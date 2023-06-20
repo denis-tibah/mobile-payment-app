@@ -1,0 +1,65 @@
+{
+  "expo": {
+    "name": "zazoo-mobile",
+    "slug": "zazoo-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "remote-notification"
+        ],
+        "NSFaceIDUsageDescription": "We need your permission to authenticate using Face ID"
+      },
+      "bundleIdentifier": "com.zazoostg.zazoomobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.zazoostg.zazoomobile",
+      "permissions": [
+        "INTERNET",
+        "android.permission.SECURE_STORAGE"
+      ],
+      "googleServicesFile": "./google-services.json"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "53738179-17b1-4378-b234-2689d22ab698"
+      }
+    },
+    "plugins": [
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow zazoo-mobile to use Face ID."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photoPermission": "The app accesses your photos to let you share them"
+        }
+      ]
+    ]
+  }
+}

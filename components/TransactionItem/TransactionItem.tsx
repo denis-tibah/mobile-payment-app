@@ -1,0 +1,176 @@
+import { useState } from "react";
+import { Text, View, TouchableOpacity, Pressable } from "react-native";
+import {
+  formatAmountTableValue,
+  formatDateTableValue,
+} from "../../utils/helpers";
+import { styles } from "./styles";
+import ArrowDown from "../../assets/icons/ArrowDown";
+import Button from "../Button";
+import Chip from "../Chip";
+import CalenderEmptyIcon from "../../assets/icons/CalenderEmpty";
+import Box from "../Box";
+import Typography from "../Typography";
+import EuroIcon from "../../assets/icons/Euro";
+import DollarIcon from "../../assets/icons/Dollar";
+import { generateTransactionPDF } from "../../utils/files";
+import { printAsync } from "expo-print";
+import { Transaction } from "../../models/Transactions";
+import Export from "../../assets/icons/Export";
+
+interface TransactionItemProps {
+  data: Transaction;
+}
+
+export function TransactionItem({ data }: TransactionItemProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOnOpen = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleExportData = async () => {
+    const pdfUri = await generateTransactionPDF([data]);
+    await printAsync({ uri: pdfUri });
+  };
+
+  return (
+    <>
+      <Pressable onPress={handleOnOpen}>
+        <View style={[styles.base, isOpen && styles.isOpen]}>
+          <Box width="30%">
+            <Text>
+              {data?.name?.length > 10
+                ? data?.name?.substring(0, 10) + "..."
+                : data?.name}
+            </Text>
+          </Box>
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            width="30%"
+          >
+            <CalenderEmptyIcon size={14} color="blue" />
+            <Typography fontSize={14}>
+              {" "}
+              {formatDateTableValue(data?.transaction_datetime?.slice(0, 10))}
+            </Typography>
+          </Box>
+          <Box
+            width="30%"
+            paddingLeft={20}
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+          >
+            {data?.currency === "EUR" ? (
+              <EuroIcon size={18} color={+data?.amount > 0 ? "green" : "red"} />
+            ) : (
+              <DollarIcon size={18} color="#278664" />
+            )}
+            <Typography>
+              {formatAmountTableValue(data?.amount, data?.currency)}
+            </Typography>
+          </Box>
+          <Box style={styles.cell}>
+            {isOpen ? <ArrowDown color="blue" /> : <ArrowDown color="blue" />}
+          </Box>
+        </View>
+      </Pressable>
+
+      {isOpen && (
+        <Box>
+          <Box style={styles.separator}></Box>
+          <Box style={styles.rowDetail}>
+            <Box style={styles.detailMobileContainer}>
+              <Box style={styles.detailMobileWrapper}>
+                <Box style={styles.detailMobile}>
+                  <Text style={styles.nameDetailMobile}>Name:</Text>
+                  <Text style={styles.valueDetailMobile}>{data?.name}</Text>
+                </Box>
+                <Box style={styles.detailMobile}>
+                  <Text style={styles.nameDetailMobile}>Reference:</Text>
+                  <Text style={styles.valueDetailMobile}>
+                    {/* Invoice_{data?.reference_no} */}
+                    {data?.reference_no}
+                  </Text>
+                </Box>
+                <Box style={styles.detailMobile}>
+                  <Text style={styles.nameDetailMobile}>Description:</Text>
+                  <Text style={styles.valueDetailMobile}>
+                    {/* Invoice_{data?.reference_no} */}
+                    {data?.description}
+                  </Text>
+                </Box>
+                <Box style={styles.cardDetails}>
+                  <Box style={styles.detailMobile}>
+                    <Text style={styles.nameDetailMobile}>IBAN:</Text>
+                    <Text style={styles.valueDetailMobile}>{data?.iban}</Text>
+                  </Box>
+                  <Box style={styles.detailMobile}>
+                    <Text style={styles.nameDetailMobile}>BIC:</Text>
+                    <Text style={styles.valueDetailMobile}>{data?.bic}</Text>
+                  </Box>
+                  {/* <Box style={styles.detailMobile}>
+                    <Text style={styles.nameDetailMobile}>
+                      Opening Balance:
+                    </Text>
+                    <Text style={styles.valueDetailMobile}>
+                      {data?.opening_balance}
+                    </Text>
+                  </Box> */}
+                  {/* <Box style={styles.detailMobile}>
+                    <Text style={styles.nameDetailMobile}>
+                      Closing Balance:
+                    </Text>
+                    <Text style={styles.valueDetailMobile}>
+                      {data?.closing_balance}
+                    </Text>
+                  </Box> */}
+                  <Box style={styles.detailMobile}>
+                    <Text style={styles.nameDetailMobile}>Running Balance:</Text>
+                    <Text style={styles.valueDetailMobile}>
+                      {/* {data?.balance} */}
+                      {data?.running_balance}
+                      
+                    </Text>
+                  </Box>
+                </Box>
+                <View style={styles.detailMobile}>
+                  <Text style={styles.nameDetailMobile}>Time:</Text>
+                  <Text style={styles.valueDetailMobile}>
+                    {data?.transaction_datetime}
+                  </Text>
+                </View>
+                <Box style={styles.downloadContainer}>
+                  <Button
+                    onPress={handleExportData}
+                    color="light-blue"
+                    leftIcon={<Export size={14} color="blue" />}
+                  >
+                    Download
+                  </Button>
+                </Box>
+              </Box>
+              <Box style={styles.statusItem}>
+                {data?.status === "SUCCESS" && (
+                  <Chip label="Completed" color="green" />
+                )}
+                {data?.status === "PENDING" && (
+                  <Chip label="Pending" color="orange" />
+                )}
+                {data?.status === "CANCELLED" && (
+                  <Chip label="Cancelled" color="red" />
+                )}
+                  {data?.status === "PROCESSING" && (
+                  <Chip label="Processing" color="red" />
+                )}
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      )}
+    </>
+  );
+}

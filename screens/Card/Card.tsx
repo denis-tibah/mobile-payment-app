@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { View, ScrollView } from "react-native";
+import * as Clipboard from "expo-clipboard";
+import { View, ScrollView, TouchableOpacity } from "react-native";
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
 import Button from "../../components/Button";
@@ -14,6 +15,7 @@ import PinIcon from "../../assets/icons/Pin";
 import EyeIcon from "../../assets/icons/Eye";
 import LostCardIcon from "../../assets/icons/LostCard";
 import TransactionIcon from "../../assets/icons/Transaction";
+import CopyClipboard from "../../assets/icons/CopyClipboard";
 import Box from "../../components/Box";
 import {
   getCardTransactions,
@@ -32,8 +34,9 @@ import { GetCardModal } from "./GetCardModal";
 import { RootState } from "../../store";
 import { CodeModal } from "../../components/CodeModal/CodeModal";
 import { delayCode } from "../../utils/delay";
-import Carousel from 'react-native-snap-carousel'
+import Carousel from "react-native-snap-carousel";
 import Spinner from "react-native-loading-spinner-overlay/lib";
+import { ICardDetails } from "../../models/interface";
 
 export function Card({ navigation }: any) {
   const infoData = useSelector((state: RootState) => state.account.details);
@@ -42,13 +45,13 @@ export function Card({ navigation }: any) {
   );
   const [cardPin, setCardPin] = useState("");
   const [remainingTime, setRemainingTime] = useState(30);
-  const loadingState = useSelector((state: RootState) => state?.card.loading)
+  const loadingState = useSelector((state: RootState) => state?.card.loading);
   const cardData = useSelector((state: RootState) => state.card?.data);
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const frozen = useSelector(
     (state: RootState) => state?.card?.data[0]?.frozenYN
   );
-  const [cardDetails, setCardDetails] = useState({});
+  const [cardDetails, setCardDetails] = useState<ICardDetails>({});
   const [freezeLoading, setFreezeLoading] = useState(false);
   const [showCardOtpModal, setShowCardOtpModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -158,6 +161,7 @@ export function Card({ navigation }: any) {
         cardreferenceId: cardData[0]?.cardreferenceId,
         card: cardData[0],
         cardImage: payload.cardImageBase64,
+        cardNumber: payload?.cardNumber,
       });
       let remainingTimer = 30;
       intervalId = setInterval(() => {
@@ -176,18 +180,20 @@ export function Card({ navigation }: any) {
     if (!!userData?.id) fetchCardData();
   }, [userData?.id]);
 
-  const _renderItem = ({item, index}:any) => {
-    return <CardView
-      resetHandler={() => setCardDetails({})}
-      cardDetails={cardDetails}
-      freezeLoading={freezeLoading}
-      unFreezeCard={unFreezeCard}
-      key={index}
-      card={item}
-      pin={cardPin}
-      timer={remainingTime}
-    />
-  }
+  const _renderItem = ({ item, index }: any) => {
+    return (
+      <CardView
+        resetHandler={() => setCardDetails({})}
+        cardDetails={cardDetails}
+        freezeLoading={freezeLoading}
+        unFreezeCard={unFreezeCard}
+        key={index}
+        card={item}
+        pin={cardPin}
+        timer={remainingTime}
+      />
+    );
+  };
 
   const handleLostCard = async () => {
     if (userData?.id)
@@ -202,11 +208,13 @@ export function Card({ navigation }: any) {
     clearInterval(storedIntervalId);
   };
 
+  const handleCopyToClipboard = async () => {
+    await Clipboard.setStringAsync(cardDetails?.cardNumber || "");
+  };
+
   return (
     <MainLayout navigation={navigation}>
-      <Spinner
-        visible={loadingState}
-      />
+      <Spinner visible={loadingState} />
       {showGetCardModal && (
         <GetCardModal
           onClose={() => setShowGetCardModal(false)}
@@ -242,6 +250,16 @@ export function Card({ navigation }: any) {
           />
         </View>
         <View style={styles.cardSection}>
+          {/*  {cardDetails?.cardNumber ? (
+            <TouchableOpacity onPress={handleCopyToClipboard}>
+              <View style={styles.clipboardContainer}>
+                <Typography fontFamily="Nunito-SemiBold" color="accent-blue">
+                  Copy card number
+                </Typography>
+                <CopyClipboard color="blue" size={18} />
+              </View>
+            </TouchableOpacity>
+          ) : null} */}
           <View style={styles.cardImages}>
             <Carousel
               data={cardData}
@@ -250,6 +268,13 @@ export function Card({ navigation }: any) {
               itemWidth={303}
               layout="default"
             />
+            {cardDetails?.cardNumber ? (
+              <TouchableOpacity onPress={handleCopyToClipboard}>
+                <View style={styles.clipboardContainer}>
+                  <CopyClipboard color="light-pink" size={18} />
+                </View>
+              </TouchableOpacity>
+            ) : null}
           </View>
           <View style={styles.incomeBox}>
             <View style={styles.incomeBox__group}>

@@ -1,9 +1,10 @@
 import { StyleSheet } from "react-native";
+import vars from "../../styles/vars";
 
-export const styles:any = StyleSheet.create<any>({
+export const styles: any = StyleSheet.create<any>({
   container: {
     marginTop: 26,
-    zIndex:1,
+    zIndex: 1,
   },
   listHead: {
     backgroundColor: "white",
@@ -18,9 +19,10 @@ export const styles:any = StyleSheet.create<any>({
     backgroundColor: "white",
   },
   cardImages: {
-    paddingTop: 24,
+    paddingTop: 20,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    position: "relative",
   },
   incomeBox: {
     paddingTop: 24,
@@ -49,5 +51,22 @@ export const styles:any = StyleSheet.create<any>({
   },
   cardTransactions: {
     marginTop: 24,
-  }
+  },
+  /* clipboardContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginLeft: 12,
+    marginRight: 12,
+    padding: 12,
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: vars["primary-blue"],
+    borderRadius: 6,
+    flexDirection: "row",
+  }, */
+  clipboardContainer: {
+    position: "absolute",
+    bottom: 105,
+    right: 10,
+  },
 });

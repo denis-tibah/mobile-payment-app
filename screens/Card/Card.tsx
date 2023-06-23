@@ -250,16 +250,6 @@ export function Card({ navigation }: any) {
           />
         </View>
         <View style={styles.cardSection}>
-          {/*  {cardDetails?.cardNumber ? (
-            <TouchableOpacity onPress={handleCopyToClipboard}>
-              <View style={styles.clipboardContainer}>
-                <Typography fontFamily="Nunito-SemiBold" color="accent-blue">
-                  Copy card number
-                </Typography>
-                <CopyClipboard color="blue" size={18} />
-              </View>
-            </TouchableOpacity>
-          ) : null} */}
           <View style={styles.cardImages}>
             <Carousel
               data={cardData}

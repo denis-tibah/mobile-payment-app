@@ -40,6 +40,8 @@ import { ICardDetails } from "../../models/interface";
 
 export function Card({ navigation }: any) {
   const infoData = useSelector((state: RootState) => state.account.details);
+  const accountData = useSelector((state: RootState) => state.auth.userData);
+
   const transactions = useSelector(
     (state: RootState) => state.card.transactions
   );
@@ -144,11 +146,12 @@ export function Card({ navigation }: any) {
 
   const handleShowCard = async ({ code }: { code: string }) => {
     let intervalId: any;
-
+    // console.log("*******accountData ***********", accountData?.id);
     setShowCardOtpLoading(true);
     const payload = await dispatch(
       showCardDetails({
-        account_id: infoData?.info?.id,
+        // account_id: infoData?.info?.id,
+         account_id: accountData?.id,
         otp: code,
       }) as any
     ).unwrap();

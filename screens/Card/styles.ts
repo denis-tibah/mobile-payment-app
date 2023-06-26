@@ -54,7 +54,7 @@ export const styles: any = StyleSheet.create<any>({
   },
   clipboardContainer: {
     position: "absolute",
-    bottom: 105,
-    right: 10,
+    bottom: 62,
+    right: -20,
   },
 });

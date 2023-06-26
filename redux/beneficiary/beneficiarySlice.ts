@@ -64,8 +64,9 @@ export const addNewBeneficiary = createAsyncThunk(
 export const deleteBeneficiary = createAsyncThunk(
   "deleteBeneficiary",
   async (uuid: any) => {
-    const { data } = await api.post(`/deleteBeneficiaryfinxp/${uuid}`);
-    return data;
+      const { data } = await api.delete(`/deleteBeneficiaryfinxp/${uuid}`);
+      return data; 
+   
   }
 );
 

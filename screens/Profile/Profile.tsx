@@ -483,7 +483,7 @@ export function Profile({ navigation }: any) {
                     }}
                     validate={(values) => {
                       let errors: any = {};
-                      if (!values.type) errors.type = "Required";
+                      // if (!values.type) errors.type = "Required";
                       if (!values.ticketValue) errors.ticketValue = "Required";
                       return errors;
                     }}
@@ -491,7 +491,19 @@ export function Profile({ navigation }: any) {
                       
                       console.log('create ticket', values, 'values.type', values.type);
 
-                      await dispatch<any>(createTicket(values));
+                      await dispatch<any>(createTicket({
+                        type: "helpdesk issue Request",
+                        dateSubmitted: values.dateSubmitted,
+                        ticketValue: [
+                          {
+                            help: {  
+                                type: values.type,
+                                value: values.ticketValue
+                            }
+                          },
+                        ],
+                        receive_mail: values.receive_mail
+                      }));
                       Toast.show("Ticket created!", {
                         duration: Toast.durations.SHORT,
                       });

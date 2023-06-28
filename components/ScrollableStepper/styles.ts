@@ -41,12 +41,12 @@ export const styles = StyleSheet.create({
   },
   textScrollable: {
     color: vars["medium-grey"],
-    fontFamily: "Nunito",
+    fontFamily: "Nunito-Regular",
     fontWeight: "600",
   },
   textScrollableSelected: {
     color: "#000000",
-    fontFamily: "Nunito",
+    fontFamily: "Nunito-Regular",
     fontWeight: "600",
   },
 });

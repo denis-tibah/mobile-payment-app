@@ -1,5 +1,14 @@
-import { useState } from "react";
-import {Keyboard, Pressable, TouchableHighlight, View,ScrollView ,TouchableWithoutFeedback,KeyboardAvoidingView} from "react-native";
+import { Fragment, useState } from "react";
+import {
+  Keyboard,
+  Pressable,
+  TouchableHighlight,
+  View,
+  ScrollView,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  ImageBackground,
+} from "react-native";
 
 import Button from "../../components/Button";
 import FormGroup from "../../components/FormGroup";
@@ -18,17 +27,40 @@ import { useNavigation } from "@react-navigation/native";
 import { validateLoginCredentials } from "../../utils/validation";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
+import ScrollableStepper from "../../components/ScrollableStepper/ScrollableStepper";
 
 export function SignupScreen({ navigation }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const { navigate }: any = useNavigation();
+  const [selectedNavIndex, setNavIndex] = useState<Number>(0);
+
   const dispatch = useDispatch();
   const keyboardDismiss = () => {
-    Keyboard.dismiss()
-  }
-
+    Keyboard.dismiss();
+  };
+  const handleSelecNavIndex = (navIndex: number): void => {
+    setNavIndex(navIndex);
+  };
   return (
-    <MainLayout navigation={navigation}>
+    <Fragment>
+      <ImageBackground
+        style={{ height: "100%" }}
+        source={require("../../assets/images/bg.png")}
+        resizeMode="cover"
+      >
+        <ScrollableStepper
+          navList={[
+            "Login Credentials",
+            "Profile Details",
+            "Address Details",
+            "Financial Details",
+            "Terms & Security",
+            "Verifications",
+          ]}
+          selectedNavIndex={selectedNavIndex}
+          handleSelecNavIndex={handleSelecNavIndex}
+        />
+        {/* <MainLayout navigation={navigation}>
       <TouchableWithoutFeedback onPress={keyboardDismiss}>
         <KeyboardAvoidingView style={{ flex: 1 }} enabled>
           <ScrollView keyboardDismissMode="on-drag">
@@ -44,10 +76,7 @@ export function SignupScreen({ navigation }: any) {
                       Login Credentials
                     </Typography>
                   </View>
-                  <Seperator
-                    backgroundColor={vars['grey']}
-                    marginBottom={24}
-                  />
+                  <Seperator backgroundColor={vars["grey"]} marginBottom={24} />
                   <Formik
                     initialValues={{
                       email: "",
@@ -62,7 +91,13 @@ export function SignupScreen({ navigation }: any) {
                       // dispatch(mockSignin());
                     }}
                   >
-                    {({ handleSubmit, handleChange, handleBlur, values, errors }) => (
+                    {({
+                      handleSubmit,
+                      handleChange,
+                      handleBlur,
+                      values,
+                      errors,
+                    }) => (
                       <View>
                         <View style={styles.cardBody}>
                           <View>
@@ -79,7 +114,7 @@ export function SignupScreen({ navigation }: any) {
                               <Seperator
                                 marginTop={18}
                                 width={315}
-                                backgroundColor={vars['light-grey']}
+                                backgroundColor={vars["light-grey"]}
                               />
                             </FormGroup>
                           </View>
@@ -110,7 +145,7 @@ export function SignupScreen({ navigation }: any) {
                                 icon={<PhoneIcon />}
                               />
                               <Seperator
-                                backgroundColor={vars['light-grey']}
+                                backgroundColor={vars["light-grey"]}
                                 width={315}
                                 marginTop={18}
                               />
@@ -171,7 +206,9 @@ export function SignupScreen({ navigation }: any) {
           </ScrollView>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
-    </MainLayout>
+    </MainLayout> */}
+      </ImageBackground>
+    </Fragment>
   );
 }
 

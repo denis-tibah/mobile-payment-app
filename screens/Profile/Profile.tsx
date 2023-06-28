@@ -488,10 +488,7 @@ export function Profile({ navigation }: any) {
                       return errors;
                     }}
                     onSubmit={async (values) => {
-                      
-                      console.log('create ticket', values, 'values.type', values.type);
-
-                      await dispatch<any>(createTicket({
+                      var data = await dispatch<any>(createTicket({
                         type: "helpdesk issue Request",
                         dateSubmitted: values.dateSubmitted,
                         ticketValue: [
@@ -504,9 +501,12 @@ export function Profile({ navigation }: any) {
                         ],
                         receive_mail: values.receive_mail
                       }));
-                      Toast.show("Ticket created!", {
-                        duration: Toast.durations.SHORT,
-                      });
+                     if(data){
+                        Toast.show("Ticket created!", {
+                          duration: Toast.durations.SHORT,
+                        });
+                     }
+                    
                     }}
                   >
                     {({

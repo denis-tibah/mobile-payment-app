@@ -3,6 +3,7 @@ import { Text, View, TouchableOpacity, Pressable } from "react-native";
 import {
   formatAmountTableValue,
   formatDateTableValue,
+  getFormattedDate,
 } from "../../utils/helpers";
 import { styles } from "./styles";
 import ArrowDown from "../../assets/icons/ArrowDown";
@@ -42,7 +43,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
             <Text>
             <Typography fontSize={14}> 
               {data?.name?.length > 10
-                ? data?.name?.substring(0, 10) + "..."
+                ? data?.name?.substring(0, 10) + "."
                 : data?.name}
             </Typography>
             </Text>
@@ -57,7 +58,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
             <CalenderEmptyIcon size={14} color="blue" />
             <Typography fontSize={14}>
               {" "}
-              {formatDateTableValue(data?.transaction_datetime?.slice(0, 10))}
+              {getFormattedDate(data?.transaction_datetime)}
             </Typography>
           </Box>
           <Box

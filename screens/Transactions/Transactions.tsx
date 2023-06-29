@@ -42,7 +42,8 @@ import { useState } from "react";
 
   const fetchTransactions = async () => {
     try {
-      let search= {     
+      let search:any;
+          search= {     
           account_id: userData?.id,
           sort: "id",
           direction: "desc",
@@ -196,16 +197,18 @@ const fetchTransactionsWithFilters = async (value :any) => {
           </View>
           <Seperator backgroundColor={vars['grey']} />
    
-          {onStartup =='true' ?  <View>{transactions?.map((transaction, index) => (
-                                    <TransactionItem data={transaction} key={index} />
-                              ))}</View>
+          {onStartup =='true' ?  <View>{transactions?.map((transaction, index) => {
+              console.log(transaction)
+                return(  <TransactionItem data={transaction} key={index} />)
+                                  
+          })}</View>
               :   
                     <View> 
                           {transactionsFiltered?.map((transaction, index) => (
                           <TransactionItem data={transaction} key={index} />  
                         ))}
                    </View>
-                 }
+          }
           {/* <View > */}
            
             {/* {transactions.map((transaction, index) => (

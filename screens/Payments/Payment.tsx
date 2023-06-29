@@ -187,7 +187,7 @@ export function Payment({ navigation }: any) {
             creditor_iban: "MT62PAUU92005050500020007443001",
             bic: "PAUUMTM1XXX",
             balance: infoData?.curbal || 0,
-            amount: 0.01,
+            amount: 0.00,
             currency: "EUR",
             reason: "Invoice test 123",
           }}
@@ -195,7 +195,9 @@ export function Payment({ navigation }: any) {
             let errors: any = {};
             const firstname = values.recipientname.trim().split(" ")[0];
             const lastname = values.recipientname.trim().split(" ")[1];
-
+            if(Number(values.amount) > Number(infoData?.curbal)) {
+              errors.amount = "Sorry you dont have enough balance for this amount";
+            }
             if (!values.recipientname) {
               errors.recipientname = "required";
             } else if (!firstname || firstname === "") {
@@ -203,7 +205,6 @@ export function Payment({ navigation }: any) {
             } else if (!lastname || lastname === "") {
               errors.recipientname = "Last name is required";
             }
-
             if (values.bic?.length <= 3) {
               errors.bic = "field must be minimum 3 characters";
             }
@@ -355,8 +356,7 @@ export function Payment({ navigation }: any) {
                       infoData?.currency
                     )} ${
                       (
-                        (Number(infoData?.curbal) || 0) -
-                        (Number(values?.amount) || 0)
+                        (Number(infoData?.curbal) || 0)
                       ).toLocaleString("en-US", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,

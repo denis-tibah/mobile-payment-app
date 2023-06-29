@@ -346,11 +346,11 @@ export function Card({ navigation }: any) {
           />
           <View>
             <View style={styles.listHead}>
-              <Typography fontFamily="Nunito-SemiBold">Name</Typography>
-              <Typography fontFamily="Nunito-SemiBold" color="accent-blue">
+              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Name</Typography>
+              <Typography fontFamily="Nunito-SemiBold" color="accent-blue" fontSize={16}>
                 Date
               </Typography>
-              <Typography fontFamily="Nunito-SemiBold">Amount</Typography>
+              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Amount</Typography>
               <Typography></Typography>
             </View>
             <View style={{ height: "70%" }}>

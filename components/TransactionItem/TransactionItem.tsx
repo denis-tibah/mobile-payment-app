@@ -40,9 +40,11 @@ export function TransactionItem({ data }: TransactionItemProps) {
         <View style={[styles.base, isOpen && styles.isOpen]}>
           <Box width="30%">
             <Text>
+            <Typography fontSize={16}> 
               {data?.name?.length > 10
                 ? data?.name?.substring(0, 10) + "..."
                 : data?.name}
+            </Typography>
             </Text>
           </Box>
           <Box
@@ -52,7 +54,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
             width="30%"
           >
             <CalenderEmptyIcon size={14} color="blue" />
-            <Typography fontSize={14}>
+            <Typography fontSize={16}>
               {" "}
               {formatDateTableValue(data?.transaction_datetime?.slice(0, 10))}
             </Typography>
@@ -69,7 +71,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
             ) : (
               <DollarIcon size={18} color="#278664" />
             )}
-            <Typography>
+            <Typography fontSize={16}>
               {formatAmountTableValue(data?.amount, data?.currency)}
             </Typography>
           </Box>

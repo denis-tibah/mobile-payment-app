@@ -24,7 +24,8 @@ export function formatAmountTableValue(amount: any = "", currency = "") {
   if (amount > 0) {
     if (amount.split(".")[1].length > 1) {
       // console.log('Decimal number amount.slice(1)',amount.slice(1))
-      return `${amount.slice(1)}`;
+      // return `${amount.slice(1)}`;
+      return `${amount}`;
     } else {
       // console.log('Decimal number amount.slice(1)0',amount)
       // return `${amount.slice(1)}0`;

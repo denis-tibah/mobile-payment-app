@@ -73,11 +73,11 @@ export function MyAccount({ navigation }: any) {
             {!!transactions?.length ? (
               <>
                 <View style={styles.listHead}>
-                  <Typography fontFamily="Nunito-SemiBold" fontSize={13}>Name</Typography>
-                  <Typography fontFamily="Nunito-SemiBold" color="accent-blue" fontSize={13}>
+                  <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Name</Typography>
+                  <Typography fontFamily="Nunito-SemiBold" color="accent-blue" fontSize={16}>
                     Date
                   </Typography>
-                  <Typography fontFamily="Nunito-SemiBold" fontSize={13}>Amount</Typography>
+                  <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Amount</Typography>
                   <Typography></Typography>
                 </View>
                 <View>

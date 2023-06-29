@@ -186,11 +186,11 @@ const fetchTransactionsWithFilters = async (value) => {
         <View>
             <Seperator backgroundColor={vars['grey']} />
           <View style={styles.listHead}>
-            <Typography fontSize={13} fontFamily="Nunito-SemiBold">Name</Typography>
-            <Typography fontSize={13} fontFamily="Nunito-SemiBold" color="accent-blue">
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Name</Typography>
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">
               Date
             </Typography>
-            <Typography fontSize={13} fontFamily="Nunito-SemiBold">Amount</Typography>
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Amount</Typography>
             <Typography></Typography>
           </View>
           <Seperator backgroundColor={vars['grey']} />

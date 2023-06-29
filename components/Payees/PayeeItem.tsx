@@ -26,9 +26,11 @@ export function PayeeItem({ data }: any) {
           <View style={[styles.base, isOpen && styles.isOpen]}>
             <Box width="30%">
               <Text>
+            
                 {data?.name?.length > 30
                   ? data?.name?.substring(0, 30) + "..."
                   : data?.name}
+                
               </Text>
             </Box>
             <Box
@@ -38,7 +40,7 @@ export function PayeeItem({ data }: any) {
               width="30%"
             >
               <CalenderEmptyIcon size={14} color="blue" />
-              <Typography>
+              <Typography fontSize={16} >
                 {" "}
                 {formatDateTableValue(
                   data?.created_at.slice(0, 10) || "29/01/2022"

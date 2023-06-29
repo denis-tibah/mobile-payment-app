@@ -102,8 +102,8 @@ export function Payees({ navigation }: any) {
         keyExtractor={(item) => item.uuid}
         ListHeaderComponent={
           <View style={styles.listHead}>
-            <Typography fontFamily="Nunito-SemiBold">Name</Typography>
-            <Typography fontFamily="Nunito-SemiBold" color="accent-blue">
+            <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Name</Typography>
+            <Typography fontFamily="Nunito-SemiBold" color="accent-blue" fontSize={16}>
               Created Date
             </Typography>
             <Text></Text>

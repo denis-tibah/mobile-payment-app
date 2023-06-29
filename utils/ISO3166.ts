@@ -1784,9 +1784,13 @@ const blackList = new Set([
 const countries = ISO3116CountryList.filter((item) => {
   return !blackList.has(item.name);
 });
-
 const countryList = countries?.sort((a, b) => a.name.localeCompare(b.name));
-
+const allowedCountries = countryList.map( country => ({
+  label: country.name,
+  value: country.alpha3,
+  countryCode: country.alpha2,
+  name: country.name
+}))
 const nationalityList = countries?.sort((a, b) =>
   a.nationality.localeCompare(b.nationality)
 );
@@ -1804,5 +1808,6 @@ const getCountryName = (countryCode: any) => {
 export {
   countryList as countries,
   nationalityList as nationalities,
+  allowedCountries,
   getCountryName,
 };

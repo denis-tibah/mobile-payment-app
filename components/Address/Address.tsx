@@ -4,10 +4,11 @@ import FormGroup from "../FormGroup";
 import CityIcon from "../../assets/icons/City";
 import MapIcon from "../../assets/icons/Map";
 import WorldIcon from "../../assets/icons/World";
-import { getCountryName } from "../../utils/ISO3166";
+import { allowedCountries, getCountryName } from "../../utils/ISO3166";
 import Button from "../../components/Button";
 import Transaction from "../../assets/icons/Transaction";
 import { styles } from "./styles";
+
 export const Address = ({
   profileData,
   compact,
@@ -18,7 +19,6 @@ export const Address = ({
   showChangeRequest: any;
 }) => {
   return (
-
     <Formik
       enableReinitialize
       initialValues={{
@@ -27,7 +27,7 @@ export const Address = ({
         town: profileData?.town,
         state: profileData?.state,
         postCode: profileData?.postal_code,
-        country: getCountryName(profileData?.country),
+        country: profileData?.country,
       }}
       validate={(values) => {
         let errors: any = {};
@@ -50,7 +50,7 @@ export const Address = ({
               <FormGroup.Input
                 style={compact ? styles.compactInput : styles.input}
                 icon={<CityIcon />}
-                editable={false}
+                // editable={false}
                 onChangeText={handleChange("street")}
                 onBlur={handleBlur("street")}
                 value={values.street}
@@ -61,7 +61,7 @@ export const Address = ({
               <FormGroup.Input
                 style={compact ? styles.compactInput : styles.input}
                 icon={<CityIcon />}
-                editable={false}
+                // editable={false}
                 onChangeText={handleChange("subStreet")}
                 onBlur={handleBlur("subStreet")}
                 value={values.subStreet}
@@ -74,7 +74,7 @@ export const Address = ({
               <FormGroup.Input
                 style={compact ? styles.compactInput : styles.input}
                 icon={<CityIcon />}
-                editable={false}
+                // editable={false}
                 onChangeText={handleChange("town")}
                 onBlur={handleBlur("town")}
                 value={values.town}
@@ -85,7 +85,7 @@ export const Address = ({
               <FormGroup.Input
                 style={compact ? styles.compactInput : styles.input}
                 icon={<CityIcon />}
-                editable={false}
+                // editable={false}
                 onChangeText={handleChange("state")}
                 onBlur={handleBlur("state")}
                 value={values.state}
@@ -98,7 +98,7 @@ export const Address = ({
               <FormGroup.Input
                 style={compact ? styles.compactInput : styles.input}
                 icon={<MapIcon />}
-                editable={false}
+                // editable={false}
                 onChangeText={handleChange("postCode")}
                 onBlur={handleBlur("postCode")}
                 value={values.postCode}
@@ -106,13 +106,14 @@ export const Address = ({
               />
             </FormGroup>
             <FormGroup validationError={errors.country}>
-              <FormGroup.Input
+              <FormGroup.Select
                 style={compact ? styles.compactInput : styles.input}
                 icon={<WorldIcon />}
-                editable={false}
+                // editable={false}
+                items={allowedCountries}
                 onChangeText={handleChange("country")}
                 onBlur={handleBlur("country")}
-                value={values.country}
+                selectedValue={values.country}
                 placeholder="Country"
               />
             </FormGroup>

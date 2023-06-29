@@ -4,7 +4,6 @@ import { Text, View, TextInput, Platform, Pressable } from "react-native";
 import { input, formGroup, textarea, pinCode } from "./styles";
 import EyeIcon from "../../assets/icons/Eye";
 import EyeClosedIcon from "../../assets/icons/EyeClosed";
-import { SalutationOption } from "../../screens/Profile/Profile";
 const { Item } = Picker;
 export function FormGroup({
   children,
@@ -84,21 +83,24 @@ export function TextArea({ ...props }) {
   );
 }
 
-export function Select({ children, items = [], selectedValue}: any ) {
-  const [option, setOption] = useState();
+export function Select({items = [], selectedValue}: any ) {
+  const [option, setOption] = useState(selectedValue);
   return (
     <View style={input.wrapper}>
       <Picker 
         style={input.input}
-        selectedValue
+        selectedValue={option}
+        onValueChange={selected => setOption(selected)}
         >
-        {items.map( (item: any, index: number) => (
-          <Item
-            key={index}
-            label={item.label}
-            value={item.value}
-          />
-        ))}
+        {items.map( (item: any, index: number) => {
+            return (
+              <Item
+                key={index}
+                label={item.label}
+                value={item.value}
+              />
+            )
+          })}
       </Picker>
     </View>
   );

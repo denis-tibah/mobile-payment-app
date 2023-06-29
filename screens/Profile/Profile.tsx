@@ -50,9 +50,18 @@ import Email from "../../assets/icons/Email";
 import { updateNotifications } from "../../redux/profile/profileSlice";
 import Toast from "react-native-root-toast";
 import DropDownPicker from "react-native-dropdown-picker";
-
+export interface SelectOption {
+  label: string;
+  value: string;
+}
 export function Profile({ navigation }: any) {
   const dispatch = useDispatch();
+  const salutationOptions: SelectOption[] = [
+    { label: "Mr", value: "Mr" }, { label: "Mrs", value: "Mrs"}
+  ];
+  const sourceOfWelth: SelectOption[] = [
+    { label: "Salary", value: 'salary'}, {label: 'Self employed', value:'self-employed'}
+  ]
   const settings = useSelector((state: RootState) => state.setting.data);
   const profileData = useSelector(
     (state: any) => state?.profile?.profile
@@ -125,7 +134,7 @@ export function Profile({ navigation }: any) {
                   first_name: profileData?.first_name,
                   last_name: profileData?.last_name,
                   annual_salary: profileData?.UserProfile?.annualSalary,
-                  source_of_wealth: profileData?.UserProfile?.sourceOfWealth,
+                  source_of_wealth: profileData?.source_of_wealth,
                 }}
                 validate={(values) => {
                   let errors: any = {};
@@ -157,12 +166,14 @@ export function Profile({ navigation }: any) {
                       </View>
                       <View style={{ flex: 0.7 }}>
                         <FormGroup validationError={errors.salutation}>
-                          <FormGroup.Input
+                          <FormGroup.Select
                             icon={<StatusIcon color={undefined} />}
                             onChangeText={handleChange("salutation")}
                             onBlur={handleBlur("salutation")}
-                            values={values.salutation}
-                            placeholder="salutation"
+                            value={values.salutation}
+                            items={salutationOptions}
+                            selectedValue={values.salutation}
+                            placeholder="Salutation"
                           />
                         </FormGroup>
                       </View>
@@ -174,7 +185,7 @@ export function Profile({ navigation }: any) {
                           onChangeText={handleChange("first_name")}
                           onBlur={handleBlur("first_name")}
                           value={values.first_name}
-                          placeholder="first name"
+                          placeholder="First name"
                         />
                       </FormGroup>
                     </View>
@@ -184,7 +195,7 @@ export function Profile({ navigation }: any) {
                         onChangeText={handleChange("last_name")}
                         onBlur={handleBlur("last_name")}
                         value={values.last_name}
-                        placeholder="last name"
+                        placeholder="Last name"
                       />
                       <Seperator
                         backgroundColor={vars["light-grey"]}
@@ -197,22 +208,24 @@ export function Profile({ navigation }: any) {
                         onChangeText={handleChange("annual_salary")}
                         onBlur={handleBlur("annual_salary")}
                         value={values.annual_salary}
-                        placeholder="annual salary"
+                        placeholder="Annual salary"
                       />
                     </FormGroup>
                     <FormGroup validationError={errors.source_of_wealth}>
-                      <FormGroup.Input
+                      <FormGroup.Select
                         icon={<PigIcon />}
                         onChangeText={handleChange("source_of_wealth")}
                         onBlur={handleBlur("source_of_wealth")}
                         value={values.source_of_wealth}
-                        placeholder="source of wealth"
+                        placeholder="Source of wealth"
+                        items={sourceOfWelth}
+                        selectedValue={values.source_of_wealth}
                       />
                     </FormGroup>
                     <View style={{ flexDirection: "row", paddingLeft: 12 }}>
                       <Button
-                        leftIcon={<TransactionIcon color="pink" />}
-                        color="light-pink"
+                        leftIcon={<TransactionIcon color="blue" />}
+                        color="light-blue"
                       >
                         Change request
                       </Button>

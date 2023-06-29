@@ -25,6 +25,7 @@ const ScrollableStepper: FC<IScrollableStepper> = ({
           {navList.map((item, index) => {
             return (
               <TouchableOpacity
+                key={item}
                 onPress={() => {
                   handleSelecNavIndex(index);
                 }}

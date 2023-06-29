@@ -4,6 +4,7 @@ import {
   Pressable,
   TouchableHighlight,
   View,
+  Text,
   ScrollView,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
@@ -28,11 +29,17 @@ import { validateLoginCredentials } from "../../utils/validation";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
 import ScrollableStepper from "../../components/ScrollableStepper/ScrollableStepper";
+import AddressDetails from "../../components/SignupComponents/AddressDetails";
+import FinancialDetails from "../../components/SignupComponents/FinancialDetails";
+import LoginDetails from "../../components/SignupComponents/LoginDetails";
+import ProfileDetails from "../../components/SignupComponents/ProfileDetails";
+import TermsAndSecurity from "../../components/SignupComponents/TermsAndSecurity";
+import Verifications from "../../components/SignupComponents/Verifications";
 
 export function SignupScreen({ navigation }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const { navigate }: any = useNavigation();
-  const [selectedNavIndex, setNavIndex] = useState<Number>(0);
+  const [selectedNavIndex, setNavIndex] = useState<number>(0);
 
   const dispatch = useDispatch();
   const keyboardDismiss = () => {
@@ -41,6 +48,42 @@ export function SignupScreen({ navigation }: any) {
   const handleSelecNavIndex = (navIndex: number): void => {
     setNavIndex(navIndex);
   };
+
+  const handleNextStep = (): void => {
+    setNavIndex((prevStep) => prevStep + 1);
+  };
+
+  const handlePrevStep = (): void => {
+    setNavIndex((prevStep) => prevStep - 1);
+  };
+
+  const steps = [
+    <LoginDetails handleNextStep={handleNextStep} />,
+    <ProfileDetails
+      handleNextStep={handleNextStep}
+      handlePrevStep={handlePrevStep}
+    />,
+    <AddressDetails
+      handleNextStep={handleNextStep}
+      handlePrevStep={handlePrevStep}
+    />,
+    <FinancialDetails
+      handleNextStep={handleNextStep}
+      handlePrevStep={handlePrevStep}
+    />,
+    <TermsAndSecurity
+      handleNextStep={handleNextStep}
+      handlePrevStep={handlePrevStep}
+    />,
+    <Verifications
+      handleNextStep={handleNextStep}
+      handlePrevStep={handlePrevStep}
+    />,
+    {
+      /* <VerificationLast nextRegistrationForm={nextRegistrationForm} />,
+    <Sumsub />, */
+    },
+  ];
   return (
     <Fragment>
       <ImageBackground
@@ -60,6 +103,19 @@ export function SignupScreen({ navigation }: any) {
           selectedNavIndex={selectedNavIndex}
           handleSelecNavIndex={handleSelecNavIndex}
         />
+
+        <TouchableWithoutFeedback onPress={keyboardDismiss}>
+          <KeyboardAvoidingView style={{ flex: 1 }} enabled>
+            <ScrollView keyboardDismissMode="on-drag">
+              <View style={styles.container}>
+                <View style={styles.innerContainer}>
+                  <>{steps[selectedNavIndex]}</>
+                </View>
+              </View>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
+
         {/* <MainLayout navigation={navigation}>
       <TouchableWithoutFeedback onPress={keyboardDismiss}>
         <KeyboardAvoidingView style={{ flex: 1 }} enabled>

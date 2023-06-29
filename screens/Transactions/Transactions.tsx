@@ -42,7 +42,16 @@ import { useState } from "react";
 
   const fetchTransactions = async () => {
     try {
-      if (userData) await dispatch<any>(getTransactions(userData));
+      let search= {     
+          account_id: userData?.id,
+          sort: "id",
+          direction: "desc",
+          status: "PROCESSING"
+      }
+      // console.log("search only porcessed transactions");
+      // if (userData) await dispatch<any>(getTransactions(userData));
+      if (userData) await dispatch<any>(getTransactions(search));
+ 
     } catch (error) {
       console.log({ error });
     }

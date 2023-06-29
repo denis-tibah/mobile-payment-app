@@ -17,6 +17,8 @@ import LostCardIcon from "../../assets/icons/LostCard";
 import TransactionIcon from "../../assets/icons/Transaction";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
 import Box from "../../components/Box";
+// import ZazooVirtualCard from "../../assets/images/zazoo-virtual-card.png";
+
 import {
   getCardTransactions,
   getCards,
@@ -164,6 +166,7 @@ export function Card({ navigation }: any) {
         cardreferenceId: cardData[0]?.cardreferenceId,
         card: cardData[0],
         cardImage: payload.cardImageBase64,
+        // cardImage: ZazooVirtualCard,
         cardNumber: payload?.cardNumber,
       });
       let remainingTimer = 30;

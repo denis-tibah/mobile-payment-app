@@ -8,7 +8,7 @@ import TransactionItem from "../../components/TransactionItem";
 import Typography from "../../components/Typography";
 import AccountIcon from "../../assets/icons/Account";
 import IncomeBox from "../../components/IncomeBox";
-import { getTransactions } from "../../redux/transaction/transactionSlice";
+import { getTransactions,getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
 import { RootState } from "../../store";
 import Box from "../../components/Box";
 import { getAccountDetails } from "../../redux/account/accountSlice";
@@ -28,7 +28,14 @@ export function MyAccount({ navigation }: any) {
   const fetchTransactions = async () => {
     try {
       if (userData) {
-        await dispatch<any>(getTransactions(userData));
+        let search= {     
+          account_id: userData?.id,
+          sort: "id",
+          direction: "desc",
+          status: "PROCESSING"
+      }
+        // await dispatch<any>(getTransactions(userData));
+        await dispatch<any>(getTransactions(search))
         await dispatch<any>(getAccountDetails(userData.id));
       }
     } catch (error) {

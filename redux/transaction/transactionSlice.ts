@@ -56,12 +56,29 @@ export const transactionSlice = createSlice({
   
 });
 
-export const getTransactions = createAsyncThunk<Transaction[], UserData>(
+// export const getTransactions = createAsyncThunk<Transaction[], UserData>(
+//   "getTransactions",
+//   async (userData, { rejectWithValue, fulfillWithValue }) => {
+//     try {
+//       const { data } = await api.post("/getTransactionsV2finxp", {
+//         account_id: userData.id,
+//       });
+//       return fulfillWithValue(data);
+//     } catch (error) {
+//       rejectWithValue(error);
+//     }
+//   }
+// );
+export const getTransactions = createAsyncThunk<Transaction[], SearchFilter>(
   "getTransactions",
-  async (userData, { rejectWithValue, fulfillWithValue }) => {
+  async (searchFilter, { rejectWithValue, fulfillWithValue }) => {
     try {
       const { data } = await api.post("/getTransactionsV2finxp", {
-        account_id: userData.id,
+        account_id: searchFilter.account_id,
+        sort:       searchFilter.sort,
+        direction:  searchFilter.direction,
+        status:     searchFilter.status
+
       });
       return fulfillWithValue(data);
     } catch (error) {
@@ -96,6 +113,7 @@ export const getTransactionsWithFilters = createAsyncThunk<Transaction[], Search
       // console.log("data",data);
       return fulfillWithValue(data);
     } catch (error) {
+      // console.log("error with transaction search",error);
       rejectWithValue(error);
     }
   }

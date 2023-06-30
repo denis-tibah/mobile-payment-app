@@ -13,4 +13,5 @@ export const styles = StyleSheet.create({
     paddingLeft: 24,
     paddingRight: 24,
   },
+  cardBody: {},
 });

@@ -17,7 +17,8 @@ import LostCardIcon from "../../assets/icons/LostCard";
 import TransactionIcon from "../../assets/icons/Transaction";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
 import Box from "../../components/Box";
-// import ZazooVirtualCard from "../../assets/images/zazoo-virtual-card.png";
+
+import ZazooVirtualCard from "../../assets/images/zazoo-virtual-card.png";
 
 import {
   getCardTransactions,
@@ -29,7 +30,7 @@ import {
   terminateCard,
 } from "../../redux/card/cardSlice";
 import { getTodaysDate } from "../../utils/dates";
-import { getCurrency } from "../../utils/helpers";
+import { getCurrency, convertImageToBase64 } from "../../utils/helpers";
 import { getAccountDetails } from "../../redux/account/accountSlice";
 import { CardView } from "../../components/Card/CardView";
 import { GetCardModal } from "./GetCardModal";
@@ -162,11 +163,20 @@ export function Card({ navigation }: any) {
       setCardPin("");
       setRemainingTime(30);
       clearInterval(storedIntervalId);
+
+    //  let image='';
+    //  convertImageToBase64(ZazooVirtualCard,(result:any) => {
+    //         image=result;
+    //         console.log("base64 images is ",image);
+    //  });
+                 
+
       setCardDetails({
         cardreferenceId: cardData[0]?.cardreferenceId,
         card: cardData[0],
         cardImage: payload.cardImageBase64,
-        // cardImage: ZazooVirtualCard,
+        //Added by Aristos
+        // cardImage:image,
         cardNumber: payload?.cardNumber,
       });
       let remainingTimer = 30;

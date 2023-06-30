@@ -2,7 +2,15 @@ export function formatDateTableValue(date = "") {
   return date.split("-").reverse().join("-");
 }
 
+//added by Aristos
 export function formatAmountTableValue(amount: any = "", currency = "") {
+  if (!amount || !currency) return;
+
+  return Number.parseFloat(amount).toFixed(2);
+
+}
+
+export function formatAmountTableValue_old(amount: any = "", currency = "") {
   if (!amount || !currency) return;
   // if (!amount.split(".")[1]) return
   
@@ -11,11 +19,12 @@ export function formatAmountTableValue(amount: any = "", currency = "") {
   // if the amount is a whole number, for example, "+10"
   if (!amount.split(".")[1]) {
     if (amount > 0) {
-      // console.log('Whole number amount.slice(1)',amount)
+      console.log('Positive number amount.slice(1)',amount)
+       console.log('Postive Decimal number amount',Number.parseFloat(amount).toFixed(2));
       // return `${amount.slice(1)}`;
       return `${amount}`;
     } else {
-      // console.log('Whole number amount.slice(0, 1)',amount.slice(0, 1))
+      console.log('Negative Whole number amount.slice(0, 1)',Number.parseFloat(amount).toFixed(2));
       return `${amount.slice(0, 1)} ${amount.slice(1)}`;
     }
   }
@@ -27,7 +36,7 @@ export function formatAmountTableValue(amount: any = "", currency = "") {
       // return `${amount.slice(1)}`;
       return `${amount}`;
     } else {
-      // console.log('Decimal number amount.slice(1)0',amount)
+      // console.log('Decimal number amount.slice(1)0',amount);
       // return `${amount.slice(1)}0`;
       return `${amount}`;
     }
@@ -42,13 +51,13 @@ export function formatAmountTableValue(amount: any = "", currency = "") {
   }
 }
 
-export function convertImageToBase64(file: any) {
+export function convertImageToBase64(file: any,cb) {
   return new Promise((resolve, reject) => {
     const reader: any = new FileReader();
     reader.readAsDataURL(file);
 
     reader.onload = () => {
-      resolve(reader.result.split("base64,")[1]);
+      cb(resolve(reader.result.split("base64,")[1]));
     };
     reader.onerror = (error: any) => {
       reject(error);

@@ -14,4 +14,28 @@ export const styles = StyleSheet.create({
     paddingRight: 24,
   },
   cardBody: {},
+  emailVerifiedContainer: {
+    alignItems: "center",
+    marginTop: 5,
+    padding: 24,
+  },
+  emailContainer: {
+    backgroundColor: vars["accent-pink"],
+  },
+  emailVerifiedText: {
+    color: "#fff",
+  },
+  emailVerifiedTextBlue: {
+    color: vars["accent-pink"],
+  },
+  changeEmailTextContainer: {
+    marginTop: 20,
+  },
+  changeEmailText: {
+    marginLeft: 20,
+    color: vars["accent-blue"],
+  },
+  alternateEmailContainer: {
+    marginTop: 20,
+  },
 });

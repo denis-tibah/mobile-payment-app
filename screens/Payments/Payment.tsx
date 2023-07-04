@@ -197,7 +197,7 @@ export function Payment({ navigation }: any) {
             balance: infoData?.curbal || 0,
             amount: 0.00,
             currency: "EUR",
-            reason: "Invoice test 123",
+            reason: "",
           }}
           validate={(values) => {
             let errors: any = {};

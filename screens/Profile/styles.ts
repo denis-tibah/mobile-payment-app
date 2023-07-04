@@ -51,6 +51,19 @@ export const styles:any = StyleSheet.create<any>({
     gap:8,
     alignItems: "center",
   },
+  biometric__switch: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingBottom:30,
+    // paddingTop: -10,
+  },
+  biometric__switch__text: {
+    flexDirection: "row",
+    gap:8,
+    alignItems: "center",
+  },
   notification__action: {
     flexDirection: "row",
     marginTop: 24,

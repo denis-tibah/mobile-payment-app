@@ -47,7 +47,9 @@ import Globe from "../../assets/icons/Globe";
 import { Picker } from "@react-native-picker/picker";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import Email from "../../assets/icons/Email";
-import { updateNotifications } from "../../redux/profile/profileSlice";
+import Biometric from "../../assets/icons/Biometric";
+
+import { updateNotifications,updateBiometric } from "../../redux/profile/profileSlice";
 import Toast from "react-native-root-toast";
 import DropDownPicker from "react-native-dropdown-picker";
 export interface SelectOption {
@@ -67,6 +69,8 @@ export function Profile({ navigation }: any) {
     (state: any) => state?.profile?.profile
   )?.data;
   const [isEnabled, setIsEnabled] = useState(false);
+  const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
+
   const [limitIsEnabled, setLimitIsEnabled] = useState<boolean>(false);
   const [dropDownOpen, setDropDownOpen] = useState(false);
   const userData = useSelector((state: RootState) => state.auth?.userData);
@@ -95,6 +99,7 @@ export function Profile({ navigation }: any) {
 
   function toggleSwitch(value: boolean) {
     setIsEnabled(value);
+
     if (value) {
       return dispatch<any>(
         updateNotifications({ email: profileData?.email, enableYN: "Y" })
@@ -107,6 +112,30 @@ export function Profile({ navigation }: any) {
     }
     dispatch<any>(
       updateNotifications({ email: profileData?.email, enableYN: "N" })
+    ).then((response: any) => {
+      Toast.show(response?.payload?.message, {
+        duration: Toast.durations.SHORT,
+      });
+    });
+
+  }
+
+  function toggleBiometric(value: boolean) {
+
+    setIsBiometricEnabled(value);
+    //Enable or Disable Biometric authentication
+    if (value) {
+      return dispatch<any>(
+        updateBiometric({ email: profileData?.email, enableYN: "Y" })
+      ).then((response: any) => {
+        console.log(response);
+        Toast.show(response?.payload?.message, {
+          duration: Toast.durations.SHORT,
+        });
+      });
+    }
+    dispatch<any>(
+      updateBiometric({ email: profileData?.email, enableYN: "N" })
     ).then((response: any) => {
       Toast.show(response?.payload?.message, {
         duration: Toast.durations.SHORT,
@@ -283,7 +312,22 @@ export function Profile({ navigation }: any) {
                   errors,
                   handleSubmit,
                 }: any) => (
-                  <View style={styles.tabContent}>
+                    <View style={styles.tabContent}>
+                      <View style={styles.biometric__switch}>
+                        <View style={styles.biometric__switch__text}>
+                          <Biometric  color="blue" size={18} />
+                          <Text>Enable Biometric Authentication</Text>
+                        </View>
+                      <View style={{ marginLeft: "auto" }}>
+                        <Switch
+                          trackColor={{ false: "#767577", true: "#81b0ff" }}
+                          thumbColor={isBiometricEnabled ? "white" : vars["light-blue"]}
+                          ios_backgroundColor="#3e3e3e"
+                          onValueChange={(e) => toggleBiometric(e)}
+                          value={isBiometricEnabled}
+                        />
+                      </View>
+                  </View>
                     <FormGroup validationError={errors.old_password}>
                       <FormGroup.Password
                         icon={<LockIcon />}
@@ -359,6 +403,7 @@ export function Profile({ navigation }: any) {
                         special character
                       </Text>
                     </Box>
+                    
                     <View style={{ flexDirection: "row", paddingLeft: 12 }}>
                       <Button onPress={handleSubmit} color="light-pink">
                         Submit
@@ -367,6 +412,7 @@ export function Profile({ navigation }: any) {
                   </View>
                 )}
               </Formik>
+  
             </Tabs.Panel>
 
             <Tabs.Panel text="Notifications" icon={<BellIcon />}>

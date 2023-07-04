@@ -25,13 +25,25 @@ import { RootState } from "../store";
 import { AppState } from "react-native";
 import { signout } from "../redux/auth/authSlice";
 import * as SecureStore from 'expo-secure-store'
+// import * as TaskManager from 'expo-task-manager';
+
 const Tab = createBottomTabNavigator();
 const Root = createNativeStackNavigator();
 const Payee = createStackNavigator();
 
+
+// const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
+
+// TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error, executionInfo }) => {
+//   console.log('Received a notification in the background!');
+//   // Do something with the notification data
+// });
+
+// Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
+    shouldShowAlert: false,
     shouldPlaySound: false,
     shouldSetBadge: false,
   }),

@@ -28,6 +28,11 @@ const initialState = {
     error: false,
     errorMessage: "",
   },
+  biometric: {  
+    loading: false,
+    error: false,
+    errorMessage: "",
+  },
 };
 
 export const profileSlice = createSlice({
@@ -83,6 +88,20 @@ export const profileSlice = createSlice({
       state.notifications.error = true;
       state.notifications.errorMessage = "Error";
     });
+    // update biometric
+    builder.addCase(updateBiometric.pending, (state) => {
+      state.biometric.loading = true;
+    });
+    builder.addCase(updateBiometric.fulfilled, (state) => {
+      state.biometric.loading = false;
+    });
+    builder.addCase(updateBiometric.rejected, (state) => {
+      state.biometric.loading = false;
+      state.biometric.error = true;
+      state.biometric.errorMessage = "Error";
+    });
+
+
     // udpate security
     builder.addCase(updateSecurity.pending, (state) => {
       state.security.loading = true;
@@ -139,6 +158,16 @@ export const updateNotifications = createAsyncThunk(
     return data;
   }
 );
+
+export const updateBiometric= createAsyncThunk(
+  "updateBiometric",
+  async (params:{email:string, enableYN:string}) => {
+    const { data } = await api.post("/updateBiometric", params);
+    // console.log("****enable biometric *********", data);
+    return data;
+  }
+);
+
 
 export const updateSecurity = createAsyncThunk(
   "changePassword",

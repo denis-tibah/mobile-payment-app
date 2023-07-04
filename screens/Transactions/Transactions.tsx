@@ -77,7 +77,6 @@ const fetchTransactionsWithFilters = async (value) => {
   useEffect(() => {
     setOnStartup('true');
     // console.log("OnStartup navigation",initial)
-    console.log("OnStartup navigation")
     fetchTransactions();
   }, []);
 

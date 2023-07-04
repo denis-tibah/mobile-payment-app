@@ -1,5 +1,5 @@
 import { View, ScrollView } from "react-native";
-import CheckBox from '@react-native-community/checkbox';
+// import CheckBox from '@react-native-community/checkbox'; commented this 3 lines for now. currently testing --- 
 // import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 // import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import Heading from "../../components/Heading";

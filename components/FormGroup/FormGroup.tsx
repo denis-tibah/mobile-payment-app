@@ -89,6 +89,7 @@ export function Select({items = [], selectedValue}: any ) {
     <View style={input.wrapper}>
       <Picker 
         style={input.input}
+<<<<<<< HEAD
         selectedValue={option}
         onValueChange={selected => setOption(selected)}
         >
@@ -101,6 +102,20 @@ export function Select({items = [], selectedValue}: any ) {
               />
             )
           })}
+=======
+        selectedValue={selectedValue}
+        >
+        {items.map( (item: any, index: number) => (
+          <Item
+            key={index}
+            label={item.label}
+            value={item.value}
+          />
+        ))}
+        <>
+          {children}
+        </>
+>>>>>>> 46938f5 (validation schema and UI changes to match web UI)
       </Picker>
     </View>
   );

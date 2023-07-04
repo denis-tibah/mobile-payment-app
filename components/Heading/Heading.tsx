@@ -14,7 +14,7 @@ export function Heading({ icon, children, title, rightAction }: any) {
         {title}
       </Typography>
       
-      {children && <View> children </View>}
+      {children && <View> {children} </View>}
       {rightAction && <View style={styles.rightAction}>{rightAction}</View>}
     </View>
   );

@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { api } from "../../api";
 import { Transaction } from "../../models/Transactions";
-import { UserData,SearchFilter } from "../../models/UserData";
+import { UserData, SearchFilter } from "../../models/UserData";
 
 
 export interface TransactionState {

@@ -85,3 +85,12 @@ export const screenNames: any = {
   approve: "Approve",
   signup: "signup",
 };
+
+export function getFormattedDate(dateToFormat:any)
+{
+  const date = new Date(dateToFormat); // Create a new Date object with the current date and time
+
+  const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+
+  return formattedDate;
+}

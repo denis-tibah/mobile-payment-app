@@ -5,6 +5,7 @@ import LoadingIcon from "../../assets/icons/Loading";
 export function Button({
   color,
   children,
+  withLine,
   rightIcon,
   leftIcon,
   onPress,
@@ -31,6 +32,7 @@ export function Button({
             styles.baseText,
             color && styles[`text-${color}`],
             selected && styles[`text-selected-${color}`],
+            withLine && styles.withLineText
           ]}
         >
           {children}

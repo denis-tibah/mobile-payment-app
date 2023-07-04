@@ -1,14 +1,17 @@
 export interface UserData {
+  id: number;
   account_number: string;
   bic: string;
+  iban: string;
   customer_account_number: string;
   description: string;
   first_name: string;
-  iban: string;
-  id: number;
-  is_active: boolean;
+  is_active?: boolean;
   last_name: string;
-  status: string;
+  status?: string;
+  account_id?: number;
+  sort?: string;
+  direction?: string;
 }
 
 interface AccountInfo {
@@ -34,20 +37,18 @@ export interface AccountDetails {
 }
 
 export interface SearchFilter {
-
-    sort: string;
-    direction: string;
-    limit: number;
-    page: number;
-    iban: string;
-    name: string;
-    min_amount: number;
-    max_amount: number;
-    status:string;
-    reference_no: string;
-    bic: string;
-    from_date: string;
-    to_date: string;
-    account_id: number;
-    
+  sort?: string;
+  direction?: string;
+  limit?: number;
+  page?: number;
+  iban?: string;
+  name?: string;
+  min_amount?: number;
+  max_amount?: number;
+  status?: string;
+  reference_no?: string;
+  bic?: string;
+  from_date?: string;
+  to_date?: string;
+  account_id: number;
 }

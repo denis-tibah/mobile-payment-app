@@ -1,4 +1,7 @@
 import { View, ScrollView } from "react-native";
+// import CheckBox from '@react-native-community/checkbox'; commented this 3 lines for now. currently testing --- 
+// import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+// import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import Heading from "../../components/Heading";
 import { MainLayout } from "../../layout/Main/Main";
 import FormGroup from "../../components/FormGroup";
@@ -30,6 +33,12 @@ import vars from "../../styles/vars";
 import { RootState } from "../../store";
 import { getTransactions } from "../../redux/transaction/transactionSlice";
 import Spinner from "react-native-loading-spinner-overlay/lib";
+import { SearchFilter, UserData } from "../../models/UserData";
+import Typography from "../../components/Typography";
+import { Text } from "react-native-paper";
+import { validationPaymentSchema } from "../../utils/validation";
+// import { Checkbox } from "react-native-paper";
+
 
 
 export function Payment({ navigation }: any) {
@@ -46,6 +55,7 @@ export function Payment({ navigation }: any) {
   const [paymentSuccessful, setPaymentSuccessful] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedPayee, setSelectedPayee] = useState(null);
+  const [isChecked, setIsChecked] = useState<boolean>(false);
   const [beneficiaryOptions, setBeneficiaryOptions] = useState<any>([]);
   const {
     transactionId,
@@ -119,15 +129,17 @@ export function Payment({ navigation }: any) {
 
   const fetchTransactions = async () => {
     try {
-
-      let search= {     
-        account_id: userData?.id,
-        sort: "id",
-        direction: "desc",
-        status: "PROCESSING"
-    }
-      // if (userData) await dispatch<any>(getTransactions(userData));
-      if (userData) await dispatch<any>(getTransactions(search));
+      const {account_id, sort, direction, status}: UserData = userData!;
+      if (account_id && sort && direction && status) {
+        const searchFilter: SearchFilter = {
+          account_id: account_id,
+          sort:       sort,
+          direction:  direction,
+          status:     status
+        };
+        await dispatch<any>(getTransactions(searchFilter));
+        
+      }
     } catch (error) {
       console.log({ error });
     }
@@ -184,43 +196,53 @@ export function Payment({ navigation }: any) {
         <View style={styles.container}>
           <Heading
             icon={<EuroIcon color="pink" size={25} />}
-            title="Make a Payment"
+            title="Payment"
+            rightAction={(
+              <Button
+              color="black-only"
+              withLine={true}
+                >
+                Save this payee
+
+                {/* <CheckBox /> */}
+                {/* <CheckBoxOutlineBlankIcon /> */}
+              </Button>
+            )}
           />
         </View>
         <Formik
+          validationSchema={validationPaymentSchema}
           initialValues={{
-            recipientname: "Aristos Christofides",
-            recipientFirstname: "Aristos",
-            recipientLastname: "Christofides",
-            creditor_iban: "MT62PAUU92005050500020007443001",
-            bic: "PAUUMTM1XXX",
+            recipientname: "",
+            recipientFirstname: "",
+            recipientLastname: "",
+            creditor_iban: "",
+            bic: "",
             balance: infoData?.curbal || 0,
-            amount: 0.00,
+            amount: 0,
             currency: "EUR",
             reason: "",
           }}
-          validate={(values) => {
-            let errors: any = {};
-            const firstname = values.recipientname.trim().split(" ")[0];
-            const lastname = values.recipientname.trim().split(" ")[1];
-            if(Number(values.amount) > Number(infoData?.curbal)) {
-              errors.amount = "Sorry you dont have enough balance for this amount";
-            }
-            if (!values.recipientname) {
-              errors.recipientname = "required";
-            } else if (!firstname || firstname === "") {
-              errors.recipientname = "First name is required";
-            } else if (!lastname || lastname === "") {
-              errors.recipientname = "Last name is required";
-            }
-            if (values.bic?.length <= 3) {
-              errors.bic = "field must be minimum 3 characters";
-            }
-            if (!values.amount) errors.amount = "required";
-            if (!values.reason) errors.reason = "required";
-            if (!values.creditor_iban) errors.creditor_iban = "required";
-            return errors;
-          }}
+          // validate={(values) => {
+          //   let errors: any = {};
+          //   const firstname = values.recipientname.trim().split(" ")[0];
+          //   const lastname = values.recipientname.trim().split(" ")[1];
+          //   if (!values.recipientname) {
+          //     errors.recipientname = "required";
+          //   } else if (!firstname || firstname === "") {
+          //     errors.recipientname = "First name is required";
+          //   } else if (!lastname || lastname === "") {
+          //     errors.recipientname = "Last name is required";
+          //   }
+
+          //   if (values.bic?.length <= 3) {
+          //     errors.bic = "field must be minimum 3 characters";
+          //   }
+          //   if (!values.amount) errors.amount = "required";
+          //   if (!values.reason) errors.reason = "required";
+          //   if (!values.creditor_iban) errors.creditor_iban = "required";
+          //   return errors;
+          // }}
           onSubmit={(values) => {
             dispatch(
               initiatePayment({
@@ -309,7 +331,7 @@ export function Payment({ navigation }: any) {
                   onClose={() => setPaymentSuccessful(false)}
                 />
               )}
-              <View style={{ zIndex: 1 }}>
+              {/* <View style={{ zIndex: 1 }}>
                   <DropDownPicker
                     placeholder="Select Payee"
                     style={styles.dropdown}
@@ -328,7 +350,7 @@ export function Payment({ navigation }: any) {
                     marginBottom={18}  
                     zIndex={-1}
                   />
-              </View>
+              </View> */}
               <View>
                 <FormGroup validationError={errors.recipientname}>
                   <FormGroup.Input
@@ -358,21 +380,24 @@ export function Payment({ navigation }: any) {
               </View>
               <View>
                 <FormGroup>
-                  <FormGroup.Input
-                    editable={false}
-                    value={`Current Balance: ${getCurrency(
-                      infoData?.currency
-                    )} ${
-                      (
-                        (Number(infoData?.curbal) || 0)
-                      ).toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }) || 0
-                    }`}
-                    def
-                    icon={<EuroIcon />}
-                  />
+                  <View style={{display: 'flex', flexDirection: 'row'}}>
+                    <Text style={{color: "#808080", lineHeight: 36}}> Available balance: </Text>
+                    <FormGroup.Input
+                      editable={false}
+                      value={`${getCurrency(
+                        infoData?.currency
+                      )} ${
+                        (
+                          (Number(infoData?.curbal) || 0)
+                        ).toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }) || 0
+                      }`}
+                      def
+                      icon={<EuroIcon />}
+                    />
+                  </View>
                 </FormGroup>
               </View>
               <View>
@@ -412,10 +437,18 @@ export function Payment({ navigation }: any) {
                     onChangeText={handleChange("reason")}
                     onBlur={handleBlur("reason")}
                     value={values.reason}
-                    placeholder="Reference..."
-                    icon={<DocumentIcon />}
+                    placeholder="Reference"
+                    icon={<CodeIcon />}
                   />
                 </FormGroup>
+              </View>
+              <View style={{display: 'flex', flexDirection: 'row'}}>
+                <Button
+                    color="blue-only"
+                    withLine={true}
+                  >
+                    VIEW CURRENT LIMIT
+                </Button>
               </View>
               <FixedBottomAction>
                 <Button

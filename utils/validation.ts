@@ -1,3 +1,5 @@
+import * as Yup from "yup";
+
 export const checkUppercase = (str:any) => {
   for (var i = 0; i < str.length; i++) {
     if (
@@ -63,3 +65,10 @@ export const validateLoginCredentials = (values:any) => {
   errors = { ...errors, ...validatePassword(values) };
   return errors;
 };
+export const validationPaymentSchema = Yup.object({
+  recipientname: Yup.string().required("This is a required field*"),
+  bic: Yup.string().test('len', 'Must be minimum of 3 characters', str => str?.length===3),
+  amount: Yup.string().required("This is a required field*"),
+  reason: Yup.string().required("This is a required field*"),
+  creditor_iban: Yup.string().required("This is a required field *"),
+});

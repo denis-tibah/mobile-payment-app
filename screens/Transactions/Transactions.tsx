@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { SetStateAction, useEffect } from "react";
 import { View, ScrollView, Linking } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import FormGroup from "../../components/FormGroup";
@@ -42,7 +42,8 @@ import { useState } from "react";
 
   const fetchTransactions = async () => {
     try {
-      let search= {     
+      let search:any;
+          search= {     
           account_id: userData?.id,
           sort: "id",
           direction: "desc",
@@ -59,7 +60,7 @@ import { useState } from "react";
   };
 
 //added by Aristos
-const fetchTransactionsWithFilters = async (value) => {
+const fetchTransactionsWithFilters = async (value :any) => {
   try {
     if (userData) await dispatch<any>(getTransactionsWithFilters(value));
   } catch (error) {
@@ -113,7 +114,8 @@ const fetchTransactionsWithFilters = async (value) => {
 
   const handleOnSubmitEditing = (event: any) => {
     // console.log("the search criterial is ",searchText);
-    if (isNaN(searchText)) {
+       const numberValue = parseInt(searchText, 10);
+    if (isNaN(numberValue)) {
 
       //if input is not a number then here
       let search= {     account_id: userData?.id,
@@ -177,7 +179,7 @@ const fetchTransactionsWithFilters = async (value) => {
             value={searchText}
             // returnKeyType={"done"}
             // onChange={handleChange}
-              onChangeText={event => setSearchText(event)}
+              onChangeText={(event: string) => setSearchText(event)}
             // onKeyPress={handleKeyPress}
             onSubmitEditing={handleOnSubmitEditing}
        
@@ -194,16 +196,18 @@ const fetchTransactionsWithFilters = async (value) => {
           </View>
           <Seperator backgroundColor={vars['grey']} />
    
-          {onStartup =='true' ?  <View>{transactions?.map((transaction, index) => (
-                                    <TransactionItem data={transaction} key={index} />
-                              ))}</View>
+          {onStartup =='true' ?  <View>{transactions?.map((transaction, index) => {
+              console.log(transaction)
+                return(  <TransactionItem data={transaction} key={index} />)
+                                  
+          })}</View>
               :   
                     <View> 
                           {transactionsFiltered?.map((transaction, index) => (
                           <TransactionItem data={transaction} key={index} />  
                         ))}
                    </View>
-                 }
+          }
           {/* <View > */}
            
             {/* {transactions.map((transaction, index) => (

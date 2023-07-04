@@ -84,4 +84,23 @@ export const styles:any = StyleSheet.create({
   "text-selected-green": {
     color: "white",
   },
+
+  // only text - blue
+  "blue-only": {
+    backgroundColor: 'none'
+  },
+  "text-blue-only": {
+    color: vars["accent-blue"]
+  },
+  withLineText: {
+    borderBottomColor: vars['accent-blue']
+  },
+
+  // only text - black
+  "black-only": {
+    backgroundColor: 'none',
+  },
+  "text-black-only": {
+    color: "#000000"
+  }
 });

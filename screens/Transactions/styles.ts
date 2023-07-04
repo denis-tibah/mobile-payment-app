@@ -10,9 +10,14 @@ export const styles:any = StyleSheet.create<any>({
     display: "flex",
     flexDirection: "row",
     paddingTop: 12,
+    // paddingBottom: 12,
+    // paddingLeft: 20,
+    // paddingRight: 100,
+
     paddingBottom: 12,
-    paddingLeft: 12,
+    paddingLeft: 19,
     justifyContent: "space-between",
+    
   },
   searchBar: {
     backgroundColor: "white",

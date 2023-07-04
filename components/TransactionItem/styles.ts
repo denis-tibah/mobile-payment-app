@@ -10,13 +10,19 @@ export const styles:any = StyleSheet.create<any>({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 12,
-    paddingRight: 12,
+    paddingLeft: 10,
+    // paddingRight: 12,
+    paddingRight: 75,
     justifyContent: "space-between",
     borderTopColor: vars["light-grey"],
     borderTopWidth: 1,
   },
-  cell: {},
+  cell: {
+
+    paddingLeft: 25,
+    paddingRight: 10
+  
+  },
   separator: {
     width: "100%",
     height: 1,
@@ -71,4 +77,10 @@ export const styles:any = StyleSheet.create<any>({
     flexDirection: "row",
     alignItems: "center",
   },
+  eurosign: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingTop: 5,
+  }
 });

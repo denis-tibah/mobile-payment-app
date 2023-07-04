@@ -40,7 +40,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
         <View style={[styles.base, isOpen && styles.isOpen]}>
           <Box width="30%">
             <Text>
-            <Typography fontSize={16}> 
+            <Typography fontSize={14}> 
               {data?.name?.length > 10
                 ? data?.name?.substring(0, 10) + "..."
                 : data?.name}
@@ -49,19 +49,21 @@ export function TransactionItem({ data }: TransactionItemProps) {
           </Box>
           <Box
             display="flex"
+            paddingLeft={-5}
             flexDirection="row"
             alignItems="center"
             width="30%"
           >
             <CalenderEmptyIcon size={14} color="blue" />
-            <Typography fontSize={16}>
+            <Typography fontSize={14}>
               {" "}
               {formatDateTableValue(data?.transaction_datetime?.slice(0, 10))}
             </Typography>
           </Box>
           <Box
             width="30%"
-            paddingLeft={20}
+            // paddingLeft={20}
+            paddingLeft={15}
             display="flex"
             flexDirection="row"
             alignItems="center"
@@ -71,13 +73,32 @@ export function TransactionItem({ data }: TransactionItemProps) {
             ) : (
               <DollarIcon size={18} color="#278664" />
             )}
-            <Typography fontSize={16}>
+            <Typography fontSize={14}>
               {formatAmountTableValue(data?.amount, data?.currency)}
             </Typography>
           </Box>
-          <Box style={styles.cell}>
-            {isOpen ? <ArrowDown color="blue" /> : <ArrowDown color="blue" />}
+
+          <Box
+            width="30%"
+            // paddingLeft={-15}
+            // paddingRight={-20}
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+          >
+          <EuroIcon size={18} color= "green" />
+          <Typography fontSize={14}>
+              {formatAmountTableValue(data?.running_balance, data?.currency)}
+            </Typography>
+                <Box style={styles.cell}>
+                  {isOpen ? <ArrowDown color="blue" /> : <ArrowDown color="blue" />}
+                </Box>
           </Box>
+
+          {/* <Box style={styles.cell}>
+            
+            {isOpen ? <ArrowDown color="blue" /> : <ArrowDown color="blue" />}
+          </Box> */}
         </View>
       </Pressable>
 
@@ -134,7 +155,17 @@ export function TransactionItem({ data }: TransactionItemProps) {
                     <Text style={styles.nameDetailMobile}>Running Balance:</Text>
                     <Text style={styles.valueDetailMobile}>
                       {/* {data?.balance} */}
-                      {data?.running_balance}
+                     
+                      <Box style={styles.eurosign}>
+                       
+                        <EuroIcon size={18} color= "black" />
+                          
+                            <Typography fontSize={14}>
+                              {data?.running_balance}
+                            </Typography>
+                      </Box>
+
+                      {/* {data?.running_balance} */}
                       
                     </Text>
                   </Box>

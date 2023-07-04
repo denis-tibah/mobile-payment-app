@@ -51,7 +51,8 @@ import { useState } from "react";
       // console.log("search only porcessed transactions");
       // if (userData) await dispatch<any>(getTransactions(userData));
       if (userData) await dispatch<any>(getTransactions(search));
- 
+//  console.log( ' transactions ' ,transactions);
+
     } catch (error) {
       console.log({ error });
     }
@@ -187,10 +188,9 @@ const fetchTransactionsWithFilters = async (value) => {
             <Seperator backgroundColor={vars['grey']} />
           <View style={styles.listHead}>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Name</Typography>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">
-              Date
-            </Typography>
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Amount</Typography>
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Balance</Typography>
             <Typography></Typography>
           </View>
           <Seperator backgroundColor={vars['grey']} />

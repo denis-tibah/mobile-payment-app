@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as Clipboard from "expo-clipboard";
-import { View, ScrollView, TouchableOpacity } from "react-native";
+import { View, ScrollView, TouchableOpacity,Image } from "react-native";
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
 import Button from "../../components/Button";
@@ -40,6 +40,7 @@ import { delayCode } from "../../utils/delay";
 import Carousel from "react-native-snap-carousel";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { ICardDetails } from "../../models/interface";
+import * as FileSystem from 'expo-file-system';
 
 export function Card({ navigation }: any) {
   const infoData = useSelector((state: RootState) => state.account.details);
@@ -165,10 +166,17 @@ export function Card({ navigation }: any) {
       clearInterval(storedIntervalId);
 
     //  let image='';
-    //  convertImageToBase64(ZazooVirtualCard,(result:any) => {
-    //         image=result;
-    //         console.log("base64 images is ",image);
-    //  });
+    //  const ImageUri = Image.resolveAssetSource(ZazooVirtualCard).uri;
+    //  console.log("images is ",ZazooVirtualCard,' ImageUri ', ImageUri);
+
+    ////  convertImageToBase64(ImageUri);
+    //  const base64 = await FileSystem.readAsStringAsync(ImageUri, { encoding: 'base64' });
+    //  console.log("base64 images is ",base64 );
+  
+    ////   convertImageToBase64(ImageUri,(result:any) => {
+    ////         image=result;
+    ////         console.log("base64 images is ",image);
+    ////  });
                  
 
       setCardDetails({

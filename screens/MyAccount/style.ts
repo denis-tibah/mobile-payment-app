@@ -7,7 +7,11 @@ export const styles: any = StyleSheet.create<any>({
     flexDirection: "row",
     paddingTop: 24,
     paddingBottom: 12,
-    paddingLeft: 12,
+    paddingLeft: 19,
+    // paddingTop: 12,
+    // paddingBottom: 12,
+    // paddingLeft: 20,
+    // paddingRight: -30,
     justifyContent: "space-between",
   },
   totalBalance: {
@@ -23,5 +27,15 @@ export const styles: any = StyleSheet.create<any>({
   base: {
     backgroundColor: "white",
     zIndex:1,
+  },
+  dateLabel : {
+    paddingLeft: 30,
+  },
+  amountLabel : {
+    paddingLeft: 10,
+  },
+  balanceLabel : {
+    // paddingLeft: -20,
+    paddingRight: 10,
   },
 });

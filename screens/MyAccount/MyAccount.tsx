@@ -74,10 +74,15 @@ export function MyAccount({ navigation }: any) {
               <>
                 <View style={styles.listHead}>
                   <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Name</Typography>
-                  <Typography fontFamily="Nunito-SemiBold" color="accent-blue" fontSize={16}>
-                    Date
-                  </Typography>
-                  <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Amount</Typography>
+                  <View style={styles.dateLabel}>
+                    <Typography fontFamily="Nunito-SemiBold" color="accent-blue" fontSize={16}>Date </Typography>
+                  </View>
+                  <View style={styles.amountLabel}>
+                      <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Amount</Typography>
+                  </View>
+                  <View style={styles.balanceLabel}>
+                    <Typography fontSize={16} fontFamily="Nunito-SemiBold">Balance</Typography>
+                  </View>
                   <Typography></Typography>
                 </View>
                 <View>

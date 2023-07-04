@@ -51,13 +51,13 @@ export function formatAmountTableValue_old(amount: any = "", currency = "") {
   }
 }
 
-export function convertImageToBase64(file: any,cb) {
+export function convertImageToBase64(file: any) {
   return new Promise((resolve, reject) => {
     const reader: any = new FileReader();
     reader.readAsDataURL(file);
 
     reader.onload = () => {
-      cb(resolve(reader.result.split("base64,")[1]));
+      resolve(reader.result.split("base64,")[1]);
     };
     reader.onerror = (error: any) => {
       reject(error);

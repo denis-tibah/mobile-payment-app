@@ -27,24 +27,33 @@ export const transactionSlice = createSlice({
   extraReducers: (builder) => {
     // get transactions
     builder.addCase(getTransactions.fulfilled, (state, action) => {
-      state.data = action.payload?.sort(
-        (a, b) =>
-          new Date(b.transaction_datetime).getTime() -
-          new Date(a.transaction_datetime).getTime()
-      );
+      state.data = action.payload;
+
+      //do no need sorting anymore
+      // state.data = action.payload?.sort(
+      //   (a, b) =>
+      //     new Date(b.transaction_datetime).getTime() -
+      //     new Date(a.transaction_datetime).getTime()
+      // );
+
       state.loading = false;
     });
+
+
     builder.addCase(getTransactions.rejected, (state) => {
       state.loading = false;
       state.error = true;
     });
 
     builder.addCase(getTransactionsWithFilters.fulfilled, (state, action) => {
-      state.search = action.payload?.sort(
-        (a, b) =>
-          new Date(b.transaction_datetime).getTime() -
-          new Date(a.transaction_datetime).getTime()
-      );
+      state.data = action.payload;
+
+      //do no need sorting anymore
+      // state.search = action.payload?.sort(
+      //   (a, b) =>
+      //     new Date(b.transaction_datetime).getTime() -
+      //     new Date(a.transaction_datetime).getTime()
+      // );
       state.loading = false;
     });
     builder.addCase(getTransactionsWithFilters.rejected, (state) => {
@@ -80,6 +89,8 @@ export const getTransactions = createAsyncThunk<Transaction[], SearchFilter>(
         status:     searchFilter.status
 
       });
+
+      // console.log('data ',data);
       return fulfillWithValue(data);
     } catch (error) {
       rejectWithValue(error);

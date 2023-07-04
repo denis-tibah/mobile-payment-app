@@ -5,9 +5,14 @@ export const styles:any = StyleSheet.create<any>({
     marginTop: 26,
     zIndex:1,
   },
+  headerContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    backgroundColor: "white",
+  },
   content: {
     backgroundColor: "white",
-    paddingTop: 24,
+    paddingTop: 12,
   },
   dropdown: {
     height: 42,

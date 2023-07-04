@@ -119,7 +119,15 @@ export function Payment({ navigation }: any) {
 
   const fetchTransactions = async () => {
     try {
-      if (userData) await dispatch<any>(getTransactions(userData));
+
+      let search= {     
+        account_id: userData?.id,
+        sort: "id",
+        direction: "desc",
+        status: "PROCESSING"
+    }
+      // if (userData) await dispatch<any>(getTransactions(userData));
+      if (userData) await dispatch<any>(getTransactions(search));
     } catch (error) {
       console.log({ error });
     }

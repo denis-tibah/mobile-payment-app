@@ -45,7 +45,17 @@ export function MyAccount({ navigation }: any) {
 
   useEffect(() => {
     if (!!userData?.id) fetchTransactions();
+    console.log("hit this");
   }, [userData?.id]);
+
+    //get transactionns every 60s
+    // useEffect(() => {
+    //   const interval = setInterval(() => {
+    //     // console.log('This will run every 60s!');
+    //     fetchTransactions();
+    //   }, 60000);
+    //   return () => clearInterval(interval);
+    // }, []);
 
   return (
     <MainLayout navigation={navigation}>

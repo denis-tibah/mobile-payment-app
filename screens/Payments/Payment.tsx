@@ -311,9 +311,9 @@ export function Payment({ navigation }: any) {
                   onClose={() => setPaymentSuccessful(false)}
                 />
               )}
-              {/* <View style={{ zIndex: 1 }}>
+              <View style={{ zIndex: 1 }}>
                   <DropDownPicker
-                    placeholder="Select Payee"
+                    placeholder="Payee name"
                     style={styles.dropdown}
                     open={open}
                     value={selectedPayee}
@@ -330,8 +330,8 @@ export function Payment({ navigation }: any) {
                     marginBottom={18}  
                     zIndex={-1}
                   />
-              </View> */}
-              <View>
+              </View>
+              {/* <View>
                 <FormGroup validationError={errors.recipientname}>
                   <FormGroup.Input
                     editable={!selectedPayee}
@@ -343,7 +343,7 @@ export function Payment({ navigation }: any) {
                     placeholder="Payee name"
                   />
                 </FormGroup>
-              </View>
+              </View> */}
               <View>
                 <FormGroup validationError={errors.amount}>
                   <FormGroup.Input

@@ -48,12 +48,12 @@ export function MyAccount({ navigation }: any) {
     // console.log("hit this");
   }, [userData?.id]);
 
-    //get transactionns every 60s
+    //get transactionns every 15 mins
     useEffect(() => {
       const interval = setInterval(() => {
-        // console.log('This will run every 60s!');
+        // console.log('This will run every 15m is !');
         fetchTransactions();
-      }, 60000);
+      }, 1500000);
       return () => clearInterval(interval);
     }, []);
 

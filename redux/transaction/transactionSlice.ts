@@ -93,6 +93,7 @@ export const getTransactions = createAsyncThunk<Transaction[], SearchFilter>(
       // console.log('data ',data);
       return fulfillWithValue(data);
     } catch (error) {
+      console.log('error aristos ',error);
       rejectWithValue(error);
     }
   }

@@ -9,6 +9,8 @@ import LoginScreen from "../screens/Login";
 import SignupScreen from "../screens/Signup";
 import MyAccountScreen from "../screens/MyAccount";
 import TransactionApprovalScreen from "../screens/TransactionApproval/index";
+import PaymentReceivedScreen from "../screens/PaymentReceivedMessage";
+
 import TransactionsScreen from "../screens/Transactions";
 import CardScreen from "../screens/Card";
 import PaymentScreen from "../screens/Payments";
@@ -25,6 +27,7 @@ import { RootState } from "../store";
 import { AppState } from "react-native";
 import { signout } from "../redux/auth/authSlice";
 import * as SecureStore from 'expo-secure-store'
+
 // import * as TaskManager from 'expo-task-manager';
 
 const Tab = createBottomTabNavigator();
@@ -86,6 +89,8 @@ export default function AppNavigationWrapper() {
   const navigation: any = useNavigation();
   const dispatch = useDispatch()
   const [showApproval, setShowApproval] = useState({ show: false, data: {} });
+  const [showReceivedPayment, setShowReceivedPayment] = useState({ show: false, data: {} });
+
   const appState = useRef(AppState.currentState)
 
   const [expoPushToken, setExpoPushToken] = useState<string>();
@@ -132,6 +137,21 @@ export default function AppNavigationWrapper() {
         userId: userData?.id,
       });
     }
+    console.log("hit PaymentReceived1");
+    if (transactionDetails.requestType === "PaymentReceived") {
+      console.log("hit PaymentReceived2");
+
+      setLastNotification(notification?.request?.identifier);
+
+      setShowReceivedPayment({
+        show: true,
+        data: { transactionDetails, userId: userData?.id },
+      });
+      navigation.navigate(screenNames.receivedPayment, {
+        transactionDetails,
+        userId: userData?.id,
+      });
+    }
   };
 
   const isBiometric = async () => {
@@ -164,6 +184,12 @@ export default function AppNavigationWrapper() {
         data={showApproval?.data}
         setShowApproval={setShowApproval}
       />
+      <PaymentReceivedScreen
+        isOpen={showReceivedPayment?.show}
+        data={showReceivedPayment?.data}
+        setShowReceivedPayment={setShowReceivedPayment}
+      />
+
       <Root.Navigator
         screenOptions={{
           header: () => {
@@ -197,6 +223,11 @@ export default function AppNavigationWrapper() {
               options={{ headerShown: false }}
               name={screenNames.approve}
               component={TransactionApprovalScreen}
+            />
+             <Root.Screen
+              options={{ headerShown: false }}
+              name={screenNames.receivedPayment}
+              component={PaymentReceivedScreen}
             />
           </>
         ) : (

@@ -29,9 +29,13 @@ export function LoginScreen({ navigation }: any) {
     setShowPassword(!showPassword);
   };
 
+  // const saveSecureCredetails = async (email: string, password: string, biometricYN: string) => {
   const saveSecureCredetails = async (email: string, password: string) => {
     await SecureStore.setItemAsync("email", email);
     await SecureStore.setItemAsync("password", password);
+    // await SecureStore.setItemAsync("biometricYN", biometricYN );
+    // console.log("amd i added the dat to storage");
+                
   };
 
   const checkCompatible = async () => {
@@ -60,7 +64,15 @@ export function LoginScreen({ navigation }: any) {
   const getSavedCredetails = async () => {
     const email = await SecureStore.getItemAsync("email");
     const password = await SecureStore.getItemAsync("password");
-    if (email && password) {
+    // const biometricYN = await SecureStore.getItemAsync("biometricYN" );
+
+    // console.log("get saved biometricYN",  biometricYN);
+
+    
+    if (email && password ) {
+      //Added by Aristos
+    // if (email && password && biometricYN =='Y' ) {
+
       return { email, password };
     }
     return {};
@@ -106,7 +118,7 @@ export function LoginScreen({ navigation }: any) {
               const result = await dispatch<any>(
                 signin({ values: credentials, navigate })
               );
-              console.log({ result });
+              // console.log({ result });
               await dispatch<any>(refreshUserData());
               if (result.error) {
                 setApiErrorMessage({ message: result.payload });
@@ -171,27 +183,46 @@ export function LoginScreen({ navigation }: any) {
                 const result = await dispatch<any>(
                   signin({ values, navigate })
                 );
-                Alert.alert(
-                  "",
-                  "Do you want to login using biometric authentication?",
-                  [
-                    {
-                      text: "Yes!",
-                      onPress: async () =>
-                        await saveSecureCredetails(
+                // console.log('result.payload.biometricYN ',result.payload.biometricYN );
+
+                  if(result.payload.biometricYN =='Y') {
+                    console.log('Use biometic ');
+                     await saveSecureCredetails(
                           values.email,
                           values.password
-                        ),
-                    },
-                    {
-                      text: "No",
-                      onPress: async () => {
-                        await SecureStore.deleteItemAsync("email");
-                        await SecureStore.deleteItemAsync("password");
-                      },
-                    },
-                  ]
-                );
+                          //Addd by aristos
+                          // result.payload.biometricYN 
+                        )
+                      
+                  } 
+                   else {
+                    console.log('Do not use biometric');
+                      //  await SecureStore.deleteItemAsync("email");
+                      //  await SecureStore.deleteItemAsync("password");
+                    
+                  }
+           //disabled by Aristos do not need this popup
+                // Alert.alert(
+                //   "",
+                //   "Do you want to login using biometric authentication?",
+                //   [
+                //     {
+                //       text: "Yes!",
+                //       onPress: async () =>
+                //         await saveSecureCredetails(
+                //           values.email,
+                //           values.password
+                //         ),
+                //     },
+                //     {
+                //       text: "No",
+                //       onPress: async () => {
+                //         await SecureStore.deleteItemAsync("email");
+                //         await SecureStore.deleteItemAsync("password");
+                //       },
+                //     },
+                //   ]
+                // );
                 await dispatch<any>(refreshUserData());
                 if (result.error)
                   setApiErrorMessage({ message: result.payload });

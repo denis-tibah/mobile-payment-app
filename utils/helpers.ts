@@ -84,6 +84,7 @@ export const screenNames: any = {
   addPayee: "Add Payee",
   approve: "Approve",
   signup: "signup",
+  receivedPayment:"receivedPayment",
 };
 
 export function getFormattedDate(dateToFormat:any)

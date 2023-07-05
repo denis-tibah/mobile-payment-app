@@ -81,15 +81,16 @@ const fetchTransactionsWithFilters = async (value :any) => {
     fetchTransactions();
   }, []);
 
-  //get transactionns every 60s
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // console.log('This will run every 60s!');
-      setOnStartup('true');
-      fetchTransactions();
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
+  //get transactionns every 60s 
+  //disabled by Aristos
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     // console.log('This will run every 60s!');
+  //     setOnStartup('true');
+  //     fetchTransactions();
+  //   }, 60000);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   // useEffect(() => {
   //   setOnStartup('true');
@@ -197,7 +198,7 @@ const fetchTransactionsWithFilters = async (value :any) => {
           <Seperator backgroundColor={vars['grey']} />
    
           {onStartup =='true' ?  <View>{transactions?.map((transaction, index) => {
-              console.log(transaction)
+              // console.log(transaction)
                 return(  <TransactionItem data={transaction} key={index} />)
                                   
           })}</View>

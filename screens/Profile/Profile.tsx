@@ -68,6 +68,9 @@ export function Profile({ navigation }: any) {
   const profileData = useSelector(
     (state: any) => state?.profile?.profile
   )?.data;
+
+  const biometricSetting = useSelector((state: any) => state.auth.data.biometricYN);
+
   const [isEnabled, setIsEnabled] = useState(false);
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
 
@@ -84,13 +87,31 @@ export function Profile({ navigation }: any) {
   // const [open, setOpen] = useState(false);
   const [selectedTicketType, setSelectedTicketType] = useState(null);
   const [selectedTicketValue, setSelectedTicketValue] = useState(null);
-  // const [items, setItems] = useState([
-  //   {label: 'Apple', value: 'apple'},
-  //   {label: 'Banana', value: 'banana'}
-  // ]);
+
 
   useEffect(() => {
     dispatch<any>(getProfile());
+
+//set biometric checkbox setting
+    // console.log("*******biometricSetting********",biometricSetting);
+        if(biometricSetting=='Y') 
+            {
+              setIsBiometricEnabled(true);
+            } 
+        else {
+              setIsBiometricEnabled(false);
+          }
+
+ //set emailAlerts checkbox setting
+      // console.log("*******profileData********",profileData.UserProfile.EnableAlertsYN);
+          if(profileData.UserProfile.EnableAlertsYN =='Y') 
+          {
+            setIsEnabled(true);
+          } 
+          else {
+            setIsEnabled(false);
+          }
+
   }, []);
 
   useEffect(() => {
@@ -129,15 +150,18 @@ export function Profile({ navigation }: any) {
         updateBiometric({ email: profileData?.email, enableYN: "Y" })
       ).then((response: any) => {
         console.log(response);
-        Toast.show(response?.payload?.message, {
+        let message=(response?.payload?.message +' but this will take effect next time you login');
+        Toast.show(message, {
           duration: Toast.durations.SHORT,
         });
+        
       });
     }
     dispatch<any>(
       updateBiometric({ email: profileData?.email, enableYN: "N" })
     ).then((response: any) => {
-      Toast.show(response?.payload?.message, {
+      let message=(response?.payload?.message+ ' but this will take effect next time you login');
+      Toast.show(message, {
         duration: Toast.durations.SHORT,
       });
     });

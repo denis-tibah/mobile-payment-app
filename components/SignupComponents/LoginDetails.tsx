@@ -37,15 +37,9 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
   const [emailToken, setEmailToken] = useState<string>(
     "4dda55e6-aaed-4d13-8ede-e36b2f5c86a8"
   );
-  console.log("🚀 ~ file: LoginDetails.tsx:34 ~ emailToken:", emailToken);
 
   const dispatch = useDispatch<AppDispatch>();
   const registration = useSelector((state: any) => state.registration);
-  console.log("🚀 ~ file: LoginDetails.tsx:42 ~ registration:", registration);
-
-  const handleChangeEmail = () => {
-    setIsChangeEmail(!isChangeEmail);
-  };
 
   const handleLink = (url: string): void => {
     const { queryParams } = Linking.parse(url);
@@ -97,10 +91,6 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
           )
             .unwrap()
             .then((payload: any) => {
-              console.log(
-                "🚀 ~ file: LoginDetails.tsx:97 ~ .then ~ payload:",
-                payload
-              );
               if (payload === "activation email sent") {
                 setIsValidEmail(true);
               }
@@ -120,6 +110,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
             setRegistrationData({
               email: alternateEmail ? alternateEmail : email,
               phone_number: `${countryCode}${phoneNumber}`,
+              phoneNumber,
               identifier: `${countryCode}${phoneNumber}`,
               countryCode,
             })
@@ -154,7 +145,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
               validationError={errors.email && touched.email && errors.email}
             >
               <FormGroup.Input
-                keyboardType="email-address"
+                keyboardType="default"
                 returnKeyType={"done"}
                 onChangeText={handleChange("email")}
                 onBlur={handleBlur("email")}
@@ -180,7 +171,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
                   if (!item?.label && !item?.value) {
                     return (
                       <FormGroup.Option
-                        key={item?.label}
+                        key="null"
                         label="Phone country code"
                         value=""
                       />
@@ -204,7 +195,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
               }
             >
               <FormGroup.Input
-                keyboardType="phone-number"
+                keyboardType="number-pad"
                 returnKeyType={"done"}
                 onChangeText={handleChange("phoneNumber")}
                 onBlur={handleBlur("phoneNumber")}
@@ -230,7 +221,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
                 <View style={styles.emailVerifiedContainer}>
                   <TouchableOpacity
                     onPress={() => {
-                      setIsChangeEmail(true);
+                      setIsChangeEmail(!isChangeEmail);
                     }}
                   >
                     <Text style={styles.emailVerifiedTextBlue}>
@@ -252,7 +243,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
                       }
                     >
                       <FormGroup.Input
-                        keyboardType="alternate-address"
+                        keyboardType="default"
                         returnKeyType={"done"}
                         onChangeText={handleChange("alternateEmail")}
                         onBlur={handleBlur("alternateEmail")}
@@ -261,6 +252,18 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
                         icon={<EmailIcon />}
                       />
                     </FormGroup>
+                    <View style={{ marginLeft: 20 }}>
+                      <Button
+                        loading={isLoading}
+                        disabled={isLoading}
+                        color="light-blue"
+                        onPress={handleSubmit}
+                        rightIcon={<EmailIcon size={14} color="blue" />}
+                        style={{ width: 100 }}
+                      >
+                        Send
+                      </Button>
+                    </View>
                   </View>
                 </View>
               ) : null}

@@ -203,7 +203,7 @@ const profileDetailsSchema = Yup.object({
   lastName: Yup.string().required("Required"),
   dob: Yup.string().required("Required"),
   placeOfBirth: Yup.string().required("Required"),
-  countryOfBirth: Yup.object()
+  /* countryOfBirth: Yup.object()
     .shape({
       label: Yup.string(),
       value: Yup.string(),
@@ -214,8 +214,9 @@ const profileDetailsSchema = Yup.object({
       }
       return true;
     })
-    .required("Required"),
-  nationality: Yup.object()
+    .required("Required"), */
+  countryOfBirth: Yup.string().required("Required"),
+  /* nationality: Yup.object()
     .shape({
       alpha2: Yup.string(),
       alpha3: Yup.string(),
@@ -229,7 +230,8 @@ const profileDetailsSchema = Yup.object({
       }
       return true;
     })
-    .required("Required"),
+    .required("Required"), */
+  nationality: Yup.string().required("Required"),
 });
 
 const termsAndConditionSchema = Yup.object({

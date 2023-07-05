@@ -17,6 +17,7 @@ export const registrationPhonePrefix = [
 ];
 
 export const salutations = [
+  null,
   { label: "Mr", value: "Mr" },
   { label: "Ms", value: "Ms" },
   { label: "Mrs", value: "Mrs" },

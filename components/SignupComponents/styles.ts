@@ -38,4 +38,22 @@ export const styles = StyleSheet.create({
   alternateEmailContainer: {
     marginTop: 20,
   },
+  dobWrapper: {
+    width: "100%",
+    height: 42,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 999,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    paddingLeft: 16,
+    paddingRight: 12,
+  },
+  dobText: {
+    color: vars["medium-grey"],
+    fontSize: 16,
+    marginLeft: 10,
+    fontWeight: 400,
+  },
 });

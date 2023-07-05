@@ -1,7 +1,7 @@
 import vars from "../../styles/vars";
 import { StyleSheet } from "react-native";
 
-export const styles:any = StyleSheet.create({
+export const styles: any = StyleSheet.create({
   base: {
     borderRadius: 999,
     display: "flex",

@@ -223,26 +223,6 @@ export function Payment({ navigation }: any) {
             currency: "EUR",
             reason: "",
           }}
-          // validate={(values) => {
-          //   let errors: any = {};
-          //   const firstname = values.recipientname.trim().split(" ")[0];
-          //   const lastname = values.recipientname.trim().split(" ")[1];
-          //   if (!values.recipientname) {
-          //     errors.recipientname = "required";
-          //   } else if (!firstname || firstname === "") {
-          //     errors.recipientname = "First name is required";
-          //   } else if (!lastname || lastname === "") {
-          //     errors.recipientname = "Last name is required";
-          //   }
-
-          //   if (values.bic?.length <= 3) {
-          //     errors.bic = "field must be minimum 3 characters";
-          //   }
-          //   if (!values.amount) errors.amount = "required";
-          //   if (!values.reason) errors.reason = "required";
-          //   if (!values.creditor_iban) errors.creditor_iban = "required";
-          //   return errors;
-          // }}
           onSubmit={(values) => {
             dispatch(
               initiatePayment({
@@ -331,9 +311,9 @@ export function Payment({ navigation }: any) {
                   onClose={() => setPaymentSuccessful(false)}
                 />
               )}
-              {/* <View style={{ zIndex: 1 }}>
+              <View style={{ zIndex: 1 }}>
                   <DropDownPicker
-                    placeholder="Select Payee"
+                    placeholder="Payee name"
                     style={styles.dropdown}
                     open={open}
                     value={selectedPayee}
@@ -350,8 +330,8 @@ export function Payment({ navigation }: any) {
                     marginBottom={18}  
                     zIndex={-1}
                   />
-              </View> */}
-              <View>
+              </View>
+              {/* <View>
                 <FormGroup validationError={errors.recipientname}>
                   <FormGroup.Input
                     editable={!selectedPayee}
@@ -363,7 +343,7 @@ export function Payment({ navigation }: any) {
                     placeholder="Payee name"
                   />
                 </FormGroup>
-              </View>
+              </View> */}
               <View>
                 <FormGroup validationError={errors.amount}>
                   <FormGroup.Input

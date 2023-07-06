@@ -26,5 +26,8 @@ export const styles:any = StyleSheet.create<any>({
     height: 68,
     justifyContent: 'space-between',
     padding: 10
+  },
+  bgWhite: {
+    backgroundColor: "white",
   }
 })

@@ -1,5 +1,6 @@
 import { SetStateAction, useEffect } from "react";
-import { View, ScrollView, Linking } from "react-native";
+import { View, ScrollView, Linking, Text, Platform  } from "react-native";
+import { Picker } from '@react-native-picker/picker';
 import { useDispatch, useSelector } from "react-redux";
 import { Ionicons } from '@expo/vector-icons'; 
 
@@ -21,7 +22,7 @@ import vars from "../../styles/vars";
 import { Seperator } from "../../components/Seperator/Seperator";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { useState } from "react";
-
+import DateTimePicker from '@react-native-community/datetimepicker';
 // export function Transactions({ navigation,initial}: any) {
   export function Transactions({ navigation}: any) {
   const transactions = useSelector(
@@ -83,6 +84,11 @@ const fetchTransactionsWithFilters = async (value :any) => {
     fetchTransactions();
   }, []);
 
+
+  const containsOnlyNumbers = (str: any) => {
+    return /^\d+$/.test(str);
+  }
+
   //get transactionns every 60s 
   //disabled by Aristos
   // useEffect(() => {
@@ -116,38 +122,110 @@ const fetchTransactionsWithFilters = async (value :any) => {
   // };
 
   const handleOnSubmitEditing = (event: any) => {
-    // console.log("the search criterial is ",searchText);
-       const numberValue = parseInt(searchText, 10);
-    if (isNaN(numberValue)) {
+    const numberValue =  containsOnlyNumbers(searchText);
+    let search:any;
+    console.log(searchText);
+    console.log(currentSelectedSearchField);
 
-      //if input is not a number then here
-      let search= {     account_id: userData?.id,
-                        name: searchText,
-                        sort: "id",
-                        direction: "desc"
-                      }
-
-              fetchTransactionsWithFilters(search);
-              setOnStartup('false');
-              // initial='test';
-      // console.log(fetchTransactionsWithFilters(search));
-
-    } else {
-      //if input is number then here
-      let search= { account_id : userData?.id,
-                    min_amount: searchText,
-                    sort: "id",
-                    direction: "desc"
-              }
-              fetchTransactionsWithFilters(search)
-              setOnStartup('false');
-              // initial='test';
-      // console.log("transactions",transactions);
+    if (!currentSelectedSearchField && !numberValue) {
+      search = {   
+        account_id: userData?.id,
+        name: searchText,
+        sort: "name",
+        direction: "desc"
+      }
     }
+
+    if (currentSelectedSearchField === "bic") {
+      search = {   
+        account_id: userData?.id,
+        bic: searchText,
+        sort: "bic",
+      }
+
+    }
+
+    if (currentSelectedSearchField === "status") {
+      search = {   
+        account_id: userData?.id,
+        status: searchText,
+        sort: "status",
+      }
+      
+    }
+
+    if (currentSelectedSearchField === "reference_no") {
+      search = {   
+        account_id: userData?.id,
+        reference_no: searchText,
+        sort: "reference_no",
+      }
+    }
+
+    if (currentSelectedSearchField === "min_amount" || numberValue) {
+      search = {   
+        account_id: userData?.id,
+        min_amount: searchText,
+        sort: "min_amount",
+      }
+    }
+
+    if (currentSelectedSearchField === "iban") {
+      search = {   
+        account_id: userData?.id,
+        iban: searchText,
+        sort: "iban",
+      }
+    }
+
+    if (currentSelectedSearchField === "max_amount") {
+      search = {   
+        account_id: userData?.id,
+        max_amount: searchText,
+        sort: "max_amount",
+      }
+    }
+    fetchTransactionsWithFilters(search);
+    setOnStartup('false');
+    // if (isNaN(numberValue)) {
+
+    
+    //   let search= {   
+    //       account_id: userData?.id,
+    //       name: searchText,
+    //       sort: "id",
+    //       direction: "desc"
+                      
+    //   }
+
+    //           fetchTransactionsWithFilters(search);
+    //           setOnStartup('false');
+    //           // initial='test';
+    //   // console.log(fetchTransactionsWithFilters(search));
+
+    // } else {
+    //   //if input is number then here
+    //   let search= { account_id : userData?.id,
+    //                 min_amount: searchText,
+    //                 sort: "id",
+    //                 direction: "desc"
+    //           }
+    //           fetchTransactionsWithFilters(search)
+    //           setOnStartup('false');
+    //           // initial='test';
+    //   // console.log("transactions",transactions);
+    // }
   };
+  const [isMobileFilterShown, setIsMobileFilterShown] = useState(false);
+  const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState('');
+  const [date, setDate] = useState(new Date());
+  const [showPicker, setShowPicker] = useState(false);
 
-
-
+  const onChange = (event: any, selectedDate: any) => {
+    const currentDate = selectedDate || date;
+    setShowPicker(Platform.OS === 'ios');
+    setDate(currentDate);
+  };
   return (
     <MainLayout navigation={navigation}>
       <Spinner 
@@ -188,9 +266,39 @@ const fetchTransactionsWithFilters = async (value :any) => {
             onSubmitEditing={handleOnSubmitEditing}
           />
           <View>
-            <Ionicons name="filter-sharp" size={24} color="pink" iconStyle={{marginTop: 80}}/>
+            <Ionicons onPress={(event: any) => setIsMobileFilterShown(!isMobileFilterShown) } name="filter-sharp" size={24} color="pink" iconStyle={{marginTop: 80}}/>
           </View>
         </View>
+        {isMobileFilterShown ? 
+          <View style={styles.bgWhite}>
+             <Picker
+                selectedValue={currentSelectedSearchField}
+                onValueChange={(itemValue) => setCurrentSelectedSearchField(itemValue)}
+             >
+                  <Picker.Item label="BIC" value="bic" />
+                  <Picker.Item label="ReferenceNo" value="reference_no" />
+                  <Picker.Item label="IBAN" value="iban" />
+                  <Picker.Item label="Maximum amount" value="max_amount" />
+                  <Picker.Item label="Status" value="status" />
+              </Picker>
+          </View>
+          
+          :
+          null
+        }
+
+{/* {isMobileFilterShown ? 
+          <View style={styles.bgWhite}>
+             <View>
+      <Button title="Open DateTimePicker" onPress={() => setShowPicker(true)} />
+   
+    </View>
+          </View>
+          
+          :
+          null
+        } */}
+        
         <View>
             <Seperator backgroundColor={vars['grey']} />
           <View style={styles.listHead}>

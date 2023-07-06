@@ -23,8 +23,22 @@ export const salutations = [
   { label: "Mrs", value: "Mrs" },
 ];
 
-export const noOfMonths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-export const noOfYears = [1, 2, 3];
+export const noOfMonths = [
+  null,
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "11",
+  "12",
+];
+export const noOfYears = [null, "1", "2", "3"];
 
 export const sourceOfWealth = [
   { label: "Salary", value: "salary" },

@@ -56,4 +56,12 @@ export const styles = StyleSheet.create({
     marginLeft: 10,
     fontWeight: 400,
   },
+  textSeparator: {
+    fontSize: 12,
+    marginLeft: 20,
+  },
+  textSeparatorContainer: {
+    marginTop: 10,
+    marginBottom: 30,
+  },
 });

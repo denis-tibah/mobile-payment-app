@@ -109,7 +109,7 @@ export function SignupScreen({ navigation }: any) {
             <ScrollView keyboardDismissMode="on-drag">
               <View style={styles.container}>
                 <View style={styles.innerContainer}>
-                  <>{steps[selectedNavIndex]}</>
+                  {steps[selectedNavIndex]}
                 </View>
               </View>
             </ScrollView>

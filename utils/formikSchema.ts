@@ -6,7 +6,7 @@ const addressDetailsSchema = Yup.object({
   town: Yup.string().required("Required"),
   state: Yup.string().required("Required"),
   postCode: Yup.string().required("Required"),
-  country: Yup.object()
+  /* country: Yup.object()
     .shape({
       label: Yup.string(),
       value: Yup.string(),
@@ -17,7 +17,8 @@ const addressDetailsSchema = Yup.object({
       }
       return true;
     })
-    .required("Required"),
+    .required("Required"), */
+  country: Yup.string().required("Required"),
   noOfMonths: Yup.string().required("Required"),
   noOfYears: Yup.string().required("Required"),
   additionalStreet: Yup.string().test(
@@ -110,7 +111,7 @@ const addressDetailsSchema = Yup.object({
       }
     }
   ),
-  additionalCountry: Yup.object()
+  /*additionalCountry: Yup.object()
     .shape({
       label: Yup.string(),
       value: Yup.string(),
@@ -124,6 +125,26 @@ const addressDetailsSchema = Yup.object({
         if (months === 12) years += 1;
 
         if (additionalCountry?.label && additionalCountry?.value) {
+          return true;
+        }
+        if (years < 3) {
+          return this.createError({ message: "Required" });
+        } else {
+          return true;
+        }
+      }
+    )
+    .notRequired(),*/
+  additionalCountry: Yup.string()
+    .test(
+      "check additionalCountry value if empty show error based on noOfYears < 3",
+      function () {
+        const { noOfYears, noOfMonths, additionalCountry } = this.parent;
+        let years = parseInt(noOfYears, 10);
+        const months = parseInt(noOfMonths, 10);
+        if (months === 12) years += 1;
+
+        if (additionalCountry) {
           return true;
         }
         if (years < 3) {

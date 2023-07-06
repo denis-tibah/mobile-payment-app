@@ -39,7 +39,6 @@ const ProfileDetails: FC<IProfileDetails> = ({
 }) => {
   const dispatch = useDispatch();
   const registration = useSelector((state: any) => state.registration);
-  console.log("🚀 ~ file: ProfileDetails.tsx:42 ~ registration:", registration);
 
   const [isDatePickerVisible, setDatePickerVisibility] =
     useState<boolean>(false);
@@ -61,9 +60,9 @@ const ProfileDetails: FC<IProfileDetails> = ({
     type: string,
     value: string
   ): {
-    label?: string;
-    value?: string;
-  } | null => {
+    label?: string | null;
+    value?: string | null;
+  } => {
     const selectedDataCountryOfBirth = {};
     if (value) {
       const arrCountry = type === "country" ? countries : nationalities;
@@ -78,7 +77,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
     }
     return Object.keys(selectedDataCountryOfBirth).length > 0
       ? selectedDataCountryOfBirth
-      : null;
+      : { label: null, value: null };
   };
 
   const {
@@ -121,7 +120,6 @@ const ProfileDetails: FC<IProfileDetails> = ({
           nationality: nationality,
         })
       );
-
       handleNextStep();
     },
   });
@@ -152,7 +150,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                   if (!item?.label && !item?.value) {
                     return (
                       <FormGroup.Option
-                        key={item?.label}
+                        key={item?.value}
                         label="Salutation"
                         value=""
                       />
@@ -160,7 +158,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                   }
                   return (
                     <FormGroup.Option
-                      key={item?.label}
+                      key={item?.value}
                       label={item?.label}
                       value={item?.value}
                     />

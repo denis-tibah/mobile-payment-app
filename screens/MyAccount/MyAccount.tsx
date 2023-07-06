@@ -20,23 +20,53 @@ export function MyAccount({ navigation }: any) {
     (state: RootState) => state?.transaction?.data
   );
   const userData = useSelector((state: RootState) => state?.auth?.userData);
+
   const totalBalance = useSelector(
     (state: RootState) => state?.account?.details
   );
+
+
   const loading = useSelector((state:RootState) => state?.transaction.loading);
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    console.log("get new transactions");
-    fetchTransactions();
-      setTimeout(() => {
-        setRefreshing(false);
-        // console.log("get new transactions");
-        // fetchTransactions();
-      }, 5000);
-  }, []);
+  // const onRefresh = useCallback(() => {
+  //   setRefreshing(true);
+  //   // console.log("1 account ",totalBalance);
+  //   // fetchTransactions();
+  //     setTimeout(() => {
+  //       setRefreshing(false);
+  //       // console.log("2 get new transactions for userData.id is ", userData);
+  //       fetchTransactions();
+  //     }, 5000);
+  // }, []);
+
+  const refreshTransactions = async () => {
+
+    try {
+      setRefreshing(true);
+      
+      if (userData) {
+        let search= {     
+          account_id: userData?.id,
+          sort: "id",
+          direction: "desc",
+          status: "PROCESSING"
+      }
+        // await dispatch<any>(getTransactions(userData));
+ 
+        setTimeout(() => {
+            setRefreshing(false);
+            // console.log("2 get new transactions for userData.id is ", userData);
+          }, 10);
+
+        await dispatch<any>(getTransactions(search))
+        await dispatch<any>(getAccountDetails(userData.id));
+      }
+    } catch (error) {
+      console.log({ error });
+    }
+  };
 
   const fetchTransactions = async () => {
     try {
@@ -48,6 +78,7 @@ export function MyAccount({ navigation }: any) {
           status: "PROCESSING"
       }
         // await dispatch<any>(getTransactions(userData));
+        // console.log('userData?.id ',userData?.id);
         await dispatch<any>(getTransactions(search))
         await dispatch<any>(getAccountDetails(userData.id));
       }
@@ -72,9 +103,14 @@ export function MyAccount({ navigation }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      <ScrollView bounces={false} 
+      <ScrollView 
+      // bounces={false} 
+      bounces={true} 
+      // bounces={!refreshing}
        refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        <RefreshControl refreshing={refreshing} 
+        onRefresh={refreshTransactions} 
+        />}
       >
         <Box style={styles.totalBalance}>
           <Typography color={"medium-grey2"} fontWeight={400} fontSize={14}>

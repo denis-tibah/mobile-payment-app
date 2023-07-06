@@ -1,6 +1,8 @@
 import { SetStateAction, useEffect } from "react";
 import { View, ScrollView, Linking } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { Ionicons } from '@expo/vector-icons'; 
+
 import FormGroup from "../../components/FormGroup";
 import Heading from "../../components/Heading";
 import TransactionItem from "../../components/TransactionItem";
@@ -177,14 +179,17 @@ const fetchTransactionsWithFilters = async (value :any) => {
             color={vars["black"]}
             fontSize={14}
             fontWeight={'400'}
+            style={{width: "80%"}}
             value={searchText}
             // returnKeyType={"done"}
             // onChange={handleChange}
-              onChangeText={(event: string) => setSearchText(event)}
+            onChangeText={(event: string) => setSearchText(event)}
             // onKeyPress={handleKeyPress}
             onSubmitEditing={handleOnSubmitEditing}
-       
           />
+          <View>
+            <Ionicons name="filter-sharp" size={24} color="pink" iconStyle={{marginTop: 80}}/>
+          </View>
         </View>
         <View>
             <Seperator backgroundColor={vars['grey']} />

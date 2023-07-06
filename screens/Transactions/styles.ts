@@ -20,11 +20,11 @@ export const styles:any = StyleSheet.create<any>({
     
   },
   searchBar: {
+    display: 'flex',
+    flexDirection: "row",
     backgroundColor: "white",
     height: 68,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingLeft: 8,
-    paddingRight: 8
+    justifyContent: 'space-between',
+    padding: 10
   }
 })

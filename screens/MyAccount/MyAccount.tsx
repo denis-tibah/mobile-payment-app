@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { View, ScrollView, ActivityIndicator } from "react-native";
+import { useEffect,useState,useCallback } from "react";
+import { View, ScrollView, ActivityIndicator,  RefreshControl } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
@@ -25,6 +25,19 @@ export function MyAccount({ navigation }: any) {
   );
   const loading = useSelector((state:RootState) => state?.transaction.loading);
   const dispatch = useDispatch();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    console.log("get new transactions");
+    fetchTransactions();
+      setTimeout(() => {
+        setRefreshing(false);
+        // console.log("get new transactions");
+        // fetchTransactions();
+      }, 5000);
+  }, []);
+
   const fetchTransactions = async () => {
     try {
       if (userData) {
@@ -59,7 +72,10 @@ export function MyAccount({ navigation }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      <ScrollView bounces={false}>
+      <ScrollView bounces={false} 
+       refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
         <Box style={styles.totalBalance}>
           <Typography color={"medium-grey2"} fontWeight={400} fontSize={14}>
             Total balance

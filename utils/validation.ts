@@ -67,7 +67,7 @@ export const validateLoginCredentials = (values:any) => {
 };
 export const validationPaymentSchema = Yup.object({
   recipientname: Yup.string().required("This is a required field*"),
-  bic: Yup.string().test('len', 'Must be minimum of 3 characters', str => str?.length===3),
+  bic: Yup.string().required('This is a required field*'),
   amount: Yup.string().required("This is a required field*"),
   reason: Yup.string().required("This is a required field*"),
   creditor_iban: Yup.string().required("This is a required field *"),

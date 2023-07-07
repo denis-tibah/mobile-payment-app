@@ -129,12 +129,22 @@ export function Payment({ navigation }: any) {
 
   const fetchTransactions = async () => {
     try {
-      const {account_id, sort, direction, status}: UserData = userData!;
-      console.log('get latest transactions',account_id);
-      
-      if (account_id && sort && direction && status) {
+      // const {account_id, sort, direction, status}: UserData = userData!;
+      const {id}: UserData = userData!;
+      const sort = "id";
+      const direction = "desc" ;
+      const status= "PROCESSING";
+          
+      // console.log('get latest transactions account_id, sort, direction, status ',id, ' ', sort, ' ', direction, ' ', status);
+      // console.log('get latest transactions',userData);
+
+      if (id && sort && direction && status) {
         const searchFilter: SearchFilter = {
-          account_id: account_id,
+          // account_id: account_id,
+          // sort:       sort,
+          // direction:  direction,
+          // status:     status
+          account_id: id,
           sort:       sort,
           direction:  direction,
           status:     status

@@ -1,6 +1,7 @@
 import { SetStateAction, useEffect } from "react";
 import { View, ScrollView, Linking, Text, Platform  } from "react-native";
 import { Picker } from '@react-native-picker/picker';
+
 import { useDispatch, useSelector } from "react-redux";
 import { Ionicons } from '@expo/vector-icons'; 
 
@@ -14,6 +15,7 @@ import Typography from "../../components/Typography";
 import TransactionIcon from "../../assets/icons/Transaction";
 import ExportIcon from "../../assets/icons/Export";
 import SearchIcon from "../../assets/icons/Search";
+import CalenderEmpty from "../../assets/icons/CalenderEmpty";
 import { getTransactions,getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
 import { generatePDF } from "../../utils/files";
 import { printAsync } from "expo-print";
@@ -22,7 +24,11 @@ import vars from "../../styles/vars";
 import { Seperator } from "../../components/Seperator/Seperator";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { useState } from "react";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import { TextInput } from "react-native-gesture-handler";
+import { Pressable } from "react-native/Libraries/Components/Pressable/Pressable";
+// import DateTimePicker from "react-native-modal-datetime-picker";
+import {getTodaysDate} from "../../utils/dates"
 // export function Transactions({ navigation,initial}: any) {
   export function Transactions({ navigation}: any) {
   const transactions = useSelector(
@@ -42,7 +48,12 @@ import DateTimePicker from '@react-native-community/datetimepicker';
   const loadingTransactions = useSelector((state:RootState) => state.transaction.loading)
 
   const dispatch = useDispatch();
-
+  const setDatePickerValue = (event: DateTimePickerEvent, date: Date) => {
+    const {
+      type,
+      nativeEvent: {timestamp},
+    } = event;
+  };
   const fetchTransactions = async () => {
     try {
       let search:any;
@@ -83,12 +94,89 @@ const fetchTransactionsWithFilters = async (value :any) => {
     // console.log("OnStartup navigation",initial)
     fetchTransactions();
   }, []);
+  const [showPickerDateTo, setShowPickerDateTo] = useState(false);
+  const [showPickerDateFrom, setShowPickerDateFrom] = useState(false);
 
-
+  const [DateTo, setDateTo] = useState("");
+  const [DateFrom, setDateFrom] = useState("");
   const containsOnlyNumbers = (str: any) => {
     return /^\d+$/.test(str);
   }
+const togglePickerDateTo = () =>{
+  setShowPickerDateTo(!showPickerDateTo);
+}
 
+const togglePickerDateFrom = () =>{
+  setShowPickerDateFrom(!showPickerDateFrom);
+}
+
+const onChangeShowPickerDateTo = (event:any) => {
+  console.log(event.type)
+  console.log(event.nativeEvent)
+  if(event.type == "set"){
+    // setDateTo(event.nativeEvent);
+    const date1 = new Date(event.nativeEvent.timestamp);
+    const formattedDate = date1.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+    
+    setDateTo(formattedDate);
+    togglePickerDateTo();
+    if (DateFrom && DateTo) {
+      if (DateFrom > DateTo) {
+       
+      } else {
+        let search:any;
+        search = {   
+          account_id: userData?.id,
+          from_date: DateFrom,
+          to_date: DateTo,
+          status: "PROCESSING",
+          sort: "accountId"
+        }
+        fetchTransactionsWithFilters(search);
+        setOnStartup('false');
+      }
+  }
+}
+  
+
+}
+
+const onChangeShowPickerDateFrom = (event:any) => {
+ 
+  if(event.type == "set"){
+    const date2 = new Date(event.nativeEvent.timestamp);
+    const formattedDate = date2.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+    setDateFrom(formattedDate);
+    togglePickerDateFrom();
+    if (DateFrom && DateTo) {
+      if (DateFrom > DateTo) {
+       
+      } else {
+        let search:any;
+        search = {   
+          account_id: userData?.id,
+          from_date: DateFrom,
+          to_date: DateTo,
+          status: "PROCESSING",
+          sort: "accountId"
+        }
+        fetchTransactionsWithFilters(search);
+        setOnStartup('false');
+      }
+   
+  }
+  }
+ 
+ 
+}
   //get transactionns every 60s 
   //disabled by Aristos
   // useEffect(() => {
@@ -121,6 +209,13 @@ const fetchTransactionsWithFilters = async (value :any) => {
   //   // setSearchText(event.nativeEvent.key);
   // };
 
+  
+  const handleDateChange = (event: any, selectedDate: any) => {
+    const currentDate = selectedDate || date;
+    setShowPicker(false);
+    setDate(currentDate);
+    // Perform any other logic with the selected date/time
+  };
   const handleOnSubmitEditing = (event: any) => {
     const numberValue =  containsOnlyNumbers(searchText);
     let search:any;
@@ -187,6 +282,7 @@ const fetchTransactionsWithFilters = async (value :any) => {
     }
     fetchTransactionsWithFilters(search);
     setOnStartup('false');
+    
     // if (isNaN(numberValue)) {
 
     
@@ -216,16 +312,12 @@ const fetchTransactionsWithFilters = async (value :any) => {
     //   // console.log("transactions",transactions);
     // }
   };
+  
   const [isMobileFilterShown, setIsMobileFilterShown] = useState(false);
   const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState('');
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
-
-  const onChange = (event: any, selectedDate: any) => {
-    const currentDate = selectedDate || date;
-    setShowPicker(Platform.OS === 'ios');
-    setDate(currentDate);
-  };
+ 
   return (
     <MainLayout navigation={navigation}>
       <Spinner 
@@ -271,7 +363,8 @@ const fetchTransactionsWithFilters = async (value :any) => {
         </View>
         {isMobileFilterShown ? 
           <View style={styles.bgWhite}>
-             <Picker
+  
+             <Picker style={{ borderColor: "#DDDDDD", backgroundColor: "#F9F9F9", borderRadius: 6,borderWidth: 1,  marginBottom: 2}}
                 selectedValue={currentSelectedSearchField}
                 onValueChange={(itemValue) => setCurrentSelectedSearchField(itemValue)}
              >
@@ -286,18 +379,64 @@ const fetchTransactionsWithFilters = async (value :any) => {
           :
           null
         }
-
-{/* {isMobileFilterShown ? 
+            {isMobileFilterShown ? 
+          
           <View style={styles.bgWhite}>
-             <View>
-      <Button title="Open DateTimePicker" onPress={() => setShowPicker(true)} />
-   
-    </View>
+              <FormGroup.Input
+                icon={<CalenderEmpty />}
+                placeholder="Date From"
+                color={vars["black"]}
+                fontSize={14}
+                fontWeight={'400'}
+                onPress={togglePickerDateFrom}
+                style={{ marginBottom: 2}}
+                value={DateFrom}
+              />
+         
+              {!showPickerDateFrom && (
+                  <DateTimePicker
+                  mode="date"
+                  display="spinner"
+                  value={date}
+                  onChange={onChangeShowPickerDateFrom}
+                />
+              
+              )}
+           
           </View>
           
           :
           null
-        } */}
+        }
+
+          {isMobileFilterShown ? 
+          <View style={styles.bgWhite}>
+              <FormGroup.Input
+                icon={<CalenderEmpty />}
+                placeholder="Date To"
+                color={vars["black"]}
+                fontSize={14}
+                fontWeight={'400'}
+                style={{ marginBottom: 2}}
+                onPress={togglePickerDateTo}
+                value={DateTo}
+              />
+          
+              {!showPickerDateTo && (
+                <DateTimePicker
+                mode="date"
+                display="spinner"
+                value={date}
+                onChange={onChangeShowPickerDateTo}
+              />
+              )}
+         
+          </View>
+          
+          :
+          null
+        }
+
         
         <View>
             <Seperator backgroundColor={vars['grey']} />

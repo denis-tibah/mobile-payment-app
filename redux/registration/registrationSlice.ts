@@ -74,9 +74,11 @@ export const registrationSlice = createSlice({
 export const setLoginCredentials = createAsyncThunk(
   "loginCredentials",
   async (params) => {
+    console.log("🚀 ~ file: registrationSlice.ts:77 ~ params:", params);
     const { data } = await api.post("/sendactivationemailfinxp", params, {
       responseType: "text",
     });
+    console.log("🚀 ~ file: registrationSlice.ts:80 ~ data:", data);
     return data;
   }
 );
@@ -118,7 +120,7 @@ export const sendSubsubToEmail = createAsyncThunk(
 export const getRegistrationStatus = createAsyncThunk(
   "getRegistrationStatus",
   async (params) => {
-    const { data } = await api.post("//getregistrationstatusfinxp", params);
+    const { data } = await api.post("/getregistrationstatusfinxp", params);
     return data;
   }
 );

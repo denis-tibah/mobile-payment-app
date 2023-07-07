@@ -83,24 +83,23 @@ export function TextArea({ ...props }) {
   );
 }
 
-export function Select({items = [], selectedValue}: any ) {
-  const [option, setOption] = useState(selectedValue);
+export function Select({
+  children,
+  icon,
+  iconColor = "medium-grey",
+  iconSize = 16,
+  ...props
+}: any) {
+  const [option, setOption] = useState();
   return (
     <View style={input.wrapper}>
-      <Picker 
-        style={input.input}
-        selectedValue={option}
-        onValueChange={selected => setOption(selected)}
-        >
-        {items.map( (item: any, index: number) => {
-            return (
-              <Item
-                key={index}
-                label={item.label}
-                value={item.value}
-              />
-            )
-          })}
+      {icon && (
+        <View style={input.icon}>
+          {cloneElement(icon, { color: iconColor, size: iconSize })}
+        </View>
+      )}
+      <Picker style={input.input} {...props}>
+        {children}
       </Picker>
     </View>
   );

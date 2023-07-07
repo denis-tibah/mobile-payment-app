@@ -86,7 +86,6 @@ export function Profile({ navigation }: any) {
 
   // const [open, setOpen] = useState(false);
   const [selectedTicketType, setSelectedTicketType] = useState(null);
-  const [selectedTicketValue, setSelectedTicketValue] = useState(null);
 
 
   useEffect(() => {

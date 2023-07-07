@@ -4,7 +4,7 @@ import { Text, View, TextInput, Platform, Pressable } from "react-native";
 import { input, formGroup, textarea, pinCode } from "./styles";
 import EyeIcon from "../../assets/icons/Eye";
 import EyeClosedIcon from "../../assets/icons/EyeClosed";
-import { SelectOption } from "../../screens/Profile/Profile";
+
 const { Item } = Picker;
 export function FormGroup({
   children,

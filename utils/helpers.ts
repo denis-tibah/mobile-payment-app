@@ -85,6 +85,7 @@ export const screenNames: any = {
   approve: "Approve",
   signup: "signup",
   receivedPayment:"receivedPayment",
+  emailVerified: "emailVerified",
 };
 
 export function getFormattedDate(dateToFormat:any)

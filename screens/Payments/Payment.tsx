@@ -130,6 +130,8 @@ export function Payment({ navigation }: any) {
   const fetchTransactions = async () => {
     try {
       const {account_id, sort, direction, status}: UserData = userData!;
+      console.log('get latest transactions',account_id);
+      
       if (account_id && sort && direction && status) {
         const searchFilter: SearchFilter = {
           account_id: account_id,

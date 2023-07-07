@@ -10,6 +10,7 @@ import SignupScreen from "../screens/Signup";
 import MyAccountScreen from "../screens/MyAccount";
 import TransactionApprovalScreen from "../screens/TransactionApproval/index";
 import PaymentReceivedScreen from "../screens/PaymentReceivedMessage";
+import EmailVerifiedScreen from "../screens/EmailVerifiedMessage";
 
 import TransactionsScreen from "../screens/Transactions";
 import CardScreen from "../screens/Card";
@@ -90,6 +91,7 @@ export default function AppNavigationWrapper() {
   const dispatch = useDispatch()
   const [showApproval, setShowApproval] = useState({ show: false, data: {} });
   const [showReceivedPayment, setShowReceivedPayment] = useState({ show: false, data: {} });
+  const [showEmailVerified, setShowEmailVerified] = useState({ show: false, data: {} });
 
   const appState = useRef(AppState.currentState)
 
@@ -126,6 +128,8 @@ export default function AppNavigationWrapper() {
   const handlePushNotification = (notification: any) => {
     if (notification?.request?.identifier === lastNotification) return;
     const transactionDetails = notification?.request?.content?.data;
+    const emailverificationDetails = notification?.request?.trigger?.remoteMessage?.data;
+
     if (transactionDetails.requestType === "TransactionApproval") {
       setLastNotification(notification?.request?.identifier);
       setShowApproval({
@@ -137,7 +141,7 @@ export default function AppNavigationWrapper() {
         userId: userData?.id,
       });
     }
-    console.log("hit PaymentReceived1");
+    // console.log("hit PaymentReceived1");
     if (transactionDetails.requestType === "PaymentReceived") {
       console.log("hit PaymentReceived2");
 
@@ -152,7 +156,25 @@ export default function AppNavigationWrapper() {
         userId: userData?.id,
       });
     }
+
+    if (transactionDetails.requestType === "EmailVerified") {
+      console.log("hit EmailVerified ", emailverificationDetails);
+  
+      setLastNotification(notification?.request?.identifier);
+
+      setShowEmailVerified({
+        show: true,
+        data: { emailverificationDetails, userId: userData?.id },
+      });
+      navigation.navigate(screenNames.emailVerified, {
+        emailverificationDetails,
+        userId: userData?.id,
+      });
+ 
+    }
+  
   };
+  
 
   const isBiometric = async () => {
     const email = await SecureStore.getItemAsync('email')
@@ -189,6 +211,12 @@ export default function AppNavigationWrapper() {
         data={showReceivedPayment?.data}
         setShowReceivedPayment={setShowReceivedPayment}
       />
+      <EmailVerifiedScreen
+        isOpen={showEmailVerified?.show}
+        data={showEmailVerified?.data}
+        setShowEmailVerified={setShowEmailVerified}
+      />
+
 
       <Root.Navigator
         screenOptions={{
@@ -228,6 +256,11 @@ export default function AppNavigationWrapper() {
               options={{ headerShown: false }}
               name={screenNames.receivedPayment}
               component={PaymentReceivedScreen}
+            />
+             <Root.Screen
+              options={{ headerShown: false }}
+              name={screenNames.emailVerified}
+              component={EmailVerifiedScreen}
             />
           </>
         ) : (

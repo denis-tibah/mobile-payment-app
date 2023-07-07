@@ -38,10 +38,6 @@ const AddressDetails: FC<IAddressDetails> = ({
 }) => {
   const dispatch = useDispatch();
   const registration = useSelector((state: any) => state.registration);
-  console.log(
-    "🚀 ~ file: AddressDetails.tsx:41 ~ registration:",
-    registration?.data
-  );
 
   const arrayChecker = (arr: any): any => {
     return arr && Array.isArray(arr) && arr.length > 0 ? true : false;

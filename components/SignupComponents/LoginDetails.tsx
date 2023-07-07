@@ -205,7 +205,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
               />
             </FormGroup>
           </View>
-          {!isValidEmail ? (
+          {isValidEmail ? (
             <View>
               <View
                 style={[styles.emailVerifiedContainer, styles.emailContainer]}

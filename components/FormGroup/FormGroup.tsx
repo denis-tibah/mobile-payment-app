@@ -4,6 +4,8 @@ import { Text, View, TextInput, Platform, Pressable } from "react-native";
 import { input, formGroup, textarea, pinCode } from "./styles";
 import EyeIcon from "../../assets/icons/Eye";
 import EyeClosedIcon from "../../assets/icons/EyeClosed";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import Button from "../Button";
 
 const { Item } = Picker;
 const { Item: ItemIOS } = PickerIOS;
@@ -87,6 +89,7 @@ export function TextArea({ ...props }) {
 
 export function Select({ 
   children,
+  placeholder,
   items = [],
   selectedValue,
   setSelectedValue,
@@ -108,6 +111,7 @@ export function Select({
           style={input.input}
           selectedValue={selectedItem}
           onValueChange={selected => setSelectedItem(selected)}
+          itemStyle={{ backgroundColor: "grey", color: "#808080 !important" }}
         >
         { items.map((item: any, index: number) => Platform.OS === 'android' ?
           <Item

@@ -53,7 +53,10 @@ const searchOptions = [
     value: 'status'
   },
 ]
-
+interface SearchOptions {
+  label: string,
+  value: string
+}
 export function Transactions({ navigation}: any) {
   const transactions = useSelector(
     (state: RootState) => state?.transaction?.data
@@ -64,7 +67,10 @@ export function Transactions({ navigation}: any) {
   );
 
   const [onStartup, setOnStartup] = useState('true');
-
+  const [isMobileFilterShown, setIsMobileFilterShown] = useState(false);
+  const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState<string>();
+  const [date, setDate] = useState(new Date());
+  const [showPicker, setShowPicker] = useState(false);
 
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const [searchText, setSearchText] = useState("");
@@ -87,11 +93,8 @@ export function Transactions({ navigation}: any) {
           direction: "desc",
           status: "PROCESSING"
       }
-      // console.log("search only porcessed transactions");
-      // if (userData) await dispatch<any>(getTransactions(userData));
-      if (userData) await dispatch<any>(getTransactions(search));
-//  console.log( ' transactions ' ,transactions);
 
+      if (userData) await dispatch<any>(getTransactions(search));
     } catch (error) {
       console.log({ error });
     }
@@ -121,8 +124,8 @@ const fetchTransactionsWithFilters = async (value :any) => {
   const [showPickerDateTo, setShowPickerDateTo] = useState(false);
   const [showPickerDateFrom, setShowPickerDateFrom] = useState(false);
 
-  const [DateTo, setDateTo] = useState("");
-  const [DateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
   const containsOnlyNumbers = (str: any) => {
     return /^\d+$/.test(str);
   }
@@ -148,92 +151,57 @@ const onChangeShowPickerDateTo = (event:any) => {
     
     setDateTo(formattedDate);
     togglePickerDateTo();
-    if (DateFrom && DateTo) {
-      if (DateFrom > DateTo) {
-       
+    if (dateFrom && dateTo) {
+      if (dateFrom > dateTo) {
+
       } else {
         let search:any;
         search = {   
           account_id: userData?.id,
-          from_date: DateFrom,
-          to_date: DateTo,
+          from_date: dateFrom,
+          to_date: dateTo,
           status: "PROCESSING",
-          sort: "accountId"
+          sort: "id"
         }
         fetchTransactionsWithFilters(search);
         setOnStartup('false');
       }
+    }
   }
 }
-  
 
-}
-
-const onChangeShowPickerDateFrom = (event:any) => {
- 
-  if(event.type == "set"){
-    const date2 = new Date(event.nativeEvent.timestamp);
-    const formattedDate = date2.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
-    setDateFrom(formattedDate);
-    togglePickerDateFrom();
-    if (DateFrom && DateTo) {
-      if (DateFrom > DateTo) {
-       
-      } else {
-        let search:any;
-        search = {   
-          account_id: userData?.id,
-          from_date: DateFrom,
-          to_date: DateTo,
-          status: "PROCESSING",
-          sort: "accountId"
+  const onChangeShowPickerDateFrom = (event:any) => {
+    if(event.type == "set"){
+      const date2 = new Date(event.nativeEvent.timestamp);
+      const formattedDate = date2.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
+      setDateFrom(formattedDate);
+      togglePickerDateFrom();
+      if (dateFrom && dateTo) {
+        if (dateFrom > dateTo) {
+        } else {
+          let search:any;
+          search = {   
+            account_id: userData?.id,
+            from_date: dateFrom,
+            to_date: dateTo,
+            status: "PROCESSING",
+            sort: "accountId"
+          }
+          fetchTransactionsWithFilters(search);
+          setOnStartup('false');
         }
-        fetchTransactionsWithFilters(search);
-        setOnStartup('false');
       }
-   
+    }
   }
-  }
- 
- 
-}
-  //get transactionns every 60s 
-  //disabled by Aristos
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     // console.log('This will run every 60s!');
-  //     setOnStartup('true');
-  //     fetchTransactions();
-  //   }, 60000);
-  //   return () => clearInterval(interval);
-  // }, []);
-
-  // useEffect(() => {
-  //   setOnStartup('true');
-  //   console.log("OnStartup navigation",initial)
-  //   fetchTransactions();
-  // }, [initial]);
-
-//   useEffect(() => {
-//     setOnStartup('true');
-//     console.log("OnStartup navigation1",onStartup)
-// });
-
   const handleExportData = async () => {
     const pdfUri = await generatePDF(transactions);
     await printAsync({ uri: pdfUri });
   };
 
-  // const handleChange = (event: any) => {
-  //   // console.log("event.handleChange ",event.nativeEvent.key)
-  //   // setSearchText(event.nativeEvent.key);
-  // };
-
-  
   const handleDateChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate || date;
     setShowPicker(false);
@@ -336,12 +304,7 @@ const onChangeShowPickerDateFrom = (event:any) => {
     //   // console.log("transactions",transactions);
     // }
   };
-  
-  const [isMobileFilterShown, setIsMobileFilterShown] = useState(false);
-  const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState('');
-  const [date, setDate] = useState(new Date());
-  const [showPicker, setShowPicker] = useState(false);
- 
+
   return (
     <MainLayout navigation={navigation}>
       <Spinner 
@@ -382,58 +345,66 @@ const onChangeShowPickerDateFrom = (event:any) => {
             onSubmitEditing={handleOnSubmitEditing}
           />
           <View>
-            <Ionicons onPress={(event: any) => setIsMobileFilterShown(!isMobileFilterShown) } name="filter-sharp" size={24} color="pink" iconStyle={{marginTop: 80}}/>
+            <Ionicons 
+              onPress={(event: any) => setIsMobileFilterShown(!isMobileFilterShown)} 
+              name="filter-sharp" 
+              size={32}
+              color="#ff28b9"
+              iconStyle={{marginTop: 180, color: "#FFC0CB"}}
+            >
+            </Ionicons>
           </View>
         </View>
-        {isMobileFilterShown &&
-          <FormGroup.Select 
-            items={searchOptions}
-          />
-        }
-            {isMobileFilterShown ? 
-          
-          <View style={styles.bgWhite}>
-              <FormGroup.Input
-                icon={<CalenderEmpty />}
-                placeholder="Date From"
-                color={vars["black"]}
-                fontSize={14}
-                fontWeight={'400'}
+        { isMobileFilterShown && (
+          <View style={{
+            backgroundColor: 'white',
+            display: 'flex',
+            flexDirection: 'row'
+          }}>
+            <View style={{
+                flex: 1,
+                minWidth: 80
+              }}
+            >
+              <FormGroup.Select
+                selectedValue=''
+                setSelectedValue={(selected: any) => setCurrentSelectedSearchField(selected)}
+                items={searchOptions}
+                placeholder="Search options"
+              />
+            </View>
+            <View style={{
+                flex: 1
+              }}
+            >
+              <Button
+                style={{width: 110, backgroundColor: "grey"}}
+                color="black-only"
                 onPress={togglePickerDateFrom}
-                style={{ marginBottom: 2}}
-                value={DateFrom}
+              >
+                { `From Date`}
+              </Button>
+              {showPickerDateFrom && (
+                <DateTimePicker
+                mode="date"
+                display="spinner"
+                value={date}
+                onChange={onChangeShowPickerDateFrom}
               />
-
-              {!showPickerDateFrom && (
-                  <DateTimePicker
-                  mode="date"
-                  display="spinner"
-                  value={date}
-                  onChange={onChangeShowPickerDateFrom}
-                />
-              
               )}
-           
-          </View>
-          
-          :
-          null
-        }
-
-          {isMobileFilterShown ? 
-          <View style={styles.bgWhite}>
-              <FormGroup.Input
-                icon={<CalenderEmpty />}
-                placeholder="Date To"
-                color={vars["black"]}
-                fontSize={14}
-                fontWeight={'400'}
-                style={{ marginBottom: 2}}
+            </View>
+            <View style={{
+                flex: 1
+              }}
+            >
+              <Button
+                style={{width: 110, backgroundColor: "grey"}}
+                color="black-only"
                 onPress={togglePickerDateTo}
-                value={DateTo}
-              />
-          
-              {!showPickerDateTo && (
+              >
+                { `To Date`}
+              </Button>
+              {showPickerDateTo && (
                 <DateTimePicker
                 mode="date"
                 display="spinner"
@@ -441,14 +412,10 @@ const onChangeShowPickerDateFrom = (event:any) => {
                 onChange={onChangeShowPickerDateTo}
               />
               )}
-         
+            </View>
           </View>
-          
-          :
-          null
+          )
         }
-
-        
         <View>
             <Seperator backgroundColor={vars['grey']} />
           <View style={styles.listHead}>
@@ -459,7 +426,6 @@ const onChangeShowPickerDateFrom = (event:any) => {
             <Typography></Typography>
           </View>
           <Seperator backgroundColor={vars['grey']} />
-   
           {onStartup =='true' ?  <View>{transactions?.map((transaction, index) => {
               // console.log(transaction)
                 return(  <TransactionItem data={transaction} key={index} />)

@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import React,{useEffect} from "react";
+import React,{useEffect,useState} from "react";
 
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { screenNames } from "../../utils/helpers";
@@ -15,6 +15,7 @@ export default function EmailVerifiedScreen({
   isOpen,
   data,
   setShowEmailVerified,
+  handleNextStep
 }: any) {
   // const {
   //   emailverification= {
@@ -28,13 +29,17 @@ export default function EmailVerifiedScreen({
   const dispatch = useDispatch();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
 
-
   const closePopup= async () => {
     setShowEmailVerified({ show: false, data: {} });
     
     //Add natbigation route to next step to registration process
-    console.log('got to next step ', data.emailverificationDetails?.message);
-    // navigate(screenNames.myaccount);
+    console.log('go to next step ', data.emailverificationDetails?.message);
+    navigate(screenNames.signup, 
+      {
+        handleNextStep: handleNextStep
+      }
+      );
+    
   }
 
   return (

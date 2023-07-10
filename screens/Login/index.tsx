@@ -197,8 +197,8 @@ export function LoginScreen({ navigation }: any) {
                   } 
                    else {
                     console.log('Do not use biometric');
-                      //  await SecureStore.deleteItemAsync("email");
-                      //  await SecureStore.deleteItemAsync("password");
+                       await SecureStore.deleteItemAsync("email");
+                       await SecureStore.deleteItemAsync("password");
                     
                   }
            //disabled by Aristos do not need this popup

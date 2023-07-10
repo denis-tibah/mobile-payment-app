@@ -22,15 +22,22 @@ import { loginCredentialsSchema } from "../../utils/formikSchema";
 import { AppDispatch } from "../../store";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
+import { registerForPushNotificationsRegistrationAsync } from "../PushNotificationRegistration";
 
 interface ILoginDetails {
   handleNextStep: () => void;
+  
 }
 
-const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
+const LoginDetails: FC<ILoginDetails> = ({ handleNextStep}) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isValidEmail, setIsValidEmail] = useState<boolean>(false);
   const [isChangeEmail, setIsChangeEmail] = useState<boolean>(false);
+  const [expoPushToken, setExpoPushToken] = useState<string>();
+
+// console.log('has it been verified ', handleNextStep);
+
+
   const [registerError, setRegisterError] = useState({
     email: "",
   });
@@ -71,6 +78,13 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
     };
   }, []);
 
+
+  useEffect(() => {
+    console.log("expotoken is ", expoPushToken);
+}, [expoPushToken]);
+
+
+
   const { handleSubmit, handleChange, values, touched, errors, handleBlur } =
     useFormik({
       initialValues: {
@@ -81,31 +95,57 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
       },
       validationSchema: loginCredentialsSchema,
       onSubmit: ({ email, alternateEmail, phoneNumber, countryCode }) => {
-        if (emailToken) {
+        
+        // console.log("hit here 1 emailToken ", emailToken);
+
+        // if (emailToken) {
           setIsLoading(true);
-          dispatch(
-            setLoginCredentials({
-              email: alternateEmail ? alternateEmail : email,
-              phone_number: `${countryCode}${phoneNumber}`,
-            })
-          )
-            .unwrap()
-            .then((payload: any) => {
-              if (payload === "activation email sent") {
-                setIsValidEmail(true);
-              }
-              setIsLoading(false);
-            })
-            .catch((error: any) => {
-              if (error) {
-                console.log("🚀 ~ file: LoginDetails.tsx:108 ~ error:", error);
-                setRegisterError({
-                  ...registerError,
-                  email: "Email already exists",
-                });
-              }
-              setIsLoading(false);
-            });
+              //added by Aristos
+                //generate expo token
+                registerForPushNotificationsRegistrationAsync(alternateEmail ? alternateEmail : email, '').then(
+                  (token:any) => { 
+                    setExpoPushToken(token),
+                    console.log("hit here", token); 
+                    dispatch(
+                      setLoginCredentials({
+                        email: alternateEmail ? alternateEmail : email,
+                        phone_number: `${countryCode}${phoneNumber}`,
+                        mobile: true,
+                        expoToken: token,
+          
+                      })
+                    )
+                      .unwrap()
+                      .then((payload: any) => {
+                      //We need to ask Santiago to chanage response message to generic one or an id value
+                        if ((payload === "activation email sent") || (payload === "new activation email sent")) {
+                          setIsValidEmail(true);
+
+                          console.log('payload ',payload);
+          
+                        }
+                        setIsLoading(false);
+                      })
+                      .catch((error: any) => {
+                        if (error) {
+                          console.log("🚀 ~ file: LoginDetails.tsx:108 ~ error:", error);
+                          setRegisterError({
+                            ...registerError,
+                            email: "Email already exists",
+                          });
+                        }
+                        setIsLoading(false);
+                      });
+                  
+                  }
+                
+                
+                
+                    );
+
+        
+
+       if (emailToken) {
           dispatch(
             setRegistrationData({
               email: alternateEmail ? alternateEmail : email,
@@ -126,8 +166,11 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
             countryCode,
           })
         );
-        handleNextStep();
+
+      
+        // handleNextStep();
       },
+      
     });
 
   return (

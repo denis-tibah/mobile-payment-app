@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import LoginScreen from "../screens/Login";
 import SignupScreen from "../screens/Signup";
+import ProfileDetails from "../components/SignupComponents/ProfileDetails";
 import MyAccountScreen from "../screens/MyAccount";
 import TransactionApprovalScreen from "../screens/TransactionApproval/index";
 import PaymentReceivedScreen from "../screens/PaymentReceivedMessage";
@@ -98,6 +99,19 @@ export default function AppNavigationWrapper() {
   const [expoPushToken, setExpoPushToken] = useState<string>();
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
+  const [selectedNavIndex, setNavIndex] = useState<number>(1);
+
+  const handleNextStep = (): void => {
+    setNavIndex((prevStep) => prevStep + 1);
+  };
+
+  //register token hen app opens
+  // useEffect(() => {
+  //   if (!expoPushToken)
+  //     registerForPushNotificationsAsync(0, '0').then(
+  //       (token) => setExpoPushToken(token)
+  //     );
+  //   }, []);
 
   useEffect(() => {
     if (userData?.id && auth?.data?.uuid && !expoPushToken)
@@ -158,7 +172,7 @@ export default function AppNavigationWrapper() {
     }
 
     if (transactionDetails.requestType === "EmailVerified") {
-      console.log("hit EmailVerified ", emailverificationDetails);
+      // console.log("hit EmailVerified ", emailverificationDetails);
   
       setLastNotification(notification?.request?.identifier);
 
@@ -166,10 +180,10 @@ export default function AppNavigationWrapper() {
         show: true,
         data: { emailverificationDetails, userId: userData?.id },
       });
-      navigation.navigate(screenNames.emailVerified, {
-        emailverificationDetails,
-        userId: userData?.id,
-      });
+      // navigation.navigate(screenNames.emailVerified, {
+      //   emailverificationDetails,
+      //   userId: userData?.id,
+      // });
  
     }
   
@@ -215,6 +229,7 @@ export default function AppNavigationWrapper() {
         isOpen={showEmailVerified?.show}
         data={showEmailVerified?.data}
         setShowEmailVerified={setShowEmailVerified}
+        handleNextStep= {handleNextStep}
       />
 
 
@@ -279,6 +294,7 @@ export default function AppNavigationWrapper() {
                 headerShown: false,
               }}
             />
+             
           </>
         )}
       </Root.Navigator>

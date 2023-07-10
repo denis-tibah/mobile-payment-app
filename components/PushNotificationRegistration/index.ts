@@ -5,9 +5,10 @@ import * as Device from "expo-device";
 
 
 // Set up push notifications
-export const registerForPushNotificationsAsync = async (
-  userId: number,
-  uuid: string
+export const registerForPushNotificationsRegistrationAsync = async (
+  email: string,
+  uuid: string,
+  // mobile: string
 ) => {
   let token;
 
@@ -39,16 +40,20 @@ export const registerForPushNotificationsAsync = async (
         })
       ).data;
 
-console.log("expo token ", token);
+   console.log('expo token ', token,' uuid' ,uuid , ' email ', email);
 
-      await api.post("/registerPushToken", {
-        token,
-        userId,
-        uuid,
-      });
+    //   const resp=await api.post("/registerPushToken", {
+    //     token,
+    //     email,
+    //     uuid,
+    //     // mobile,
+    //   });
+    //   // console.log(resp);
+
     } catch (error) {
       console.log({ notificationRegError: error });
     }
+
   } else {
     alert("Must use physical device for Push Notifications");
   }

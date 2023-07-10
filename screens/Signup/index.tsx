@@ -35,6 +35,7 @@ import LoginDetails from "../../components/SignupComponents/LoginDetails";
 import ProfileDetails from "../../components/SignupComponents/ProfileDetails";
 import TermsAndSecurity from "../../components/SignupComponents/TermsAndSecurity";
 import Verifications from "../../components/SignupComponents/Verifications";
+import EmailVerifiedScreen from "../EmailVerifiedMessage";
 
 export function SignupScreen({ navigation }: any) {
   const [isLoading, setIsLoading] = useState(false);

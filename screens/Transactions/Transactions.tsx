@@ -30,7 +30,31 @@ import { Pressable } from "react-native/Libraries/Components/Pressable/Pressable
 // import DateTimePicker from "react-native-modal-datetime-picker";
 import {getTodaysDate} from "../../utils/dates"
 // export function Transactions({ navigation,initial}: any) {
-  export function Transactions({ navigation}: any) {
+
+const searchOptions = [
+  {
+    label: "BIC",
+    value: 'bic'
+  },
+  {
+    label: "ReferenceNo",
+    value: 'reference_no'
+  },
+  {
+    label: "IBAN",
+    value: 'iban'
+  },
+  {
+    label: "Maximum amount",
+    value: 'max_amount'
+  },
+  {
+    label: "Status",
+    value: 'status'
+  },
+]
+
+export function Transactions({ navigation}: any) {
   const transactions = useSelector(
     (state: RootState) => state?.transaction?.data
   );
@@ -361,23 +385,10 @@ const onChangeShowPickerDateFrom = (event:any) => {
             <Ionicons onPress={(event: any) => setIsMobileFilterShown(!isMobileFilterShown) } name="filter-sharp" size={24} color="pink" iconStyle={{marginTop: 80}}/>
           </View>
         </View>
-        {isMobileFilterShown ? 
-          <View style={styles.bgWhite}>
-  
-             <Picker style={{ borderColor: "#DDDDDD", backgroundColor: "#F9F9F9", borderRadius: 6,borderWidth: 1,  marginBottom: 2}}
-                selectedValue={currentSelectedSearchField}
-                onValueChange={(itemValue) => setCurrentSelectedSearchField(itemValue)}
-             >
-                  <Picker.Item label="BIC" value="bic" />
-                  <Picker.Item label="ReferenceNo" value="reference_no" />
-                  <Picker.Item label="IBAN" value="iban" />
-                  <Picker.Item label="Maximum amount" value="max_amount" />
-                  <Picker.Item label="Status" value="status" />
-              </Picker>
-          </View>
-          
-          :
-          null
+        {isMobileFilterShown &&
+          <FormGroup.Select 
+            items={searchOptions}
+          />
         }
             {isMobileFilterShown ? 
           
@@ -392,7 +403,7 @@ const onChangeShowPickerDateFrom = (event:any) => {
                 style={{ marginBottom: 2}}
                 value={DateFrom}
               />
-         
+
               {!showPickerDateFrom && (
                   <DateTimePicker
                   mode="date"

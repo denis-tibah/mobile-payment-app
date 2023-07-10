@@ -1,10 +1,8 @@
-import { SetStateAction, useEffect } from "react";
-import { View, ScrollView, Linking, Text, Platform  } from "react-native";
-import { Picker } from '@react-native-picker/picker';
+import { useEffect } from "react";
+import { View, ScrollView } from "react-native";
 
 import { useDispatch, useSelector } from "react-redux";
 import { Ionicons } from '@expo/vector-icons'; 
-
 import FormGroup from "../../components/FormGroup";
 import Heading from "../../components/Heading";
 import TransactionItem from "../../components/TransactionItem";
@@ -13,9 +11,7 @@ import { styles } from "./styles";
 import Button from "../../components/Button";
 import Typography from "../../components/Typography";
 import TransactionIcon from "../../assets/icons/Transaction";
-import ExportIcon from "../../assets/icons/Export";
 import SearchIcon from "../../assets/icons/Search";
-import CalenderEmpty from "../../assets/icons/CalenderEmpty";
 import { getTransactions,getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
 import { generatePDF } from "../../utils/files";
 import { printAsync } from "expo-print";
@@ -24,12 +20,7 @@ import vars from "../../styles/vars";
 import { Seperator } from "../../components/Seperator/Seperator";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { useState } from "react";
-import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import { TextInput } from "react-native-gesture-handler";
-import { Pressable } from "react-native/Libraries/Components/Pressable/Pressable";
-// import DateTimePicker from "react-native-modal-datetime-picker";
-import {getTodaysDate} from "../../utils/dates"
-// export function Transactions({ navigation,initial}: any) {
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const searchOptions = [
   {
@@ -53,10 +44,7 @@ const searchOptions = [
     value: 'status'
   },
 ]
-interface SearchOptions {
-  label: string,
-  value: string
-}
+
 export function Transactions({ navigation}: any) {
   const transactions = useSelector(
     (state: RootState) => state?.transaction?.data
@@ -212,7 +200,6 @@ const onChangeShowPickerDateTo = (event:any) => {
         bic: searchText,
         sort: "bic",
       }
-
     }
 
     if (currentSelectedSearchField === "status") {
@@ -257,35 +244,6 @@ const onChangeShowPickerDateTo = (event:any) => {
     }
     fetchTransactionsWithFilters(search);
     setOnStartup('false');
-    
-    // if (isNaN(numberValue)) {
-
-    
-    //   let search= {   
-    //       account_id: userData?.id,
-    //       name: searchText,
-    //       sort: "id",
-    //       direction: "desc"
-                      
-    //   }
-
-    //           fetchTransactionsWithFilters(search);
-    //           setOnStartup('false');
-    //           // initial='test';
-    //   // console.log(fetchTransactionsWithFilters(search));
-
-    // } else {
-    //   //if input is number then here
-    //   let search= { account_id : userData?.id,
-    //                 min_amount: searchText,
-    //                 sort: "id",
-    //                 direction: "desc"
-    //           }
-    //           fetchTransactionsWithFilters(search)
-    //           setOnStartup('false');
-    //           // initial='test';
-    //   // console.log("transactions",transactions);
-    // }
   };
 
   return (

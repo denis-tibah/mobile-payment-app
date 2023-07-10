@@ -103,26 +103,23 @@ export const getTransactionsWithFilters = createAsyncThunk<Transaction[], Search
   "getTransactionsWithfilters",
   async (searchFilter, { rejectWithValue, fulfillWithValue }) => {
     try {
-      // console.log("searchFilter",searchFilter);
       const { data } = await api.post("/getTransactionsV2finxp", {
         // searchFilter,
-        sort: searchFilter.sort,
-        direction: searchFilter.direction,
+        sort: searchFilter?.sort,
+        direction: searchFilter?.direction,
         limit: searchFilter.limit,
-        page: searchFilter.page,
-        iban: searchFilter.bic,
-        name: searchFilter.name,
-        min_amount: searchFilter.min_amount,
-        max_amount: searchFilter.max_amount,
-        status:   searchFilter.status,
-        reference_no: searchFilter.reference_no,
-        bic: searchFilter.bic,
-        from_date: searchFilter.from_date,
-        to_date: searchFilter.to_date,
+        page: searchFilter?.page,
+        iban: searchFilter?.bic,
+        name: searchFilter?.name,
+        min_amount: searchFilter?.min_amount,
+        max_amount: searchFilter?.max_amount,
+        status:   searchFilter?.status,
+        reference_no: searchFilter?.reference_no,
+        bic: searchFilter?.bic,
+        from_date: searchFilter?.from_date,
+        to_date: searchFilter?.to_date,
         account_id: searchFilter.account_id
-
       });
-      // console.log("data",data);
       return fulfillWithValue(data);
     } catch (error) {
       // console.log("error with transaction search",error);

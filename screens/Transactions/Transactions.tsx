@@ -78,12 +78,7 @@ export function Transactions({ navigation}: any) {
   const loadingTransactions = useSelector((state:RootState) => state.transaction.loading)
 
   const dispatch = useDispatch();
-  const setDatePickerValue = (event: DateTimePickerEvent, date: Date) => {
-    const {
-      type,
-      nativeEvent: {timestamp},
-    } = event;
-  };
+
   const fetchTransactions = async () => {
     try {
       let search:any;
@@ -112,13 +107,11 @@ const fetchTransactionsWithFilters = async (value :any) => {
 
   useEffect(() => {
     setOnStartup('true');
-    // console.log("load once navigation",onStartup)
     fetchTransactions();
   }, [transactions?.length, userData?.id]);
 
   useEffect(() => {
     setOnStartup('true');
-    // console.log("OnStartup navigation",initial)
     fetchTransactions();
   }, []);
   const [showPickerDateTo, setShowPickerDateTo] = useState(false);
@@ -138,50 +131,39 @@ const togglePickerDateFrom = () =>{
 }
 
 const onChangeShowPickerDateTo = (event:any) => {
-  console.log(event.type)
-  console.log(event.nativeEvent)
-  if(event.type == "set"){
-    // setDateTo(event.nativeEvent);
-    const date1 = new Date(event.nativeEvent.timestamp);
-    const formattedDate = date1.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
-    
+  if(event.type == "set") {
+    const formattedDate = new Date(event.nativeEvent.timestamp).toISOString().split('T')[0];
     setDateTo(formattedDate);
-    togglePickerDateTo();
     if (dateFrom && dateTo) {
       if (dateFrom > dateTo) {
-
+        alert("Date from should be before or same with Date to");
       } else {
         let search:any;
-        search = {   
-          account_id: userData?.id,
-          from_date: dateFrom,
-          to_date: dateTo,
-          status: "PROCESSING",
-          sort: "id"
+        if (userData?.id) {
+          search = {   
+            account_id: userData.id,
+            from_date: dateFrom,
+            to_date: dateTo,
+            status: "PROCESSING",
+          }
+          fetchTransactionsWithFilters(search);
+          setOnStartup('false');
+        } else {
+          alert("Try relogging in.");
         }
-        fetchTransactionsWithFilters(search);
-        setOnStartup('false');
       }
     }
+    togglePickerDateTo();
   }
 }
 
   const onChangeShowPickerDateFrom = (event:any) => {
     if(event.type == "set"){
-      const date2 = new Date(event.nativeEvent.timestamp);
-      const formattedDate = date2.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      });
+      const formattedDate = new Date(event.nativeEvent.timestamp).toISOString().split('T')[0];
       setDateFrom(formattedDate);
-      togglePickerDateFrom();
       if (dateFrom && dateTo) {
         if (dateFrom > dateTo) {
+          alert("Date from should be before or same with Date to");
         } else {
           let search:any;
           search = {   
@@ -189,14 +171,15 @@ const onChangeShowPickerDateTo = (event:any) => {
             from_date: dateFrom,
             to_date: dateTo,
             status: "PROCESSING",
-            sort: "accountId"
           }
           fetchTransactionsWithFilters(search);
           setOnStartup('false');
         }
       }
+      togglePickerDateFrom();
     }
   }
+
   const handleExportData = async () => {
     const pdfUri = await generatePDF(transactions);
     await printAsync({ uri: pdfUri });
@@ -211,8 +194,8 @@ const onChangeShowPickerDateTo = (event:any) => {
   const handleOnSubmitEditing = (event: any) => {
     const numberValue =  containsOnlyNumbers(searchText);
     let search:any;
-    console.log(searchText);
-    console.log(currentSelectedSearchField);
+    // console.log(searchText);
+    // console.log(currentSelectedSearchField);
 
     if (!currentSelectedSearchField && !numberValue) {
       search = {   
@@ -314,17 +297,14 @@ const onChangeShowPickerDateTo = (event:any) => {
         <View style={styles.container}>
           <Heading
             icon={<TransactionIcon size={18} color="pink" />}
-            title={"Transactions"}
+            title={"Last Transactions"}
             rightAction={
               <Button
-                height={34}
-                width={94}
-                style={{height: 34, width: 94}}
+                style={{height: 34, width: 120}}
                 color={"light-pink"}
-                rightIcon={<ExportIcon color="pink" size={12} />}
                 onPress={handleExportData}
               >
-                Report
+                Export Data
               </Button>
             }
           />
@@ -382,7 +362,7 @@ const onChangeShowPickerDateTo = (event:any) => {
                 color="black-only"
                 onPress={togglePickerDateFrom}
               >
-                { `From Date`}
+                { !dateFrom ? `From Date`: dateFrom }
               </Button>
               {showPickerDateFrom && (
                 <DateTimePicker
@@ -402,7 +382,7 @@ const onChangeShowPickerDateTo = (event:any) => {
                 color="black-only"
                 onPress={togglePickerDateTo}
               >
-                { `To Date`}
+                { !dateTo ? `To Date` : dateTo }
               </Button>
               {showPickerDateTo && (
                 <DateTimePicker

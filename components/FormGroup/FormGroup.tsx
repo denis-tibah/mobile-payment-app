@@ -6,6 +6,7 @@ import EyeIcon from "../../assets/icons/Eye";
 import EyeClosedIcon from "../../assets/icons/EyeClosed";
 
 const { Item } = Picker;
+const { Item: ItemIOS } = PickerIOS;
 export function FormGroup({
   children,
   extraPadding,
@@ -103,17 +104,22 @@ export function Select({
         </View>
       )}
       { items.length > 0 ? (
-        <Picker 
+        <Picker
           style={input.input}
           selectedValue={selectedItem}
           onValueChange={selected => setSelectedItem(selected)}
         >
-        { items.map((item: any, index: number) =>
+        { items.map((item: any, index: number) => Platform.OS === 'android' ?
           <Item
             key={index}
             label={item.label}
             value={item.value}
-          />)
+          /> : <ItemIOS
+            key={index}
+            label={item.label}
+            value={item.value}
+          />
+          )
           }
         </Picker>
       ) :

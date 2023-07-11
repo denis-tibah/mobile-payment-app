@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "zazoo-mobile",
+    "scheme": "zazoomobile",
     "slug": "zazoo-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -37,7 +38,29 @@
         "INTERNET",
         "android.permission.SECURE_STORAGE"
       ],
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+             {
+               "scheme": "https",
+               "host": "www.gozazoo.com/",
+               "pathPrefix": "/"
+             },
+             {
+               "scheme": "zazoomobile",
+               "host": "*",
+               "pathPrefix": "/"
+             }
+           ],
+         "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+       }
+    ]
     },
     "web": {
       "favicon": "./assets/favicon.png"

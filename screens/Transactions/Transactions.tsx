@@ -178,6 +178,15 @@ const onChangeShowPickerDateTo = (event:any) => {
       }
     }
 
+    if (!currentSelectedSearchField && isNumberOnly) {
+      search = {   
+        account_id: userData?.id,
+        min_amount: searchText,
+        sort: "min_amount",
+        direction: "desc"
+      }
+    }
+
     if (currentSelectedSearchField === "bic") {
       search = {   
         account_id: userData?.id,
@@ -198,12 +207,12 @@ const onChangeShowPickerDateTo = (event:any) => {
     if (currentSelectedSearchField === "reference_no") {
       search = {   
         account_id: userData?.id,
-        reference_no: searchText,
+        reference_no: Number(searchText),
         sort: "reference_no",
       }
     }
 
-    if (currentSelectedSearchField === "min_amount" || isNumberOnly) {
+    if (currentSelectedSearchField === "min_amount") {
       search = {   
         account_id: userData?.id,
         min_amount: searchText,
@@ -348,7 +357,7 @@ const onChangeShowPickerDateTo = (event:any) => {
           </View>
           )
         }
-        <View>
+        <View style={{paddingBottom: 140}}>
             <Seperator backgroundColor={vars['grey']} />
           <View style={styles.listHead}>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Name</Typography>
@@ -359,7 +368,9 @@ const onChangeShowPickerDateTo = (event:any) => {
           </View>
           <Seperator backgroundColor={vars['grey']} />
           <View>{transactions?.map((transaction, index) => {
-            return( <TransactionItem data={transaction} key={index} />)
+            return(
+              <TransactionItem data={transaction} key={index} />
+            )
           })}
           </View>
         </View>

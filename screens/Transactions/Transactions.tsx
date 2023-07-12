@@ -257,7 +257,7 @@ const onChangeShowPickerDateTo = (event:any) => {
         <View style={styles.searchBar}>
           <FormGroup.Input
             icon={<SearchIcon />}
-            placeholder="john.smith@mail.com"
+            placeholder="Enter Minimum Amount"
             color={vars["black"]}
             fontSize={14}
             fontWeight={'400'}

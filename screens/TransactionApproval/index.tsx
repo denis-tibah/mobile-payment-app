@@ -14,16 +14,16 @@ export default function TransactionApprovalScreen({
   const {
     transactionDetails = {
       amount: 19.99,
-      title: "Bib",
-      card: "2343",
+      title: "",
+      card: "",
     },
-    userId = "123",
+    userId = "",
   } = data || {};
   const { navigate }: any = useNavigation();
 
-  const handleTransactionResponse = async (status: any) => {
+  const handleTransactionResponse = async (id:any,ref:any,status: any) => {
     try {
-      const responsePayload = { status, userId };
+      const responsePayload = { id:id, reference:ref, status:status };
 
       await api.post("/transactionResponse", responsePayload);
     } catch (error) {
@@ -41,7 +41,7 @@ export default function TransactionApprovalScreen({
         <View style={styles.buttonContainer}>
           <Button
             color="light-pink"
-            onPress={() => handleTransactionResponse("reject")}
+            onPress={() => handleTransactionResponse(transactionDetails.id,transactionDetails.ref,"reject")}
           >
             Decline
           </Button>
@@ -53,14 +53,16 @@ export default function TransactionApprovalScreen({
         {transactionDetails && (
           <View style={styles.transactionDetails}>
             <Text>
-              A Card ({transactionDetails.card}) Payment of{" "}
-              {transactionDetails.amount} was made at {transactionDetails.title}
+              A Card Payment of{" "}
+              {transactionDetails.amount} {""} {transactionDetails.currency} {""} with reference {transactionDetails.ref}
+              {""} was executed at {""} {transactionDetails.transactonDate}
+
             </Text>
           </View>
         )}
         <Button
           color={"green"}
-          onPress={() => handleTransactionResponse("approve")}
+          onPress={() => handleTransactionResponse(transactionDetails.transactionId,transactionDetails.ref,"approve")}
         >
           <Text style={styles.buttonText}>Approve</Text>
         </Button>

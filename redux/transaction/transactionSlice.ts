@@ -109,7 +109,7 @@ export const getTransactionsWithFilters = createAsyncThunk<Transaction[], Search
         direction: searchFilter?.direction,
         limit: searchFilter.limit,
         page: searchFilter?.page,
-        iban: searchFilter?.bic,
+        iban: searchFilter?.iban,
         name: searchFilter?.name,
         min_amount: searchFilter?.min_amount,
         max_amount: searchFilter?.max_amount,

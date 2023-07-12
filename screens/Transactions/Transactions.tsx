@@ -24,6 +24,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 const searchOptions = [
   {
+    label: "Search options",
+    value: null
+  },
+  {
     label: "BIC",
     value: 'bic'
   },
@@ -125,6 +129,7 @@ const onChangeShowPickerDateTo = (event:any) => {
     if (dateFrom && dateTo) {
       if (dateFrom > dateTo) {
         alert("Date from should be before or same with Date to");
+        return;
       } else {
         let search:any;
         if (userData?.id) {
@@ -152,6 +157,7 @@ const onChangeShowPickerDateTo = (event:any) => {
       if (dateFrom && dateTo) {
         if (dateFrom > dateTo) {
           alert("Date from should be before or same with Date to");
+          return;
         } else {
           let search:any;
           search = {   

@@ -113,7 +113,7 @@ export function Select({
           onValueChange={selected => setSelectedItem(selected)}
           itemStyle={{ backgroundColor: "grey", color: "#808080 !important" }}
         >
-        <Item 
+        <Item
           label={placeholder}
           value=""
           style={{color: "#808080"}}

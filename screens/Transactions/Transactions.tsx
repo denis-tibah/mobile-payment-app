@@ -24,10 +24,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 const searchOptions = [
   {
-    label: "Search options",
-    value: null
-  },
-  {
     label: "BIC",
     value: 'bic'
   },

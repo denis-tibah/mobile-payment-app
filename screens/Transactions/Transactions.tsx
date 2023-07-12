@@ -21,30 +21,15 @@ import { Seperator } from "../../components/Seperator/Seperator";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { useState } from "react";
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Transaction } from "../../models/Transactions";
+import DropDownPicker from "react-native-dropdown-picker";
 
 const searchOptions = [
-  {
-    label: "BIC",
-    value: 'bic'
-  },
-  {
-    label: "ReferenceNo",
-    value: 'reference_no'
-  },
-  {
-    label: "IBAN",
-    value: 'iban'
-  },
-  {
-    label: "Maximum amount",
-    value: 'max_amount'
-  },
-  {
-    label: "Status",
-    value: 'status'
-  },
-]
+  { label: "BIC", value: 'bic' },
+  { label: "ReferenceNo", value: 'reference_no' },
+  { label: "IBAN", value: 'iban' },
+  { label: "Maximum amount", value: 'max_amount' },
+  { label: "Status", value: 'status' },
+];
 
 export function Transactions({ navigation}: any) {
   const transactions = useSelector(
@@ -57,10 +42,9 @@ export function Transactions({ navigation}: any) {
 
   const [onStartup, setOnStartup] = useState('true');
   const [isMobileFilterShown, setIsMobileFilterShown] = useState(false);
-  const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState<string>();
+  const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState(null);
   const [date, setDate] = useState(new Date());
-  const [showPicker, setShowPicker] = useState(false);
-
+  const [ openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const [searchText, setSearchText] = useState("");
 
@@ -179,7 +163,6 @@ const onChangeShowPickerDateTo = (event:any) => {
 
   const handleDateChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate || date;
-    setShowPicker(false);
     setDate(currentDate);
     // Perform any other logic with the selected date/time
   };
@@ -301,18 +284,25 @@ const onChangeShowPickerDateTo = (event:any) => {
           <View style={{
             backgroundColor: 'white',
             display: 'flex',
-            flexDirection: 'row'
+            flexDirection: 'row',
+            zIndex: 100
           }}>
             <View style={{
                 flex: 1,
                 minWidth: 80
               }}
             >
-              <FormGroup.Select
-                selectedValue=''
-                setSelectedValue={(selected: any) => setCurrentSelectedSearchField(selected)}
+              <DropDownPicker
+                listMode="SCROLLVIEW"
+                setValue={setCurrentSelectedSearchField}
                 items={searchOptions}
+                value={currentSelectedSearchField}
                 placeholder="Search options"
+                setOpen={setOpenSearchOptions}
+                open={openSearchOptions}
+                zIndex={100}
+                style={styles.dropdown}
+                dropDownContainerStyle={styles.dropdownContainer}
               />
             </View>
             <View style={{

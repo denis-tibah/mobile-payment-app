@@ -118,16 +118,12 @@ export function Select({
           value=""
           style={{color: "#808080"}}
         />
-        { items.map((item: any, index: number) => Platform.OS === 'android' ?
-          <Item
-            key={index}
-            label={item.label}
-            value={item.value}
-          /> : <ItemIOS
-            key={index}
-            label={item.label}
-            value={item.value}
-          />
+        { items.map((item: any, index: number) =>
+            <Item
+              key={index}
+              label={item.label}
+              value={item.value}
+            />
           )
           }
         </Picker>

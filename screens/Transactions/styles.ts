@@ -29,5 +29,24 @@ export const styles:any = StyleSheet.create<any>({
   },
   bgWhite: {
     backgroundColor: "white",
-  }
+  },
+  dropdown: {
+    height: 42,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 999,
+    display: "flex",
+    flexDirection: "row",
+    paddingLeft: 12,
+    width: "95%",
+    alignSelf: "center",
+    borderColor: "transparent",
+    marginBottom: 18,
+  },
+  dropdownContainer: {
+    width: "95%",
+    alignSelf: "center",
+    backgroundColor: "#f9f9f9",
+    borderColor: "transparent",
+    zIndex: 100
+  },
 })

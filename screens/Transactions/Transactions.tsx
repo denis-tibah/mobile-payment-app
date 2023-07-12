@@ -21,6 +21,7 @@ import { Seperator } from "../../components/Seperator/Seperator";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { useState } from "react";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Transaction } from "../../models/Transactions";
 
 const searchOptions = [
   {
@@ -93,15 +94,16 @@ const fetchTransactionsWithFilters = async (value :any) => {
 };
 
 
-  useEffect(() => {
-    setOnStartup('true');
-    fetchTransactions();
-  }, [transactions?.length, userData?.id]);
+  // useEffect(() => {
+  //   setOnStartup('true');
+  //   fetchTransactions();
+  // }, [transactions?.length, userData?.id]);
 
   useEffect(() => {
     setOnStartup('true');
     fetchTransactions();
   }, []);
+
   const [showPickerDateTo, setShowPickerDateTo] = useState(false);
   const [showPickerDateFrom, setShowPickerDateFrom] = useState(false);
 
@@ -136,7 +138,7 @@ const onChangeShowPickerDateTo = (event:any) => {
             status: "PROCESSING",
           }
           fetchTransactionsWithFilters(search);
-          setOnStartup('false');
+          // setOnStartup('false');
         } else {
           alert("Try relogging in.");
         }
@@ -163,7 +165,7 @@ const onChangeShowPickerDateTo = (event:any) => {
             status: "PROCESSING",
           }
           fetchTransactionsWithFilters(search);
-          setOnStartup('false');
+          // setOnStartup('false');
         }
       }
       togglePickerDateFrom();
@@ -366,30 +368,10 @@ const onChangeShowPickerDateTo = (event:any) => {
             <Typography></Typography>
           </View>
           <Seperator backgroundColor={vars['grey']} />
-          {onStartup =='true' ?  <View>{transactions?.map((transaction, index) => {
-              // console.log(transaction)
-                return(  <TransactionItem data={transaction} key={index} />)
-                                  
-          })}</View>
-              :   
-                    <View> 
-                          {transactionsFiltered?.map((transaction, index) => (
-                          <TransactionItem data={transaction} key={index} />  
-                        ))}
-                   </View>
-          }
-          {/* <View > */}
-           
-            {/* {transactions.map((transaction, index) => (
-              <TransactionItem data={transaction} key={index} />
-            ))} */}
-                 {/* {transactionsFiltered?.map((transaction, index) => (
-              <TransactionItem data={transaction} key={index} />
-            ))} */}
-       
-  
-
-          {/* </View> */}
+          <View>{transactions?.map((transaction, index) => {
+            return( <TransactionItem data={transaction} key={index} />)
+          })}
+          </View>
         </View>
       </ScrollView>
     </MainLayout>

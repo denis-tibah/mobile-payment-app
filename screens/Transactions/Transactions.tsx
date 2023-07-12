@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, TouchableOpacity } from "react-native";
 
 import { useDispatch, useSelector } from "react-redux";
 import { Ionicons } from '@expo/vector-icons'; 
@@ -167,12 +167,9 @@ const onChangeShowPickerDateTo = (event:any) => {
     // Perform any other logic with the selected date/time
   };
   const handleOnSubmitEditing = (event: any) => {
-    const numberValue =  containsOnlyNumbers(searchText);
+    const isNumberOnly = containsOnlyNumbers(searchText);
     let search:any;
-    // console.log(searchText);
-    // console.log(currentSelectedSearchField);
-
-    if (!currentSelectedSearchField && !numberValue) {
+    if (!currentSelectedSearchField && !isNumberOnly) {
       search = {   
         account_id: userData?.id,
         name: searchText,
@@ -206,7 +203,7 @@ const onChangeShowPickerDateTo = (event:any) => {
       }
     }
 
-    if (currentSelectedSearchField === "min_amount" || numberValue) {
+    if (currentSelectedSearchField === "min_amount" || isNumberOnly) {
       search = {   
         account_id: userData?.id,
         min_amount: searchText,
@@ -225,7 +222,7 @@ const onChangeShowPickerDateTo = (event:any) => {
     if (currentSelectedSearchField === "max_amount") {
       search = {   
         account_id: userData?.id,
-        max_amount: searchText,
+        max_amount: Number(searchText),
         sort: "max_amount",
       }
     }
@@ -270,14 +267,17 @@ const onChangeShowPickerDateTo = (event:any) => {
             onSubmitEditing={handleOnSubmitEditing}
           />
           <View>
-            <Ionicons 
+            <TouchableOpacity
               onPress={(event: any) => setIsMobileFilterShown(!isMobileFilterShown)} 
-              name="filter-sharp" 
-              size={32}
-              color="#ff28b9"
-              iconStyle={{marginTop: 180, color: "#FFC0CB"}}
             >
-            </Ionicons>
+              <Ionicons
+                name="filter-sharp" 
+                size={32}
+                color="#ff28b9"
+                iconStyle={{marginTop: 180, color: "#FFC0CB"}}
+              >
+              </Ionicons>
+            </TouchableOpacity>
           </View>
         </View>
         { isMobileFilterShown && (

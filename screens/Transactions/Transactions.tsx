@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, TouchableOpacity } from "react-native";
 
 import { useDispatch, useSelector } from "react-redux";
 import { Ionicons } from '@expo/vector-icons'; 
@@ -267,14 +267,17 @@ const onChangeShowPickerDateTo = (event:any) => {
             onSubmitEditing={handleOnSubmitEditing}
           />
           <View>
-            <Ionicons 
+            <TouchableOpacity
               onPress={(event: any) => setIsMobileFilterShown(!isMobileFilterShown)} 
-              name="filter-sharp" 
-              size={32}
-              color="#ff28b9"
-              iconStyle={{marginTop: 180, color: "#FFC0CB"}}
             >
-            </Ionicons>
+              <Ionicons
+                name="filter-sharp" 
+                size={32}
+                color="#ff28b9"
+                iconStyle={{marginTop: 180, color: "#FFC0CB"}}
+              >
+              </Ionicons>
+            </TouchableOpacity>
           </View>
         </View>
         { isMobileFilterShown && (

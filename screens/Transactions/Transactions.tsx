@@ -328,6 +328,7 @@ export function Transactions({ navigation }: any) {
     return () => clearFilter();
   }, []);
 
+
   return (
     <MainLayout navigation={navigation}>
       {/* <Spinner 

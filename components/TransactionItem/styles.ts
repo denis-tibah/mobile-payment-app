@@ -12,7 +12,7 @@ export const styles:any = StyleSheet.create<any>({
     alignItems: "center",
     paddingLeft: 10,
     // paddingRight: 12,
-    paddingRight: 75,
+    paddingRight: 68,
     justifyContent: "space-between",
     borderTopColor: vars["light-grey"],
     borderTopWidth: 1,

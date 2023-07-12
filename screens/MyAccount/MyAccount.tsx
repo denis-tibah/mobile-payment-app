@@ -113,7 +113,7 @@ export function MyAccount({ navigation }: any) {
         />}
       >
         <Box style={styles.totalBalance}>
-          <Typography color={"medium-grey2"} fontWeight={400} fontSize={14}>
+          <Typography color={"medium-grey2"} fontWeight={400} fontSize={18}>
             Total balance
           </Typography>
           <Typography fontFamily="Nunito-SemiBold" fontSize={18}>

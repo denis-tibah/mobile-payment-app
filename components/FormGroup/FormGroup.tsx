@@ -113,6 +113,11 @@ export function Select({
           onValueChange={selected => setSelectedItem(selected)}
           itemStyle={{ backgroundColor: "grey", color: "#808080 !important" }}
         >
+        <Item 
+          label={placeholder}
+          value=""
+          style={{color: "#808080"}}
+        />
         { items.map((item: any, index: number) => Platform.OS === 'android' ?
           <Item
             key={index}

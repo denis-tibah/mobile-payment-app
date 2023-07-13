@@ -163,13 +163,13 @@ export const styles:any = StyleSheet.create<any>({
     alignSelf: "center",
     borderColor: "transparent",
     marginBottom: 18,
-    zIndex: 100
+    zIndex: 1000
   },
   dropdownContainer: {
     width: "95%",
     alignSelf: "center",
     backgroundColor: "#f9f9f9",
     borderColor: "transparent",
-    zIndex: 100
+    zIndex: 1000
   },
 });

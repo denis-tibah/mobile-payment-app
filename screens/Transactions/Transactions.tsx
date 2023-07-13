@@ -87,12 +87,6 @@ const fetchTransactionsWithFilters = async (value :any) => {
   }
 };
 
-
-  // useEffect(() => {
-  //   setOnStartup('true');
-  //   fetchTransactions();
-  // }, [transactions?.length, userData?.id]);
-
   useEffect(() => {
     setOnStartup('true');
     fetchTransactions();

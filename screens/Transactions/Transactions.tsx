@@ -78,9 +78,7 @@ const fetchTransactionsWithFilters = async (value :any) => {
   try {
     setIsLoading(true);
     if (userData) {
-      await dispatch<any>(getTransactionsWithFilters(value))
-      .unwrap()
-      .then((data: any) => console.log(data));      
+      await dispatch<any>(getTransactionsWithFilters(value));      
     }
   } catch (error) {
     console.log({ error });

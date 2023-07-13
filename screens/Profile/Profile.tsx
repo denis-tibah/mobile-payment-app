@@ -58,6 +58,7 @@ export interface SelectOption {
 }
 export function Profile({ navigation }: any) {
   const dispatch = useDispatch();
+  const showChangeRequest ='Y';
   const salutationOptions: SelectOption[] = [
     { label: "Mr", value: "Mr" }, { label: "Mrs", value: "Mrs"}
   ];
@@ -78,39 +79,35 @@ export function Profile({ navigation }: any) {
   const [dropDownOpen, setDropDownOpen] = useState(false);
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const [helpTopicOpen, setHelpTopicOpen] = useState(false);
+  const [openListForSalutation, setOpenListForSalutation] = useState<boolean>(false);
+  const [selectedSalutation, setSelectedSalutation] = useState(null);
+  const [openListForSourceOfWealth, setOpenListForSourceOfWealth] = useState<boolean>(false);
+  const [selectedSourceOfWealth, setSelectedSourceOfWealth] = useState(null);
+
   const loadingUserProfileData = useSelector(
     (state: RootState) => state.profile.profile.loading
   );
 
-  const showChangeRequest ='Y';
-
-  // const [open, setOpen] = useState(false);
   const [selectedTicketType, setSelectedTicketType] = useState(null);
-
 
   useEffect(() => {
     dispatch<any>(getProfile());
-
-//set biometric checkbox setting
+    //set biometric checkbox setting
     // console.log("*******biometricSetting********",biometricSetting);
-        if(biometricSetting=='Y') 
-            {
-              setIsBiometricEnabled(true);
-            } 
-        else {
-              setIsBiometricEnabled(false);
-          }
-
- //set emailAlerts checkbox setting
-      // console.log("*******profileData********",profileData.UserProfile.EnableAlertsYN);
-          if(profileData.UserProfile.EnableAlertsYN =='Y') 
-          {
-            setIsEnabled(true);
-          } 
-          else {
-            setIsEnabled(false);
-          }
-
+    if(biometricSetting=='Y') {
+      setIsBiometricEnabled(true);
+      }
+    else {
+      setIsBiometricEnabled(false);
+    }
+  //set emailAlerts checkbox setting
+  // console.log("*******profileData********",profileData.UserProfile.EnableAlertsYN);
+    if(profileData.UserProfile.EnableAlertsYN =='Y') {
+      setIsEnabled(true);
+    } 
+    else {
+      setIsEnabled(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -202,7 +199,13 @@ export function Profile({ navigation }: any) {
                   console.log({ values });
                 }}
               >
-                {({ handleBlur, handleChange, values, errors }) => (
+                {({
+                  handleBlur,
+                  handleChange,
+                  values,
+                  errors,
+                  setValues
+                }) => (
                   <View style={styles.tabContent}>
                     <View style={styles.row}>
                       <View style={{ flex: 0.3 }}>
@@ -217,17 +220,26 @@ export function Profile({ navigation }: any) {
                         </FormGroup>
                       </View>
                       <View style={{ flex: 0.7 }}>
-                        <FormGroup validationError={errors.salutation}>
-                          <FormGroup.Select
-                            icon={<StatusIcon color={undefined} />}
-                            onChangeText={handleChange("salutation")}
-                            onBlur={handleBlur("salutation")}
-                            value={values.salutation}
+                        <DropDownPicker
+                            schema={{label: 'label', value: 'value'}}
+                            onSelectItem={(value: any) => {
+                              const { value: salutationValue } = value;
+                              setValues({
+                                ...values,
+                                salutation: salutationValue
+                              })
+                              }
+                            }
+                            listMode="SCROLLVIEW"
+                            setValue={setSelectedSalutation}
                             items={salutationOptions}
-                            selectedValue={values.salutation}
-                            placeholder="Salutation"
+                            value={values.salutation}
+                            setOpen={setOpenListForSalutation}
+                            open={openListForSalutation}
+                            style={styles.dropdown}
+                            dropDownContainerStyle={styles.dropdownContainer}
+                            dropDownDirection="TOP"
                           />
-                        </FormGroup>
                       </View>
                     </View>
                     <View style={{ flex: 0.7 }}>
@@ -264,14 +276,25 @@ export function Profile({ navigation }: any) {
                       />
                     </FormGroup>
                     <FormGroup validationError={errors.source_of_wealth}>
-                      <FormGroup.Select
-                        icon={<PigIcon />}
-                        onChangeText={handleChange("source_of_wealth")}
-                        onBlur={handleBlur("source_of_wealth")}
-                        value={values.source_of_wealth}
-                        placeholder="Source of wealth"
+                    <DropDownPicker
+                        schema={{label: 'label', value: 'value'}}
+                        onSelectItem={(value: any) => {
+                          const { value: sourceOfWealthValue} = value;
+                            setValues({
+                              ...values,
+                              source_of_wealth: sourceOfWealthValue
+                            })
+                          }
+                        }
+                        listMode="SCROLLVIEW"
+                        setValue={(value: any) => setSelectedSourceOfWealth(value)}
                         items={sourceOfWelth}
-                        selectedValue={values.source_of_wealth}
+                        value={values.source_of_wealth}
+                        setOpen={setOpenListForSourceOfWealth}
+                        open={openListForSourceOfWealth}
+                        style={styles.dropdown}
+                        dropDownContainerStyle={styles.dropdownContainer}
+                        dropDownDirection="TOP"
                       />
                     </FormGroup>
                     <View style={{ flexDirection: "row", paddingLeft: 12 }}>

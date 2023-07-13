@@ -22,6 +22,7 @@ import Spinner from "react-native-loading-spinner-overlay/lib";
 import { useState } from "react";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from "react-native-dropdown-picker";
+import LoadingScreen from "../../components/Loader/LoadingScreen";
 
 const searchOptions = [
   { label: "BIC", value: 'bic' },
@@ -47,6 +48,7 @@ export function Transactions({ navigation}: any) {
   const [ openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const [searchText, setSearchText] = useState("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const loadingTransactions = useSelector((state:RootState) => state.transaction.loading)
 
@@ -54,6 +56,7 @@ export function Transactions({ navigation}: any) {
 
   const fetchTransactions = async () => {
     try {
+      setIsLoading(true);
       let search:any;
           search= {     
           account_id: userData?.id,
@@ -65,15 +68,24 @@ export function Transactions({ navigation}: any) {
       if (userData) await dispatch<any>(getTransactions(search));
     } catch (error) {
       console.log({ error });
+    } finally {
+      setIsLoading(false);
     }
   };
 
 //added by Aristos
 const fetchTransactionsWithFilters = async (value :any) => {
   try {
-    if (userData) await dispatch<any>(getTransactionsWithFilters(value));
+    setIsLoading(true);
+    if (userData) {
+      await dispatch<any>(getTransactionsWithFilters(value))
+      .unwrap()
+      .then((data: any) => console.log(data));      
+    }
   } catch (error) {
     console.log({ error });
+  } finally {
+    setIsLoading(false);
   }
 };
 
@@ -374,6 +386,7 @@ const onChangeShowPickerDateTo = (event:any) => {
           })}
           </View>
         </View>
+        <LoadingScreen isLoading={isLoading} />
       </ScrollView>
     </MainLayout>
   );

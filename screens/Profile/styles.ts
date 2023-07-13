@@ -101,6 +101,7 @@ export const styles:any = StyleSheet.create<any>({
     height: "100%",
     color: "#000"
   },
+  /*
   dropdown: {
     // borderRadius: 999,
     borderWidth: 1,
@@ -120,8 +121,7 @@ export const styles:any = StyleSheet.create<any>({
     justifyContent: "space-between",
     paddingLeft: 12,
     paddingRight: 12,
-        
-  },
+  }, */
   txtArea: {
     // marginTop:90,
     width: "95%",
@@ -135,22 +135,41 @@ export const styles:any = StyleSheet.create<any>({
                // for stacking the element under the above previous element.
     elevation: -1,
   },
-box: {
+  box: {
+      borderWidth: 4,
+      borderColor: 'rgba(0,0,0,0.2)',
+      height: 48,
+      width: 48,
+      borderRadius: 8,
+  },
+  overlay: {
     borderWidth: 4,
-    borderColor: 'rgba(0,0,0,0.2)',
-    height: 48,
-    width: 48,
-    borderRadius: 8,
-},
-overlay: {
-  borderWidth: 4,
-    borderColor: 'rgba(0,0,0,0.2)',
-    height: 48,
-    width: 48,
-    borderRadius: 8,
-    zIndex: -1, // 1 for stacking the element on top of the previous element and -1 
-                // for stacking the element under the above previous element.
-    elevation: -1,
-}
-  
+      borderColor: 'rgba(0,0,0,0.2)',
+      height: 48,
+      width: 48,
+      borderRadius: 8,
+      zIndex: -1, // 1 for stacking the element on top of the previous element and -1 
+                  // for stacking the element under the above previous element.
+      elevation: -1,
+  },
+  dropdown: {
+    height: 42,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 999,
+    display: "flex",
+    flexDirection: "row",
+    paddingLeft: 12,
+    width: "95%",
+    alignSelf: "center",
+    borderColor: "transparent",
+    marginBottom: 18,
+    zIndex: 100
+  },
+  dropdownContainer: {
+    width: "95%",
+    alignSelf: "center",
+    backgroundColor: "#f9f9f9",
+    borderColor: "transparent",
+    zIndex: 100
+  },
 });

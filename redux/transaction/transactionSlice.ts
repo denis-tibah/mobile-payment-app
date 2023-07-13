@@ -3,7 +3,6 @@ import { api } from "../../api";
 import { Transaction } from "../../models/Transactions";
 import { UserData, SearchFilter } from "../../models/UserData";
 
-
 export interface TransactionState {
   data: Transaction[];
   search: Transaction[];

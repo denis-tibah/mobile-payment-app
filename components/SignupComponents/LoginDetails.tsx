@@ -1,5 +1,5 @@
 import { useState, FC, useEffect } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Platform } from "react-native";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import * as Linking from "expo-linking";
@@ -26,24 +26,20 @@ import { registerForPushNotificationsRegistrationAsync } from "../PushNotificati
 
 interface ILoginDetails {
   handleNextStep: () => void;
-  
 }
 
-const LoginDetails: FC<ILoginDetails> = ({ handleNextStep}) => {
+const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isValidEmail, setIsValidEmail] = useState<boolean>(false);
   const [isChangeEmail, setIsChangeEmail] = useState<boolean>(false);
   const [expoPushToken, setExpoPushToken] = useState<string>();
 
-// console.log('has it been verified ', handleNextStep);
-
+  // console.log('has it been verified ', handleNextStep);
 
   const [registerError, setRegisterError] = useState({
     email: "",
   });
-  const [emailToken, setEmailToken] = useState<string>(
-    "4dda55e6-aaed-4d13-8ede-e36b2f5c86a8"
-  );
+  const [emailToken, setEmailToken] = useState<string>("");
 
   const dispatch = useDispatch<AppDispatch>();
   const registration = useSelector((state: any) => state.registration);
@@ -78,12 +74,9 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep}) => {
     };
   }, []);
 
-
   useEffect(() => {
     console.log("expotoken is ", expoPushToken);
-}, [expoPushToken]);
-
-
+  }, [expoPushToken]);
 
   const { handleSubmit, handleChange, values, touched, errors, handleBlur } =
     useFormik({
@@ -95,57 +88,51 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep}) => {
       },
       validationSchema: loginCredentialsSchema,
       onSubmit: ({ email, alternateEmail, phoneNumber, countryCode }) => {
-        
         // console.log("hit here 1 emailToken ", emailToken);
 
         // if (emailToken) {
-          setIsLoading(true);
-              //added by Aristos
-                //generate expo token
-                registerForPushNotificationsRegistrationAsync(alternateEmail ? alternateEmail : email, '').then(
-                  (token:any) => { 
-                    setExpoPushToken(token),
-                    console.log("hit here", token); 
-                    dispatch(
-                      setLoginCredentials({
-                        email: alternateEmail ? alternateEmail : email,
-                        phone_number: `${countryCode}${phoneNumber}`,
-                        mobile: true,
-                        expoToken: token,
-          
-                      })
-                    )
-                      .unwrap()
-                      .then((payload: any) => {
-                      //We need to ask Santiago to chanage response message to generic one or an id value
-                        if ((payload === "activation email sent") || (payload === "new activation email sent")) {
-                          setIsValidEmail(true);
+        setIsLoading(true);
+        //added by Aristos
+        //generate expo token
+        registerForPushNotificationsRegistrationAsync(
+          alternateEmail ? alternateEmail : email,
+          ""
+        ).then((token: any) => {
+          setExpoPushToken(token), console.log("hit here", token);
+          dispatch(
+            setLoginCredentials({
+              email: alternateEmail ? alternateEmail : email,
+              phone_number: `${countryCode}${phoneNumber}`,
+              mobile: true,
+              expoToken: token,
+            })
+          )
+            .unwrap()
+            .then((payload: any) => {
+              //We need to ask Santiago to chanage response message to generic one or an id value
+              if (
+                payload === "activation email sent" ||
+                payload === "new activation email sent"
+              ) {
+                setIsValidEmail(true);
 
-                          console.log('payload ',payload);
-          
-                        }
-                        setIsLoading(false);
-                      })
-                      .catch((error: any) => {
-                        if (error) {
-                          console.log("🚀 ~ file: LoginDetails.tsx:108 ~ error:", error);
-                          setRegisterError({
-                            ...registerError,
-                            email: "Email already exists",
-                          });
-                        }
-                        setIsLoading(false);
-                      });
-                  
-                  }
-                
-                
-                
-                    );
+                console.log("payload ", payload);
+              }
+              setIsLoading(false);
+            })
+            .catch((error: any) => {
+              if (error) {
+                console.log("🚀 ~ file: LoginDetails.tsx:108 ~ error:", error);
+                setRegisterError({
+                  ...registerError,
+                  email: "Email already exists",
+                });
+              }
+              setIsLoading(false);
+            });
+        });
 
-        
-
-       if (emailToken) {
+        if (emailToken) {
           dispatch(
             setRegistrationData({
               email: alternateEmail ? alternateEmail : email,
@@ -167,12 +154,10 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep}) => {
           })
         );
 
-      
         // handleNextStep();
       },
-      
     });
-
+  console.log("🚀 ~ file: LoginDetails.tsx:82 ~ values:", values);
   return (
     <View style={styles.card}>
       <View style={styles.cardTitle}>
@@ -204,11 +189,12 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep}) => {
                 errors.countryCode && touched.countryCode && errors.countryCode
               }
             >
-              <FormGroup.Select
+              <FormGroup.SelectForArrOfObject
                 onValueChange={handleChange("countryCode")}
                 onBlur={handleBlur("countryCode")}
                 selectedValue={values?.countryCode}
                 icon={<MapIcon />}
+                itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
               >
                 {registrationPhonePrefix.map((item) => {
                   if (!item?.label && !item?.value) {
@@ -222,13 +208,13 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep}) => {
                   }
                   return (
                     <FormGroup.Option
-                      key={item?.label}
+                      key={item?.value}
                       label={item?.label}
                       value={item?.value}
                     />
                   );
                 })}
-              </FormGroup.Select>
+              </FormGroup.SelectForArrOfObject>
             </FormGroup>
           </View>
           <View>

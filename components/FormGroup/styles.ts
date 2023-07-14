@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 import vars from "../../styles/vars";
 export const textarea: any = StyleSheet.create({
   wrapper: {
@@ -16,8 +16,8 @@ export const textarea: any = StyleSheet.create({
     paddingBottom: 12,
     paddingLeft: 18,
     paddingRight: 18,
-    textAlignVertical: 'top',
-    fontSize: 16
+    textAlignVertical: "top",
+    fontSize: 16,
   },
 });
 
@@ -33,6 +33,28 @@ export const input: any = StyleSheet.create({
     justifyContent: "space-between",
     paddingLeft: 12,
     paddingRight: 12,
+  },
+  wrapperSelectForObjectData: {
+    width: "100%",
+    height: 48,
+    ...Platform.select({
+      ios: {
+        backgroundColor: "transparent",
+      },
+      android: {
+        backgroundColor: "#f9f9f9",
+        paddingLeft: 12,
+        paddingRight: 30,
+      },
+    }),
+    borderRadius: 999,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  wrapperIOS: {
+    overflow: "hidden",
   },
   input: {
     width: "100%",

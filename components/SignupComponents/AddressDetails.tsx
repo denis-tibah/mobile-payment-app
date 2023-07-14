@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, Platform } from "react-native";
 import { useFormik } from "formik";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -321,7 +321,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                 errors.country && touched.country && errors.country
               }
             >
-              <FormGroup.Select
+              <FormGroup.SelectForArrOfObject
                 onValueChange={handleChange("country")}
                 onBlur={handleBlur("country")}
                 selectedValue={
@@ -331,6 +331,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                     : null
                 }
                 icon={<MapIcon />}
+                itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
               >
                 {countries.map((item, index) => {
                   if (index === 0) {
@@ -350,7 +351,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                     />
                   );
                 })}
-              </FormGroup.Select>
+              </FormGroup.SelectForArrOfObject>
             </FormGroup>
           </View>
           <View style={styles.textSeparatorContainer}>
@@ -364,11 +365,12 @@ const AddressDetails: FC<IAddressDetails> = ({
                 errors.noOfMonths && touched.noOfMonths && errors.noOfMonths
               }
             >
-              <FormGroup.Select
+              <FormGroup.SelectForArrOfObject
                 onValueChange={handleChange("noOfMonths")}
                 onBlur={handleBlur("noOfMonths")}
                 selectedValue={values?.noOfMonths || ""}
                 icon={<CalenderIcon />}
+                itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
               >
                 {noOfMonths.map((item) => {
                   if (!item) {
@@ -384,7 +386,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                     <FormGroup.Option key={item} label={item} value={item} />
                   );
                 })}
-              </FormGroup.Select>
+              </FormGroup.SelectForArrOfObject>
             </FormGroup>
           </View>
           <View>
@@ -393,11 +395,12 @@ const AddressDetails: FC<IAddressDetails> = ({
                 errors.noOfYears && touched.noOfYears && errors.noOfYears
               }
             >
-              <FormGroup.Select
+              <FormGroup.SelectForArrOfObject
                 onValueChange={handleChange("noOfYears")}
                 onBlur={handleBlur("noOfYears")}
                 selectedValue={values?.noOfYears}
                 icon={<CalenderIcon />}
+                itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
               >
                 {noOfYears.map((item) => {
                   if (!item) {
@@ -413,7 +416,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                     <FormGroup.Option key={item} label={item} value={item} />
                   );
                 })}
-              </FormGroup.Select>
+              </FormGroup.SelectForArrOfObject>
             </FormGroup>
           </View>
           {isYearsRequiredForAdditionalField({
@@ -538,7 +541,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                       errors.additionalCountry
                     }
                   >
-                    <FormGroup.Select
+                    <FormGroup.SelectForArrOfObject
                       onValueChange={handleChange("additionalCountry")}
                       onBlur={handleBlur("additionalCountry")}
                       selectedValue={
@@ -550,6 +553,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                           : null
                       }
                       icon={<MapIcon />}
+                      itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
                     >
                       {countries.map((item, index) => {
                         if (index === 0) {
@@ -569,7 +573,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                           />
                         );
                       })}
-                    </FormGroup.Select>
+                    </FormGroup.SelectForArrOfObject>
                   </FormGroup>
                 </View>
                 <View>
@@ -580,11 +584,12 @@ const AddressDetails: FC<IAddressDetails> = ({
                       errors.additionalNoofmonths
                     }
                   >
-                    <FormGroup.Select
+                    <FormGroup.SelectForArrOfObject
                       onValueChange={handleChange("additionalNoofmonths")}
                       onBlur={handleBlur("additionalNoofmonths")}
                       selectedValue={values?.additionalNoofmonths || ""}
                       icon={<CalenderIcon />}
+                      itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
                     >
                       {noOfMonths.map((item) => {
                         if (!item) {
@@ -604,7 +609,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                           />
                         );
                       })}
-                    </FormGroup.Select>
+                    </FormGroup.SelectForArrOfObject>
                   </FormGroup>
                 </View>
                 <View>
@@ -615,11 +620,12 @@ const AddressDetails: FC<IAddressDetails> = ({
                       errors.additionalNoofyears
                     }
                   >
-                    <FormGroup.Select
+                    <FormGroup.SelectForArrOfObject
                       onValueChange={handleChange("additionalNoofyears")}
                       onBlur={handleBlur("additionalNoofyears")}
                       selectedValue={values?.additionalNoofyears}
                       icon={<CalenderIcon />}
+                      itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
                     >
                       {noOfYears.map((item) => {
                         if (!item) {
@@ -639,7 +645,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                           />
                         );
                       })}
-                    </FormGroup.Select>
+                    </FormGroup.SelectForArrOfObject>
                   </FormGroup>
                 </View>
               </View>

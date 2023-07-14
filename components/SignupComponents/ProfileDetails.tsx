@@ -1,7 +1,7 @@
 import { FC, Fragment, useState } from "react";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { View, Text, Button, TouchableOpacity } from "react-native";
+import { View, Text, Button, TouchableOpacity, Platform } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 import SalutationIcon from "../../assets/icons/Salutation";
@@ -140,11 +140,12 @@ const ProfileDetails: FC<IProfileDetails> = ({
                 errors.salutation && touched.salutation && errors.salutation
               }
             >
-              <FormGroup.Select
+              <FormGroup.SelectForArrOfObject
                 onValueChange={handleChange("salutation")}
                 onBlur={handleBlur("salutation")}
                 selectedValue={values?.salutation}
                 icon={<SalutationIcon />}
+                itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
               >
                 {salutations.map((item) => {
                   if (!item?.label && !item?.value) {
@@ -164,7 +165,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                     />
                   );
                 })}
-              </FormGroup.Select>
+              </FormGroup.SelectForArrOfObject>
             </FormGroup>
           </View>
           <View>
@@ -248,7 +249,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                 errors.countryOfBirth
               }
             >
-              <FormGroup.Select
+              <FormGroup.SelectForArrOfObject
                 onValueChange={handleChange("countryOfBirth")}
                 onBlur={handleBlur("countryOfBirth")}
                 selectedValue={
@@ -260,6 +261,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                     : null
                 }
                 icon={<ProfileIcon />}
+                itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
               >
                 {countries.map((item) => {
                   return (
@@ -270,7 +272,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                     />
                   );
                 })}
-              </FormGroup.Select>
+              </FormGroup.SelectForArrOfObject>
             </FormGroup>
           </View>
           <View>
@@ -279,7 +281,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                 errors.nationality && touched.nationality && errors.nationality
               }
             >
-              <FormGroup.Select
+              <FormGroup.SelectForArrOfObject
                 onValueChange={handleChange("nationality")}
                 onBlur={handleBlur("nationality")}
                 selectedValue={
@@ -291,6 +293,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                     : null
                 }
                 icon={<ProfileIcon />}
+                itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
               >
                 {nationalities.map((item, index) => {
                   if (index === 0) {
@@ -310,7 +313,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                     />
                   );
                 })}
-              </FormGroup.Select>
+              </FormGroup.SelectForArrOfObject>
             </FormGroup>
           </View>
           <FixedBottomAction rounded>

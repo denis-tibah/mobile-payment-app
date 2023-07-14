@@ -73,6 +73,7 @@ export function Payment({ navigation }: any) {
   } = useSelector((state: any) => state.payment.initiatePaymentData);
   const loading = useSelector((state: any) => state.beneficiary.loading)
 
+
   useEffect(() => {
     if (!beneficiaryList.length) {
       fetchAllPayees();
@@ -380,7 +381,8 @@ export function Payment({ navigation }: any) {
                         infoData?.currency
                       )} ${
                         (
-                          (Number(infoData?.curbal) || 0)
+                          ( Number(infoData?.curbal.replace(/[^0-9.-]+/g,"")) || 0 ) 
+                          // (Number(infoData?.curbal) || 0)
                         ).toLocaleString("en-US", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,

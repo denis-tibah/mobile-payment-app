@@ -87,7 +87,7 @@ export function TextArea({ ...props }) {
   );
 }
 
-export function Select({ 
+export function Select({
   children,
   placeholder,
   items = [],
@@ -97,7 +97,7 @@ export function Select({
   iconColor = "medium-grey",
   iconSize = 16,
   ...props
-}: any ) {
+}: any) {
   const [selectedItem, setSelectedItem] = useState(selectedValue);
   return (
     <View style={input.wrapper}>
@@ -106,32 +106,23 @@ export function Select({
           {cloneElement(icon, { color: iconColor, size: iconSize })}
         </View>
       )}
-      { items.length > 0 ? (
+      {items.length > 0 ? (
         <Picker
           style={input.input}
           selectedValue={selectedItem}
-          onValueChange={selected => setSelectedItem(selected)}
+          onValueChange={(selected) => setSelectedItem(selected)}
           itemStyle={{ backgroundColor: "grey", color: "#808080 !important" }}
         >
-        <Item
-          label={placeholder}
-          value=""
-          style={{color: "#808080"}}
-        />
-        { items.map((item: any, index: number) =>
-            <Item
-              key={index}
-              label={item.label}
-              value={item.value}
-            />
-          )
-          }
+          <Item label={placeholder} value="" style={{ color: "#808080" }} />
+          {items.map((item: any, index: number) => (
+            <Item key={index} label={item.label} value={item.value} />
+          ))}
         </Picker>
-      ) :
-      <Picker style={input.input} {...props}>
-        {children}
-      </Picker>
-      }
+      ) : (
+        <Picker style={input.input} {...props}>
+          {children}
+        </Picker>
+      )}
     </View>
   );
 }
@@ -229,9 +220,31 @@ export const PinCodeInputBoxes = ({
   );
 };
 
+export function SelectForArrOfObject({
+  children,
+  icon,
+  iconColor = "medium-grey",
+  iconSize = 16,
+  ...props
+}: any) {
+  return (
+    <View style={input.wrapperSelectForObjectData}>
+      {icon && Platform.OS !== "ios" && (
+        <View style={input.icon}>
+          {cloneElement(icon, { color: iconColor, size: iconSize })}
+        </View>
+      )}
+      <Picker style={input.input} {...props}>
+        {children}
+      </Picker>
+    </View>
+  );
+}
+
 FormGroup.Input = Input;
 FormGroup.Label = Label;
 FormGroup.TextArea = TextArea;
 FormGroup.Select = Select;
 FormGroup.Option = Option;
 FormGroup.Password = Password;
+FormGroup.SelectForArrOfObject = SelectForArrOfObject;

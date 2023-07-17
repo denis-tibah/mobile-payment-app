@@ -53,7 +53,6 @@ export function Transactions({ navigation}: any) {
   const [isMobileFilterShown, setIsMobileFilterShown] = useState<boolean>(false);
   const debounceIsMobileFilterShown = useDebounce<boolean>(isMobileFilterShown, 500);
   const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState(null);
-  const [date, setDate] = useState(new Date());
   const [openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const [searchText, setSearchText] = useState("");
@@ -61,7 +60,6 @@ export function Transactions({ navigation}: any) {
   const [searchFieldData, setSearchFieldData] = useState<SearchFields>(initialSearchFieldData);
   const [showPickerDateTo, setShowPickerDateTo] = useState(false);
   const [showPickerDateFrom, setShowPickerDateFrom] = useState(false);
-  const debounceShowPickerDateFrom = useDebounce<boolean>(showPickerDateFrom, 500);
   const [dateTo, setDateTo] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const loadingTransactions = useSelector((state:RootState) => state.transaction.loading)

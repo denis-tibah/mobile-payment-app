@@ -22,6 +22,7 @@
     "@react-navigation/native-stack": "^6.9.12",
     "@react-navigation/stack": "^6.3.16",
     "@reduxjs/toolkit": "^1.9.3",
+    "@types/lodash": "^4.14.195",
     "@types/node": "^20.1.2",
     "@types/react-native": "^0.72.2",
     "@types/react-native-snap-carousel": "^3.8.5",
@@ -68,6 +69,7 @@
     "redux": "^4.2.1",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.4.2",
+    "usehooks-ts": "^2.9.1",
     "yup": "^1.2.0"
   },
   "devDependencies": {

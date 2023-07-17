@@ -8,3 +8,8 @@ export const getTodaysDate = () => {
   const day = today.getDate() < 10 ? `0${today.getDate()}` : today.getDate();
   return `${year}-${month}-${day}`;
 };
+
+export const dateFormatter = (date: Date) => {
+  const dateFormatted = new Date(date).toISOString().split('T')[0];
+  return dateFormatted;
+}

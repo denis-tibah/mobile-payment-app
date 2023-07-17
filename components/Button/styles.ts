@@ -98,7 +98,7 @@ export const styles: any = StyleSheet.create({
 
   // only text - black
   "black-only": {
-    backgroundColor: 'none',
+    backgroundColor: 'aliceblue',
   },
   "text-black-only": {
     color: "#000000"

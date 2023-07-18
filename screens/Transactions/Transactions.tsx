@@ -45,10 +45,6 @@ export function Transactions({ navigation}: any) {
     (state: RootState) => state?.transaction?.data
   );
 
-  const transactionsFiltered = useSelector(
-    (state: RootState) => state?.transaction?.search
-  );
-
   const [isMobileFilterShown, setIsMobileFilterShown] = useState<boolean>(false);
   const debounceIsMobileFilterShown = useDebounce<boolean>(isMobileFilterShown, 500);
   const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState(null);
@@ -62,7 +58,6 @@ export function Transactions({ navigation}: any) {
   const [dateTo, setDateTo] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const loadingTransactions = useSelector((state:RootState) => state.transaction.loading)
-
 
   const clearFilter = () => {
     setDateFrom("");

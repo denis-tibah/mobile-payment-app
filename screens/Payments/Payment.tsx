@@ -231,7 +231,8 @@ export function Payment({ navigation }: any) {
             recipientLastname: "",
             creditor_iban: "",
             bic: "",
-            balance: infoData?.curbal || 0,
+            balance: infoData?.avlbal || 0,
+            // balance: infoData?.curbal || 0,
             amount: 0,
             currency: "EUR",
             reason: "",
@@ -381,7 +382,8 @@ export function Payment({ navigation }: any) {
                         infoData?.currency
                       )} ${
                         (
-                          ( Number(infoData?.curbal.replace(/[^0-9.-]+/g,"")) || 0 ) 
+                          ( Number(infoData?.avlbal.replace(/[^0-9.-]+/g,"")) || 0 ) 
+                          // ( Number(infoData?.curbal.replace(/[^0-9.-]+/g,"")) || 0 ) 
                           // (Number(infoData?.curbal) || 0)
                         ).toLocaleString("en-US", {
                           minimumFractionDigits: 2,

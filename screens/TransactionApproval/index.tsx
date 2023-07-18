@@ -23,9 +23,9 @@ export default function TransactionApprovalScreen({
 
   const handleTransactionResponse = async (id:any,ref:any,status: any) => {
     try {
-      const responsePayload = { id:id, reference:ref, status:status };
+      const responsePayload = { id:id, ref:ref, status:status };
 
-      await api.post("/transactionResponse", responsePayload);
+      await api.post("/authorizationNotificationFinXP", responsePayload);
     } catch (error) {
       console.error(error);
     } finally {
@@ -41,7 +41,7 @@ export default function TransactionApprovalScreen({
         <View style={styles.buttonContainer}>
           <Button
             color="light-pink"
-            onPress={() => handleTransactionResponse(transactionDetails.id,transactionDetails.ref,"reject")}
+            onPress={() => handleTransactionResponse(Number(transactionDetails.transactionId),transactionDetails.ref,false)}
           >
             Decline
           </Button>
@@ -62,7 +62,7 @@ export default function TransactionApprovalScreen({
         )}
         <Button
           color={"green"}
-          onPress={() => handleTransactionResponse(transactionDetails.transactionId,transactionDetails.ref,"approve")}
+          onPress={() => handleTransactionResponse(Number(transactionDetails.transactionId),transactionDetails.ref,true)}
         >
           <Text style={styles.buttonText}>Approve</Text>
         </Button>

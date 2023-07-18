@@ -77,6 +77,7 @@ export function Card({ navigation }: any) {
           type: "PREAUTH",
         })
       );
+      // console.log("do we have any cards", cardData);
       if (userData) await dispatch<any>(getAccountDetails(userData.id));
     } catch (error) {
       console.log({ error });

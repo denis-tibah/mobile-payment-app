@@ -60,6 +60,8 @@ export const signin = createAsyncThunk(
       });
 
       const { message } = data;
+      console.log("login in resp credentials", values)
+      console.log("login in resp", data)
 
       if (data.code === 401 || !data)
         return rejectWithValue("Invalid email or password");

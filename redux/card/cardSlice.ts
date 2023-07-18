@@ -33,6 +33,20 @@ export const cardSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+
+    //enroll for card scheme
+      builder.addCase(enrollforCardScheme.pending, (state) => {
+        state.loading = true;
+      });
+      builder.addCase(enrollforCardScheme.fulfilled, (state, action) => {
+        state.data = action.payload;
+        state.loading = false;
+      });
+      builder.addCase(enrollforCardScheme.rejected, (state, _) => {
+        state.error = true;
+        state.loading = false;
+      });
+
     // get cards
     builder.addCase(getCards.pending, (state) => {
       state.loading = true;
@@ -88,6 +102,11 @@ export const cardSlice = createSlice({
       state.error = true;
     });
   },
+});
+
+export const enrollforCardScheme = createAsyncThunk("enrollforCardScheme", async (params: any) => {
+  const { data } = await api.post("/showcardregistrationfinxpV2", params);
+  return data;
 });
 
 export const orderCard = createAsyncThunk("orderCard", async (params: any) => {

@@ -21,7 +21,6 @@ import { Seperator } from "../../components/Seperator/Seperator";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { useState } from "react";
 import DateTimePicker from '@react-native-community/datetimepicker';
-// import DropDownPicker from "react-native-dropdown-picker";
 import DropDownPicker from 'react-native-dropdown-picker';
 import LoadingScreen from "../../components/Loader/LoadingScreen";
 import { dateFormatter } from "../../utils/dates";
@@ -70,6 +69,7 @@ export function Transactions({ navigation}: any) {
     setDateTo("");
     setCurrentSelectedSearchField(null);
     setSearchText("");
+    fetchTransactions();
   }
 
   const fetchTransactions = async () => {

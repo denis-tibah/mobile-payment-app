@@ -28,14 +28,13 @@ import { useEffect, useRef, useState } from "react";
 import { RootState } from "../store";
 import { AppState } from "react-native";
 import { signout } from "../redux/auth/authSlice";
-import * as SecureStore from 'expo-secure-store'
+import * as SecureStore from "expo-secure-store";
 
 // import * as TaskManager from 'expo-task-manager';
 
 const Tab = createBottomTabNavigator();
 const Root = createNativeStackNavigator();
 const Payee = createStackNavigator();
-
 
 // const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
 
@@ -48,7 +47,7 @@ const Payee = createStackNavigator();
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: false,
+    shouldShowAlert: true,
     shouldPlaySound: false,
     shouldSetBadge: false,
   }),
@@ -89,21 +88,23 @@ export default function AppNavigationWrapper() {
   const userData = useSelector((state: RootState) => state.auth.userData);
   const [lastNotification, setLastNotification] = useState("");
   const navigation: any = useNavigation();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [showApproval, setShowApproval] = useState({ show: false, data: {} });
-  const [showReceivedPayment, setShowReceivedPayment] = useState({ show: false, data: {} });
-  const [showEmailVerified, setShowEmailVerified] = useState({ show: false, data: {} });
+  const [showReceivedPayment, setShowReceivedPayment] = useState({
+    show: false,
+    data: {},
+  });
+  const [showEmailVerified, setShowEmailVerified] = useState({
+    show: false,
+    data: {},
+  });
 
-  const appState = useRef(AppState.currentState)
+  const appState = useRef(AppState.currentState);
 
   const [expoPushToken, setExpoPushToken] = useState<string>();
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
   const [selectedNavIndex, setNavIndex] = useState<number>(1);
-
-  const handleNextStep = (): void => {
-    setNavIndex((prevStep) => prevStep + 1);
-  };
 
   //register token hen app opens
   // useEffect(() => {
@@ -142,7 +143,8 @@ export default function AppNavigationWrapper() {
   const handlePushNotification = (notification: any) => {
     if (notification?.request?.identifier === lastNotification) return;
     const transactionDetails = notification?.request?.content?.data;
-    const emailverificationDetails = notification?.request?.trigger?.remoteMessage?.data;
+    const emailverificationDetails =
+      notification?.request?.trigger?.remoteMessage?.data;
 
     if (transactionDetails.requestType === "TransactionApproval") {
       setLastNotification(notification?.request?.identifier);
@@ -172,8 +174,8 @@ export default function AppNavigationWrapper() {
     }
 
     if (transactionDetails.requestType === "EmailVerified") {
-      // console.log("hit EmailVerified ", emailverificationDetails);
-  
+      console.log("hit EmailVerified ", emailverificationDetails);
+
       setLastNotification(notification?.request?.identifier);
 
       setShowEmailVerified({
@@ -184,34 +186,38 @@ export default function AppNavigationWrapper() {
       //   emailverificationDetails,
       //   userId: userData?.id,
       // });
- 
     }
-  
   };
-  
 
   const isBiometric = async () => {
-    const email = await SecureStore.getItemAsync('email')
-    const password = await SecureStore.getItemAsync('password')
+    const email = await SecureStore.getItemAsync("email");
+    const password = await SecureStore.getItemAsync("password");
     if (email && password) {
-      return true
+      return true;
     }
-    return false
-  }
+    return false;
+  };
 
   useEffect(() => {
-    const handleChange = AppState.addEventListener('change', async (nextAppState) => {
-      const isBiometricAuth = await isBiometric()
-      if (appState.current.match(/background|inactive/) && nextAppState === 'active' && isBiometricAuth) {
-        dispatch(signout())
+    const handleChange = AppState.addEventListener(
+      "change",
+      async (nextAppState) => {
+        const isBiometricAuth = await isBiometric();
+        if (
+          appState.current.match(/background|inactive/) &&
+          nextAppState === "active" &&
+          isBiometricAuth
+        ) {
+          dispatch(signout());
+        }
+        console.log(nextAppState, "CURRENT");
+        appState.current = nextAppState;
       }
-      console.log(nextAppState, "CURRENT")
-      appState.current = nextAppState
-    })
+    );
     return () => {
-      handleChange.remove()
-    }
-  },[])
+      handleChange.remove();
+    };
+  }, []);
 
   return (
     <>
@@ -229,9 +235,7 @@ export default function AppNavigationWrapper() {
         isOpen={showEmailVerified?.show}
         data={showEmailVerified?.data}
         setShowEmailVerified={setShowEmailVerified}
-        handleNextStep= {handleNextStep}
       />
-
 
       <Root.Navigator
         screenOptions={{
@@ -267,12 +271,12 @@ export default function AppNavigationWrapper() {
               name={screenNames.approve}
               component={TransactionApprovalScreen}
             />
-             <Root.Screen
+            <Root.Screen
               options={{ headerShown: false }}
               name={screenNames.receivedPayment}
               component={PaymentReceivedScreen}
             />
-             <Root.Screen
+            <Root.Screen
               options={{ headerShown: false }}
               name={screenNames.emailVerified}
               component={EmailVerifiedScreen}
@@ -294,7 +298,12 @@ export default function AppNavigationWrapper() {
                 headerShown: false,
               }}
             />
-             
+            {/* to text emailVerified component*/}
+            <Root.Screen
+              options={{ headerShown: false }}
+              name={screenNames.emailVerified}
+              component={EmailVerifiedScreen}
+            />
           </>
         )}
       </Root.Navigator>

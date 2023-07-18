@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import {
   Keyboard,
   Pressable,
@@ -37,7 +37,7 @@ import TermsAndSecurity from "../../components/SignupComponents/TermsAndSecurity
 import Verifications from "../../components/SignupComponents/Verifications";
 import EmailVerifiedScreen from "../EmailVerifiedMessage";
 
-export function SignupScreen({ navigation }: any) {
+export function SignupScreen({ navigation, route }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const { navigate }: any = useNavigation();
   const [selectedNavIndex, setNavIndex] = useState<number>(0);
@@ -57,6 +57,12 @@ export function SignupScreen({ navigation }: any) {
   const handlePrevStep = (): void => {
     setNavIndex((prevStep) => prevStep - 1);
   };
+  // to navigate on profile details after user has been verified
+  useEffect(() => {
+    if (route?.params?.stepIndex === 1) {
+      setNavIndex(route?.params?.stepIndex);
+    }
+  }, [route?.params]);
 
   const steps = [
     <LoginDetails handleNextStep={handleNextStep} />,

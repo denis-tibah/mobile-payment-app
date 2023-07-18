@@ -32,4 +32,17 @@ export const styles:any = StyleSheet.create<any>({
     backgroundColor: "#f9f9f9",
     borderColor: "transparent",
   },
+  externalPayment__switch: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingBottom:5,
+    // paddingTop: -10,
+  },
+  externalPayment__switch__text: {
+    flexDirection: "row",
+    gap:8,
+    alignItems: "center",
+  },
 });

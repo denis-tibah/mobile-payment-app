@@ -7,24 +7,29 @@ export function formatAmountTableValue(amount: any = "", currency = "") {
   if (!amount || !currency) return;
 
   return Number.parseFloat(amount).toFixed(2);
-
 }
 
 export function formatAmountTableValue_old(amount: any = "", currency = "") {
   if (!amount || !currency) return;
   // if (!amount.split(".")[1]) return
-  
+
   // console.log('***amount****',amount);
 
   // if the amount is a whole number, for example, "+10"
   if (!amount.split(".")[1]) {
     if (amount > 0) {
-      console.log('Positive number amount.slice(1)',amount)
-       console.log('Postive Decimal number amount',Number.parseFloat(amount).toFixed(2));
+      console.log("Positive number amount.slice(1)", amount);
+      console.log(
+        "Postive Decimal number amount",
+        Number.parseFloat(amount).toFixed(2)
+      );
       // return `${amount.slice(1)}`;
       return `${amount}`;
     } else {
-      console.log('Negative Whole number amount.slice(0, 1)',Number.parseFloat(amount).toFixed(2));
+      console.log(
+        "Negative Whole number amount.slice(0, 1)",
+        Number.parseFloat(amount).toFixed(2)
+      );
       return `${amount.slice(0, 1)} ${amount.slice(1)}`;
     }
   }
@@ -84,16 +89,30 @@ export const screenNames: any = {
   addPayee: "Add Payee",
   approve: "Approve",
   signup: "signup",
-  receivedPayment:"receivedPayment",
+  receivedPayment: "receivedPayment",
   emailVerified: "emailVerified",
-  profileDetails:' profileDetails',
+  profileDetails: " profileDetails",
 };
 
-export function getFormattedDate(dateToFormat:any)
-{
+export function getFormattedDate(dateToFormat: any) {
   const date = new Date(dateToFormat); // Create a new Date object with the current date and time
 
-  const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+  const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(
+    date.getMonth() + 1
+  )
+    .toString()
+    .padStart(2, "0")}/${date.getFullYear()}`;
 
   return formattedDate;
 }
+
+export const formatCurrencyToLocalEn = (currency: string) => {
+  const trimString = currency.replace(/[^0-9.-]+/g, "");
+  if (trimString) {
+    return parseFloat(trimString).toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
+  return 0.0;
+};

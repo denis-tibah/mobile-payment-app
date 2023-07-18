@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { View, ScrollView, TouchableOpacity } from "react-native";
-
+import { useDebounce } from 'usehooks-ts'
 import { useDispatch, useSelector } from "react-redux";
 import { Ionicons } from '@expo/vector-icons'; 
 import FormGroup from "../../components/FormGroup";
@@ -12,7 +12,7 @@ import Button from "../../components/Button";
 import Typography from "../../components/Typography";
 import TransactionIcon from "../../assets/icons/Transaction";
 import SearchIcon from "../../assets/icons/Search";
-import { getTransactions,getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
+import { SearchFields, getTransactions,getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
 import { generatePDF } from "../../utils/files";
 import { printAsync } from "expo-print";
 import { RootState } from "../../store";
@@ -21,38 +21,51 @@ import { Seperator } from "../../components/Seperator/Seperator";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { useState } from "react";
 import DateTimePicker from '@react-native-community/datetimepicker';
-import DropDownPicker from "react-native-dropdown-picker";
+import DropDownPicker from 'react-native-dropdown-picker';
 import LoadingScreen from "../../components/Loader/LoadingScreen";
+import { dateFormatter } from "../../utils/dates";
 
 const searchOptions = [
-  { label: "BIC", value: 'bic' },
-  { label: "ReferenceNo", value: 'reference_no' },
-  { label: "IBAN", value: 'iban' },
+  // { label: "BIC", value: 'bic' },
+  // { label: "ReferenceNo", value: 'reference_no' },
+  // { label: "IBAN", value: 'iban' },
   { label: "Maximum amount", value: 'max_amount' },
   { label: "Status", value: 'status' },
 ];
 
+const currentDate = new Date();
+const initialSearchFieldData: SearchFields = {
+  account_id: 0,
+  sort:  "id",
+};
+
 export function Transactions({ navigation}: any) {
+  const dispatch = useDispatch();
   const transactions = useSelector(
     (state: RootState) => state?.transaction?.data
   );
 
-  const transactionsFiltered = useSelector(
-    (state: RootState) => state?.transaction?.search
-  );
-
-  const [onStartup, setOnStartup] = useState('true');
-  const [isMobileFilterShown, setIsMobileFilterShown] = useState(false);
+  const [isMobileFilterShown, setIsMobileFilterShown] = useState<boolean>(false);
+  const debounceIsMobileFilterShown = useDebounce<boolean>(isMobileFilterShown, 500);
   const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState(null);
-  const [date, setDate] = useState(new Date());
-  const [ openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
+  const [openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const [searchText, setSearchText] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const [searchFieldData, setSearchFieldData] = useState<SearchFields>(initialSearchFieldData);
+  const [showPickerDateTo, setShowPickerDateTo] = useState(false);
+  const [showPickerDateFrom, setShowPickerDateFrom] = useState(false);
+  const [dateTo, setDateTo] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
   const loadingTransactions = useSelector((state:RootState) => state.transaction.loading)
 
-  const dispatch = useDispatch();
+  const clearFilter = () => {
+    setDateFrom("");
+    setDateTo("");
+    setCurrentSelectedSearchField(null);
+    setSearchText("");
+    fetchTransactions();
+  }
 
   const fetchTransactions = async () => {
     try {
@@ -64,7 +77,6 @@ export function Transactions({ navigation}: any) {
           direction: "desc",
           status: "PROCESSING"
       }
-
       if (userData) await dispatch<any>(getTransactions(search));
     } catch (error) {
       console.log({ error });
@@ -73,90 +85,69 @@ export function Transactions({ navigation}: any) {
     }
   };
 
-//added by Aristos
-const fetchTransactionsWithFilters = async (value :any) => {
-  try {
-    setIsLoading(true);
-    if (userData) {
-      await dispatch<any>(getTransactionsWithFilters(value));      
+  //added by Aristos
+  const fetchTransactionsWithFilters = async (value :any) => {
+    try {
+      setIsLoading(true);
+      if (userData) {
+        await dispatch<any>(getTransactionsWithFilters(value));      
+      }
+    } catch (error) {
+      console.log("Error", error);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.log({ error });
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
-  useEffect(() => {
-    setOnStartup('true');
-    fetchTransactions();
-  }, []);
-
-  const [showPickerDateTo, setShowPickerDateTo] = useState(false);
-  const [showPickerDateFrom, setShowPickerDateFrom] = useState(false);
-
-  const [dateTo, setDateTo] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
   const containsOnlyNumbers = (str: any) => {
     return /^\d+$/.test(str);
   }
-const togglePickerDateTo = () =>{
-  setShowPickerDateTo(!showPickerDateTo);
-}
 
-const togglePickerDateFrom = () =>{
-  setShowPickerDateFrom(!showPickerDateFrom);
-}
+  const filterFromToDate = (fromDate: string, toDate: string) => {
+    const userId = userData?.id;
+    if (fromDate && toDate && userId) {
+      const search: SearchFields = {
+        ...searchFieldData,
+        account_id: userId,
+        ...(fromDate && { from_date: fromDate }),
+        ...(toDate && { to_date: toDate }),
+        sort: 'id',
+        direction: 'desc'
+      };
+      setSearchFieldData(search);
+      fetchTransactionsWithFilters(search);
+    }
+  }
 
-const onChangeShowPickerDateTo = (event:any) => {
-  if(event.type == "set") {
-    const formattedDate = new Date(event.nativeEvent.timestamp).toISOString().split('T')[0];
-    setDateTo(formattedDate);
-    if (dateFrom && dateTo) {
-      if (dateFrom > dateTo) {
+  const onChangeShowPickerDateTo = (event:any) => {
+    if(event.type == "set") {
+      const formattedToDate = new Date(event.nativeEvent.timestamp).toISOString().split('T')[0];
+      setDateTo(formattedToDate);
+      const fromDate = new Date(dateFrom);
+      const toDate = new Date(dateTo);
+      setShowPickerDateTo(false);
+      if (fromDate > toDate) {
         alert("Date from should be before or same with Date to");
         return;
       } else {
-        let search:any;
-        if (userData?.id) {
-          search = {   
-            account_id: userData.id,
-            from_date: dateFrom,
-            to_date: dateTo,
-            status: "PROCESSING",
-          }
-          fetchTransactionsWithFilters(search);
-          // setOnStartup('false');
-        } else {
-          alert("Try relogging in.");
-        }
+        filterFromToDate(dateFrom, formattedToDate);
       }
     }
-    togglePickerDateTo();
   }
-}
 
   const onChangeShowPickerDateFrom = (event:any) => {
     if(event.type == "set"){
-      const formattedDate = new Date(event.nativeEvent.timestamp).toISOString().split('T')[0];
-      setDateFrom(formattedDate);
-      if (dateFrom && dateTo) {
-        if (dateFrom > dateTo) {
-          alert("Date from should be before or same with Date to");
-          return;
-        } else {
-          let search:any;
-          search = {   
-            account_id: userData?.id,
-            from_date: dateFrom,
-            to_date: dateTo,
-            status: "PROCESSING",
-          }
-          fetchTransactionsWithFilters(search);
-          // setOnStartup('false');
-        }
+      const formattedFromDate = new Date(event.nativeEvent.timestamp).toISOString().split('T')[0];
+      setDateFrom(formattedFromDate);
+      const fromDate = new Date(dateFrom);
+      const toDate = new Date(dateTo);
+      setShowPickerDateFrom(false);
+      if (fromDate > toDate) {
+        alert("Date from should be before or same with Date to");
+        return;
+      } else {
+        filterFromToDate(formattedFromDate, dateTo);
       }
-      togglePickerDateFrom();
     }
   }
 
@@ -165,83 +156,47 @@ const onChangeShowPickerDateTo = (event:any) => {
     await printAsync({ uri: pdfUri });
   };
 
-  const handleDateChange = (event: any, selectedDate: any) => {
-    const currentDate = selectedDate || date;
-    setDate(currentDate);
-    // Perform any other logic with the selected date/time
-  };
   const handleOnSubmitEditing = (event: any) => {
     const isNumberOnly = containsOnlyNumbers(searchText);
-    let search:any;
-    if (!currentSelectedSearchField && !isNumberOnly) {
-      search = {   
-        account_id: userData?.id,
-        name: searchText,
-        sort: "name",
-        direction: "desc"
-      }
+    const userId = userData?.id;
+    if (!userId) {
+      return;
     }
-
-    if (!currentSelectedSearchField && isNumberOnly) {
-      search = {   
-        account_id: userData?.id,
-        min_amount: searchText,
-        sort: "min_amount",
-        direction: "desc"
-      }
+    const { from_date, to_date } = searchFieldData;
+    const _searchFieldData: SearchFields = {
+      ...(!currentSelectedSearchField && !isNumberOnly && {name: searchText}),
+      ...(!currentSelectedSearchField && isNumberOnly && {min_amount: Number(searchText)}),
+      ...(currentSelectedSearchField === 'bic' && {bic: searchText}),
+      ...(currentSelectedSearchField === 'status' && {status: searchText}),
+      ...(currentSelectedSearchField === 'reference_no' && {reference_no : Number(searchText)}),
+      ...(currentSelectedSearchField === 'min_amount'&& {min_amount: Number(searchText)}),
+      ...(currentSelectedSearchField === 'iban' && {iban: searchText}),
+      ...(currentSelectedSearchField === 'max_amount' && {max_amount: Number(searchText)}),
+      sort: "id",
+      direction: 'desc',
+      account_id: userId,
+      ...(from_date && {from_date}),
+      ...(to_date && {to_date}),
     }
-
-    if (currentSelectedSearchField === "bic") {
-      search = {   
-        account_id: userData?.id,
-        bic: searchText,
-        sort: "bic",
-      }
-    }
-
-    if (currentSelectedSearchField === "status") {
-      search = {   
-        account_id: userData?.id,
-        status: searchText,
-        sort: "status",
-      }
-      
-    }
-
-    if (currentSelectedSearchField === "reference_no") {
-      search = {   
-        account_id: userData?.id,
-        reference_no: Number(searchText),
-        sort: "reference_no",
-      }
-    }
-
-    if (currentSelectedSearchField === "min_amount") {
-      search = {   
-        account_id: userData?.id,
-        min_amount: searchText,
-        sort: "min_amount",
-      }
-    }
-
-    if (currentSelectedSearchField === "iban") {
-      search = {   
-        account_id: userData?.id,
-        iban: searchText,
-        sort: "iban",
-      }
-    }
-
-    if (currentSelectedSearchField === "max_amount") {
-      search = {   
-        account_id: userData?.id,
-        max_amount: Number(searchText),
-        sort: "max_amount",
-      }
-    }
-    fetchTransactionsWithFilters(search);
-    setOnStartup('false');
+    setSearchFieldData(_searchFieldData);
+    fetchTransactionsWithFilters({
+      ..._searchFieldData,
+    });
   };
+
+  useEffect(() => {
+    if (!isMobileFilterShown) {
+      clearFilter();
+    }
+  },[isMobileFilterShown])
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  useEffect(() => {
+    return () => clearFilter();
+  },[]);
 
   return (
     <MainLayout navigation={navigation}>
@@ -281,10 +236,10 @@ const onChangeShowPickerDateTo = (event:any) => {
           />
           <View>
             <TouchableOpacity
-              onPress={(event: any) => setIsMobileFilterShown(!isMobileFilterShown)} 
+              onPress={() => setIsMobileFilterShown(!isMobileFilterShown)}
             >
               <Ionicons
-                name="filter-sharp" 
+                name="filter-sharp"
                 size={32}
                 color="#ff28b9"
                 iconStyle={{marginTop: 180, color: "#FFC0CB"}}
@@ -293,7 +248,7 @@ const onChangeShowPickerDateTo = (event:any) => {
             </TouchableOpacity>
           </View>
         </View>
-        { isMobileFilterShown && (
+        { debounceIsMobileFilterShown && (
           <View style={{
             backgroundColor: 'white',
             display: 'flex',
@@ -302,7 +257,7 @@ const onChangeShowPickerDateTo = (event:any) => {
           }}>
             <View style={{
                 flex: 1,
-                minWidth: 80
+                minWidth: 72
               }}
             >
               <DropDownPicker
@@ -323,40 +278,45 @@ const onChangeShowPickerDateTo = (event:any) => {
               }}
             >
               <Button
-                style={{width: 110, backgroundColor: "grey"}}
+                style={{width: 110, backgroundColor: "gey", marginTop: 10, lineHeight: 25}}
                 color="black-only"
-                onPress={togglePickerDateFrom}
+                onPress={() => setShowPickerDateFrom(true)}
               >
-                { !dateFrom ? `From Date`: dateFrom }
+                { !dateFrom ? `From Date`: `${dateFrom}` }
               </Button>
-              {showPickerDateFrom && (
+              { showPickerDateFrom && (
                 <DateTimePicker
-                mode="date"
-                display="spinner"
-                value={date}
-                onChange={onChangeShowPickerDateFrom}
-              />
+                  mode="date"
+                  display="spinner"
+                  maximumDate={new Date()}
+                  value={!dateFrom ? currentDate : new Date(dateFrom)}
+                  onChange={onChangeShowPickerDateFrom}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row'
+                  }}
+                />
               )}
             </View>
             <View style={{
                 flex: 1
               }}
-            >
-              <Button
-                style={{width: 110, backgroundColor: "grey"}}
-                color="black-only"
-                onPress={togglePickerDateTo}
               >
-                { !dateTo ? `To Date` : dateTo }
-              </Button>
-              {showPickerDateTo && (
-                <DateTimePicker
-                mode="date"
-                display="spinner"
-                value={date}
-                onChange={onChangeShowPickerDateTo}
-              />
-              )}
+                <Button
+                  style={{width: 110, backgroundColor: "grey", marginTop: 10, lineHeight: 25}}
+                  color="black-only"
+                  onPress={() => setShowPickerDateTo(true)}
+                >
+                  { !dateTo ? `To Date` : `${dateTo}` }
+                </Button>
+                {showPickerDateTo && (
+                  <DateTimePicker
+                    mode="date"
+                    display="spinner"
+                    value={!dateTo ? currentDate : new Date(dateTo)}
+                    onChange={onChangeShowPickerDateTo}
+                  />
+                )}
             </View>
           </View>
           )
@@ -371,11 +331,11 @@ const onChangeShowPickerDateTo = (event:any) => {
             <Typography></Typography>
           </View>
           <Seperator backgroundColor={vars['grey']} />
-          <View>{transactions?.map((transaction, index) => {
-            return(
+          <View>{ transactions ? transactions?.map((transaction, index) => {
+            return (
               <TransactionItem data={transaction} key={index} />
             )
-          })}
+          }) : null }
           </View>
         </View>
         <LoadingScreen isLoading={isLoading} />

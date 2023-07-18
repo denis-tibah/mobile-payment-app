@@ -511,10 +511,11 @@ export function Profile({ navigation }: any) {
                         editable={false}
                         placeholder={
                           "€" +
-                          settings?.daily?.limit_reached +
+                          settings?.daily?.limit_reached
+                           +
                           "/" +
-                          "€" +
-                          settings.daily.limit
+                          "€" 
+                          + settings?.daily?.limit
                         }
                       />
                     </FormGroup>
@@ -524,10 +525,11 @@ export function Profile({ navigation }: any) {
                         editable={false}
                         placeholder={
                           "€" +
-                          settings?.weekly?.limit_reached +
+                          settings?.weekly?.limit_reached 
+                          +
                           "/" +
-                          "€" +
-                          settings.weekly.limit
+                          "€" 
+                          + settings?.weekly?.limit
                         }
                       />
                     </FormGroup>
@@ -537,10 +539,11 @@ export function Profile({ navigation }: any) {
                         editable={false}
                         placeholder={
                           "€" +
-                          settings?.monthly?.limit_reached +
+                          settings?.monthly?.limit_reached
+                           +
                           "/" +
-                          "€" +
-                          settings.monthly.limit
+                          "€" 
+                          + settings?.monthly?.limit
                         }
                       />
                     </FormGroup>

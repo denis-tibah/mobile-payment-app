@@ -1,7 +1,11 @@
-import { View, ScrollView } from "react-native";
-// import CheckBox from '@react-native-community/checkbox'; commented this 3 lines for now. currently testing --- 
+import { View, ScrollView,Switch } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import DropDownPicker from "react-native-dropdown-picker";
+// import { Checkbox } from "react-native-paper";
+// import CheckBox from '@react-native-community/checkbox'; commented this 3 lines for now. currently testing ---
 // import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 // import CheckBoxIcon from '@mui/icons-material/CheckBox';
+
 import Heading from "../../components/Heading";
 import { MainLayout } from "../../layout/Main/Main";
 import FormGroup from "../../components/FormGroup";
@@ -24,22 +28,24 @@ import {
   sendSmsPaymentVerification,
   setInitiatePaymentData,
 } from "../../redux/payment/paymentSlice";
-import DropDownPicker from "react-native-dropdown-picker";
+
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { delayCode } from "../../utils/delay";
-import { addNewBeneficiary, getAllBeneficiary } from "../../redux/beneficiary/beneficiarySlice";
+import {
+  addNewBeneficiary,
+  getAllBeneficiary,
+} from "../../redux/beneficiary/beneficiarySlice";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
 import { RootState } from "../../store";
 import { getTransactions } from "../../redux/transaction/transactionSlice";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { SearchFilter, UserData } from "../../models/UserData";
-import Typography from "../../components/Typography";
 import { Text } from "react-native-paper";
 import { validationPaymentSchema } from "../../utils/validation";
-// import { Checkbox } from "react-native-paper";
-
-
+import { formatCurrencyToLocalEn } from "../../utils/helpers";
+import PaymentsIcon from "../../assets/icons/PaymentsIcon";
+import { screenNames } from "../../utils/helpers";
 
 export function Payment({ navigation }: any) {
   const infoData = useSelector((state: any) => state.account.details);
@@ -70,9 +76,14 @@ export function Payment({ navigation }: any) {
     recipientLastname,
     bic,
     savePayee,
+    type,
   } = useSelector((state: any) => state.payment.initiatePaymentData);
-  const loading = useSelector((state: any) => state.beneficiary.loading)
 
+  const loading = useSelector((state: any) => state.beneficiary.loading);
+
+  const [isExternalPayment, setIsExternalPayment] = useState(false);
+  const [externalPayment, setExternalPayment] = useState('');
+  const { navigate }: any = useNavigation();
 
   useEffect(() => {
     if (!beneficiaryList.length) {
@@ -131,11 +142,11 @@ export function Payment({ navigation }: any) {
   const fetchTransactions = async () => {
     try {
       // const {account_id, sort, direction, status}: UserData = userData!;
-      const {id}: UserData = userData!;
+      const { id }: UserData = userData!;
       const sort = "id";
-      const direction = "desc" ;
-      const status= "PROCESSING";
-          
+      const direction = "desc";
+      const status = "PROCESSING";
+
       // console.log('get latest transactions account_id, sort, direction, status ',id, ' ', sort, ' ', direction, ' ', status);
       // console.log('get latest transactions',userData);
 
@@ -146,17 +157,37 @@ export function Payment({ navigation }: any) {
           // direction:  direction,
           // status:     status
           account_id: id,
-          sort:       sort,
-          direction:  direction,
-          status:     status
+          sort: sort,
+          direction: direction,
+          status: status,
         };
         await dispatch<any>(getTransactions(searchFilter));
-        
       }
     } catch (error) {
       console.log({ error });
     }
   };
+
+  function gotoLimitsPage() {
+    // console.log('go to limist page');
+    navigation.navigate("profile");
+  }
+
+    //Enable or Disable if its external payment
+  function toggleExternalPayment(value: boolean) {
+
+    setIsExternalPayment(value);
+    // console.log(value,externalPayment);
+  }
+
+  useEffect(() => {
+    if (isExternalPayment) {
+      setExternalPayment('SEPACT');
+    } else {
+      setExternalPayment('');
+    }
+  }, [isExternalPayment]);
+
 
   const handleSubmitOTP = async ({ code }: { code: string }) => {
     await handleProccessPayment({ code });
@@ -178,6 +209,7 @@ export function Payment({ navigation }: any) {
           currency,
           remarks: `${reason}, ${remarks}`,
           account,
+          type,
         }) as any
       )
         .unwrap()
@@ -202,25 +234,19 @@ export function Payment({ navigation }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      <Spinner
-        visible={loading}
-      />
+      <Spinner visible={loading} />
       <ScrollView bounces={false}>
         <View style={styles.container}>
           <Heading
             icon={<EuroIcon color="pink" size={25} />}
             title="Payment"
-            rightAction={(
-              <Button
-              color="black-only"
-              withLine={true}
-                >
+            rightAction={
+              <Button color="black-only" withLine={true}>
                 Save this payee
-
                 {/* <CheckBox /> */}
                 {/* <CheckBoxOutlineBlankIcon /> */}
               </Button>
-            )}
+            }
           />
         </View>
         <Formik
@@ -238,6 +264,7 @@ export function Payment({ navigation }: any) {
             reason: "",
           }}
           onSubmit={(values) => {
+            // console.log('initiate payment type ',externalPayment);
             dispatch(
               initiatePayment({
                 recipientFirstname: getFirstAndLastName(values.recipientname)
@@ -251,6 +278,7 @@ export function Payment({ navigation }: any) {
                 amount: values.amount,
                 currency: "EUR",
                 reason: values.reason,
+                type: externalPayment
               }) as any
             )
               .unwrap()
@@ -274,6 +302,7 @@ export function Payment({ navigation }: any) {
                         reason: values.reason,
                         transactionId: payload.transaction_id,
                         savePayee,
+                        type: payload.type,
                       })
                     );
                     dispatch(
@@ -326,24 +355,24 @@ export function Payment({ navigation }: any) {
                 />
               )}
               <View style={{ zIndex: 1 }}>
-                  <DropDownPicker
-                    placeholder="Payee name"
-                    style={styles.dropdown}
-                    open={open}
-                    value={selectedPayee}
-                    items={beneficiaryOptions}
-                    setOpen={setOpen}
-                    setValue={setSelectedPayee}
-                    onChangeValue={(v) => handleSelectPayee(v, values, setValues)}
-                    listMode="SCROLLVIEW"
-                    dropDownContainerStyle={styles.dropdownContainer}
-                    zIndex={100}
-                  />
-                  <Seperator
-                    backgroundColor={vars['light-grey']}
-                    marginBottom={18}  
-                    zIndex={-1}
-                  />
+                <DropDownPicker
+                  placeholder="Payee name"
+                  style={styles.dropdown}
+                  open={open}
+                  value={selectedPayee}
+                  items={beneficiaryOptions}
+                  setOpen={setOpen}
+                  setValue={setSelectedPayee}
+                  onChangeValue={(v) => handleSelectPayee(v, values, setValues)}
+                  listMode="SCROLLVIEW"
+                  dropDownContainerStyle={styles.dropdownContainer}
+                  zIndex={100}
+                />
+                <Seperator
+                  backgroundColor={vars["light-grey"]}
+                  marginBottom={18}
+                  zIndex={-1}
+                />
               </View>
               {/* <View>
                 <FormGroup validationError={errors.recipientname}>
@@ -374,21 +403,20 @@ export function Payment({ navigation }: any) {
               </View>
               <View>
                 <FormGroup>
-                  <View style={{display: 'flex', flexDirection: 'row'}}>
-                    <Text style={{color: "#808080", lineHeight: 36}}> Available balance: </Text>
+                  <View style={{ display: "flex", flexDirection: "row" }}>
+                    <Text style={{ color: "#808080", lineHeight: 36 }}>
+                      {" "}
+                      Available balance:{" "}
+                    </Text>
                     <FormGroup.Input
                       editable={false}
-                      value={`${getCurrency(
-                        infoData?.currency
-                      )} ${
-                        (
-                          ( Number(infoData?.avlbal.replace(/[^0-9.-]+/g,"")) || 0 ) 
-                          // ( Number(infoData?.curbal.replace(/[^0-9.-]+/g,"")) || 0 ) 
+                      value={`${getCurrency(infoData?.currency)} ${
+                        (formatCurrencyToLocalEn(infoData?.avlbal) || 0)
                           // (Number(infoData?.curbal) || 0)
-                        ).toLocaleString("en-US", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        }) || 0
+                          .toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }) || 0
                       }`}
                       def
                       icon={<EuroIcon />}
@@ -423,7 +451,7 @@ export function Payment({ navigation }: any) {
                 </FormGroup>
                 <Seperator
                   marginBottom={18}
-                  backgroundColor={vars['light-grey']}
+                  backgroundColor={vars["light-grey"]}
                 />
               </View>
               <View>
@@ -438,12 +466,25 @@ export function Payment({ navigation }: any) {
                   />
                 </FormGroup>
               </View>
-              <View style={{display: 'flex', flexDirection: 'row'}}>
-                <Button
-                    color="blue-only"
-                    withLine={true}
-                  >
-                    VIEW CURRENT LIMIT
+              <View style={styles.externalPayment__switch}>
+                    <View style={styles.externalPayment__switch__text}>
+                      <PaymentsIcon  color="blue" size={18} />
+                      <Text>External Payment Y/N</Text>
+                    </View>
+                    <View style={{ marginLeft: "auto" }}>
+                      <Switch
+                        trackColor={{ false: "#767577", true: "#81b0ff" }}
+                        thumbColor={isExternalPayment ? "white" : vars["light-blue"]}
+                        ios_backgroundColor="#3e3e3e"
+                        onValueChange={(e) => toggleExternalPayment(e)}
+                        value={isExternalPayment}
+                      />
+                  </View>
+               </View>
+
+              <View style={{ display: "flex", flexDirection: "row" }}>
+                <Button color="blue-only" withLine={true}  onPress={gotoLimitsPage} >
+                  VIEW CURRENT LIMIT
                 </Button>
               </View>
               <FixedBottomAction>

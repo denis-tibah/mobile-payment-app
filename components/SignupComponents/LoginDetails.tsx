@@ -2,6 +2,8 @@ import { useState, FC, useEffect } from "react";
 import { View, Text, TouchableOpacity, Platform } from "react-native";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
+import { Button as Btn } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import * as Linking from "expo-linking";
 
 import { registrationPhonePrefix } from "../../data/options";
@@ -29,6 +31,7 @@ interface ILoginDetails {
 }
 
 const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
+  const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isValidEmail, setIsValidEmail] = useState<boolean>(false);
   const [isChangeEmail, setIsChangeEmail] = useState<boolean>(false);
@@ -157,7 +160,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
         // handleNextStep();
       },
     });
-  console.log("🚀 ~ file: LoginDetails.tsx:82 ~ values:", values);
+
   return (
     <View style={styles.card}>
       <View style={styles.cardTitle}>
@@ -309,6 +312,12 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
             >
               {isLoading ? "Authenticating..." : "Continue"}
             </Button>
+            {/* <Btn
+              onPress={() => {
+                navigation.navigate("emailVerified");
+              }}
+              title="notif"
+            /> */}
           </FixedBottomAction>
         </View>
       </View>

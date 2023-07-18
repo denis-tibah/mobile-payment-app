@@ -1,67 +1,45 @@
 import { useNavigation } from "@react-navigation/native";
-import React,{useEffect,useState} from "react";
+import React, { useEffect, useState } from "react";
 
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { screenNames } from "../../utils/helpers";
-import { api } from "../../api";
 import { Modal } from "../../components/Modal/Modal";
 import Button from "../../components/Button";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store";
-import { getTransactions } from "../../redux/transaction/transactionSlice";
 
 export default function EmailVerifiedScreen({
-  
   isOpen,
   data,
   setShowEmailVerified,
-  handleNextStep
 }: any) {
-  // const {
-  //   emailverification= {
-  //     title: "",
-  //     message: "",
-  //   },
-  //   userId = "",
-  // } = data || {};
-
   const { navigate }: any = useNavigation();
-  const dispatch = useDispatch();
-  const userData = useSelector((state: RootState) => state?.auth?.userData);
+  const [isOpenModal, setOpenModal] = useState<Boolean>(false);
 
-  const closePopup= async () => {
-    setShowEmailVerified({ show: false, data: {} });
-    
-    //Add natbigation route to next step to registration process
-    console.log('go to next step ', data.emailverificationDetails?.message);
-    navigate(screenNames.signup, 
-      {
-        handleNextStep: handleNextStep
-      }
-      );
-    
-  }
+  useEffect(() => {
+    if (isOpen) {
+      setOpenModal(true);
+    }
+    /* setOpenModal(true); */
+  }, []);
+
+  const closePopup = async () => {
+    //Add navigation route to next step to registration process
+    /* setShowEmailVerified({ show: false, data: {} });*/
+    navigate(screenNames.signup, {
+      stepIndex: 1,
+    });
+    setOpenModal(false);
+  };
 
   return (
     <Modal
-      isOpen={isOpen}
-      // footer={
-      //   <View style={styles.buttonContainer}>
-      //   </View>
-      // }
+      isOpen={isOpenModal}
       headerTitle={data?.emailverificationDetails?.title}
     >
       <View style={styles.container}>
-        
-          <View style={styles.transactionDetails}>
-            <Text>
-              {data?.emailverificationDetails?.message}
-            </Text>
-          </View>
-        <Button
-          color={"green"}
-          onPress={() => closePopup()}
-        >
+        <View style={styles.transactionDetails}>
+          <Text>{data?.emailverificationDetails?.message}</Text>
+        </View>
+        <Button color={"green"} onPress={() => closePopup()}>
           <Text style={styles.buttonText}>Next Step</Text>
         </Button>
       </View>

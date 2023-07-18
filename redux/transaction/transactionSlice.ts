@@ -19,6 +19,23 @@ const initialState: TransactionState = {
   errorMessage: undefined,
 };
 
+export interface SearchFields {
+  account_id: number | undefined;
+  sort: string;
+  name?: string;
+  from_date?: string;
+  to_date?: string;
+  direction?: string;
+  limit?: string;
+  page?: number;
+  min_amount?: number;
+  max_amount?: number
+  status?: string;
+  iban?: string;
+  reference_no?: number;
+  bic?: string;
+}
+
 export const transactionSlice = createSlice({
   name: "transaction",
   initialState,
@@ -86,10 +103,7 @@ export const getTransactions = createAsyncThunk<Transaction[], SearchFilter>(
         sort:       searchFilter.sort,
         direction:  searchFilter.direction,
         status:     searchFilter.status
-
       });
-
-      // console.log('data ',data);
       return fulfillWithValue(data);
     } catch (error) {
       console.log('error aristos ',error);

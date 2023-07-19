@@ -77,6 +77,12 @@ export const styles:any = StyleSheet.create<any>({
     justifyContent: 'space-between',
     paddingRight: 35,
   },
+  detailMobile: {
+    marginBottom: 12,
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap'
+  },
   nameDetailMobile: {
     color: "#086AFB",
     fontFamily: "Nunito-Regular",

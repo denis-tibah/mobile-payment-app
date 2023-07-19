@@ -5,7 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4b04fb15-24d0-4619-b7a8-864f736a93a0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/components/TransactionItem/TransactionItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/TransactionItem/TransactionItem.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/TransactionItem/styles.ts" beforeDir="false" afterPath="$PROJECT_DIR$/components/TransactionItem/styles.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/Transactions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/models/Transactions.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/Transactions/Transactions.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/screens/Transactions/Transactions.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/dates.ts" beforeDir="false" afterPath="$PROJECT_DIR$/utils/dates.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

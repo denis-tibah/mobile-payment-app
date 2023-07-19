@@ -41,6 +41,7 @@ export const noOfMonths = [
 export const noOfYears = [null, "1", "2", "3"];
 
 export const sourceOfWealth = [
+  null,
   { label: "Salary", value: "salary" },
   { label: "Dividend", value: "dividend" },
   { label: "Crypto", value: "crypto" },
@@ -52,6 +53,7 @@ export const paymentReasons = [
 ];
 
 export const employmentStatus = [
+  null,
   { label: "Employed", value: "employed" },
   { label: "Self Employed", value: "self_employed" },
   { label: "Unemployed", value: "unemployed" },

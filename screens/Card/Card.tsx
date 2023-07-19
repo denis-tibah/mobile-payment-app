@@ -386,15 +386,16 @@ export function Card({ navigation }: any) {
                       closing_balance: "",
                       running_balance: "",
                       currency: transaction.transactionCurrency,
-                      description: "",
+                      description: transaction.purposeDetailed,
                       iban: "",
                       opening_balance: "",
-                      reference_no: "",
+                      reference_no: transaction.authCardId,
                       service: "",
                       status: "",
-                      transaction_datetime: "",
+                      transaction_datetime: transaction.receiptDate,
                       transaction_id: 0,
                       transaction_uuid: "",
+                      isCardTx : true,
                     }}
                     key={index}
                   />

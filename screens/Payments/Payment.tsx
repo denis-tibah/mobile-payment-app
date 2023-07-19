@@ -209,7 +209,7 @@ export function Payment({ navigation }: any) {
           currency,
           remarks: `${reason}, ${remarks}`,
           account,
-          type,
+          type:  externalPayment,
         }) as any
       )
         .unwrap()
@@ -302,7 +302,7 @@ export function Payment({ navigation }: any) {
                         reason: values.reason,
                         transactionId: payload.transaction_id,
                         savePayee,
-                        type: payload.type,
+                        type:  externalPayment,
                       })
                     );
                     dispatch(

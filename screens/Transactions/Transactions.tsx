@@ -29,7 +29,9 @@ import ArrowDown from "../../assets/icons/ArrowDown";
 import { arrayChecker } from "../../utils/helper";
 import { Transaction, TransactionDetails } from "../../models/Transactions";
 import Pagination from "../../components/Pagination/Pagination";
-
+export interface GroupedByDateTransaction {
+  [date: string]: Transaction[];
+}
 const searchOptions = [
   // { label: "BIC", value: 'bic' },
   // { label: "ReferenceNo", value: 'reference_no' },
@@ -49,6 +51,8 @@ const initialSearchFieldData: SearchFilter = {
 
 export function Transactions({ navigation }: any) {
   const dispatch = useDispatch();
+  const loadingTransactions = useSelector((state:RootState) => state.transaction.loading)
+  const userData = useSelector((state: RootState) => state?.auth?.userData);
   const transactions = useSelector(
     (state: RootState) => state?.transaction?.data
   );
@@ -61,9 +65,9 @@ export function Transactions({ navigation }: any) {
 
   const [isStatusOptionSelected, setIsStatusOptionSelected] =
     useState<boolean>(false);
-  const userData = useSelector((state: RootState) => state?.auth?.userData);
   const [searchText, setSearchText] = useState<string>("");
   const debounceSearchText = useDebounce<string>(searchText, 300);
+  const [txData, setTxData] = useState<GroupedByDateTransaction>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchFieldData, setSearchFieldData] = useState<SearchFilter>(initialSearchFieldData);
   const [showPickerDateTo, setShowPickerDateTo] = useState(false);
@@ -116,7 +120,24 @@ export function Transactions({ navigation }: any) {
           setIsLoading(false);
         });
       }
-      setSearchFieldData(search);
+      if (userData) {
+        await dispatch<any>(getTransactions(search))
+        .unwrap()
+        .then((_transactions: Transaction[]) => {
+          const sanitizeDate = _transactions.map((tx: Transaction) => {
+            return {
+              ...tx,
+              transaction_datetime: dateFormatter(tx.transaction_datetime),
+            }
+          });
+          const groupedByDateTransactions = sanitizeDate.reduce((current: any, element) => {
+            (current[element.transaction_datetime] ??= []).push(element);
+            return current;
+          }, {});
+          setTxData(groupedByDateTransactions);
+          return _transactions;
+        });
+      }
     } catch (error) {
       console.log({ error });
       setIsLoading(false);
@@ -470,54 +491,37 @@ export function Transactions({ navigation }: any) {
         <View style={{ paddingBottom: 140 }}>
           <Seperator backgroundColor={vars["grey"]} />
           <View style={styles.listHead}>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold">
-              Name
-            </Typography>
-            <View style={{ display: "flex", flexDirection: "row" }}>
-              <Typography
-                fontSize={16}
-                fontFamily="Nunito-SemiBold"
-                color="accent-blue"
-              >
-                Date
-              </Typography>
-              <TouchableOpacity
-                onPress={() => {
-                  setIsLoading(true);
-                  handleSortByDate(!sortByDate);
-                  setSortByDate(!sortByDate);
-                }}
-              >
-                {sortByDate ? (
-                  <ArrowDown
-                    color="blue"
-                    style={{ marginTop: 5, marginLeft: 5 }}
-                  />
-                ) : (
-                  <AntDesign
-                    name="up"
-                    size={16}
-                    color="blue"
-                    style={{ marginTop: 5, marginLeft: 5 }}
-                  />
-                )}
-              </TouchableOpacity>
-            </View>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold">
-              Amount
-            </Typography>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold">
-              Balance
-            </Typography>
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Date</Typography>
+            {/* <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography> */}
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Total Amount</Typography>
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Balance</Typography>
             <Typography></Typography>
           </View>
           <Seperator backgroundColor={vars['grey']} />
           <View>
-            { _transactions ? _transactions?.map((transaction, index) => {
-            return (
-              <TransactionItem data={transaction} key={index} />
-            )
-          }) : null }
+          { txData ? Object.keys(txData).map( (date: string) => {
+            let _amount: number = 0;
+            const nameAndAmountList = txData[date].map((tx, index) => {
+              const { name, amount } = tx;
+              _amount = Number(_amount) + Number(amount);
+              return {
+                name,
+                amount,
+              }
+            });
+            const transactionData = {
+              ...(txData[date][0])
+            };
+            return <TransactionsByDate
+              key={txData[date][0].transaction_uuid}
+              groupedTransactions={transactionData}
+              nameAndAmount={nameAndAmountList}
+              totalAmount={_amount.toString()}
+            />
+          }) :
+            <>
+            </>
+          }
           </View>
           <Seperator backgroundColor={vars['grey']} />
           <View>

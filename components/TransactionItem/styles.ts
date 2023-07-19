@@ -49,23 +49,40 @@ export const styles:any = StyleSheet.create<any>({
     top: 0,
     right: 0,
   },
+  detailMobile: {
+    marginBottom: 12,
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap'
+  },
   nameDetailMobile: {
     color: "#086AFB",
     fontFamily: "Nunito-Regular",
     fontSize: 14,
+    paddingRight: 10,
   },
   valueDetailMobile: {
     color: "#000000",
     fontSize: 14,
+  },
+  amountDetailMobile: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    flex: 1,
+    alignSelf: 'flex-end'
+  },
+  amountAddedDetail: {
+    color: 'green'
+  },
+  amountDeductedDetail: {
+    color: 'red'
   },
   detailMobileWrapper: {},
   cardDetails: {
     paddingTop: 25,
     paddingBottom: 25,
   },
-  detailMobile: {
-    marginBottom: 12,
-  },
+
   downloadContainer: {
     marginTop: 24,
     flexDirection: "row",

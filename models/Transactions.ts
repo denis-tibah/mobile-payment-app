@@ -18,6 +18,7 @@ export interface Transaction {
   transaction_uuid: string;
   isCardTx:boolean;
   
+  total_amount?: string;
 }
 
 export interface CardTransaction {

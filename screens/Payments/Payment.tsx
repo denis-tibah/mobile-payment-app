@@ -1,4 +1,5 @@
-import { View, ScrollView } from "react-native";
+import { View, ScrollView,Switch } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import DropDownPicker from "react-native-dropdown-picker";
 // import { Checkbox } from "react-native-paper";
 // import CheckBox from '@react-native-community/checkbox'; commented this 3 lines for now. currently testing ---
@@ -43,6 +44,8 @@ import { SearchFilter, UserData } from "../../models/UserData";
 import { Text } from "react-native-paper";
 import { validationPaymentSchema } from "../../utils/validation";
 import { formatCurrencyToLocalEn } from "../../utils/helpers";
+import PaymentsIcon from "../../assets/icons/PaymentsIcon";
+import { screenNames } from "../../utils/helpers";
 
 export function Payment({ navigation }: any) {
   const infoData = useSelector((state: any) => state.account.details);
@@ -73,8 +76,14 @@ export function Payment({ navigation }: any) {
     recipientLastname,
     bic,
     savePayee,
+    type,
   } = useSelector((state: any) => state.payment.initiatePaymentData);
+
   const loading = useSelector((state: any) => state.beneficiary.loading);
+
+  const [isExternalPayment, setIsExternalPayment] = useState(false);
+  const [externalPayment, setExternalPayment] = useState('');
+  const { navigate }: any = useNavigation();
 
   useEffect(() => {
     if (!beneficiaryList.length) {
@@ -159,6 +168,27 @@ export function Payment({ navigation }: any) {
     }
   };
 
+  function gotoLimitsPage() {
+    // console.log('go to limist page');
+    navigation.navigate("profile");
+  }
+
+    //Enable or Disable if its external payment
+  function toggleExternalPayment(value: boolean) {
+
+    setIsExternalPayment(value);
+    // console.log(value,externalPayment);
+  }
+
+  useEffect(() => {
+    if (isExternalPayment) {
+      setExternalPayment('SEPACT');
+    } else {
+      setExternalPayment('');
+    }
+  }, [isExternalPayment]);
+
+
   const handleSubmitOTP = async ({ code }: { code: string }) => {
     await handleProccessPayment({ code });
     setDisplayModal(false);
@@ -179,6 +209,7 @@ export function Payment({ navigation }: any) {
           currency,
           remarks: `${reason}, ${remarks}`,
           account,
+          type:  externalPayment,
         }) as any
       )
         .unwrap()
@@ -226,12 +257,14 @@ export function Payment({ navigation }: any) {
             recipientLastname: "",
             creditor_iban: "",
             bic: "",
-            balance: infoData?.curbal || 0,
+            balance: infoData?.avlbal || 0,
+            // balance: infoData?.curbal || 0,
             amount: 0,
             currency: "EUR",
             reason: "",
           }}
           onSubmit={(values) => {
+            // console.log('initiate payment type ',externalPayment);
             dispatch(
               initiatePayment({
                 recipientFirstname: getFirstAndLastName(values.recipientname)
@@ -245,6 +278,7 @@ export function Payment({ navigation }: any) {
                 amount: values.amount,
                 currency: "EUR",
                 reason: values.reason,
+                type: externalPayment
               }) as any
             )
               .unwrap()
@@ -268,6 +302,7 @@ export function Payment({ navigation }: any) {
                         reason: values.reason,
                         transactionId: payload.transaction_id,
                         savePayee,
+                        type:  externalPayment,
                       })
                     );
                     dispatch(
@@ -431,8 +466,24 @@ export function Payment({ navigation }: any) {
                   />
                 </FormGroup>
               </View>
+              <View style={styles.externalPayment__switch}>
+                    <View style={styles.externalPayment__switch__text}>
+                      <PaymentsIcon  color="blue" size={18} />
+                      <Text>External Payment Y/N</Text>
+                    </View>
+                    <View style={{ marginLeft: "auto" }}>
+                      <Switch
+                        trackColor={{ false: "#767577", true: "#81b0ff" }}
+                        thumbColor={isExternalPayment ? "white" : vars["light-blue"]}
+                        ios_backgroundColor="#3e3e3e"
+                        onValueChange={(e) => toggleExternalPayment(e)}
+                        value={isExternalPayment}
+                      />
+                  </View>
+               </View>
+
               <View style={{ display: "flex", flexDirection: "row" }}>
-                <Button color="blue-only" withLine={true}>
+                <Button color="blue-only" withLine={true}  onPress={gotoLimitsPage} >
                   VIEW CURRENT LIMIT
                 </Button>
               </View>

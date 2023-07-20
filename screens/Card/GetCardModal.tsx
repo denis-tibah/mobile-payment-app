@@ -54,6 +54,7 @@ export const GetCardModal = ({
   const [openCurrency, setOpenCurrency] = useState(false);
 
   // console.log('******cardData**********',cardData[0].type);
+  // {console.log('do we have any cards',cardData?.type )}
   // console.log('******showChangeRequest**********',showChangeRequest);
 
   useEffect(() => {
@@ -211,29 +212,52 @@ export const GetCardModal = ({
                   zIndex={2}
                 /> */}
 
-      {/* only show card thathas not been ordered yet--added by Aristos  19/06/2023        */}
-      {cardData[0].type == VirtualCard ? 
-       <View style={styles.cardTypeCombo} >
-              <RadioButton
-                  value="P"
-                  status={ cardType === 'P' ? 'checked' : 'unchecked' }
-                    onPress={() => setCardType('P')} 
-                  color='#E7038E'
-                />  
-                <Text style={styles.cardTypeText}>Physical Card</Text>
-    
-          </View>
-                :
-                <View style={styles.cardTypeCombo} >
-                      <RadioButton
-                      value="V"
-                      status={ cardType === 'V' ? 'checked' : 'unchecked' }
-                      onPress={() => setCardType('V')}
-                      color='#E7038E'
-                    />
-                  <Text style={styles.cardTypeText}>Virtual Card</Text>
-           
-              </View> 
+      {/* only show card that has not been ordered yet--added by Aristos  19/06/2023        */}
+      {/* if we do not have any cards, show both options and enrol for a card by calling showcardregistrationfinxpV2 */}
+        {  !cardData.length ?   <View style={styles.cardTypeCombo} >
+                                    <RadioButton
+                                        value="P"
+                                        status={ cardType === 'P' ? 'checked' : 'unchecked' }
+                                          onPress={() => setCardType('P')} 
+                                        color='#E7038E'
+                                      />  
+                                      <Text style={styles.cardTypeText}>Physical Card</Text>
+                                    
+                                    <RadioButton
+                                    value="V"
+                                    status={ cardType === 'V' ? 'checked' : 'unchecked' }
+                                    onPress={() => setCardType('V')}
+                                    color='#E7038E'
+                                  />
+                                <Text style={styles.cardTypeText}>Virtual Card</Text>
+                      
+                             </View> 
+                               
+        
+        
+        : 
+                      cardData[0].type == VirtualCard ? 
+                              <View style={styles.cardTypeCombo} >
+                                      <RadioButton
+                                          value="P"
+                                          status={ cardType === 'P' ? 'checked' : 'unchecked' }
+                                            onPress={() => setCardType('P')} 
+                                          color='#E7038E'
+                                        />  
+                                        <Text style={styles.cardTypeText}>Physical Card</Text>
+                            
+                                  </View>
+                                        :
+                                        <View style={styles.cardTypeCombo} >
+                                              <RadioButton
+                                              value="V"
+                                              status={ cardType === 'V' ? 'checked' : 'unchecked' }
+                                              onPress={() => setCardType('V')}
+                                              color='#E7038E'
+                                            />
+                                          <Text style={styles.cardTypeText}>Virtual Card</Text>
+                                  
+                                      </View> 
                 
                 }
       

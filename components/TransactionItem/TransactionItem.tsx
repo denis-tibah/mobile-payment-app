@@ -26,6 +26,7 @@ interface TransactionItemProps {
 export function TransactionItem({ data }: TransactionItemProps) {
   const [isOpen, setIsOpen] = useState(false);
 
+
   const handleOnOpen = () => {
     setIsOpen(!isOpen);
   };
@@ -127,6 +128,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
                     {data?.description}
                   </Text>
                 </Box>
+                {!data.isCardTx  ? 
                 <Box style={styles.cardDetails}>
                   <Box style={styles.detailMobile}>
                     <Text style={styles.nameDetailMobile}>IBAN:</Text>
@@ -135,7 +137,9 @@ export function TransactionItem({ data }: TransactionItemProps) {
                   <Box style={styles.detailMobile}>
                     <Text style={styles.nameDetailMobile}>BIC:</Text>
                     <Text style={styles.valueDetailMobile}>{data?.bic}</Text>
-                  </Box>
+                  </Box> 
+                  {/* : '') */}
+
                   {/* <Box style={styles.detailMobile}>
                     <Text style={styles.nameDetailMobile}>
                       Opening Balance:
@@ -171,10 +175,14 @@ export function TransactionItem({ data }: TransactionItemProps) {
                     </Text>
                   </Box>
                 </Box>
+           
+           : null } 
+
                 <View style={styles.detailMobile}>
                   <Text style={styles.nameDetailMobile}>Time:</Text>
                   <Text style={styles.valueDetailMobile}>
-                    {data?.transaction_datetime}
+                    {/* {data?.transaction_datetime} */}
+                    {getFormattedDate(data?.transaction_datetime)}
                   </Text>
                 </View>
                 <Box style={styles.downloadContainer}>

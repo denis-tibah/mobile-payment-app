@@ -1,7 +1,12 @@
 import axios from "axios";
 
-const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
+// staging backend v1
 // const baseURL = process.env.APIURL || "https://zazoostg.com/reg/ziyl";
+// staging backend v2
+// const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
+// live backend
+const baseURL = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
+
 export const api = axios.create({ baseURL });
 let _store: any;
 let _signoutAction: any;

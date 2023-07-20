@@ -105,6 +105,7 @@ export default function AppNavigationWrapper() {
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
   const [selectedNavIndex, setNavIndex] = useState<number>(1);
+  const [aState, setAppState] = useState(AppState.currentState);
 
   //register token hen app opens
   // useEffect(() => {
@@ -198,20 +199,68 @@ export default function AppNavigationWrapper() {
     return false;
   };
 
+  // useEffect(() => {
+  //   var counter = 0;
+  //   console.log('aState ',aState ,' ', appState.current);
+    
+    // const interval = setInterval(() => {
+    //   // console.log('This will run every 5s is !', counter);
+    //   counter ++;
+    //   // if (counter == 15) {
+    //   //     clearInterval(interval);
+    //   //     // console.log('logout!');
+    //   //    }
+
+    //   if (aState ==='background') {
+    //       if (counter == 10) {
+    //       clearInterval(interval);
+    //       console.log('logout!');
+    //      }
+    //     // setHasExpiryTimeOutReached(true);
+    //     // clearInterval(interval);
+  
+    //   } 
+    //   if (aState ==='active') {
+    //     // counter = 15;
+    //     console.log('This will run every 5s is !', counter);
+    //     clearInterval(interval);
+    //     if (counter == 5) {
+    //         console.log('do not logout!');
+    //     }   
+    //     // setHasExpiryTimeOutReached(false);
+    //   }
+
+    // }, 1000);
+
+
+  // }, [aState]);
+
+
+
   useEffect(() => {
     const handleChange = AppState.addEventListener(
       "change",
       async (nextAppState) => {
         const isBiometricAuth = await isBiometric();
+
+        // console.log('Next AppState is: ', nextAppState);
+        // setAppState(nextAppState);
+
+
         if (
           appState.current.match(/background|inactive/) &&
           nextAppState === "active" &&
           isBiometricAuth
         ) {
+           
           dispatch(signout());
         }
-        console.log(nextAppState, "CURRENT");
-        appState.current = nextAppState;
+        // console.log(nextAppState, "CURRENT");
+       if(nextAppState === "background") {
+
+       } 
+            appState.current = nextAppState;
+
       }
     );
     return () => {

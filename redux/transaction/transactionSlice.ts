@@ -102,7 +102,8 @@ export const getTransactions = createAsyncThunk<Transaction[], SearchFilter>(
         account_id: searchFilter.account_id,
         sort:       searchFilter.sort,
         direction:  searchFilter.direction,
-        status:     searchFilter.status
+        status:     searchFilter.status,
+        limit :     20,
       });
       return fulfillWithValue(data);
     } catch (error) {

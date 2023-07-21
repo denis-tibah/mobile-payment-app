@@ -14,6 +14,7 @@ import Box from "../../components/Box";
 import { getAccountDetails } from "../../redux/account/accountSlice";
 import { getCurrency } from "../../utils/helpers";
 import Spinner from "react-native-loading-spinner-overlay/lib";
+import { getPendingAmount } from "../../utils/helpers";
 
 export function MyAccount({ navigation }: any) {
   const transactions = useSelector(
@@ -113,14 +114,47 @@ export function MyAccount({ navigation }: any) {
         />}
       >
         <Box style={styles.totalBalance}>
-          <Typography color={"medium-grey2"} fontWeight={400} fontSize={18}>
-            Total balance
-          </Typography>
-          <Typography fontFamily="Nunito-SemiBold" fontSize={18}>
-            {getCurrency(totalBalance?.currency)}{" "}
-            {totalBalance?.curbal || "0.00"}
-          </Typography>
         </Box>
+        <View style={styles.balancesTitleA}>
+              <Typography color={"medium-grey2"} fontWeight={400} fontSize={13}>
+                {/* Current {"\n"} Balance */}
+                Current 
+              </Typography>
+              <Typography color={"medium-grey2"} fontWeight={400} fontSize={13}>
+                {/* Pending */}
+              </Typography>
+              <Typography color={"medium-grey2"} fontWeight={400} fontSize={13}>
+                {/* Available {"\n"} Balance */}
+                Available
+              </Typography>
+          </View>
+        <View style={styles.balancesTitleB}>
+        <Typography color={"medium-grey2"} fontWeight={400} fontSize={18}>
+                Balance
+            </Typography>
+            <Typography color={"medium-grey2"} fontWeight={400} fontSize={18}>
+                 Pending
+            </Typography>
+            <Typography color={"medium-grey2"} fontWeight={400} fontSize={18}>
+                 Balance
+            </Typography>
+          </View>
+
+
+        <View style={styles.balances}>
+        <Typography color={"medium-grey2"} fontWeight={400} fontSize={18}>
+              {getCurrency(totalBalance?.currency)}{" "}
+              {totalBalance?.curbal || "0.0"}
+            </Typography>
+            <Typography color="#E53CA9"  fontWeight={400} fontSize={18}>
+              {getCurrency(totalBalance?.currency)}{" "}
+              {getPendingAmount(totalBalance?.opnbal ||"0.00",totalBalance?.curbal ||"0.00")}
+            </Typography>
+            <Typography color={"medium-grey2"} fontWeight={400} fontSize={18}>
+              {getCurrency(totalBalance?.currency)}{" "}
+              {totalBalance?.avlbal || "0.00"}
+            </Typography>
+          </View>
         <View>
           <View style={styles.base}>
             <Heading

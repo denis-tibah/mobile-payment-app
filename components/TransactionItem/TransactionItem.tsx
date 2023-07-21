@@ -70,14 +70,25 @@ export function TransactionItem({ data }: TransactionItemProps) {
             flexDirection="row"
             alignItems="center"
           >
-            {data?.currency === "EUR" ? (
+      
+            {/* {data?.currency === "EUR"  ? ( */}
+            {!data.isCardTx ? (
               <EuroIcon size={18} color={+data?.amount > 0 ? "green" : "red"} />
             ) : (
               <DollarIcon size={18} color="#278664" />
             )}
-            <Typography fontSize={14}>
-              {formatAmountTableValue(data?.amount, data?.currency)}
-            </Typography>
+
+            {!data.isCardTx ?    
+              <Typography fontSize={14}>
+                {formatAmountTableValue(data?.amount, data?.currency)}
+              </Typography>
+            : <View style={styles.cardCell}>
+                <Typography fontSize={14}>
+                {formatAmountTableValue(data?.amount, data?.currency)}
+              </Typography>
+             </View>
+            }
+           
           </Box>
 
           <Box
@@ -88,13 +99,21 @@ export function TransactionItem({ data }: TransactionItemProps) {
             flexDirection="row"
             alignItems="center"
           >
-          <EuroIcon size={18} color= "green" />
-          <Typography fontSize={14}>
-              {formatAmountTableValue(data?.running_balance, data?.currency)}
-            </Typography>
-                <Box style={styles.cell}>
-                  {isOpen ? <ArrowDown color="blue" /> : <ArrowDown color="blue" />}
-                </Box>
+          {!data.isCardTx ? 
+                <EuroIcon size={18} color= "green" />
+                : null
+              }
+
+        {!data.isCardTx ?    
+              <Typography fontSize={14}>
+                {formatAmountTableValue(data?.running_balance, data?.currency)}
+              </Typography>
+            : null
+              }
+
+              <Box style={styles.cell}>
+                {isOpen ? <ArrowDown color="blue" /> : <ArrowDown color="blue" />}
+              </Box>     
           </Box>
 
           {/* <Box style={styles.cell}>

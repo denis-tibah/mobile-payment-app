@@ -24,7 +24,7 @@ import { loginCredentialsSchema } from "../../utils/formikSchema";
 import { AppDispatch } from "../../store";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
-import { registerForPushNotificationsRegistrationAsync } from "../PushNotificationRegistration";
+import { registerForPushNotificationsRegistrationAsync } from "../PushNotification copy";
 
 interface ILoginDetails {
   handleNextStep: () => void;

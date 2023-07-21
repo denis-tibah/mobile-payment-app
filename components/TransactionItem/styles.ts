@@ -23,6 +23,12 @@ export const styles:any = StyleSheet.create<any>({
     paddingRight: 10
   
   },
+  cardCell: {
+
+    paddingLeft: 15,
+    paddingRight: 10
+  
+  },
   separator: {
     width: "100%",
     height: 1,

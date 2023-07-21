@@ -75,7 +75,7 @@ export const prependBase64 = (base64: string) => {
 };
 
 export const getCurrency = (currency = "") => {
-  return currency === "EUR" ? "€" : "$";
+  return currency === "EUR" ? "€" : "€";
 };
 
 export const screenNames: any = {
@@ -93,6 +93,13 @@ export const screenNames: any = {
   emailVerified: "emailVerified",
   profileDetails: " profileDetails",
 };
+
+export function getPendingAmount(opnbal:any,currentBalance: any) {
+  
+  const pendingAmount = Math.abs(opnbal-currentBalance);
+  //use toFixed(2) to format nuber to 2 decimal places
+  return pendingAmount.toFixed(2) || "0.00";
+}
 
 export function getFormattedDate(dateToFormat: any) {
   const date = new Date(dateToFormat); // Create a new Date object with the current date and time

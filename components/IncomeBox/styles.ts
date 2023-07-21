@@ -19,10 +19,39 @@ export const styles: any = StyleSheet.create<any>({
     justifyContent: "space-between",
     width: "100%",
   },
-  incomeBox__box__item: {
+  incomeBox__box__title1: {
     display: "flex",
     gap: 8,
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: -35,
+  },
+  incomeBox__box__title2: {
+    display: "flex",
+    gap: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: -20,
+  },
+  incomeBox__box__bic: {
+    display: "flex",
+    gap: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: -20,
+  },
+  incomeBox__box__iban: {
+    display: "flex",
+    gap: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: -10,
+  },
+  incomeBox__box__balances: {
+    display: "flex",
+    gap: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: -10,
   },
 });

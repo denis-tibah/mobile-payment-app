@@ -41,6 +41,7 @@ import Carousel from "react-native-snap-carousel";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { ICardDetails } from "../../models/interface";
 import * as FileSystem from 'expo-file-system';
+import { getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
 
 export function Card({ navigation }: any) {
   const infoData = useSelector((state: RootState) => state.account.details);
@@ -68,15 +69,24 @@ export function Card({ navigation }: any) {
   const dispatch = useDispatch();
   const fetchCardData = async () => {
     try {
-      await dispatch<any>(getCards());
-      await dispatch<any>(
-        getCardTransactions({
+      if(userData) {
+        await dispatch<any>(
+          getCardTransactions({
+            account_id: userData?.id,
+            from_date: "2022-06-02",
+            to_date: getTodaysDate(),
+            type: "PREAUTH",
+          })
+        );
+        await getTransactionsWithFilters({
           account_id: userData?.id,
-          from_date: "2022-06-02",
-          to_date: getTodaysDate(),
-          type: "PREAUTH",
-        })
-      );
+          sort: 'id',
+          direction: 'desc',
+          status: 'PROCESSING'
+        });
+      }
+      await dispatch<any>(getCards());
+
       // console.log("do we have any cards", cardData);
       if (userData) await dispatch<any>(getAccountDetails(userData.id));
     } catch (error) {
@@ -378,24 +388,24 @@ export function Card({ navigation }: any) {
                   <TransactionItem
                     data={{
                       ...transaction,
-                      id: Number(transaction.id),
-                      amount: transaction.amount.toString(),
-                      name: transaction.purpose,
-                      balance: "0.00",
-                      bic: "",
-                      closing_balance: "",
-                      running_balance: "",
-                      currency: transaction.transactionCurrency,
-                      description: transaction.purposeDetailed,
-                      iban: "",
-                      opening_balance: "",
-                      reference_no: transaction.authCardId,
-                      service: "",
-                      status: "",
-                      transaction_datetime: transaction.receiptDate,
-                      transaction_id: 0,
-                      transaction_uuid: "",
-                      isCardTx : true,
+                      // id: Number(transaction.id),
+                      // amount: transaction.amount.toString(),
+                      // name: transaction.purpose,
+                      // balance: "0.00",
+                      // bic: "",
+                      // closing_balance: "",
+                      // running_balance: "",
+                      // currency: transaction.transactionCurrency,
+                      // description: transaction.purposeDetailed,
+                      // iban: "",
+                      // opening_balance: "",
+                      // reference_no: transaction.authCardId,
+                      // service: "",
+                      // status: "",
+                      // transaction_datetime: transaction.receiptDate,
+                      // transaction_id: 0,
+                      // transaction_uuid: "",
+                      // isCardTx : true,
                     }}
                     key={index}
                   />

@@ -37,6 +37,8 @@ const currentDate = new Date();
 const initialSearchFieldData: SearchFields = {
   account_id: 0,
   sort:  "id",
+  direction: 'desc',
+  status: 'PROCESSING'
 };
 
 export function Transactions({ navigation}: any) {
@@ -46,7 +48,9 @@ export function Transactions({ navigation}: any) {
   );
 
   const [isMobileFilterShown, setIsMobileFilterShown] = useState<boolean>(false);
-  const debounceIsMobileFilterShown = useDebounce<boolean>(isMobileFilterShown, 500);
+  const debounceIsMobileFilterShown = useDebounce<boolean>(isMobileFilterShown, 300);
+  const [sortByDate, setSortByDate] = useState<boolean>(false);
+  const debounceSortByDate = useDebounce<boolean>(sortByDate, 500);
   const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState(null);
   const [openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
   const userData = useSelector((state: RootState) => state?.auth?.userData);
@@ -183,6 +187,21 @@ export function Transactions({ navigation}: any) {
       ..._searchFieldData,
     });
   };
+
+  const handleSortByDate = () => {
+    const sortState = sortByDate ? 'asc' : 'desc';
+    fetchTransactionsWithFilters({
+      ...searchFieldData,
+      account_id: userData?.id,
+      direction: sortState,
+    });
+  }
+
+  useEffect(() => {
+    if (searchFieldData && userData) {
+      handleSortByDate();
+    }
+  },[debounceSortByDate, searchFieldData]);
 
   useEffect(() => {
     if (!isMobileFilterShown) {
@@ -325,7 +344,12 @@ export function Transactions({ navigation}: any) {
             <Seperator backgroundColor={vars['grey']} />
           <View style={styles.listHead}>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Name</Typography>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
+            <TouchableOpacity onPress={() =>{
+                setIsLoading(true);
+                setSortByDate(!sortByDate);
+              }}>
+              <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
+            </TouchableOpacity>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Amount</Typography>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Balance</Typography>
             <Typography></Typography>

@@ -184,7 +184,7 @@ export function Payment({ navigation }: any) {
     if (isExternalPayment) {
       setExternalPayment('SEPACT');
     } else {
-      setExternalPayment('');
+      setExternalPayment('null');
     }
   }, [isExternalPayment]);
 

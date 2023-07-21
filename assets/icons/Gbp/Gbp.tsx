@@ -3,30 +3,20 @@ import { getColor } from "../color";
 export function Gbp({ size = 14, color }:any) {
   return (
     <Svg
-      width={size}
-      height={size}
-      viewBox="-6.4 -6.4 76.80 76.80"
-      stroke={getColor(color) || color}
-      strokeWidth="3.5200000000000005"
-      fill="none"
-    >
-      <G id="SVGRepo_bgCarrier" strokeWidth="0" />
-
-      <G
-        id="SVGRepo_tracerCarrier"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      <G id="SVGRepo_iconCarrier">
-        <Circle cx="31.1" strokeWidth="4" cy="31.05" r="25.29" />
-
-        <Path strokeWidth="4" d="M41.19,40.91a12.43,12.43,0,1,1-2.34-21.14" />
-
-        <Line strokeWidth="4" x1="14.99" y1="28.04" x2="35.67" y2="28.04" />
-
-        <Line strokeWidth="4" x1="14.99" y1="34.34" x2="33.17" y2="34.34" />
-      </G>
-    </Svg>
+    width={14}
+    height={13}
+    viewBox="0 0 14 13"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <Path
+      d="M13.5 6.5c0 3.28-2.875 6-6.5 6S.5 9.78.5 6.5 3.375.5 7 .5s6.5 2.72 6.5 6z"
+      stroke="#105ED0"
+    />
+    <Path
+      d="M9.469 10H4.653v-.781H9.47V10zM7.935 7.173h-3.31v-.81h3.31v.81zM6.173 4.93l.114 3.082c.014.299-.013.574-.082.828a.988.988 0 01-.387.579l-.88-.2c.142 0 .25-.07.326-.212.076-.142.127-.308.153-.497.026-.19.037-.356.032-.498l-.1-3.082c-.019-.516.075-.945.281-1.286.208-.34.48-.595.817-.763a2.358 2.358 0 011.062-.252c.338 0 .646.061.923.184.277.121.51.285.7.49.189.207.321.439.397.697.076.255.08.518.01.788l-.823-.227c.033-.247-.005-.455-.114-.625a1 1 0 00-.447-.391 1.413 1.413 0 00-1.26.028c-.212.107-.384.273-.52.498-.134.222-.202.509-.202.859z"
+      fill="#105ED0"
+    />
+  </Svg>
   );
 }

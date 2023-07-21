@@ -39,14 +39,15 @@ export function TransactionItem({ data }: TransactionItemProps) {
 
   const currencyIcon=(param:any)=>{
     // console.log("currecy is ", param);
+    // console.log("data?.amount ", data?.amount );
 
     switch(param) {
       case 'EUR':
         return <EuroIcon size={18} color={+data?.amount > 0 ? "green" : "red"} />
       case 'USD':
         return <DollarIcon size={18} color={+data?.amount > 0 ? "#278664" : "red"} />
-      case 'GBP':
-        return <GbpIcon size={18} color={+data?.amount > 0 ? "#278664" : "red"} />
+      case 'GBP': 
+        return <GbpIcon size={18} color={+data?.amount > 0 ? "#105ED0" : "red"} />
       default:
         return <EuroIcon size={18} color={+data?.amount > 0 ? "green" : "red"} />
       }

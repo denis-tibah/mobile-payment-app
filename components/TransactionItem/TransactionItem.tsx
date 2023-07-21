@@ -14,9 +14,10 @@ import Box from "../Box";
 import Typography from "../Typography";
 import EuroIcon from "../../assets/icons/Euro";
 import DollarIcon from "../../assets/icons/Dollar";
+import GbpIcon from "../../assets/icons/Gbp";
 import { generateTransactionPDF } from "../../utils/files";
 import { printAsync } from "expo-print";
-import { Transaction } from "../../models/Transactions";
+import { Transaction,CardTransaction  } from "../../models/Transactions";
 import Export from "../../assets/icons/Export";
 
 interface TransactionItemProps {
@@ -35,6 +36,23 @@ export function TransactionItem({ data }: TransactionItemProps) {
     const pdfUri = await generateTransactionPDF([data]);
     await printAsync({ uri: pdfUri });
   };
+
+  const currencyIcon=(param:any)=>{
+    // console.log("currecy is ", param);
+
+    switch(param) {
+      case 'EUR':
+        return <EuroIcon size={18} color={+data?.amount > 0 ? "green" : "red"} />
+      case 'USD':
+        return <DollarIcon size={18} color={+data?.amount > 0 ? "#278664" : "red"} />
+      case 'GBP':
+        return <GbpIcon size={18} color={+data?.amount > 0 ? "#278664" : "red"} />
+      default:
+        return <EuroIcon size={18} color={+data?.amount > 0 ? "green" : "red"} />
+      }
+  }
+  
+
 
   return (
     <>
@@ -70,13 +88,23 @@ export function TransactionItem({ data }: TransactionItemProps) {
             flexDirection="row"
             alignItems="center"
           >
-      
-            {/* {data?.currency === "EUR"  ? ( */}
-            {!data.isCardTx ? (
+
+            
+             {data.isCardTx ?  
+                 (    <View style={styles.cardpayments}>
+                       {currencyIcon(data?.currency)}
+                      </View>
+                 
+                 )
+                : currencyIcon(data?.currency)
+           
+             }   
+{/*       
+           {data?.currency === "EUR"  ? (
               <EuroIcon size={18} color={+data?.amount > 0 ? "green" : "red"} />
             ) : (
               <DollarIcon size={18} color="#278664" />
-            )}
+            )} */}
 
             {!data.isCardTx ?    
               <Typography fontSize={14}>

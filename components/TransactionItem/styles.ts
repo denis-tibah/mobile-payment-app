@@ -25,8 +25,8 @@ export const styles:any = StyleSheet.create<any>({
   },
   cardCell: {
 
-    paddingLeft: 15,
-    paddingRight: 10
+    paddingLeft: 5,
+    // paddingRight: 20
   
   },
   separator: {
@@ -88,5 +88,13 @@ export const styles:any = StyleSheet.create<any>({
     flexDirection: "row",
     alignItems: "center",
     paddingTop: 5,
+  },
+  cardpayments: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingLeft: 30,
+    // marginLeft: 30,
+    // paddingRight: -30,
   }
 });

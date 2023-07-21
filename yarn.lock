@@ -4688,22 +4688,15 @@
     "path-browserify" "^1.0.0"
     "url-parse" "^1.5.9"
 
-<<<<<<< HEAD
-expo-checkbox@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/expo-checkbox/-/expo-checkbox-2.4.0.tgz#5d5bb82117f4d781eb1d4db0ff96e1f0a4a0547a"
-  integrity sha512-ZEe79B73I+NDkLZQ2pR1E5rv9ey1oleNI/s2/Jdb9zKWztS0KVU2K+drFn2t/zyoSbR1U+CNwik2v7h6JxrXcA==
+"expo-checkbox@^2.4.0":
+  "integrity" "sha512-ZEe79B73I+NDkLZQ2pR1E5rv9ey1oleNI/s2/Jdb9zKWztS0KVU2K+drFn2t/zyoSbR1U+CNwik2v7h6JxrXcA=="
+  "resolved" "https://registry.npmjs.org/expo-checkbox/-/expo-checkbox-2.4.0.tgz"
+  "version" "2.4.0"
 
-expo-clipboard@^4.1.2:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/expo-clipboard/-/expo-clipboard-4.3.0.tgz#19321dabeab3514c6ab6e7e2e39ac51bab47acc6"
-  integrity sha512-FsPv7FFdVCPGT1P9mnOhB7o6wPMI05Bpuchj58ACGEx8mYfA90CLL/sdQFSS7VmQOxdgUh+De3GDJgHq3JvckA==
-=======
 "expo-clipboard@^4.1.2":
   "integrity" "sha512-YSuIs4CV+3gypl7X74sp2ruwAVuhnOngsWs7EGkcvRdX0BBrZZMk3GXGw9a59sU6SW4wGWAfwrhyCT41GUaN+A=="
   "resolved" "https://registry.npmjs.org/expo-clipboard/-/expo-clipboard-4.1.2.tgz"
   "version" "4.1.2"
->>>>>>> eb82a4b354ee45211aeb5bb1339474fb2fd8364d
 
 "expo-constants@~14.2.0", "expo-constants@~14.2.1":
   "integrity" "sha512-DD5u4QmBds2U7uYo409apV7nX+XjudARcgqe7S9aRFJ/6kyftmuxvk1DpaU4X42Av8z/tfKwEpuxl+vl7HHx/Q=="

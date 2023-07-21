@@ -54,7 +54,7 @@ export const styles = StyleSheet.create({
     color: vars["medium-grey"],
     fontSize: 16,
     marginLeft: 10,
-    fontWeight: 400,
+    fontWeight: "400",
   },
   textSeparator: {
     fontSize: 12,
@@ -63,5 +63,13 @@ export const styles = StyleSheet.create({
   textSeparatorContainer: {
     marginTop: 10,
     marginBottom: 30,
+  },
+  termsHeaderText: {
+    color: vars["medium-grey"],
+    fontFamily: "Mukta-SemiBold",
+    fontWeight: "bold",
+    fontSize: 16,
+    marginLeft: 24,
+    marginBottom: 18,
   },
 });

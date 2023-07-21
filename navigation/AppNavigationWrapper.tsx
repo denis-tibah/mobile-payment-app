@@ -144,6 +144,10 @@ export default function AppNavigationWrapper() {
   const handlePushNotification = (notification: any) => {
     if (notification?.request?.identifier === lastNotification) return;
     const transactionDetails = notification?.request?.content?.data;
+    console.log(
+      "🚀 ~ file: AppNavigationWrapper.tsx:147 ~ handlePushNotification ~ transactionDetails:",
+      transactionDetails
+    );
     const emailverificationDetails =
       notification?.request?.trigger?.remoteMessage?.data;
 
@@ -183,6 +187,10 @@ export default function AppNavigationWrapper() {
         show: true,
         data: { emailverificationDetails, userId: userData?.id },
       });
+      navigation.navigate(screenNames.emailVerified, {
+        emailverificationDetails,
+        userId: userData?.id,
+      });
       // navigation.navigate(screenNames.emailVerified, {
       //   emailverificationDetails,
       //   userId: userData?.id,
@@ -202,40 +210,37 @@ export default function AppNavigationWrapper() {
   // useEffect(() => {
   //   var counter = 0;
   //   console.log('aState ',aState ,' ', appState.current);
-    
-    // const interval = setInterval(() => {
-    //   // console.log('This will run every 5s is !', counter);
-    //   counter ++;
-    //   // if (counter == 15) {
-    //   //     clearInterval(interval);
-    //   //     // console.log('logout!');
-    //   //    }
 
-    //   if (aState ==='background') {
-    //       if (counter == 10) {
-    //       clearInterval(interval);
-    //       console.log('logout!');
-    //      }
-    //     // setHasExpiryTimeOutReached(true);
-    //     // clearInterval(interval);
-  
-    //   } 
-    //   if (aState ==='active') {
-    //     // counter = 15;
-    //     console.log('This will run every 5s is !', counter);
-    //     clearInterval(interval);
-    //     if (counter == 5) {
-    //         console.log('do not logout!');
-    //     }   
-    //     // setHasExpiryTimeOutReached(false);
-    //   }
+  // const interval = setInterval(() => {
+  //   // console.log('This will run every 5s is !', counter);
+  //   counter ++;
+  //   // if (counter == 15) {
+  //   //     clearInterval(interval);
+  //   //     // console.log('logout!');
+  //   //    }
 
-    // }, 1000);
+  //   if (aState ==='background') {
+  //       if (counter == 10) {
+  //       clearInterval(interval);
+  //       console.log('logout!');
+  //      }
+  //     // setHasExpiryTimeOutReached(true);
+  //     // clearInterval(interval);
 
+  //   }
+  //   if (aState ==='active') {
+  //     // counter = 15;
+  //     console.log('This will run every 5s is !', counter);
+  //     clearInterval(interval);
+  //     if (counter == 5) {
+  //         console.log('do not logout!');
+  //     }
+  //     // setHasExpiryTimeOutReached(false);
+  //   }
+
+  // }, 1000);
 
   // }, [aState]);
-
-
 
   useEffect(() => {
     const handleChange = AppState.addEventListener(
@@ -246,21 +251,17 @@ export default function AppNavigationWrapper() {
         // console.log('Next AppState is: ', nextAppState);
         // setAppState(nextAppState);
 
-
         if (
           appState.current.match(/background|inactive/) &&
           nextAppState === "active" &&
           isBiometricAuth
         ) {
-           
           dispatch(signout());
         }
         // console.log(nextAppState, "CURRENT");
-       if(nextAppState === "background") {
-
-       } 
-            appState.current = nextAppState;
-
+        if (nextAppState === "background") {
+        }
+        appState.current = nextAppState;
       }
     );
     return () => {
@@ -348,11 +349,11 @@ export default function AppNavigationWrapper() {
               }}
             />
             {/* to text emailVerified component*/}
-            <Root.Screen
+            {/* <Root.Screen
               options={{ headerShown: false }}
               name={screenNames.emailVerified}
               component={EmailVerifiedScreen}
-            />
+            /> */}
           </>
         )}
       </Root.Navigator>

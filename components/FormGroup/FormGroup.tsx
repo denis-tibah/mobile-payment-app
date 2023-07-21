@@ -1,9 +1,12 @@
 import { cloneElement, useEffect, useRef, useState } from "react";
 import { Picker, PickerIOS } from "@react-native-picker/picker";
 import { Text, View, TextInput, Platform, Pressable } from "react-native";
-import { input, formGroup, textarea, pinCode } from "./styles";
+import Checkbox from "expo-checkbox";
+
+import { input, formGroup, textarea, pinCode, checkbox } from "./styles";
 import EyeIcon from "../../assets/icons/Eye";
 import EyeClosedIcon from "../../assets/icons/EyeClosed";
+import vars from "../../styles/vars";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Button from "../Button";
 
@@ -240,7 +243,16 @@ export function SelectForArrOfObject({
     </View>
   );
 }
-
+export function CheckboxUI({ label, ...props }: any) {
+  return (
+    <View style={checkbox.container}>
+      <View style={checkbox.checkboxContainer}>
+        <Checkbox {...props} />
+        <Text style={checkbox.label}>{label}</Text>
+      </View>
+    </View>
+  );
+}
 FormGroup.Input = Input;
 FormGroup.Label = Label;
 FormGroup.TextArea = TextArea;
@@ -248,3 +260,4 @@ FormGroup.Select = Select;
 FormGroup.Option = Option;
 FormGroup.Password = Password;
 FormGroup.SelectForArrOfObject = SelectForArrOfObject;
+FormGroup.CheckboxUI = CheckboxUI;

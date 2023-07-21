@@ -136,3 +136,22 @@ export const formGroup: any = StyleSheet.create<any>({
     marginTop: 3,
   },
 });
+
+export const checkbox: any = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "flex-start",
+    justifyContent: "center",
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    marginLeft: 14,
+  },
+  checkbox: {
+    alignSelf: "center",
+    marginLeft: 14,
+  },
+  label: {
+    marginLeft: 6,
+  },
+});

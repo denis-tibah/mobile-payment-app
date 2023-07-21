@@ -23,7 +23,7 @@ export default function EmailVerifiedScreen({
 
   const closePopup = async () => {
     //Add navigation route to next step to registration process
-    /* setShowEmailVerified({ show: false, data: {} });*/
+    setShowEmailVerified({ show: false, data: {} });
     navigate(screenNames.signup, {
       stepIndex: 1,
     });

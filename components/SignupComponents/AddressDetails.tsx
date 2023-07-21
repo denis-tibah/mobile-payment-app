@@ -84,7 +84,6 @@ const AddressDetails: FC<IAddressDetails> = ({
     values,
     touched,
     errors,
-    setFieldValue,
     submitCount,
     setFieldTouched,
   } = useFormik({

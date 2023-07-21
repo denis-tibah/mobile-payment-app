@@ -3,11 +3,10 @@ import { api } from "../../api";
 import { Alert, Platform } from "react-native";
 import * as Device from "expo-device";
 
-
 // Set up push notifications
 export const registerForPushNotificationsRegistrationAsync = async (
   email: string,
-  uuid: string,
+  uuid: string
   // mobile: string
 ) => {
   let token;
@@ -40,20 +39,18 @@ export const registerForPushNotificationsRegistrationAsync = async (
         })
       ).data;
 
-   console.log('expo token ', token,' uuid' ,uuid , ' email ', email);
+      console.log("expo token ", token, " uuid", uuid, " email ", email);
 
-    //   const resp=await api.post("/registerPushToken", {
-    //     token,
-    //     email,
-    //     uuid,
-    //     // mobile,
-    //   });
-    //   // console.log(resp);
-
+      /* const resp = await api.post("/registerPushToken", {
+        token,
+        email,
+        uuid,
+        mobile,
+      });
+      console.log(resp); */
     } catch (error) {
       console.log({ notificationRegError: error });
     }
-
   } else {
     alert("Must use physical device for Push Notifications");
   }

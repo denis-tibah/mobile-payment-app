@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { AntDesign } from '@expo/vector-icons'; 
 import * as Clipboard from "expo-clipboard";
 import { View, ScrollView, TouchableOpacity,Image } from "react-native";
 import Heading from "../../components/Heading";
@@ -41,14 +42,29 @@ import Carousel from "react-native-snap-carousel";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { ICardDetails } from "../../models/interface";
 import * as FileSystem from 'expo-file-system';
+import { getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
+import { Seperator } from "../../components/Seperator/Seperator";
+import vars from "../../styles/vars";
+import ArrowDown from "../../assets/icons/ArrowDown";
+import { useDebounce } from "usehooks-ts";
+import { TRANSACTIONS_STATUS } from "../../utils/constants";
+import LoadingScreen from "../../components/Loader/LoadingScreen";
+import ArrowRight from "../../assets/icons/ArrowRight";
+import { Transaction } from "../../models/Transactions";
 
 export function Card({ navigation }: any) {
   const infoData = useSelector((state: RootState) => state.account.details);
   const accountData = useSelector((state: RootState) => state.auth.userData);
-
+  const defaultSearchOptions = {
+    sort: 'id',
+    status: 'PROCESSING',
+    account_id: 0,
+    direction: 'desc',
+  };
   const transactions = useSelector(
-    (state: RootState) => state.card.transactions
+    (state: RootState) => state?.transaction?.data
   );
+
   const [cardPin, setCardPin] = useState("");
   const [remainingTime, setRemainingTime] = useState(30);
   const loadingState = useSelector((state: RootState) => state?.card.loading);
@@ -64,19 +80,30 @@ export function Card({ navigation }: any) {
   const [showGetCardModal, setShowGetCardModal] = useState(false);
   const [showCardOtpLoading, setShowCardOtpLoading] = useState(false);
   const [storedIntervalId, setStoredIntervalId] = useState<any>(null);
+  const [sortByDate, setSortByDate] = useState<boolean>(false);
+  const debounceSortByDate = useDebounce<boolean>(sortByDate, 300);
+  const [isLoading, setIsloading] = useState<boolean>(false);
 
   const dispatch = useDispatch();
   const fetchCardData = async () => {
     try {
-      await dispatch<any>(getCards());
-      await dispatch<any>(
-        getCardTransactions({
+      if(userData) {
+        await dispatch<any>(
+          getCardTransactions({
+            account_id: userData?.id,
+            from_date: "2022-06-02",
+            to_date: getTodaysDate(),
+            type: "PREAUTH",
+          })
+        );
+        await dispatch<any>(getTransactionsWithFilters({
           account_id: userData?.id,
-          from_date: "2022-06-02",
-          to_date: getTodaysDate(),
-          type: "PREAUTH",
-        })
-      );
+          sort: 'id',
+          direction: 'desc',
+          status: 'PROCESSING'
+        }));
+      }
+      await dispatch<any>(getCards());
       // console.log("do we have any cards", cardData);
       if (userData) await dispatch<any>(getAccountDetails(userData.id));
     } catch (error) {
@@ -178,7 +205,6 @@ export function Card({ navigation }: any) {
     ////         image=result;
     ////         console.log("base64 images is ",image);
     ////  });
-                 
 
       setCardDetails({
         cardreferenceId: cardData[0]?.cardreferenceId,
@@ -200,6 +226,29 @@ export function Card({ navigation }: any) {
     setShowCardOtpModal(false);
     await delayCode(100);
   };
+
+  const handleFetchTransactions = async (userId: number) => {
+    const isAscending = sortByDate ? 'asc' : 'desc';
+    const _searchOptions = {
+      ...defaultSearchOptions,
+      account_id: userId,
+      direction: isAscending,
+    };
+
+    try {
+      await dispatch<any>(getTransactionsWithFilters(_searchOptions));
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsloading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (userData && userData.id) {
+      handleFetchTransactions(userData.id);
+    }
+  },[sortByDate]);
 
   useEffect(() => {
     if (!!userData?.id) fetchCardData();
@@ -364,39 +413,30 @@ export function Card({ navigation }: any) {
             title={"Latest Transactions"}
           />
           <View>
+            <Seperator backgroundColor={vars['grey']} />
             <View style={styles.listHead}>
               <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Name</Typography>
-              <Typography fontFamily="Nunito-SemiBold" color="accent-blue" fontSize={16}>
-                Date
-              </Typography>
+              <View 
+                style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: 60}}
+                >
+                <Typography fontFamily="Nunito-SemiBold" color="accent-blue" fontSize={16}>
+                  Date
+                </Typography>
+                <TouchableOpacity onPress={() => {
+                  setIsloading(!isLoading);
+                  setSortByDate(!sortByDate);
+                }}>
+                  {sortByDate ? <ArrowDown color="blue" style={{marginTop: 5}}/> : <AntDesign name="up" size={16} color="blue" style={{marginTop: 5}}/>}
+                </TouchableOpacity>
+              </View>
               <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Amount</Typography>
-              <Typography></Typography>
+              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Balance</Typography>
             </View>
             <View style={{ height: "70%" }}>
               <View>
                 {transactions?.map((transaction, index) => (
                   <TransactionItem
-                    data={{
-                      ...transaction,
-                      id: Number(transaction.id),
-                      amount: transaction.amount.toString(),
-                      name: transaction.purpose,
-                      balance: "0.00",
-                      bic: "",
-                      closing_balance: "",
-                      running_balance: "",
-                      currency: transaction.transactionCurrency,
-                      description: transaction.purposeDetailed,
-                      iban: "",
-                      opening_balance: "",
-                      reference_no: transaction.authCardId,
-                      service: "",
-                      status: "",
-                      transaction_datetime: transaction.receiptDate,
-                      transaction_id: 0,
-                      transaction_uuid: "",
-                      isCardTx : true,
-                    }}
+                    data={transaction}
                     key={index}
                   />
                 ))}
@@ -404,6 +444,7 @@ export function Card({ navigation }: any) {
             </View>
           </View>
         </View>
+        <LoadingScreen isLoading={isLoading} />
       </ScrollView>
     </MainLayout>
   );

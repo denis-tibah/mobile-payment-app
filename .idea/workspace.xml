@@ -5,9 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4b04fb15-24d0-4619-b7a8-864f736a93a0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/redux/transaction/transactionSlice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/redux/transaction/transactionSlice.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/api.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/screens/Transactions/Transactions.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/screens/Transactions/Transactions.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/Transactions/styles.ts" beforeDir="false" afterPath="$PROJECT_DIR$/screens/Transactions/styles.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -35,7 +35,6 @@ export function LoginScreen({ navigation }: any) {
     await SecureStore.setItemAsync("password", password);
     // await SecureStore.setItemAsync("biometricYN", biometricYN );
     // console.log("amd i added the dat to storage");
-                
   };
 
   const checkCompatible = async () => {
@@ -68,10 +67,9 @@ export function LoginScreen({ navigation }: any) {
 
     // console.log("get saved biometricYN",  biometricYN);
 
-    
-    if (email && password ) {
+    if (email && password) {
       //Added by Aristos
-    // if (email && password && biometricYN =='Y' ) {
+      // if (email && password && biometricYN =='Y' ) {
 
       return { email, password };
     }
@@ -185,23 +183,20 @@ export function LoginScreen({ navigation }: any) {
                 );
                 // console.log('result.payload.biometricYN ',result.payload.biometricYN );
 
-                  if(result.payload.biometricYN =='Y') {
-                    console.log('Use biometic ');
-                     await saveSecureCredetails(
+                if (result.payload.biometricYN == "Y") {
+                  console.log("Use biometic ");
+                  /* await saveSecureCredetails(
                           values.email,
                           values.password
                           //Addd by aristos
                           // result.payload.biometricYN 
-                        )
-                      
-                  } 
-                   else {
-                    console.log('Do not use biometric');
-                       await SecureStore.deleteItemAsync("email");
-                       await SecureStore.deleteItemAsync("password");
-                    
-                  }
-           //disabled by Aristos do not need this popup
+                        ) */
+                } else {
+                  console.log("Do not use biometric");
+                  await SecureStore.deleteItemAsync("email");
+                  await SecureStore.deleteItemAsync("password");
+                }
+                //disabled by Aristos do not need this popup
                 // Alert.alert(
                 //   "",
                 //   "Do you want to login using biometric authentication?",

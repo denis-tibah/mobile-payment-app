@@ -4,3 +4,9 @@ export const countries = [
     {label: "Spain", value: "ESP"},
     {label: "Netherlands", value: "NLD"}
 ]
+
+export enum TRANSACTIONS_STATUS {
+    PENDING = 'pending',
+    COMPLETED = 'completed',
+    PROCESSING = 'processing'
+}

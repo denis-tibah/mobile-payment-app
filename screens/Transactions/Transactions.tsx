@@ -24,6 +24,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from 'react-native-dropdown-picker';
 import LoadingScreen from "../../components/Loader/LoadingScreen";
 import { dateFormatter } from "../../utils/dates";
+import { TRANSACTIONS_STATUS } from "../../utils/constants";
+import ArrowDown from "../../assets/icons/ArrowDown";
 
 const searchOptions = [
   // { label: "BIC", value: 'bic' },
@@ -51,10 +53,14 @@ export function Transactions({ navigation}: any) {
   const debounceIsMobileFilterShown = useDebounce<boolean>(isMobileFilterShown, 300);
   const [sortByDate, setSortByDate] = useState<boolean>(false);
   const debounceSortByDate = useDebounce<boolean>(sortByDate, 500);
-  const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState(null);
+  const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState<string>("");
+  const debounceCurrentSelectedSearchField = useDebounce<string>(currentSelectedSearchField, 300);
   const [openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
+  const [openStatusOptions, setOpenStatusOptions] = useState<boolean>(false);
+  const [isStatusOptionSelected, setIsStatusOptionSelected] = useState<boolean>(false);
   const userData = useSelector((state: RootState) => state?.auth?.userData);
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState<string>("");
+  const debounceSearchText = useDebounce<string>(searchText, 300);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchFieldData, setSearchFieldData] = useState<SearchFields>(initialSearchFieldData);
   const [showPickerDateTo, setShowPickerDateTo] = useState(false);
@@ -63,24 +69,39 @@ export function Transactions({ navigation}: any) {
   const [dateFrom, setDateFrom] = useState("");
   const loadingTransactions = useSelector((state:RootState) => state.transaction.loading)
 
+  function capitalizeFirstLetter(str: string): string {
+    return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+  }
+
+  const transactionStatusOptions = Object.keys(TRANSACTIONS_STATUS).map((value) => {
+    return {
+      label: capitalizeFirstLetter(value),
+      value: TRANSACTIONS_STATUS[value as keyof typeof TRANSACTIONS_STATUS]
+    }
+  });
+
   const clearFilter = () => {
     setDateFrom("");
     setDateTo("");
-    setCurrentSelectedSearchField(null);
+    setCurrentSelectedSearchField("");
     setSearchText("");
     fetchTransactions();
+    setIsStatusOptionSelected(false);
   }
 
   const fetchTransactions = async () => {
     try {
       setIsLoading(true);
       let search: any = {
-          account_id: userData?.id,
-          sort: "id",
-          direction: "desc",
-          status: "PROCESSING",
+        account_id: userData?.id,
+        sort: 'id',
+        direction: 'desc',
+        status: 'PROCESSING',
       }
-      if (userData) await dispatch<any>(getTransactionsWithFilters(search));
+      if (userData) {
+        await dispatch<any>(getTransactionsWithFilters(search));
+      }
+      setSearchFieldData(search);
     } catch (error) {
       console.log({ error });
     } finally {
@@ -197,6 +218,15 @@ export function Transactions({ navigation}: any) {
   }
 
   useEffect(() => {
+    if (currentSelectedSearchField === 'status') {
+      fetchTransactionsWithFilters({
+        ...searchFieldData,
+        status: searchText,
+      })
+    }
+  },[debounceSearchText]);
+
+  useEffect(() => {
     if (searchFieldData && userData) {
       handleSortByDate();
     }
@@ -207,6 +237,15 @@ export function Transactions({ navigation}: any) {
       clearFilter();
     }
   },[isMobileFilterShown]);
+
+  useEffect(() => {
+    if (currentSelectedSearchField === 'status') {
+      setIsStatusOptionSelected(true);
+    } else {
+      setSearchText("");
+      setIsStatusOptionSelected(false);
+    }
+  },[debounceCurrentSelectedSearchField]);
 
   useEffect(() => {
     fetchTransactions();
@@ -238,20 +277,35 @@ export function Transactions({ navigation}: any) {
           />
         </View>
         <View style={styles.searchBar}>
-          <FormGroup.Input
-            icon={<SearchIcon />}
-            placeholder="Enter Minimum Amount"
-            color={vars["black"]}
-            fontSize={14}
-            fontWeight={'400'}
-            style={{width: "80%"}}
-            value={searchText}
-            // returnKeyType={"done"}
-            // onChange={handleChange}
-            onChangeText={(event: string) => setSearchText(event)}
-            // onKeyPress={handleKeyPress}
-            onSubmitEditing={handleOnSubmitEditing}
-          />
+          { isStatusOptionSelected ? (
+            <View style={{width: '75%', display: 'flex', flexDirection: 'row'}}>
+              <DropDownPicker
+                listMode="SCROLLVIEW"
+                setValue={setSearchText}
+                items={transactionStatusOptions}
+                value={searchText}
+                placeholder="Status options"
+                setOpen={setOpenStatusOptions}
+                open={openStatusOptions}
+                zIndex={101}
+                dropDownDirection="BOTTOM"
+                style={[styles.dropdown, {width: '80%', alignSelf: 'flex-start'}]}
+                dropDownContainerStyle={[styles.dropdownContainer, { zIndex: 20 }]}
+              />
+            </View>
+            ) : (
+            <FormGroup.Input
+              icon={<SearchIcon />}
+              placeholder="Enter Minimum Amount"
+              color={vars["black"]}
+              fontSize={14}
+              fontWeight={'400'}
+              style={{width: "80%"}}
+              value={searchText}
+              onChangeText={(event: string) => setSearchText(event)}
+              onSubmitEditing={handleOnSubmitEditing}
+            />
+            )}
           <View>
             <TouchableOpacity
               onPress={() => setIsMobileFilterShown(!isMobileFilterShown)}
@@ -271,7 +325,7 @@ export function Transactions({ navigation}: any) {
             backgroundColor: 'white',
             display: 'flex',
             flexDirection: 'row',
-            zIndex: 100
+            zIndex: 10
           }}>
             <View style={{
                 flex: 1,
@@ -343,12 +397,15 @@ export function Transactions({ navigation}: any) {
           <Seperator backgroundColor={vars['grey']} />
           <View style={styles.listHead}>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Name</Typography>
-            <TouchableOpacity onPress={() =>{
-                setIsLoading(true);
-                setSortByDate(!sortByDate);
-              }}>
-              <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
-            </TouchableOpacity>
+            <View style={{display: 'flex', flexDirection: 'row'}}>
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
+              <TouchableOpacity onPress={() => {
+                  setIsLoading(true);
+                  setSortByDate(!sortByDate);
+                }}>
+                {sortByDate ? <ArrowDown color="blue" style={{marginTop: 5, marginLeft: 5}}/> : <AntDesign name="up" size={16} color="blue" style={{marginTop: 5, marginLeft: 5}}/>}
+              </TouchableOpacity>
+            </View>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Amount</Typography>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Balance</Typography>
             <Typography></Typography>

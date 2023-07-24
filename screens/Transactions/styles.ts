@@ -25,7 +25,8 @@ export const styles:any = StyleSheet.create<any>({
     backgroundColor: "white",
     height: 68,
     justifyContent: 'space-between',
-    padding: 10
+    padding: 10,
+    zIndex: 100
   },
   bgWhite: {
     backgroundColor: "white",
@@ -48,6 +49,5 @@ export const styles:any = StyleSheet.create<any>({
     alignSelf: "center",
     backgroundColor: "#f9f9f9",
     borderColor: "transparent",
-    zIndex: 100
   },
 })

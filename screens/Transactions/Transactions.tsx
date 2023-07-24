@@ -75,7 +75,7 @@ export function Transactions({ navigation}: any) {
     try {
       setIsLoading(true);
       let search:any;
-          search= {     
+          search= {
           account_id: userData?.id,
           sort: "id",
           direction: "desc",
@@ -341,7 +341,7 @@ export function Transactions({ navigation}: any) {
           )
         }
         <View style={{paddingBottom: 140}}>
-            <Seperator backgroundColor={vars['grey']} />
+          <Seperator backgroundColor={vars['grey']} />
           <View style={styles.listHead}>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Name</Typography>
             <TouchableOpacity onPress={() =>{

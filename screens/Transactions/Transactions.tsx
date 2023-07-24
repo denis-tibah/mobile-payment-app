@@ -209,10 +209,6 @@ export function Transactions({ navigation}: any) {
   },[isMobileFilterShown]);
 
   useEffect(() => {
-    console.log('transactions', transactions);
-  }, [transactions])
-
-  useEffect(() => {
     fetchTransactions();
   }, []);
 

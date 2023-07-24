@@ -60,8 +60,6 @@ export const signin = createAsyncThunk(
       });
 
       const { message } = data;
-      console.log("login in resp credentials", values)
-      console.log("login in resp", data)
 
       if (data.code === 401 || !data)
         return rejectWithValue("Invalid email or password");
@@ -72,7 +70,7 @@ export const signin = createAsyncThunk(
       if (data.code === "200" || data.code === "201")
         return fulfillWithValue(data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return rejectWithValue("Something went wrong");
     }
   }

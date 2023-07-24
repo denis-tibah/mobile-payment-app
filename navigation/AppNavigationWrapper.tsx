@@ -99,13 +99,16 @@ export default function AppNavigationWrapper() {
     data: {},
   });
 
-  const appState = useRef(AppState.currentState);
+  /* const appState = useRef(AppState.currentState); */
 
   const [expoPushToken, setExpoPushToken] = useState<string>();
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
   const [selectedNavIndex, setNavIndex] = useState<number>(1);
-  const [aState, setAppState] = useState(AppState.currentState);
+  /* const [appCurrentState, setAppState] = useState(AppState.currentState); */
+  const [isAppInactive, setIsAppInactive] = useState(false);
+  const INACTIVE_TIMEOUT = 30000; // 30 seconds (adjust as needed)
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   //register token hen app opens
   // useEffect(() => {
@@ -144,10 +147,6 @@ export default function AppNavigationWrapper() {
   const handlePushNotification = (notification: any) => {
     if (notification?.request?.identifier === lastNotification) return;
     const transactionDetails = notification?.request?.content?.data;
-    console.log(
-      "🚀 ~ file: AppNavigationWrapper.tsx:147 ~ handlePushNotification ~ transactionDetails:",
-      transactionDetails
-    );
     const emailverificationDetails =
       notification?.request?.trigger?.remoteMessage?.data;
 
@@ -191,10 +190,6 @@ export default function AppNavigationWrapper() {
         emailverificationDetails,
         userId: userData?.id,
       });
-      // navigation.navigate(screenNames.emailVerified, {
-      //   emailverificationDetails,
-      //   userId: userData?.id,
-      // });
     }
   };
 
@@ -242,15 +237,16 @@ export default function AppNavigationWrapper() {
 
   // }, [aState]);
 
-  useEffect(() => {
+  /*  useEffect(() => {
+    console.log("mounting");
     const handleChange = AppState.addEventListener(
       "change",
       async (nextAppState) => {
         const isBiometricAuth = await isBiometric();
-
-        // console.log('Next AppState is: ', nextAppState);
-        // setAppState(nextAppState);
-
+        console.log(
+          "🚀 ~ file: AppNavigationWrapper.tsx:250 ~ isBiometricAuth:",
+          isBiometricAuth
+        );
         if (
           appState.current.match(/background|inactive/) &&
           nextAppState === "active" &&
@@ -258,17 +254,62 @@ export default function AppNavigationWrapper() {
         ) {
           dispatch(signout());
         }
-        // console.log(nextAppState, "CURRENT");
         if (nextAppState === "background") {
         }
         appState.current = nextAppState;
       }
     );
+
     return () => {
+      console.log("unmounted");
       handleChange.remove();
     };
-  }, []);
+  }, []); */
 
+  useEffect(() => {
+    const handleAppStateChange = async (nextAppState: any) => {
+      const isBiometricAuth = await isBiometric();
+
+      if (nextAppState === "active") {
+        // if nextAppState is active clear/refresh the timer
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+          timerRef.current = null;
+        }
+      } else {
+        // if nextAppState is in other state run a timer and if the reach INACTIVE_TIMEOUT and isBiometricAuth, log out the user
+        timerRef.current = setTimeout(() => {
+          if (isBiometricAuth) {
+            dispatch(signout());
+            timerRef.current = null;
+          }
+        }, INACTIVE_TIMEOUT);
+
+        return () => {
+          // Clear the timer if the component unmounts
+          if (timerRef.current) {
+            clearTimeout(timerRef.current);
+            timerRef.current = null;
+          }
+        };
+      }
+    };
+
+    // Add event listeners when the component mounts
+    const handleAppStateChangeEventListener = AppState.addEventListener(
+      "change",
+      handleAppStateChange
+    );
+
+    return () => {
+      handleAppStateChangeEventListener.remove();
+      // Clear the timer if the component unmounts
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, []);
   return (
     <>
       <TransactionApprovalScreen

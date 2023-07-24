@@ -55,13 +55,8 @@ export function MyAccount({ navigation }: any) {
           status: "PROCESSING"
       }
         // await dispatch<any>(getTransactions(userData));
- 
-        setTimeout(() => {
-            setRefreshing(false);
-            // console.log("2 get new transactions for userData.id is ", userData);
-          }, 10);
 
-        await dispatch<any>(getTransactions(search))
+        await dispatch<any>(getTransactionsWithFilters(search))
         await dispatch<any>(getAccountDetails(userData.id));
       }
     } catch (error) {
@@ -80,7 +75,7 @@ export function MyAccount({ navigation }: any) {
       }
         // await dispatch<any>(getTransactions(userData));
         // console.log('userData?.id ',userData?.id);
-        await dispatch<any>(getTransactions(search))
+        await dispatch<any>(getTransactionsWithFilters(search))
         await dispatch<any>(getAccountDetails(userData.id));
       }
     } catch (error) {

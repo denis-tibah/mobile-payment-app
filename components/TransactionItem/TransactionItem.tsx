@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Text, View, TouchableOpacity, Pressable } from "react-native";
 import {
   formatAmountTableValue,
@@ -27,7 +27,6 @@ interface TransactionItemProps {
 export function TransactionItem({ data }: TransactionItemProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-
   const handleOnOpen = () => {
     setIsOpen(!isOpen);
   };
@@ -52,8 +51,6 @@ export function TransactionItem({ data }: TransactionItemProps) {
         return <EuroIcon size={18} color={+data?.amount > 0 ? "green" : "red"} />
       }
   }
-  
-
 
   return (
     <>
@@ -89,19 +86,16 @@ export function TransactionItem({ data }: TransactionItemProps) {
             flexDirection="row"
             alignItems="center"
           >
-
-            
-             {data.isCardTx ?  
-                 (    <View style={styles.cardpayments}>
-                       {currencyIcon(data?.currency)}
-                      </View>
-                 
-                 )
-                : currencyIcon(data?.currency)
-           
-             }   
-{/*       
-           {data?.currency === "EUR"  ? (
+            {data.isCardTx ?
+                (    
+                <View style={styles.cardpayments}>
+                  {currencyIcon(data?.currency)}
+                </View>
+                )
+              : currencyIcon(data?.currency)
+              }   
+          {/*       
+          {data?.currency === "EUR"  ? (
               <EuroIcon size={18} color={+data?.amount > 0 ? "green" : "red"} />
             ) : (
               <DollarIcon size={18} color="#278664" />

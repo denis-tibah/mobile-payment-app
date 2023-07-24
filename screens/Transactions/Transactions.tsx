@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { View, ScrollView, TouchableOpacity } from "react-native";
 import { useDebounce } from 'usehooks-ts'
 import { useDispatch, useSelector } from "react-redux";
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons, AntDesign } from '@expo/vector-icons';
 import FormGroup from "../../components/FormGroup";
 import Heading from "../../components/Heading";
 import TransactionItem from "../../components/TransactionItem";
@@ -74,14 +74,13 @@ export function Transactions({ navigation}: any) {
   const fetchTransactions = async () => {
     try {
       setIsLoading(true);
-      let search:any;
-          search= {
+      let search: any = {
           account_id: userData?.id,
           sort: "id",
           direction: "desc",
-          status: "PROCESSING"
+          status: "PROCESSING",
       }
-      if (userData) await dispatch<any>(getTransactions(search));
+      if (userData) await dispatch<any>(getTransactionsWithFilters(search));
     } catch (error) {
       console.log({ error });
     } finally {
@@ -207,7 +206,11 @@ export function Transactions({ navigation}: any) {
     if (!isMobileFilterShown) {
       clearFilter();
     }
-  },[isMobileFilterShown])
+  },[isMobileFilterShown]);
+
+  useEffect(() => {
+    console.log('transactions', transactions);
+  }, [transactions])
 
   useEffect(() => {
     fetchTransactions();

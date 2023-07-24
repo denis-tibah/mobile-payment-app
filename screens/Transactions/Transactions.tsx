@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { View, ScrollView, TouchableOpacity } from "react-native";
 import { useDebounce } from 'usehooks-ts'
 import { useDispatch, useSelector } from "react-redux";
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons, AntDesign } from '@expo/vector-icons';
 import FormGroup from "../../components/FormGroup";
 import Heading from "../../components/Heading";
 import TransactionItem from "../../components/TransactionItem";
@@ -37,6 +37,8 @@ const currentDate = new Date();
 const initialSearchFieldData: SearchFields = {
   account_id: 0,
   sort:  "id",
+  direction: 'desc',
+  status: 'PROCESSING'
 };
 
 export function Transactions({ navigation}: any) {
@@ -46,7 +48,9 @@ export function Transactions({ navigation}: any) {
   );
 
   const [isMobileFilterShown, setIsMobileFilterShown] = useState<boolean>(false);
-  const debounceIsMobileFilterShown = useDebounce<boolean>(isMobileFilterShown, 500);
+  const debounceIsMobileFilterShown = useDebounce<boolean>(isMobileFilterShown, 300);
+  const [sortByDate, setSortByDate] = useState<boolean>(false);
+  const debounceSortByDate = useDebounce<boolean>(sortByDate, 500);
   const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState(null);
   const [openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
   const userData = useSelector((state: RootState) => state?.auth?.userData);
@@ -70,14 +74,13 @@ export function Transactions({ navigation}: any) {
   const fetchTransactions = async () => {
     try {
       setIsLoading(true);
-      let search:any;
-          search= {     
+      let search: any = {
           account_id: userData?.id,
           sort: "id",
           direction: "desc",
-          status: "PROCESSING"
+          status: "PROCESSING",
       }
-      if (userData) await dispatch<any>(getTransactions(search));
+      if (userData) await dispatch<any>(getTransactionsWithFilters(search));
     } catch (error) {
       console.log({ error });
     } finally {
@@ -184,11 +187,30 @@ export function Transactions({ navigation}: any) {
     });
   };
 
+  const handleSortByDate = () => {
+    const sortState = sortByDate ? 'asc' : 'desc';
+    fetchTransactionsWithFilters({
+      ...searchFieldData,
+      account_id: userData?.id,
+      direction: sortState,
+    });
+  }
+
+  useEffect(() => {
+    if (searchFieldData && userData) {
+      handleSortByDate();
+    }
+  },[debounceSortByDate, searchFieldData]);
+
   useEffect(() => {
     if (!isMobileFilterShown) {
       clearFilter();
     }
-  },[isMobileFilterShown])
+  },[isMobileFilterShown]);
+
+  useEffect(() => {
+    console.log('transactions', transactions);
+  }, [transactions])
 
   useEffect(() => {
     fetchTransactions();
@@ -322,10 +344,15 @@ export function Transactions({ navigation}: any) {
           )
         }
         <View style={{paddingBottom: 140}}>
-            <Seperator backgroundColor={vars['grey']} />
+          <Seperator backgroundColor={vars['grey']} />
           <View style={styles.listHead}>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Name</Typography>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
+            <TouchableOpacity onPress={() =>{
+                setIsLoading(true);
+                setSortByDate(!sortByDate);
+              }}>
+              <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
+            </TouchableOpacity>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Amount</Typography>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Balance</Typography>
             <Typography></Typography>

@@ -142,17 +142,20 @@ export function MyAccount({ navigation }: any) {
 
 
         <View style={styles.balances}>
-        <Typography color={"medium-grey2"} fontWeight={400} fontSize={18}>
+        <Typography color={"medium-grey2"} fontWeight={400} fontSize={17}>
               {getCurrency(totalBalance?.currency)}{" "}
               {totalBalance?.curbal || "0.0"}
+              
             </Typography>
-            <Typography color="#E53CA9"  fontWeight={400} fontSize={18}>
+            <Typography color="#E53CA9"  fontWeight={400} fontSize={17}>
               {getCurrency(totalBalance?.currency)}{" "}
               {getPendingAmount(totalBalance?.opnbal ||"0.00",totalBalance?.curbal ||"0.00")}
+         
             </Typography>
-            <Typography color={"medium-grey2"} fontWeight={400} fontSize={18}>
+            <Typography color={"medium-grey2"} fontWeight={400} fontSize={17}>
               {getCurrency(totalBalance?.currency)}{" "}
               {totalBalance?.avlbal || "0.00"}
+              
             </Typography>
           </View>
         <View>

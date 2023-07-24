@@ -35,7 +35,7 @@ export const styles: any = StyleSheet.create<any>({
   },
   incomeBox__box__bic: {
     display: "flex",
-    gap: 8,
+    gap: 20,
     flexDirection: "row",
     alignItems: "center",
     marginBottom: -20,
@@ -53,5 +53,12 @@ export const styles: any = StyleSheet.create<any>({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: -10,
+  },
+  clipboardContainer: {
+    position: "absolute",
+    bottom: 5,
+    right: -25,
+    // marginTop: -20,
+    // marginLeft: 250
   },
 });

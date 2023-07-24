@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { View,TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { styles } from "./styles";
 import Typography from "../Typography";
@@ -9,6 +9,10 @@ import { getCurrency } from "../../utils/helpers";
 import { getAccountDetails } from "../../redux/account/accountSlice";
 import { RootState } from "../../store";
 import { getPendingAmount } from "../../utils/helpers";
+import * as Clipboard from "expo-clipboard";
+import CopyClipboard from "../../assets/icons/CopyClipboard";
+
+
 
 export function IncomeBox() {
   const userData = useSelector((state: RootState) => state.auth.userData);
@@ -17,6 +21,12 @@ export function IncomeBox() {
 
   const getUserInfo = async () => {
     if (userData) await dispatch<any>(getAccountDetails(userData.id));
+  };
+
+  const handleCopyToClipboard = async () => {
+    await Clipboard.setStringAsync(infoData?.info?.iban || "");
+
+
   };
 
   useEffect(() => {
@@ -150,7 +160,14 @@ export function IncomeBox() {
           <Box>
             <Typography fontFamily="Mukta-Regular" fontSize={14}>
               {infoData?.info?.iban}
+                
             </Typography>
+              <TouchableOpacity onPress={handleCopyToClipboard}>
+                <View style={styles.clipboardContainer}>
+                  <CopyClipboard color="blue" size={18} />
+                </View>
+              </TouchableOpacity>
+           
           </Box>
         </Box>
       </Box>

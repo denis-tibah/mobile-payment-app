@@ -25,6 +25,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import LoadingScreen from "../../components/Loader/LoadingScreen";
 import { dateFormatter } from "../../utils/dates";
 import { TRANSACTIONS_STATUS } from "../../utils/constants";
+import ArrowDown from "../../assets/icons/ArrowDown";
 
 const searchOptions = [
   // { label: "BIC", value: 'bic' },
@@ -396,12 +397,15 @@ export function Transactions({ navigation}: any) {
           <Seperator backgroundColor={vars['grey']} />
           <View style={styles.listHead}>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Name</Typography>
-            <TouchableOpacity onPress={() =>{
-                setIsLoading(true);
-                setSortByDate(!sortByDate);
-              }}>
-              <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
-            </TouchableOpacity>
+            <View style={{display: 'flex', flexDirection: 'row'}}>
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
+              <TouchableOpacity onPress={() => {
+                  setIsLoading(true);
+                  setSortByDate(!sortByDate);
+                }}>
+                {sortByDate ? <ArrowDown color="blue" style={{marginTop: 5, marginLeft: 5}}/> : <AntDesign name="up" size={16} color="blue" style={{marginTop: 5, marginLeft: 5}}/>}
+              </TouchableOpacity>
+            </View>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Amount</Typography>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Balance</Typography>
             <Typography></Typography>

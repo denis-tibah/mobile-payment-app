@@ -29,6 +29,14 @@ import ArrowDown from "../../assets/icons/ArrowDown";
 import { arrayChecker } from "../../utils/helper";
 import { Transaction, TransactionDetails } from "../../models/Transactions";
 import Pagination from "../../components/Pagination/Pagination";
+import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
+
+export enum TransactionStatus {
+  PENDING = 'pending',
+  PROCESSING = 'processing',
+  SUCCESS = 'success',
+  CANCELLED = 'cancelled'
+}
 export interface GroupedByDateTransaction {
   [date: string]: Transaction[];
 }
@@ -136,6 +144,9 @@ export function Transactions({ navigation }: any) {
           }, {});
           setTxData(groupedByDateTransactions);
           return _transactions;
+        })
+        .catch((err: any) => {
+          console.log({ err });
         });
       }
     } catch (error) {
@@ -499,29 +510,28 @@ export function Transactions({ navigation }: any) {
           </View>
           <Seperator backgroundColor={vars['grey']} />
           <View>
-          { txData ? Object.keys(txData).map( (date: string) => {
+          { txData ? Object.keys(txData).map((date: string) => {
             let _amount: number = 0;
-            const nameAndAmountList = txData[date].map((tx, index) => {
-              const { name, amount } = tx;
+            const transactionsByDate = txData[date].map((tx, index) => {
+              const { amount } = tx;
               _amount = Number(_amount) + Number(amount);
-              return {
-                name,
-                amount,
-              }
+              return tx;
             });
-            const transactionData = {
-              ...(txData[date][0])
+            const shownData = {
+              date,
+              totalAmount: _amount.toString(),
+              balance: txData[date][0].running_balance,
+              currency: txData[date][0].currency,
             };
-            return <TransactionsByDate
-              key={txData[date][0].transaction_uuid}
-              groupedTransactions={transactionData}
-              nameAndAmount={nameAndAmountList}
-              totalAmount={_amount.toString()}
-            />
-          }) :
-            <>
-            </>
-          }
+            return (
+              <TransactionsByDate
+                key={txData[date][0].transaction_uuid}
+                shownData={shownData}
+                transactionsByDate={transactionsByDate}
+                totalAmount={_amount.toString()}
+              />
+            )
+            }) : null }
           </View>
           <Seperator backgroundColor={vars['grey']} />
           <View>

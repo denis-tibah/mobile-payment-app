@@ -16,8 +16,7 @@ export interface Transaction {
   transaction_datetime: string;
   transaction_id: number;
   transaction_uuid: string;
-  isCardTx:boolean;
-  
+  isCardTx: boolean;
   total_amount?: string;
 }
 

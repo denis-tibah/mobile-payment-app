@@ -261,10 +261,16 @@ const termsAndConditionSchema = Yup.object({
   newsLetterSubscription: Yup.boolean().notRequired(),
 });
 
+const verifyPhoneNumberSchema = Yup.object({
+  countryCode: Yup.string().required("Country code  is required"),
+  phoneNumber: Yup.string().required("Phone number is required"),
+});
+
 export {
   addressDetailsSchema,
   financialDetailsSchema,
   loginCredentialsSchema,
   profileDetailsSchema,
   termsAndConditionSchema,
+  verifyPhoneNumberSchema,
 };

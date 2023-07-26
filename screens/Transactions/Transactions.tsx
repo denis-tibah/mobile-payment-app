@@ -502,7 +502,9 @@ export function Transactions({ navigation }: any) {
         <View style={{ paddingBottom: 140 }}>
           <Seperator backgroundColor={vars["grey"]} />
           <View style={styles.listHead}>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Date</Typography>
+            <TouchableOpacity onPress={() => setSortByDate(!sortByDate)}>
+              <Typography fontSize={16} fontFamily="Nunito-SemiBold">Date</Typography>
+            </TouchableOpacity>
             {/* <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography> */}
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Total Amount</Typography>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Balance</Typography>
@@ -510,7 +512,11 @@ export function Transactions({ navigation }: any) {
           </View>
           <Seperator backgroundColor={vars['grey']} />
           <View>
-          { txData ? Object.keys(txData).map((date: string) => {
+          { txData ? Object.keys(txData)
+          .sort((a, b) => {
+            return sortByDate ? new Date(a).getTime() - new Date(b).getTime() : new Date(b).getTime() - new Date(a).getTime();
+          })
+          .map((date: string) => {
             let _amount: number = 0;
             const transactionsByDate = txData[date].map((tx, index) => {
               const { amount } = tx;

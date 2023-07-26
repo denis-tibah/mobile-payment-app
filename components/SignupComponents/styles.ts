@@ -72,4 +72,37 @@ export const styles = StyleSheet.create({
     marginLeft: 24,
     marginBottom: 18,
   },
+  pinCodeContainer: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 10,
+    textAlign: "center",
+  },
+  noCode: {
+    color: vars["accent-pink"],
+    fontSize: 14,
+    fontWeight: "400",
+    marginTop: 24,
+  },
+  phoneNumberContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingTop: 10,
+    paddingBottom: 24,
+    paddingLeft: 24,
+    padding: 24,
+  },
+  phoneNumberInnerContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  alternatePhoneNumberContainer: {
+    paddingTop: 0,
+    paddingBottom: 24,
+    paddingLeft: 24,
+    padding: 24,
+  },
 });

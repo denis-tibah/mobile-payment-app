@@ -114,6 +114,9 @@ export function getFormattedDate(dateToFormat: any) {
 }
 
 export const formatCurrencyToLocalEn = (currency: string) => {
+  if (!currency) {
+    return 0.0
+  }
   const trimString = currency.replace(/[^0-9.-]+/g, "");
   if (trimString) {
     return parseFloat(trimString).toLocaleString("en-US", {
@@ -121,5 +124,4 @@ export const formatCurrencyToLocalEn = (currency: string) => {
       maximumFractionDigits: 2,
     });
   }
-  return 0.0;
 };

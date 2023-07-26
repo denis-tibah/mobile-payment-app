@@ -170,7 +170,9 @@ export function Payment({ navigation }: any) {
 
   function gotoLimitsPage() {
     // console.log('go to limist page');
-    navigation.navigate("profile");
+    navigation.navigate("profile", {
+      screen: 'Limits',
+    });
   }
 
     //Enable or Disable if its external payment

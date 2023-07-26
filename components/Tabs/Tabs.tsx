@@ -1,4 +1,4 @@
-import { useState, Children, cloneElement } from "react";
+import { useState, Children, cloneElement, useEffect } from "react";
 import { View, ScrollView } from "react-native";
 import Button from "../Button";
 import { styles } from "./styles";
@@ -7,9 +7,21 @@ export function Panel({ children }: any) {
   return <>{children}</>;
 }
 
-export function Tabs({ children }: any) {
+export function Tabs({ children, screen }: any) {
   const [active, setActive] = useState(0);
   const setActiveTab = (index: any) => setActive(index);
+
+  useEffect(() => {
+    if (screen === undefined) return;
+    const limitsIndex = Children.toArray(children).findIndex(
+      (child: any) => 
+        child.props.text === screen
+    );
+    if (limitsIndex !== -1) {
+      setActiveTab(limitsIndex);
+    }
+  }, [screen]);
+
   return (
     <View>
       <View style={styles.tabBar}>

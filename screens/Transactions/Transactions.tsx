@@ -29,24 +29,9 @@ import ArrowDown from "../../assets/icons/ArrowDown";
 import { arrayChecker } from "../../utils/helper";
 import { Transaction, TransactionDetails,TransactionDetailsNew } from "../../models/Transactions";
 import Pagination from "../../components/Pagination/Pagination";
-<<<<<<< HEAD
-<<<<<<< HEAD
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 
 export interface GroupedByDateTransactionObject {
-=======
-=======
-import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
-
-export enum TransactionStatus {
-  PENDING = 'pending',
-  PROCESSING = 'processing',
-  SUCCESS = 'success',
-  CANCELLED = 'cancelled'
-}
->>>>>>> a69a680 (added UI for showing details for each transaction)
-export interface GroupedByDateTransaction {
->>>>>>> 47ae96a (Added transactions by date on transactions screen)
   [date: string]: Transaction[];
 }
 const searchOptions = [
@@ -69,16 +54,7 @@ const initialSearchFieldData: SearchFilter = {
 
 export function Transactions({ navigation }: any) {
   const dispatch = useDispatch();
-<<<<<<< HEAD
   const userData = useSelector((state: RootState) => state?.auth?.userData);
-=======
-  const loadingTransactions = useSelector((state:RootState) => state.transaction.loading)
-  const userData = useSelector((state: RootState) => state?.auth?.userData);
-  const transactions = useSelector(
-    (state: RootState) => state?.transaction?.data
-  );
-  const [_transactions, setTransactions] = useState<Transaction[]>([]);
->>>>>>> 47ae96a (Added transactions by date on transactions screen)
   const [isMobileFilterShown, setIsMobileFilterShown] = useState<boolean>(false);
   const [sortByDate, setSortByDate] = useState<boolean>(false);
   const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState<string>("");
@@ -91,11 +67,7 @@ export function Transactions({ navigation }: any) {
     useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const debounceSearchText = useDebounce<string>(searchText, 300);
-<<<<<<< HEAD
   const [txData, setTxData] = useState<GroupedByDateTransactionObject>();
-=======
-  const [txData, setTxData] = useState<GroupedByDateTransaction>();
->>>>>>> 47ae96a (Added transactions by date on transactions screen)
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchFieldData, setSearchFieldData] = useState<SearchFilter>(initialSearchFieldData);
   const [showPickerDateTo, setShowPickerDateTo] = useState(false);
@@ -156,8 +128,8 @@ export function Transactions({ navigation }: any) {
           // console.log('transaction ',res)
           // const [transaction] = res;
           const transactionData = res.transactions;
-          const last_page=res.last_page ??= 0;
-          const current_page=res.current_page ??= 0 ;
+          const last_page=res.last_page;
+          const current_page=res.current_page;
 
           // console.log('data ',transactionData)
 
@@ -170,30 +142,6 @@ export function Transactions({ navigation }: any) {
           setIsLoading(false);
         });
       }
-<<<<<<< HEAD
-=======
-      if (userData) {
-        await dispatch<any>(getTransactions(search))
-        .unwrap()
-        .then((_transactions: Transaction[]) => {
-          const sanitizeDate = _transactions.map((tx: Transaction) => {
-            return {
-              ...tx,
-              transaction_datetime: dateFormatter(tx.transaction_datetime),
-            }
-          });
-          const groupedByDateTransactions = sanitizeDate.reduce((current: any, element) => {
-            (current[element.transaction_datetime] ??= []).push(element);
-            return current;
-          }, {});
-          setTxData(groupedByDateTransactions);
-          return _transactions;
-        })
-        .catch((err: any) => {
-          console.log({ err });
-        });
-      }
->>>>>>> 47ae96a (Added transactions by date on transactions screen)
     } catch (error) {
       console.log("error aristos 1");
       console.log({ error });
@@ -556,7 +504,6 @@ export function Transactions({ navigation }: any) {
         <View>
           <Seperator backgroundColor={vars["grey"]} />
           <View style={styles.listHead}>
-<<<<<<< HEAD
             <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
             <TouchableOpacity onPress={() => setSortByDate(!sortByDate)}>
             { sortByDate ? 
@@ -567,18 +514,10 @@ export function Transactions({ navigation }: any) {
             {/* <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography> */}
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Total Amount</Typography>
             {/* <Typography fontSize={16} fontFamily="Nunito-SemiBold">Balance</Typography> */}
-=======
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Date</Typography>
-            {/* <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography> */}
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Total Amount</Typography>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Balance</Typography>
->>>>>>> 47ae96a (Added transactions by date on transactions screen)
             <Typography></Typography>
           </View>
           <Seperator backgroundColor={vars['grey']} />
           <View>
-<<<<<<< HEAD
-<<<<<<< HEAD
           { txData ? Object.keys(txData)
           .sort((a, b) => {
             return sortByDate ? new Date(a).getTime() - new Date(b).getTime() : new Date(b).getTime() - new Date(a).getTime();
@@ -606,46 +545,6 @@ export function Transactions({ navigation }: any) {
               />
             )
             }) : null }
-=======
-          { txData ? Object.keys(txData).map( (date: string) => {
-=======
-          { txData ? Object.keys(txData).map((date: string) => {
->>>>>>> a69a680 (added UI for showing details for each transaction)
-            let _amount: number = 0;
-            const transactionsByDate = txData[date].map((tx, index) => {
-              const { amount } = tx;
-              _amount = Number(_amount) + Number(amount);
-              return tx;
-            });
-            const shownData = {
-              date,
-              totalAmount: _amount.toString(),
-              balance: txData[date][0].running_balance,
-              currency: txData[date][0].currency,
-            };
-<<<<<<< HEAD
-            return <TransactionsByDate
-              key={txData[date][0].transaction_uuid}
-              groupedTransactions={transactionData}
-              nameAndAmount={nameAndAmountList}
-              totalAmount={_amount.toString()}
-            />
-          }) :
-            <>
-            </>
-          }
->>>>>>> 47ae96a (Added transactions by date on transactions screen)
-=======
-            return (
-              <TransactionsByDate
-                key={txData[date][0].transaction_uuid}
-                shownData={shownData}
-                transactionsByDate={transactionsByDate}
-                totalAmount={_amount.toString()}
-              />
-            )
-            }) : null }
->>>>>>> a69a680 (added UI for showing details for each transaction)
           </View>
           <Seperator backgroundColor={vars['grey']} />
           <View> 

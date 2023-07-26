@@ -351,7 +351,6 @@ export function TransactionItem({ data }: TransactionItemProps) {
                   {data?.revenueType === "PREAUTH" && (
                     <Chip label="Preauth" color="orange" />
                   )}
-                 
                 </Box>
                   }
             </Box>

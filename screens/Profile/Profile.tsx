@@ -62,7 +62,8 @@ export interface SelectOption {
   label: string;
   value: string;
 }
-export function Profile({ navigation }: any) {
+export function Profile({ route, navigation }: any) {
+  const getRedirectScreen = route.params?.screen;
   const dispatch = useDispatch();
   const showChangeRequest = "Y";
   const salutationOptions: SelectOption[] = [
@@ -185,7 +186,7 @@ export function Profile({ navigation }: any) {
         <IncomeBox />
         {/* content */}
         <View style={styles.content}>
-          <Tabs>
+          <Tabs screen={getRedirectScreen}>
             <Tabs.Panel text="Profile" icon={<ProfileIcon />}>
               <Formik
                 // enableReinitialize

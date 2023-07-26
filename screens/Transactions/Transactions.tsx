@@ -30,10 +30,21 @@ import { arrayChecker } from "../../utils/helper";
 import { Transaction, TransactionDetails,TransactionDetailsNew } from "../../models/Transactions";
 import Pagination from "../../components/Pagination/Pagination";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 
 export interface GroupedByDateTransactionObject {
 =======
+=======
+import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
+
+export enum TransactionStatus {
+  PENDING = 'pending',
+  PROCESSING = 'processing',
+  SUCCESS = 'success',
+  CANCELLED = 'cancelled'
+}
+>>>>>>> a69a680 (added UI for showing details for each transaction)
 export interface GroupedByDateTransaction {
 >>>>>>> 47ae96a (Added transactions by date on transactions screen)
   [date: string]: Transaction[];
@@ -177,6 +188,9 @@ export function Transactions({ navigation }: any) {
           }, {});
           setTxData(groupedByDateTransactions);
           return _transactions;
+        })
+        .catch((err: any) => {
+          console.log({ err });
         });
       }
 >>>>>>> 47ae96a (Added transactions by date on transactions screen)
@@ -564,6 +578,7 @@ export function Transactions({ navigation }: any) {
           <Seperator backgroundColor={vars['grey']} />
           <View>
 <<<<<<< HEAD
+<<<<<<< HEAD
           { txData ? Object.keys(txData)
           .sort((a, b) => {
             return sortByDate ? new Date(a).getTime() - new Date(b).getTime() : new Date(b).getTime() - new Date(a).getTime();
@@ -593,18 +608,22 @@ export function Transactions({ navigation }: any) {
             }) : null }
 =======
           { txData ? Object.keys(txData).map( (date: string) => {
+=======
+          { txData ? Object.keys(txData).map((date: string) => {
+>>>>>>> a69a680 (added UI for showing details for each transaction)
             let _amount: number = 0;
-            const nameAndAmountList = txData[date].map((tx, index) => {
-              const { name, amount } = tx;
+            const transactionsByDate = txData[date].map((tx, index) => {
+              const { amount } = tx;
               _amount = Number(_amount) + Number(amount);
-              return {
-                name,
-                amount,
-              }
+              return tx;
             });
-            const transactionData = {
-              ...(txData[date][0])
+            const shownData = {
+              date,
+              totalAmount: _amount.toString(),
+              balance: txData[date][0].running_balance,
+              currency: txData[date][0].currency,
             };
+<<<<<<< HEAD
             return <TransactionsByDate
               key={txData[date][0].transaction_uuid}
               groupedTransactions={transactionData}
@@ -616,6 +635,17 @@ export function Transactions({ navigation }: any) {
             </>
           }
 >>>>>>> 47ae96a (Added transactions by date on transactions screen)
+=======
+            return (
+              <TransactionsByDate
+                key={txData[date][0].transaction_uuid}
+                shownData={shownData}
+                transactionsByDate={transactionsByDate}
+                totalAmount={_amount.toString()}
+              />
+            )
+            }) : null }
+>>>>>>> a69a680 (added UI for showing details for each transaction)
           </View>
           <Seperator backgroundColor={vars['grey']} />
           <View> 

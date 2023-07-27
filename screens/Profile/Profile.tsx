@@ -226,6 +226,8 @@ export function Profile({ route, navigation }: any) {
                         </FormGroup>
                       </View>
                       <View style={{ flex: 0.7 }}>
+                        {/* a title with 14px fontsie and grey text */}
+                        <Text style={styles.titleTag}>{`Salutation`}</Text>
                         <DropDownPicker
                           schema={{ label: "label", value: "value" }}
                           onSelectItem={(value: any) => {
@@ -249,6 +251,7 @@ export function Profile({ route, navigation }: any) {
                     </View>
                     <View style={{ flex: 0.7 }}>
                       <FormGroup validationError={errors.first_name}>
+                      <Text style={styles.titleTag}>{`First name`}</Text>
                         <FormGroup.Input
                           icon={<ProfileIcon />}
                           onChangeText={handleChange("first_name")}
@@ -259,6 +262,7 @@ export function Profile({ route, navigation }: any) {
                       </FormGroup>
                     </View>
                     <FormGroup validationError={errors.last_name}>
+                    <Text style={styles.titleTag}>{`Last name`}</Text>
                       <FormGroup.Input
                         icon={<ProfileIcon />}
                         onChangeText={handleChange("last_name")}
@@ -272,6 +276,8 @@ export function Profile({ route, navigation }: any) {
                       />
                     </FormGroup>
                     <FormGroup validationError={errors.annual_salary}>
+                    <Text style={styles.titleTag}>{`Annual Salary`}</Text>
+
                       <FormGroup.Input
                         icon={<PigIcon />}
                         onChangeText={handleChange("annual_salary")}
@@ -281,6 +287,8 @@ export function Profile({ route, navigation }: any) {
                       />
                     </FormGroup>
                     <FormGroup validationError={errors.source_of_wealth}>
+                    <Text style={styles.titleTag}>{`Source of income`}</Text>
+
                       <DropDownPicker
                         schema={{ label: "label", value: "value" }}
                         onSelectItem={(value: any) => {
@@ -554,9 +562,19 @@ export function Profile({ route, navigation }: any) {
                         }
                       />
                     </FormGroup>
+                    <View style={{ flexDirection: "row", paddingLeft: 12 }}>
+                      <Button
+                        leftIcon={<TransactionIcon color="blue" />}
+                        color="light-blue"
+                      >
+                        Change request
+                      </Button>
+                    </View>
                   </View>
                 )}
+                
               </Formik>
+
             </Tabs.Panel>
 
             <Tabs.Panel text="Help" icon={<HelpIcon />}>

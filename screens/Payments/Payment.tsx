@@ -46,6 +46,7 @@ import { validationPaymentSchema } from "../../utils/validation";
 import { formatCurrencyToLocalEn } from "../../utils/helpers";
 import PaymentsIcon from "../../assets/icons/PaymentsIcon";
 import { screenNames } from "../../utils/helpers";
+import { it } from "node:test";
 
 export function Payment({ navigation }: any) {
   const infoData = useSelector((state: any) => state.account.details);
@@ -95,7 +96,7 @@ export function Payment({ navigation }: any) {
         label: beneficiary.name,
         value: beneficiary.uuid,
       })),
-      { label: "Add New", value: null },
+      { label: "Add New", value: 'none' },
     ]);
   }, [beneficiaryList]);
 
@@ -120,7 +121,7 @@ export function Payment({ navigation }: any) {
   }
 
   const handleSelectPayee = (item: any, values: any, setValues: any) => {
-    if (!item) {
+    if (item === 'none' || !item) {
       setValues({
         ...values,
         recipientname: "",

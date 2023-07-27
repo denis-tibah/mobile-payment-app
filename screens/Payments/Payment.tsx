@@ -49,6 +49,7 @@ import { screenNames } from "../../utils/helpers";
 
 export function Payment({ navigation }: any) {
   const infoData = useSelector((state: any) => state.account.details);
+  const validationSchema = validationPaymentSchema(infoData?.avlbal || 0);
   const userData = useSelector((state: RootState) => state.auth.userData);
   const dispatch = useDispatch();
   const beneficiaryList = useSelector((state: any) => state?.beneficiary?.data);
@@ -146,7 +147,6 @@ export function Payment({ navigation }: any) {
       const sort = "id";
       const direction = "desc";
       const status = "PROCESSING";
-
       // console.log('get latest transactions account_id, sort, direction, status ',id, ' ', sort, ' ', direction, ' ', status);
       // console.log('get latest transactions',userData);
 
@@ -189,7 +189,6 @@ export function Payment({ navigation }: any) {
       setExternalPayment('null');
     }
   }, [isExternalPayment]);
-
 
   const handleSubmitOTP = async ({ code }: { code: string }) => {
     await handleProccessPayment({ code });
@@ -252,7 +251,8 @@ export function Payment({ navigation }: any) {
           />
         </View>
         <Formik
-          validationSchema={validationPaymentSchema}
+          validationSchema={validationSchema}
+          validateOnChange={true}
           initialValues={{
             recipientname: "",
             recipientFirstname: "",
@@ -267,6 +267,7 @@ export function Payment({ navigation }: any) {
           }}
           onSubmit={(values) => {
             // console.log('initiate payment type ',externalPayment);
+
             dispatch(
               initiatePayment({
                 recipientFirstname: getFirstAndLastName(values.recipientname)
@@ -335,6 +336,7 @@ export function Payment({ navigation }: any) {
             values,
             errors,
             setValues,
+            touched,
           }) => (
             <View style={styles.content}>
               {displayModal && !paymentSuccessful && (
@@ -390,7 +392,7 @@ export function Payment({ navigation }: any) {
                 </FormGroup>
               </View> */}
               <View>
-                <FormGroup validationError={errors.amount}>
+                <FormGroup validationError={ touched.amount ? errors.amount : null}>
                   <FormGroup.Input
                     onChangeText={handleChange("amount")}
                     name="amount"
@@ -427,7 +429,7 @@ export function Payment({ navigation }: any) {
                 </FormGroup>
               </View>
               <View>
-                <FormGroup validationError={errors.creditor_iban}>
+                <FormGroup validationError={touched.creditor_iban ? errors.creditor_iban : null}>
                   <FormGroup.Input
                     name="creditor_iban"
                     editable={!selectedPayee}
@@ -440,7 +442,7 @@ export function Payment({ navigation }: any) {
                 </FormGroup>
               </View>
               <View>
-                <FormGroup validationError={errors.bic}>
+                <FormGroup validationError={touched.bic ? errors.bic: null}>
                   <FormGroup.Input
                     name="bic"
                     editable={!selectedPayee}
@@ -457,7 +459,7 @@ export function Payment({ navigation }: any) {
                 />
               </View>
               <View>
-                <FormGroup validationError={errors.reason}>
+                <FormGroup validationError={touched.reason ? errors.reason : null}>
                   <FormGroup.Input
                     name="reason"
                     onChangeText={handleChange("reason")}

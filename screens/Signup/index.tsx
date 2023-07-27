@@ -35,6 +35,8 @@ import LoginDetails from "../../components/SignupComponents/LoginDetails";
 import ProfileDetails from "../../components/SignupComponents/ProfileDetails";
 import TermsAndSecurity from "../../components/SignupComponents/TermsAndSecurity";
 import Verifications from "../../components/SignupComponents/Verifications";
+import VerificationLast from "../../components/SignupComponents/VerificationLast";
+import Sumsub from "../../components/SignupComponents/Sumsub";
 import EmailVerifiedScreen from "../EmailVerifiedMessage";
 
 export function SignupScreen({ navigation, route }: any) {
@@ -86,6 +88,11 @@ export function SignupScreen({ navigation, route }: any) {
       handleNextStep={handleNextStep}
       handlePrevStep={handlePrevStep}
     />,
+    <VerificationLast
+      handleNextStep={handleNextStep}
+      handlePrevStep={handlePrevStep}
+    />,
+    <Sumsub handlePrevStep={handlePrevStep} />,
     {
       /* <VerificationLast nextRegistrationForm={nextRegistrationForm} />,
     <Sumsub />, */
@@ -106,6 +113,8 @@ export function SignupScreen({ navigation, route }: any) {
             "Financial Details",
             "Terms & Security",
             "Verifications",
+            "Verification Last",
+            "Sumsub",
           ]}
           selectedNavIndex={selectedNavIndex}
           handleSelecNavIndex={handleSelecNavIndex}

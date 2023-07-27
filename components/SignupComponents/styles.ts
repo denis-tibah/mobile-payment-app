@@ -105,4 +105,19 @@ export const styles = StyleSheet.create({
     paddingLeft: 24,
     padding: 24,
   },
+  smsResentContainer: {
+    backgroundColor: "#0dca9d",
+  },
+  smsResentInnerContainer: {
+    flexDirection: "column",
+    margin: 20,
+  },
+  smsResentText: {
+    color: "#ffffff",
+    textAlign: "center",
+    fontWeight: "600",
+  },
+  smsResentFirstText: {
+    marginBottom: 8,
+  },
 });

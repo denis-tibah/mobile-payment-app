@@ -1,13 +1,12 @@
 import { FC, useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, Platform } from "react-native";
 import { useFormik } from "formik";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import Button from "../../components/Button";
 import Typography from "../../components/Typography";
 import PhoneIcon from "../../assets/icons/Phone";
 import ArrowDownIcon from "../../assets/icons/ArrowDown";
-import ArrowRightLong from "../../assets/icons/ArrowRightLong";
 import ArrowLeft from "../../assets/icons/ArrowLeft";
 import TickIcon from "../../assets/icons/TickWithoutCircle";
 import { Seperator } from "../../components/Seperator/Seperator";
@@ -16,6 +15,11 @@ import FixedBottomAction from "../../components/FixedBottomAction";
 import FormGroup from "../../components/FormGroup";
 import { registrationPhonePrefix } from "../../data/options";
 import { verifyPhoneNumberSchema } from "../../utils/formikSchema";
+import {
+  setRegistrationData,
+  sendSMSVerification,
+  getSumsubVerificationCode,
+} from "../../redux/registration/registrationSlice";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
 
@@ -28,15 +32,17 @@ const Verifications: FC<IVerifications> = ({
   handlePrevStep,
   handleNextStep,
 }) => {
+  const dispatch = useDispatch();
   const registration = useSelector((state: any) => state.registration);
+  console.log("🚀 ~ file: Verifications.tsx:33 ~ registration:", registration);
+
   const [isUpdatePhoneNumber, setUpdatePhoneNumber] = useState<Boolean>(false);
   const [isLoading, setIsLoading] = useState<Boolean>(false);
   const [isDisabledOtp, setIsDisabledOtp] = useState<Boolean>(true);
+  const [SMSResent, setSMSResent] = useState<Boolean>(false);
+  const [errorsOtp, setErrorsOtp] = useState({});
   const [otp, setOtp] = useState<Number>();
-  console.log(
-    "🚀 ~ file: Verifications.tsx:36 ~ otp:",
-    otp && otp.toString().length
-  );
+  console.log("🚀 ~ file: Verifications.tsx:46 ~ otp:", otp);
 
   useEffect(() => {
     if (otp && otp.toString().length && otp.toString().length === 6) {
@@ -62,10 +68,70 @@ const Verifications: FC<IVerifications> = ({
       validationSchema: verifyPhoneNumberSchema,
       onSubmit: ({ phoneNumber, countryCode }) => {
         setIsLoading(true);
+        dispatch(
+          setRegistrationData({
+            phone_number: `${countryCode}${phoneNumber}`,
+            identifier: `${countryCode}${phoneNumber}`,
+          })
+        );
+        dispatch(
+          sendSMSVerification({
+            identifier: `${countryCode}${phoneNumber}`,
+          })
+        )
+          .then((payload: any) => {
+            if (payload) {
+              setIsLoading(false);
+              setSMSResent(true);
+            }
+          })
+          .catch((error: any) => {
+            setIsLoading(false);
+            console.error(
+              `*** resent sms verification to ${countryCode}${phoneNumber} failed: ${error} ***`
+            );
+          });
+
+        setUpdatePhoneNumber(false);
       },
     });
 
-  const handleVerifyPhoneNumber = () => {};
+  const handleVerifyPhoneNumber = () => {
+    // dispatch action to send all the registration data
+    setIsLoading(true);
+    dispatch(
+      getSumsubVerificationCode({
+        ...registration.data,
+        code: otp,
+        provider: "ziyl",
+        country: registration.data.country_of_birth,
+      })
+    )
+      .unwrap()
+      .then((payload: any) => {
+        if (payload) {
+          if (payload[0].code === 201) {
+            setIsLoading(false);
+            dispatch(
+              setRegistrationData({
+                sumsubToken: payload[0].data.token,
+              })
+            );
+            localStorage.setItem("token_ziyl", payload[0].token_ziyl);
+            handleNextStep();
+            return;
+          }
+          setIsLoading(false);
+          // if the response code is not 201 will assume there was an error submitting the application
+          setErrorsOtp((prev) => ({ ...prev, message: payload[0].message }));
+        }
+      })
+      .catch((error: any) => {
+        setIsLoading(false);
+        console.error(`*** send data to backend error: ***`, error);
+      });
+  };
+
   return (
     <View style={styles.card}>
       <View style={styles.cardTitle}>
@@ -189,6 +255,20 @@ const Verifications: FC<IVerifications> = ({
                 </View>
               </View>
             )}
+            {SMSResent ? (
+              <View style={styles.smsResentContainer}>
+                <View style={styles.smsResentInnerContainer}>
+                  <Text
+                    style={[styles.smsResentText, styles.smsResentFirstText]}
+                  >
+                    Updated phone number
+                  </Text>
+                  <Text style={styles.smsResentText}>
+                    We resent the verification code to your new number
+                  </Text>
+                </View>
+              </View>
+            ) : null}
           </View>
           <FixedBottomAction rounded>
             <View
@@ -209,12 +289,19 @@ const Verifications: FC<IVerifications> = ({
                 Back
               </Button>
               <Button
-                color={isDisabledOtp ? "grey" : "light-pink"}
+                loading={isLoading}
+                color={isDisabledOtp || isLoading ? "grey" : "light-pink"}
                 onPress={handleVerifyPhoneNumber}
                 leftIcon={
                   <TickIcon
                     size={14}
-                    color={vars[isDisabledOtp ? "medium-grey2" : "accent-pink"]}
+                    color={
+                      vars[
+                        isDisabledOtp || isLoading
+                          ? "medium-grey2"
+                          : "accent-pink"
+                      ]
+                    }
                   />
                 }
                 disabled={isDisabledOtp}

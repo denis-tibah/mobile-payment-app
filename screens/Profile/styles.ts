@@ -172,4 +172,9 @@ export const styles:any = StyleSheet.create<any>({
     borderColor: "transparent",
     zIndex: 1000
   },
+  titleTag: {
+    fontSize: 12,
+    color: '#808080',
+    paddingLeft: 12,
+  }
 });

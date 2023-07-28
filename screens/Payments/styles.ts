@@ -45,4 +45,11 @@ export const styles:any = StyleSheet.create<any>({
     gap:8,
     alignItems: "center",
   },
+  checkboxSavePayee: {
+    flexDirection: "row",
+    fontSize: 12,
+    color: "#808080",
+    backgrounColor: "white",
+    paddingLeft: 12,
+  }
 });

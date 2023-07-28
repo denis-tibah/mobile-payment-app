@@ -65,10 +65,21 @@ export const validateLoginCredentials = (values:any) => {
   errors = { ...errors, ...validatePassword(values) };
   return errors;
 };
-export const validationPaymentSchema = Yup.object({
-  recipientname: Yup.string().required("This is a required field*"),
-  bic: Yup.string().required('This is a required field*'),
-  amount: Yup.string().required("This is a required field*"),
-  reason: Yup.string().required("This is a required field*"),
-  creditor_iban: Yup.string().required("This is a required field *"),
-});
+
+export const validationPaymentSchema = (maxAmount: number) => {
+  return Yup.object().shape({
+    recipientname: Yup.string().required("This is a required field*")
+    .test('len', 'Must include First name and Last name', (val) => {
+      if (val) {
+        const name = val.split(' ');
+      return name.length > 1;
+      } else {
+        return false;
+      }
+    }),
+    bic: Yup.string().required('This is a required field*'),
+    amount: Yup.number().required("This is a required field*").max(maxAmount, `Amount cannot be greater than ${maxAmount}`),
+    reason: Yup.string().required("This is a required field*"),
+    creditor_iban: Yup.string().required("This is a required field *"),
+  })
+};

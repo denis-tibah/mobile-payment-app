@@ -126,7 +126,7 @@ const VerificationLast: FC<IVerificationLast> = ({
                 flexWrap: "wrap",
                 paddingRight: 20,
                 gap: 8,
-                paddingBottom: 24,
+                paddingBottom: 34,
               }}
             >
               <Button

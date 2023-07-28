@@ -99,7 +99,7 @@ export default function AppNavigationWrapper() {
     data: {},
   });
 
-  /* const appState = useRef(AppState.currentState); */
+  /*  const appState = useRef(AppState.currentState); */
 
   const [expoPushToken, setExpoPushToken] = useState<string>();
   const notificationListener = useRef<Notifications.Subscription>();
@@ -107,7 +107,7 @@ export default function AppNavigationWrapper() {
   const [selectedNavIndex, setNavIndex] = useState<number>(1);
   /* const [appCurrentState, setAppState] = useState(AppState.currentState); */
   const [isAppInactive, setIsAppInactive] = useState(false);
-  const INACTIVE_TIMEOUT = 30000; // 30 seconds (adjust as needed)
+  const INACTIVE_TIMEOUT = 5000; // 30 seconds (adjust as needed)
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   //register token hen app opens
@@ -267,7 +267,8 @@ export default function AppNavigationWrapper() {
   }, []); */
 
   useEffect(() => {
-    const handleAppStateChange = (nextAppState: any) => {
+    const handleAppStateChange = async (nextAppState: any) => {
+      const isBiometricAuth = await isBiometric();
       if (nextAppState === "active") {
         // if nextAppState is active clear/refresh the timer
         if (timerRef.current) {
@@ -276,8 +277,7 @@ export default function AppNavigationWrapper() {
         }
       } else {
         // if nextAppState is in other state run a timer and if the reach INACTIVE_TIMEOUT and isBiometricAuth, log out the user
-        timerRef.current = setTimeout(async () => {
-          const isBiometricAuth = await isBiometric();
+        timerRef.current = setTimeout(() => {
           if (isBiometricAuth) {
             dispatch(signout());
             timerRef.current = null;

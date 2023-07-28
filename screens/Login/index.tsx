@@ -185,12 +185,12 @@ export function LoginScreen({ navigation }: any) {
 
                 if (result.payload.biometricYN == "Y") {
                   console.log("Use biometic ");
-                  /* await saveSecureCredetails(
-                          values.email,
-                          values.password
-                          //Addd by aristos
-                          // result.payload.biometricYN 
-                        ) */
+                  await saveSecureCredetails(
+                    values.email,
+                    values.password
+                    //Addd by aristos
+                    // result.payload.biometricYN
+                  );
                 } else {
                   console.log("Do not use biometric");
                   await SecureStore.deleteItemAsync("email");

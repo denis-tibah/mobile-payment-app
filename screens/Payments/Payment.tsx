@@ -97,10 +97,6 @@ export function Payment({ navigation }: any) {
   }, [beneficiaryList]);
   
 
-  useEffect(() => {
-    console.log('savePayee', savePayee);
-  }, [savePayee]);
-
   function handleDisplayModal() {
     setDisplayModal(!displayModal);
   }
@@ -295,17 +291,7 @@ export function Payment({ navigation }: any) {
             currency: "EUR",
             reason: "",
           }}
-          // validate={(values) => {
-          //   let errors: any = {};
-          //   if (!getFirstAndLastName(values.recipientname).lastname) {
-          //     errors.recipientname = "Please enter lastname";
-          //     }
-          //     return errors;
-          //   }
-          // }
           onSubmit={(values) => {
-            // console.log('initiate payment type ',externalPayment);
-
             dispatch(
               initiatePayment({
                 recipientFirstname: getFirstAndLastName(values.recipientname)

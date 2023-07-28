@@ -1,11 +1,7 @@
 import { View, ScrollView,Switch } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import DropDownPicker from "react-native-dropdown-picker";
-// import { Checkbox } from "react-native-paper";
-// import CheckBox from '@react-native-community/checkbox'; commented this 3 lines for now. currently testing ---
-// import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-// import CheckBoxIcon from '@mui/icons-material/CheckBox';
-
+import CheckBox from 'expo-checkbox'; 
 import Heading from "../../components/Heading";
 import { MainLayout } from "../../layout/Main/Main";
 import FormGroup from "../../components/FormGroup";
@@ -28,7 +24,7 @@ import {
   sendSmsPaymentVerification,
   setInitiatePaymentData,
 } from "../../redux/payment/paymentSlice";
-
+import LoadingScreen from "../../components/Loader/LoadingScreen";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { delayCode } from "../../utils/delay";
 import {
@@ -45,8 +41,6 @@ import { Text } from "react-native-paper";
 import { validationPaymentSchema } from "../../utils/validation";
 import { formatCurrencyToLocalEn } from "../../utils/helpers";
 import PaymentsIcon from "../../assets/icons/PaymentsIcon";
-import { screenNames } from "../../utils/helpers";
-import { it } from "node:test";
 
 export function Payment({ navigation }: any) {
   const infoData = useSelector((state: any) => state.account.details);
@@ -63,8 +57,10 @@ export function Payment({ navigation }: any) {
   const [paymentSuccessful, setPaymentSuccessful] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedPayee, setSelectedPayee] = useState(null);
-  const [isChecked, setIsChecked] = useState<boolean>(false);
   const [beneficiaryOptions, setBeneficiaryOptions] = useState<any>([]);
+  const [toggledSavePayee, setToggledSavePayee] = useState<boolean>(false);
+  const [isAddNewPayee, setIsAddNewPayee] = useState<boolean>(false);
+
   const {
     transactionId,
     debtor_iban,
@@ -82,7 +78,7 @@ export function Payment({ navigation }: any) {
   } = useSelector((state: any) => state.payment.initiatePaymentData);
 
   const loading = useSelector((state: any) => state.beneficiary.loading);
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isExternalPayment, setIsExternalPayment] = useState(false);
   const [externalPayment, setExternalPayment] = useState('');
   const { navigate }: any = useNavigation();
@@ -99,6 +95,11 @@ export function Payment({ navigation }: any) {
       { label: "Add New", value: 'none' },
     ]);
   }, [beneficiaryList]);
+  
+
+  useEffect(() => {
+    console.log('savePayee', savePayee);
+  }, [savePayee]);
 
   function handleDisplayModal() {
     setDisplayModal(!displayModal);
@@ -121,6 +122,11 @@ export function Payment({ navigation }: any) {
   }
 
   const handleSelectPayee = (item: any, values: any, setValues: any) => {
+    if (item === 'none') {
+      setIsAddNewPayee(true);
+    } else {
+      setIsAddNewPayee(false);
+    }
     if (item === 'none' || !item) {
       setValues({
         ...values,
@@ -192,7 +198,22 @@ export function Payment({ navigation }: any) {
   }, [isExternalPayment]);
 
   const handleSubmitOTP = async ({ code }: { code: string }) => {
-    await handleProccessPayment({ code });
+    setIsLoading(true);
+    await handleProccessPayment({ code })
+      .then((data: any) => {
+        if (data) {
+          if (data.code === 200) {
+            setPaymentSuccessful(true);
+          }
+        }
+      })
+      .catch((error: any) => {
+        console.error(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+    });
+
     setDisplayModal(false);
     await delayCode(1000);
     setPaymentSuccessful(true);
@@ -219,17 +240,20 @@ export function Payment({ navigation }: any) {
           if (payload) {
             if (payload.code === 200) {
               // if the user chose to save as a beneficiary
-              if (savePayee) {
+              if (toggledSavePayee) {
                 dispatch(
                   addNewBeneficiary({
                     beneficiary_name: `${recipientFirstname} ${recipientLastname}`,
                     beneficiary_iban: creditor_iban,
-                    bic: bic,
+                    beneficiary_bic: bic,
                   }) as any
                 );
               }
             }
           }
+        })
+        .catch((error: any) => {
+          console.error(error);
         });
     }
   };
@@ -237,17 +261,22 @@ export function Payment({ navigation }: any) {
   return (
     <MainLayout navigation={navigation}>
       <Spinner visible={loading} />
+      <LoadingScreen isLoading={isLoading} />
       <ScrollView bounces={false}>
         <View style={styles.container}>
           <Heading
             icon={<EuroIcon color="pink" size={25} />}
             title="Payment"
             rightAction={
-              <Button color="black-only" withLine={true}>
-                Save this payee
-                {/* <CheckBox /> */}
-                {/* <CheckBoxOutlineBlankIcon /> */}
-              </Button>
+              <View style={{flexDirection: 'row', display: 'flex'}}>
+                <Text style={{paddingRight: 8}}>Save this payee</Text>
+                <CheckBox
+                  disabled={false}
+                  value={toggledSavePayee}
+                  onValueChange={() => toggledSavePayee ? setToggledSavePayee(false) : setToggledSavePayee(true)}
+                  style={styles.checkboxSavePayee}
+                />
+              </View>
             }
           />
         </View>
@@ -266,6 +295,14 @@ export function Payment({ navigation }: any) {
             currency: "EUR",
             reason: "",
           }}
+          // validate={(values) => {
+          //   let errors: any = {};
+          //   if (!getFirstAndLastName(values.recipientname).lastname) {
+          //     errors.recipientname = "Please enter lastname";
+          //     }
+          //     return errors;
+          //   }
+          // }
           onSubmit={(values) => {
             // console.log('initiate payment type ',externalPayment);
 
@@ -379,10 +416,9 @@ export function Payment({ navigation }: any) {
                   zIndex={-1}
                 />
               </View>
-              {/* <View>
-                <FormGroup validationError={errors.recipientname}>
+              { isAddNewPayee && <View>
+                <FormGroup validationError={ touched.recipientname ? errors.recipientname : null}>
                   <FormGroup.Input
-                    editable={!selectedPayee}
                     name="recipientname"
                     onChangeText={handleChange("recipientname")}
                     onBlur={handleBlur("recipientname")}
@@ -391,7 +427,8 @@ export function Payment({ navigation }: any) {
                     placeholder="Payee name"
                   />
                 </FormGroup>
-              </View> */}
+              </View>
+              }
               <View>
                 <FormGroup validationError={ touched.amount ? errors.amount : null}>
                   <FormGroup.Input
@@ -433,7 +470,7 @@ export function Payment({ navigation }: any) {
                 <FormGroup validationError={touched.creditor_iban ? errors.creditor_iban : null}>
                   <FormGroup.Input
                     name="creditor_iban"
-                    editable={!selectedPayee}
+                    editable={!selectedPayee || isAddNewPayee}
                     onChangeText={handleChange("creditor_iban")}
                     onBlur={handleBlur("creditor_iban")}
                     value={values.creditor_iban}
@@ -446,7 +483,7 @@ export function Payment({ navigation }: any) {
                 <FormGroup validationError={touched.bic ? errors.bic: null}>
                   <FormGroup.Input
                     name="bic"
-                    editable={!selectedPayee}
+                    editable={!selectedPayee || isAddNewPayee}
                     onChangeText={handleChange("bic")}
                     onBlur={handleBlur("bic")}
                     value={values.bic}
@@ -485,8 +522,7 @@ export function Payment({ navigation }: any) {
                         value={isExternalPayment}
                       />
                   </View>
-               </View>
-
+              </View>
               <View style={{ display: "flex", flexDirection: "row" }}>
                 <Button color="blue-only" withLine={true}  onPress={gotoLimitsPage} >
                   VIEW CURRENT LIMIT

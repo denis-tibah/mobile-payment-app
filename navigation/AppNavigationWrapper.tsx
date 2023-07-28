@@ -99,7 +99,7 @@ export default function AppNavigationWrapper() {
     data: {},
   });
 
-  /* const appState = useRef(AppState.currentState); */
+  /*  const appState = useRef(AppState.currentState); */
 
   const [expoPushToken, setExpoPushToken] = useState<string>();
   const notificationListener = useRef<Notifications.Subscription>();
@@ -267,7 +267,8 @@ export default function AppNavigationWrapper() {
   }, []); */
 
   useEffect(() => {
-    const handleAppStateChange = (nextAppState: any) => {
+    const handleAppStateChange = async (nextAppState: any) => {
+      const isBiometricAuth = await isBiometric();
       if (nextAppState === "active") {
         // if nextAppState is active clear/refresh the timer
         if (timerRef.current) {
@@ -276,8 +277,7 @@ export default function AppNavigationWrapper() {
         }
       } else {
         // if nextAppState is in other state run a timer and if the reach INACTIVE_TIMEOUT and isBiometricAuth, log out the user
-        timerRef.current = setTimeout(async () => {
-          const isBiometricAuth = await isBiometric();
+        timerRef.current = setTimeout(() => {
           if (isBiometricAuth) {
             dispatch(signout());
             timerRef.current = null;

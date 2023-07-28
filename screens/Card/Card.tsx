@@ -286,8 +286,6 @@ export function Card({ navigation }: any) {
     await Clipboard.setStringAsync(cardDetails?.cardNumber || "");
   };
 
-  useEffect(() => { console.log('cardData', cardData) },[cardData])
-
   return (
     <MainLayout navigation={navigation}>
       <Spinner visible={loadingState} />

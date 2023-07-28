@@ -107,7 +107,7 @@ export default function AppNavigationWrapper() {
   const [selectedNavIndex, setNavIndex] = useState<number>(1);
   /* const [appCurrentState, setAppState] = useState(AppState.currentState); */
   const [isAppInactive, setIsAppInactive] = useState(false);
-  const INACTIVE_TIMEOUT = 5000; // 30 seconds (adjust as needed)
+  const INACTIVE_TIMEOUT = 30000; // 30 seconds (adjust as needed)
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   //register token hen app opens

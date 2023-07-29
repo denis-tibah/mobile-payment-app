@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { View, Text } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
 
 import Typography from "../../components/Typography";
 import { Seperator } from "../../components/Seperator/Seperator";
@@ -7,6 +8,11 @@ import ProfileIcon from "../../assets/icons/Profile";
 import WebcamIcon from "../../assets/icons/Webcam";
 import FixedBottomAction from "../../components/FixedBottomAction";
 import ArrowRightLong from "../../assets/icons/ArrowRightLong";
+import {
+  sendSubsubToMobile,
+  sendSubsubToEmail,
+} from "../../redux/registration/registrationSlice";
+import { AppDispatch } from "../../store";
 import Button from "../../components/Button";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
@@ -16,13 +22,56 @@ interface IVerificationLast {
   handlePrevStep: () => void;
 }
 
+type MessageProps = {
+  channel: string;
+  to: string;
+  content: string;
+}[];
+
 const VerificationLast: FC<IVerificationLast> = ({
   handleNextStep,
   handlePrevStep,
 }) => {
-  const handleSendToMobile = (): void => {};
-  const handleContinue = (): void => {};
-  const handleDoItLater = (): void => {};
+  const dispatch = useDispatch<AppDispatch>();
+  const fromtEndURL = process.env.APIURL;
+  const registration = useSelector((state: any) => state.registration);
+  const handleSendToMobile = () => {
+    const messages: MessageProps = [
+      {
+        channel: "sms",
+        to: registration?.data?.identifier,
+        content:
+          fromtEndURL +
+          "/app/Sumsublinked/token?token=" +
+          registration?.data?.sumsubToken,
+      },
+    ];
+
+    dispatch(sendSubsubToMobile({ messages }));
+  };
+
+  const handleContinue = (): void => {
+    handleNextStep();
+  };
+
+  const handleDoItLater = (): void => {
+    dispatch(
+      sendSubsubToEmail({
+        message:
+          fromtEndURL +
+          "/app/Sumsublinked/token?token=" +
+          registration?.data?.sumsubToken,
+        recipientAddress: [
+          {
+            to: registration?.data?.email,
+          },
+        ],
+        from: "noreply@zazoo.money",
+        subject: "Sumsub Link",
+      })
+    );
+  };
+
   return (
     <View style={styles.card}>
       <View style={styles.cardTitle}>

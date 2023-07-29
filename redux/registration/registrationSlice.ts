@@ -99,7 +99,7 @@ export const getSumsubVerificationCode = createAsyncThunk(
 
 export const sendSubsubToMobile = createAsyncThunk(
   "sendSubsubToMobile",
-  async (params) => {
+  async (params: any) => {
     const { data } = await api.post("/sendsmszazoo", params);
     return data;
   }
@@ -107,7 +107,7 @@ export const sendSubsubToMobile = createAsyncThunk(
 
 export const sendSubsubToEmail = createAsyncThunk(
   "sendSubsubToEmail",
-  async (params) => {
+  async (params: any) => {
     const { data } = await api.post("/sendemailzazoo", params, {
       responseType: "text",
     });

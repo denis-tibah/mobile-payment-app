@@ -1,7 +1,7 @@
-import { View, ScrollView,Switch } from "react-native";
+import { View, ScrollView, Switch } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import DropDownPicker from "react-native-dropdown-picker";
-import CheckBox from 'expo-checkbox'; 
+import CheckBox from "expo-checkbox";
 import Heading from "../../components/Heading";
 import { MainLayout } from "../../layout/Main/Main";
 import FormGroup from "../../components/FormGroup";
@@ -80,7 +80,7 @@ export function Payment({ navigation }: any) {
   const loading = useSelector((state: any) => state.beneficiary.loading);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isExternalPayment, setIsExternalPayment] = useState(false);
-  const [externalPayment, setExternalPayment] = useState('');
+  const [externalPayment, setExternalPayment] = useState("");
   const { navigate }: any = useNavigation();
 
   useEffect(() => {
@@ -92,10 +92,9 @@ export function Payment({ navigation }: any) {
         label: beneficiary.name,
         value: beneficiary.uuid,
       })),
-      { label: "Add New", value: 'none' },
+      { label: "Add New", value: "none" },
     ]);
   }, [beneficiaryList]);
-  
 
   function handleDisplayModal() {
     setDisplayModal(!displayModal);
@@ -118,12 +117,12 @@ export function Payment({ navigation }: any) {
   }
 
   const handleSelectPayee = (item: any, values: any, setValues: any) => {
-    if (item === 'none') {
+    if (item === "none") {
       setIsAddNewPayee(true);
     } else {
       setIsAddNewPayee(false);
     }
-    if (item === 'none' || !item) {
+    if (item === "none" || !item) {
       setValues({
         ...values,
         recipientname: "",
@@ -174,22 +173,21 @@ export function Payment({ navigation }: any) {
   function gotoLimitsPage() {
     // console.log('go to limist page');
     navigation.navigate("profile", {
-      screen: 'Limits',
+      screen: "Limits",
     });
   }
 
-    //Enable or Disable if its external payment
+  //Enable or Disable if its external payment
   function toggleExternalPayment(value: boolean) {
-
     setIsExternalPayment(value);
     // console.log(value,externalPayment);
   }
 
   useEffect(() => {
     if (isExternalPayment) {
-      setExternalPayment('SEPACT');
+      setExternalPayment("SEPACT");
     } else {
-      setExternalPayment('null');
+      setExternalPayment("null");
     }
   }, [isExternalPayment]);
 
@@ -208,7 +206,7 @@ export function Payment({ navigation }: any) {
       })
       .finally(() => {
         setIsLoading(false);
-    });
+      });
 
     setDisplayModal(false);
     await delayCode(1000);
@@ -228,7 +226,7 @@ export function Payment({ navigation }: any) {
           currency,
           remarks: `${reason}, ${remarks}`,
           account,
-          type:  externalPayment,
+          type: externalPayment,
         }) as any
       )
         .unwrap()
@@ -264,12 +262,16 @@ export function Payment({ navigation }: any) {
             icon={<EuroIcon color="pink" size={25} />}
             title="Payment"
             rightAction={
-              <View style={{flexDirection: 'row', display: 'flex'}}>
-                <Text style={{paddingRight: 8}}>Save this payee</Text>
+              <View style={{ flexDirection: "row", display: "flex" }}>
+                <Text style={{ paddingRight: 8 }}>Save this payee</Text>
                 <CheckBox
                   disabled={false}
                   value={toggledSavePayee}
-                  onValueChange={() => toggledSavePayee ? setToggledSavePayee(false) : setToggledSavePayee(true)}
+                  onValueChange={() =>
+                    toggledSavePayee
+                      ? setToggledSavePayee(false)
+                      : setToggledSavePayee(true)
+                  }
                   style={styles.checkboxSavePayee}
                 />
               </View>
@@ -305,7 +307,7 @@ export function Payment({ navigation }: any) {
                 amount: values.amount,
                 currency: "EUR",
                 reason: values.reason,
-                type: externalPayment
+                type: externalPayment,
               }) as any
             )
               .unwrap()
@@ -329,7 +331,7 @@ export function Payment({ navigation }: any) {
                         reason: values.reason,
                         transactionId: payload.transaction_id,
                         savePayee,
-                        type:  externalPayment,
+                        type: externalPayment,
                       })
                     );
                     dispatch(
@@ -402,21 +404,28 @@ export function Payment({ navigation }: any) {
                   zIndex={-1}
                 />
               </View>
-              { isAddNewPayee && <View>
-                <FormGroup validationError={ touched.recipientname ? errors.recipientname : null}>
-                  <FormGroup.Input
-                    name="recipientname"
-                    onChangeText={handleChange("recipientname")}
-                    onBlur={handleBlur("recipientname")}
-                    value={values.recipientname}
-                    icon={<ProfileIcon />}
-                    placeholder="Payee name"
-                  />
-                </FormGroup>
-              </View>
-              }
+              {isAddNewPayee && (
+                <View>
+                  <FormGroup
+                    validationError={
+                      touched.recipientname ? errors.recipientname : null
+                    }
+                  >
+                    <FormGroup.Input
+                      name="recipientname"
+                      onChangeText={handleChange("recipientname")}
+                      onBlur={handleBlur("recipientname")}
+                      value={values.recipientname}
+                      icon={<ProfileIcon />}
+                      placeholder="Payee name"
+                    />
+                  </FormGroup>
+                </View>
+              )}
               <View>
-                <FormGroup validationError={ touched.amount ? errors.amount : null}>
+                <FormGroup
+                  validationError={touched.amount ? errors.amount : null}
+                >
                   <FormGroup.Input
                     onChangeText={handleChange("amount")}
                     name="amount"
@@ -453,7 +462,11 @@ export function Payment({ navigation }: any) {
                 </FormGroup>
               </View>
               <View>
-                <FormGroup validationError={touched.creditor_iban ? errors.creditor_iban : null}>
+                <FormGroup
+                  validationError={
+                    touched.creditor_iban ? errors.creditor_iban : null
+                  }
+                >
                   <FormGroup.Input
                     name="creditor_iban"
                     editable={!selectedPayee || isAddNewPayee}
@@ -466,7 +479,7 @@ export function Payment({ navigation }: any) {
                 </FormGroup>
               </View>
               <View>
-                <FormGroup validationError={touched.bic ? errors.bic: null}>
+                <FormGroup validationError={touched.bic ? errors.bic : null}>
                   <FormGroup.Input
                     name="bic"
                     editable={!selectedPayee || isAddNewPayee}
@@ -483,7 +496,9 @@ export function Payment({ navigation }: any) {
                 />
               </View>
               <View>
-                <FormGroup validationError={touched.reason ? errors.reason : null}>
+                <FormGroup
+                  validationError={touched.reason ? errors.reason : null}
+                >
                   <FormGroup.Input
                     name="reason"
                     onChangeText={handleChange("reason")}
@@ -495,22 +510,28 @@ export function Payment({ navigation }: any) {
                 </FormGroup>
               </View>
               <View style={styles.externalPayment__switch}>
-                    <View style={styles.externalPayment__switch__text}>
-                      <PaymentsIcon  color="blue" size={18} />
-                      <Text>External Payment Y/N</Text>
-                    </View>
-                    <View style={{ marginLeft: "auto" }}>
-                      <Switch
-                        trackColor={{ false: "#767577", true: "#81b0ff" }}
-                        thumbColor={isExternalPayment ? "white" : vars["light-blue"]}
-                        ios_backgroundColor="#3e3e3e"
-                        onValueChange={(e) => toggleExternalPayment(e)}
-                        value={isExternalPayment}
-                      />
-                  </View>
+                <View style={styles.externalPayment__switch__text}>
+                  <PaymentsIcon color="blue" size={18} />
+                  <Text>External Payment Y/N</Text>
+                </View>
+                <View style={{ marginLeft: "auto" }}>
+                  <Switch
+                    trackColor={{ false: "#767577", true: "#81b0ff" }}
+                    thumbColor={
+                      isExternalPayment ? "white" : vars["light-blue"]
+                    }
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={(e) => toggleExternalPayment(e)}
+                    value={isExternalPayment}
+                  />
+                </View>
               </View>
               <View style={{ display: "flex", flexDirection: "row" }}>
-                <Button color="blue-only" withLine={true}  onPress={gotoLimitsPage} >
+                <Button
+                  color="blue-only"
+                  withLine={true}
+                  onPress={gotoLimitsPage}
+                >
                   VIEW CURRENT LIMIT
                 </Button>
               </View>

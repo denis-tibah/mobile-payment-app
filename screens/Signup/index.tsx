@@ -121,15 +121,15 @@ export function SignupScreen({ navigation, route }: any) {
         />
 
         <TouchableWithoutFeedback onPress={keyboardDismiss}>
-          <KeyboardAvoidingView style={{ flex: 1 }} enabled>
-            <ScrollView keyboardDismissMode="on-drag">
-              <View style={styles.container}>
-                <View style={styles.innerContainer}>
+          <ScrollView keyboardDismissMode="on-drag">
+            <View style={styles.container}>
+              <View style={styles.innerContainer}>
+                <KeyboardAvoidingView style={{ flex: 1 }} enabled>
                   {steps[selectedNavIndex]}
-                </View>
+                </KeyboardAvoidingView>
               </View>
-            </ScrollView>
-          </KeyboardAvoidingView>
+            </View>
+          </ScrollView>
         </TouchableWithoutFeedback>
 
         {/* <MainLayout navigation={navigation}>

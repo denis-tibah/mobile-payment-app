@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AntDesign } from '@expo/vector-icons'; 
+import { AntDesign } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
-import { View, ScrollView, TouchableOpacity,Image } from "react-native";
+import { View, ScrollView, TouchableOpacity, Image } from "react-native";
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
 import Button from "../../components/Button";
@@ -41,7 +41,7 @@ import { delayCode } from "../../utils/delay";
 import Carousel from "react-native-snap-carousel";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { ICardDetails } from "../../models/interface";
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from "expo-file-system";
 import { getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
@@ -56,10 +56,10 @@ export function Card({ navigation }: any) {
   const infoData = useSelector((state: RootState) => state.account.details);
   const accountData = useSelector((state: RootState) => state.auth.userData);
   const defaultSearchOptions = {
-    sort: 'id',
-    status: 'PROCESSING',
+    sort: "id",
+    status: "PROCESSING",
     account_id: 0,
-    direction: 'desc',
+    direction: "desc",
   };
   const transactions = useSelector(
     (state: RootState) => state?.transaction?.data
@@ -87,7 +87,7 @@ export function Card({ navigation }: any) {
   const dispatch = useDispatch();
   const fetchCardData = async () => {
     try {
-      if(userData) {
+      if (userData) {
         await dispatch<any>(
           getCardTransactions({
             account_id: userData?.id,
@@ -96,12 +96,14 @@ export function Card({ navigation }: any) {
             type: "PREAUTH",
           })
         );
-        await dispatch<any>(getTransactionsWithFilters({
-          account_id: userData?.id,
-          sort: 'id',
-          direction: 'desc',
-          status: 'PROCESSING'
-        }));
+        await dispatch<any>(
+          getTransactionsWithFilters({
+            account_id: userData?.id,
+            sort: "id",
+            direction: "desc",
+            status: "PROCESSING",
+          })
+        );
       }
       await dispatch<any>(getCards());
       // console.log("do we have any cards", cardData);
@@ -183,7 +185,7 @@ export function Card({ navigation }: any) {
     const payload = await dispatch(
       showCardDetails({
         // account_id: infoData?.info?.id,
-         account_id: accountData?.id,
+        account_id: accountData?.id,
         otp: code,
       }) as any
     ).unwrap();
@@ -193,18 +195,18 @@ export function Card({ navigation }: any) {
       setRemainingTime(30);
       clearInterval(storedIntervalId);
 
-    //  let image='';
-    //  const ImageUri = Image.resolveAssetSource(ZazooVirtualCard).uri;
-    //  console.log("images is ",ZazooVirtualCard,' ImageUri ', ImageUri);
+      //  let image='';
+      //  const ImageUri = Image.resolveAssetSource(ZazooVirtualCard).uri;
+      //  console.log("images is ",ZazooVirtualCard,' ImageUri ', ImageUri);
 
-    ////  convertImageToBase64(ImageUri);
-    //  const base64 = await FileSystem.readAsStringAsync(ImageUri, { encoding: 'base64' });
-    //  console.log("base64 images is ",base64 );
-  
-    ////   convertImageToBase64(ImageUri,(result:any) => {
-    ////         image=result;
-    ////         console.log("base64 images is ",image);
-    ////  });
+      ////  convertImageToBase64(ImageUri);
+      //  const base64 = await FileSystem.readAsStringAsync(ImageUri, { encoding: 'base64' });
+      //  console.log("base64 images is ",base64 );
+
+      ////   convertImageToBase64(ImageUri,(result:any) => {
+      ////         image=result;
+      ////         console.log("base64 images is ",image);
+      ////  });
 
       setCardDetails({
         cardreferenceId: cardData[0]?.cardreferenceId,
@@ -228,7 +230,7 @@ export function Card({ navigation }: any) {
   };
 
   const handleFetchTransactions = async (userId: number) => {
-    const isAscending = sortByDate ? 'asc' : 'desc';
+    const isAscending = sortByDate ? "asc" : "desc";
     const _searchOptions = {
       ...defaultSearchOptions,
       account_id: userId,
@@ -242,13 +244,13 @@ export function Card({ navigation }: any) {
     } finally {
       setIsloading(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (userData && userData.id) {
       handleFetchTransactions(userData.id);
     }
-  },[sortByDate]);
+  }, [sortByDate]);
 
   useEffect(() => {
     if (!!userData?.id) fetchCardData();
@@ -413,32 +415,55 @@ export function Card({ navigation }: any) {
             title={"Latest Transactions"}
           />
           <View>
-            <Seperator backgroundColor={vars['grey']} />
+            <Seperator backgroundColor={vars["grey"]} />
             <View style={styles.listHead}>
-              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Name</Typography>
-              <View 
-                style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: 60}}
+              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
+                Name
+              </Typography>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  width: 60,
+                }}
+              >
+                <Typography
+                  fontFamily="Nunito-SemiBold"
+                  color="accent-blue"
+                  fontSize={16}
                 >
-                <Typography fontFamily="Nunito-SemiBold" color="accent-blue" fontSize={16}>
                   Date
                 </Typography>
-                <TouchableOpacity onPress={() => {
-                  setIsloading(!isLoading);
-                  setSortByDate(!sortByDate);
-                }}>
-                  {sortByDate ? <ArrowDown color="blue" style={{marginTop: 5}}/> : <AntDesign name="up" size={16} color="blue" style={{marginTop: 5}}/>}
+                <TouchableOpacity
+                  onPress={() => {
+                    setIsloading(!isLoading);
+                    setSortByDate(!sortByDate);
+                  }}
+                >
+                  {sortByDate ? (
+                    <ArrowDown color="blue" style={{ marginTop: 5 }} />
+                  ) : (
+                    <AntDesign
+                      name="up"
+                      size={16}
+                      color="blue"
+                      style={{ marginTop: 5 }}
+                    />
+                  )}
                 </TouchableOpacity>
               </View>
-              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Amount</Typography>
-              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Balance</Typography>
+              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
+                Amount
+              </Typography>
+              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
+                Balance
+              </Typography>
             </View>
             <View style={{ height: "70%" }}>
               <View>
                 {transactions?.map((transaction, index) => (
-                  <TransactionItem
-                    data={transaction}
-                    key={index}
-                  />
+                  <TransactionItem data={transaction} key={index} />
                 ))}
               </View>
             </View>

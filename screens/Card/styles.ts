@@ -12,8 +12,27 @@ export const styles: any = StyleSheet.create<any>({
     flexDirection: "row",
     paddingTop: 24,
     paddingBottom: 12,
-    paddingLeft: 12,
+    paddingHorizontal: 24,
     justifyContent: "space-between",
+    borderBottomColor: vars.grey,
+    borderBottomWidth: 1,
+  },
+  listItem: {
+    backgroundColor: "white",
+    display: "flex",
+    flexDirection: "row",
+    paddingTop: 24,
+    paddingBottom: 12,
+    paddingHorizontal: 24,
+    justifyContent: "space-between",
+    textAlign: 'left',
+    borderBottomColor: vars.grey,
+    borderBottomWidth: 1,
+  },
+  listItemInnerText: {
+    textAligjt: 'left',
+    width: '40%',
+    color: '#fd7a7a'
   },
   cardSection: {
     backgroundColor: "white",

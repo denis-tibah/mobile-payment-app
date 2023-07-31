@@ -7,7 +7,7 @@ import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
 import Button from "../../components/Button";
 import { styles } from "./styles";
-import TransactionItem from "../../components/TransactionItem";
+// import TransactionItem from "../../components/TransactionItem";
 import Typography from "../../components/Typography";
 import CardIcon from "../../assets/icons/Card";
 import AddIcon from "../../assets/icons/Add";
@@ -18,9 +18,7 @@ import LostCardIcon from "../../assets/icons/LostCard";
 import TransactionIcon from "../../assets/icons/Transaction";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
 import Box from "../../components/Box";
-
 import ZazooVirtualCard from "../../assets/images/zazoo-virtual-card.png";
-
 import {
   getCardTransactions,
   getCards,
@@ -47,10 +45,11 @@ import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
 import ArrowDown from "../../assets/icons/ArrowDown";
 import { useDebounce } from "usehooks-ts";
-import { TRANSACTIONS_STATUS } from "../../utils/constants";
+// import { TRANSACTIONS_STATUS } from "../../utils/constants";
 import LoadingScreen from "../../components/Loader/LoadingScreen";
-import ArrowRight from "../../assets/icons/ArrowRight";
-import { Transaction } from "../../models/Transactions";
+// import ArrowRight from "../../assets/icons/ArrowRight";
+import { CardTransaction } from "../../models/Transactions";
+import moment from "moment";
 
 export function Card({ navigation }: any) {
   const infoData = useSelector((state: RootState) => state.account.details);
@@ -69,6 +68,13 @@ export function Card({ navigation }: any) {
   const [remainingTime, setRemainingTime] = useState(30);
   const loadingState = useSelector((state: RootState) => state?.card.loading);
   const cardData = useSelector((state: RootState) => state.card?.data);
+  const cardTransactions = useSelector(
+    (state: RootState) => state?.card?.transactions
+  );
+
+  const cardDetailsLoading = useSelector(
+    (state: RootState) => state?.card?.loading
+  );
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const frozen = useSelector(
     (state: RootState) => state?.card?.data[0]?.frozenYN
@@ -82,6 +88,7 @@ export function Card({ navigation }: any) {
   const [storedIntervalId, setStoredIntervalId] = useState<any>(null);
   const [sortByDate, setSortByDate] = useState<boolean>(false);
   const debounceSortByDate = useDebounce<boolean>(sortByDate, 300);
+  const [cardTransactionsData, setCardTransactionsData] = useState<CardTransaction[]>([]);
   const [isLoading, setIsloading] = useState<boolean>(false);
 
   const dispatch = useDispatch();
@@ -288,6 +295,32 @@ export function Card({ navigation }: any) {
     await Clipboard.setStringAsync(cardDetails?.cardNumber || "");
   };
 
+  const soryCardTransactionsByDate = (sortState: boolean) => {
+    if (sortState) {
+      const sortedTransactions = cardTransactionsData.sort((a: any, b: any) => {
+        const dateA = new Date(a.receiptDate);
+        const dateB = new Date(b.receiptDate);
+        return dateA.getTime() - dateB.getTime();
+      });
+      setCardTransactionsData(sortedTransactions);
+    } else {
+      const sortedTransactions = cardTransactionsData.sort((a: any, b: any) => {
+        const dateA = new Date(a.receiptDate);
+        const dateB = new Date(b.receiptDate);
+        return dateB.getTime() - dateA.getTime();
+      });
+      setCardTransactionsData(sortedTransactions);
+    }
+  }
+
+  useEffect(() => {
+    soryCardTransactionsByDate(debounceSortByDate);
+  },[debounceSortByDate]);
+
+  useEffect(() => {
+    setCardTransactionsData(cardTransactions);
+  }, [cardTransactions]);
+
   return (
     <MainLayout navigation={navigation}>
       <Spinner visible={loadingState} />
@@ -412,7 +445,7 @@ export function Card({ navigation }: any) {
         <View style={styles.cardTransactions}>
           <Heading
             icon={<TransactionIcon color="pink" size={18} />}
-            title={"Latest Transactions"}
+            title={"Latest Card Transactions"}
           />
           <View>
             <Seperator backgroundColor={vars["grey"]} />
@@ -453,19 +486,44 @@ export function Card({ navigation }: any) {
                   )}
                 </TouchableOpacity>
               </View>
-              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
-                Amount
-              </Typography>
-              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
-                Balance
-              </Typography>
+              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Amount</Typography>
+              {/* <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Balance</Typography> */}
             </View>
             <View style={{ height: "70%" }}>
-              <View>
-                {transactions?.map((transaction, index) => (
-                  <TransactionItem data={transaction} key={index} />
-                ))}
-              </View>
+                { cardTransactionsData.length > 0 ? cardTransactionsData?.map((transaction, index) => (
+                  <>
+                    <View key={index} style={styles.listItem}>
+                      <View style={styles.listItemInnerText}>
+                        <Typography fontFamily="Nunito-Regular" fontSize={14}>
+                          {transaction?.dsName}
+                        </Typography>
+                      </View>
+                      <View style={styles.listItemInnerText}>
+                        <Typography fontFamily="Nunito-Regular" fontSize={14}>
+                          {moment(transaction?.receiptDate).format("DD MMM YYYY")}
+                        </Typography>
+                      </View>
+                      <View style={styles.listItemInnerText}>
+                        <View style={{display: 'flex', flexDirection: 'row'}}>
+                          <Typography fontFamily="Nunito-Regular" fontSize={14} color={ transaction?.transactionAmount >= 0 ? `#4bd8b7` : `#fd7a7a`}>
+                            {getCurrency(infoData?.currency)}
+                          </Typography>
+                          <Typography fontFamily="Nunito-Regular" fontSize={14}>
+                            {" "}
+                            {transaction?.transactionAmount}
+                          </Typography>
+                        </View>
+                      </View>
+                    </View>
+                  </>
+                )) : (
+                  <View style={{backgroundColor: "#fff", padding: 24}}>
+                    <Typography fontFamily="Nunito-Regular" fontSize={16} style={{textAlign: 'center', marginTop: 20, backgroundColor: '#fff'}}>
+                      You don't have any transactions yet, why not add some money to your account to get started!
+                    </Typography>
+                  </View>
+                  )
+                }
             </View>
           </View>
         </View>

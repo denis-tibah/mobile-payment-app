@@ -57,7 +57,8 @@ export function Card({ navigation }: any) {
   const accountData = useSelector((state: RootState) => state.auth.userData);
   const defaultSearchOptions = {
     sort: 'id',
-    status: 'PROCESSING',
+    // status: 'PROCESSING',
+    status: 'SUCCESS',
     account_id: 0,
     direction: 'desc',
   };
@@ -96,11 +97,13 @@ export function Card({ navigation }: any) {
             type: "PREAUTH",
           })
         );
+    //This should be disabled: This is incorrect we do not get transaction data only card transactions
         await dispatch<any>(getTransactionsWithFilters({
           account_id: userData?.id,
           sort: 'id',
           direction: 'desc',
-          status: 'PROCESSING'
+          // status: 'PROCESSING'
+          status: 'SUCCESS'
         }));
       }
       await dispatch<any>(getCards());

@@ -40,7 +40,8 @@ const initialSearchFieldData: SearchFields = {
   account_id: 0,
   sort:  "id",
   direction: 'desc',
-  status: 'PROCESSING'
+  // status: 'PROCESSING'
+  status: 'SUCCESS'
 };
 
 export function Transactions({ navigation}: any) {
@@ -96,7 +97,8 @@ export function Transactions({ navigation}: any) {
         account_id: userData?.id,
         sort: 'id',
         direction: 'desc',
-        status: 'PROCESSING',
+        // status: 'PROCESSING',
+        status: 'SUCCESS',
       }
       if (userData) {
         await dispatch<any>(getTransactionsWithFilters(search));

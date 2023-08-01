@@ -52,7 +52,8 @@ export function MyAccount({ navigation }: any) {
           account_id: userData?.id,
           sort: "id",
           direction: "desc",
-          status: "PROCESSING"
+          // status: "PROCESSING"
+          status: 'SUCCESS'
       }
         // await dispatch<any>(getTransactions(userData));
 
@@ -71,7 +72,8 @@ export function MyAccount({ navigation }: any) {
           account_id: userData?.id,
           sort: "id",
           direction: "desc",
-          status: "PROCESSING"
+          // status: "PROCESSING"
+          status: 'SUCCESS'
       }
         // await dispatch<any>(getTransactions(userData));
         // console.log('userData?.id ',userData?.id);
@@ -93,7 +95,7 @@ export function MyAccount({ navigation }: any) {
       const interval = setInterval(() => {
         // console.log('This will run every 15m is !');
         fetchTransactions();
-      }, 1500000);
+      }, 900000);
       return () => clearInterval(interval);
     }, []);
 

@@ -57,7 +57,8 @@ export default function PaymentReceivedScreen({
           account_id: userData?.id,
           sort: "id",
           direction: "desc",
-          status: "PROCESSING"
+          // status: "PROCESSING"
+          status: 'SUCCESS'
       }
         await dispatch<any>(getTransactions(search))
       }

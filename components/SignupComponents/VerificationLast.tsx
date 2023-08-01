@@ -103,7 +103,10 @@ const VerificationLast: FC<IVerificationLast> = ({
               </Text>
             </Typography>
           </View>
-          <Seperator backgroundColor={vars["grey"]} marginBottom={24} />
+          <Seperator
+            backgroundColor={vars["verification "]}
+            marginBottom={24}
+          />
           <View>
             <Typography
               fontSize={14}

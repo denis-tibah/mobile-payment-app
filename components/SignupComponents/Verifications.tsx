@@ -34,7 +34,6 @@ const Verifications: FC<IVerifications> = ({
 }) => {
   const dispatch = useDispatch();
   const registration = useSelector((state: any) => state.registration);
-  console.log("🚀 ~ file: Verifications.tsx:33 ~ registration:", registration);
 
   const [isUpdatePhoneNumber, setUpdatePhoneNumber] = useState<Boolean>(false);
   const [isLoading, setIsLoading] = useState<Boolean>(false);
@@ -42,7 +41,6 @@ const Verifications: FC<IVerifications> = ({
   const [SMSResent, setSMSResent] = useState<Boolean>(false);
   const [errorsOtp, setErrorsOtp] = useState({});
   const [otp, setOtp] = useState<Number>();
-  console.log("🚀 ~ file: Verifications.tsx:46 ~ otp:", otp);
 
   useEffect(() => {
     if (otp && otp.toString().length && otp.toString().length === 6) {

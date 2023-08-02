@@ -247,7 +247,10 @@ export function Card({ navigation }: any) {
     };
 
     try {
-      await dispatch<any>(getTransactionsWithFilters(_searchOptions));
+      
+      // await dispatch<any>(getTransactionsWithFilters(_searchOptions));
+      fetchCardData();
+
     } catch (error) {
       console.log(error);
     } finally {
@@ -257,6 +260,7 @@ export function Card({ navigation }: any) {
 
   useEffect(() => {
     if (userData && userData.id) {
+      // console.log("sorting logic");
       handleFetchTransactions(userData.id);
     }
   }, [sortByDate]);
@@ -297,7 +301,7 @@ export function Card({ navigation }: any) {
     await Clipboard.setStringAsync(cardDetails?.cardNumber || "");
   };
 
-  const soryCardTransactionsByDate = (sortState: boolean) => {
+  const sortCardTransactionsByDate = (sortState: boolean) => {
     if (sortState) {
       const sortedTransactions = cardTransactionsData.sort((a: any, b: any) => {
         const dateA = new Date(a.receiptDate);
@@ -316,7 +320,7 @@ export function Card({ navigation }: any) {
   }
 
   useEffect(() => {
-    soryCardTransactionsByDate(debounceSortByDate);
+    sortCardTransactionsByDate(debounceSortByDate);
   },[debounceSortByDate]);
 
   useEffect(() => {
@@ -479,9 +483,10 @@ export function Card({ navigation }: any) {
                   Date
                 </Typography>
                 <TouchableOpacity
+                // temp disabled sorting logic 
                   onPress={() => {
-                    setIsloading(!isLoading);
-                    setSortByDate(!sortByDate);
+                    // setIsloading(!isLoading);
+                    // setSortByDate(!sortByDate);
                   }}
                 >
                   {sortByDate ? (

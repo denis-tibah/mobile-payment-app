@@ -50,6 +50,7 @@ import LoadingScreen from "../../components/Loader/LoadingScreen";
 // import ArrowRight from "../../assets/icons/ArrowRight";
 import { CardTransaction } from "../../models/Transactions";
 import moment from "moment";
+import TransactionItem from "../../components/TransactionItem";
 
 export function Card({ navigation }: any) {
   const infoData = useSelector((state: RootState) => state.account.details);
@@ -450,7 +451,15 @@ export function Card({ navigation }: any) {
           />
           <View>
             <Seperator backgroundColor={vars["grey"]} />
-            <View style={styles.listHead}>
+
+  {/* start: Added by Aritos  */}
+  <View>
+            <Spinner
+              visible={loading}
+            />
+            {!!cardTransactionsData?.length ? (
+              <>
+                <View style={styles.listHeadCardTransactions}>
               <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
                 Name
               </Typography>
@@ -488,10 +497,88 @@ export function Card({ navigation }: any) {
                 </TouchableOpacity>
               </View>
               <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Amount</Typography>
-              {/* <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Balance</Typography> */}
             </View>
-            <View style={{ height: "70%" }}>
-                { cardTransactionsData.length > 0 ? cardTransactionsData?.map((transaction, index) => (
+            <View style={{ height: "70%",  backgroundColor: "white" }}>
+                {cardTransactionsData?.map((transaction, index) => (
+                  <View key={index} style={styles.listCardTransactions}>
+                        <TransactionItem
+                          data={{
+                            ...transaction,
+                            id: Number(transaction.id),
+                            amount: transaction.amount.toString(),
+                            name: transaction.purpose,
+                            // balance: "0.00",
+                            // closing_balance: "",
+                            // running_balance: "",
+                            // opening_balance: "",
+                            currency: transaction.transactionCurrency,
+                            description: transaction.purposeDetailed,
+                            reference_no: transaction.processingAllMessagesId.toString(),
+                            transaction_datetime: transaction?.receiptDate,
+                            isCardTx : true,
+                          }}
+                          key={index}
+                        />
+                     </View>
+
+                  ))}
+
+            </View>
+              </>
+            ) : (
+              <View style={{backgroundColor: "#fff", padding: 24}}>
+                    <Typography fontFamily="Nunito-Regular" fontSize={16} style={{textAlign: 'center', marginTop: 20, backgroundColor: '#fff'}}>
+                      You don't have any transactions yet, why not add some money to your account to get started!
+                    </Typography>
+                  </View>
+            )}
+          </View>
+          {/* end: Added by Aristos */}
+
+
+       {/* start:02-08-2013 disabled by Aristos */}
+            {/* <View style={styles.listHead}>
+              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
+                Name
+              </Typography>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  width: 60,
+                }}
+              >
+                <Typography
+                  fontFamily="Nunito-SemiBold"
+                  color="accent-blue"
+                  fontSize={16}
+                >
+                  Date
+                </Typography>
+                <TouchableOpacity
+                  onPress={() => {
+                    setIsloading(!isLoading);
+                    setSortByDate(!sortByDate);
+                  }}
+                >
+                  {sortByDate ? (
+                    <ArrowDown color="blue" style={{ marginTop: 5 }} />
+                  ) : (
+                    <AntDesign
+                      name="up"
+                      size={16}
+                      color="blue"
+                      style={{ marginTop: 5 }}
+                    />
+                  )}
+                </TouchableOpacity>
+              </View>
+              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Amount</Typography>
+            </View>
+            <View style={{ height: "70%" }}> */}
+
+                {/* { cardTransactionsData.length > 0 ? cardTransactionsData?.map((transaction, index) => (
                   <>
                     <View key={index} style={styles.listItem}>
                       <View style={styles.listItemInnerText}>
@@ -524,8 +611,11 @@ export function Card({ navigation }: any) {
                     </Typography>
                   </View>
                   )
-                }
-            </View>
+                } 
+
+            </View> */}
+          {/* end:02-08-2013 disabled by Aristos */}
+
           </View>
         </View>
         <LoadingScreen isLoading={isLoading} />

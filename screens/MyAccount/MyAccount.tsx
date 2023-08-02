@@ -63,6 +63,10 @@ export function MyAccount({ navigation }: any) {
     } catch (error) {
       console.log({ error });
     }
+    finally {
+      setRefreshing(false);
+z
+    }
   };
 
   const fetchTransactions = async () => {

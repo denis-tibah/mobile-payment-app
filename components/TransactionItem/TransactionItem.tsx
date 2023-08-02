@@ -39,6 +39,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
   const currencyIcon=(param:any)=>{
     // console.log("currecy is ", param);
     // console.log("data?.amount ", data?.amount );
+        // console.log("data.isCardTx ", data.isCardTx );
 
     switch(param) {
       case 'EUR':

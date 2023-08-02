@@ -498,7 +498,7 @@ export function Card({ navigation }: any) {
               </View>
               <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Amount</Typography>
             </View>
-            <View style={{ height: "70%",  backgroundColor: "white" }}>
+            <View style={{ backgroundColor: "white" }}>
                 {cardTransactionsData?.map((transaction, index) => (
                   <View key={index} style={styles.listCardTransactions}>
                         <TransactionItem

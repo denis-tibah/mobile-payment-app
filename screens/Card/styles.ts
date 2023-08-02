@@ -91,7 +91,7 @@ export const styles: any = StyleSheet.create<any>({
     textAlign: 'left',
     backgroundColor: "white",
     display: "flex",
-    paddingTop: 5,
+    // paddingTop: 5,
     paddingBottom: 5,
     marginLeft: 20,
     paddingHorizontal: 5,

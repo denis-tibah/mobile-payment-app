@@ -12,7 +12,7 @@ import Button from "../../components/Button";
 import Typography from "../../components/Typography";
 import TransactionIcon from "../../assets/icons/Transaction";
 import SearchIcon from "../../assets/icons/Search";
-import { SearchFields, getTransactions,getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
+import { SearchFilter, getTransactions, getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
 import { generatePDF } from "../../utils/files";
 import { printAsync } from "expo-print";
 import { RootState } from "../../store";
@@ -26,6 +26,8 @@ import LoadingScreen from "../../components/Loader/LoadingScreen";
 import { dateFormatter } from "../../utils/dates";
 import { TRANSACTIONS_STATUS } from "../../utils/constants";
 import ArrowDown from "../../assets/icons/ArrowDown";
+import { arrayChecker } from "../../utils/helper";
+import { Transaction, TransactionDetails } from "../../models/Transactions";
 
 const searchOptions = [
   // { label: "BIC", value: 'bic' },
@@ -36,12 +38,13 @@ const searchOptions = [
 ];
 
 const currentDate = new Date();
-const initialSearchFieldData: SearchFields = {
+const initialSearchFieldData: SearchFilter = {
   account_id: 0,
   sort:  "id",
   direction: 'desc',
-  // status: 'PROCESSING'
-  status: 'SUCCESS'
+  status: "SUCCESS",
+  limit: 20,
+  page: 1,
 };
 
 export function Transactions({ navigation}: any) {
@@ -49,9 +52,9 @@ export function Transactions({ navigation}: any) {
   const transactions = useSelector(
     (state: RootState) => state?.transaction?.data
   );
-
+  const [_transactions, setTransactions] = useState<Transaction[]>([]);
   const [isMobileFilterShown, setIsMobileFilterShown] = useState<boolean>(false);
-  const debounceIsMobileFilterShown = useDebounce<boolean>(isMobileFilterShown, 300);
+  // const debounceIsMobileFilterShown = useDebounce<boolean>(isMobileFilterShown, 300);
   const [sortByDate, setSortByDate] = useState<boolean>(false);
   const debounceSortByDate = useDebounce<boolean>(sortByDate, 500);
   const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState<string>("");
@@ -63,12 +66,12 @@ export function Transactions({ navigation}: any) {
   const [searchText, setSearchText] = useState<string>("");
   const debounceSearchText = useDebounce<string>(searchText, 300);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [searchFieldData, setSearchFieldData] = useState<SearchFields>(initialSearchFieldData);
+  const [searchFieldData, setSearchFieldData] = useState<SearchFilter>(initialSearchFieldData);
   const [showPickerDateTo, setShowPickerDateTo] = useState(false);
   const [showPickerDateFrom, setShowPickerDateFrom] = useState(false);
   const [dateTo, setDateTo] = useState("");
   const [dateFrom, setDateFrom] = useState("");
-  const loadingTransactions = useSelector((state:RootState) => state.transaction.loading)
+  const [limitCount, setLimitCount] = useState<number>(1);
 
   function capitalizeFirstLetter(str: string): string {
     return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
@@ -86,37 +89,47 @@ export function Transactions({ navigation}: any) {
     setDateTo("");
     setCurrentSelectedSearchField("");
     setSearchText("");
-    fetchTransactions();
     setIsStatusOptionSelected(false);
   }
 
-  const fetchTransactions = async () => {
+  const fetchTransactions = async (page?: number) => {
     try {
       setIsLoading(true);
-      let search: any = {
+      let search: SearchFilter = {
+        ...initialSearchFieldData,
+        limit: Number(initialSearchFieldData.limit) * (page || 1),
         account_id: userData?.id,
-        sort: 'id',
-        direction: 'desc',
-        // status: 'PROCESSING',
-        status: 'SUCCESS',
       }
       if (userData) {
-        await dispatch<any>(getTransactionsWithFilters(search));
+        await dispatch<any>(getTransactionsWithFilters(search))
+        .unwrap()
+        .then((res: TransactionDetails[]) => {
+          const [transaction] = res;
+          const {data: transactionData} = transaction;
+          setTransactions(transactionData);
+          setIsLoading(false);
+        });
       }
       setSearchFieldData(search);
     } catch (error) {
       console.log({ error });
-    } finally {
       setIsLoading(false);
     }
   };
 
   //added by Aristos
-  const fetchTransactionsWithFilters = async (value :any) => {
+  const fetchTransactionsWithFilters = async (value: SearchFilter) => {
     try {
       setIsLoading(true);
       if (userData) {
-        await dispatch<any>(getTransactionsWithFilters(value));      
+        await dispatch<any>(getTransactionsWithFilters(value))
+        .unwrap()
+        .then((res: TransactionDetails[]) => {
+          const [transaction] = res;
+          const {data: transactionData} = transaction;
+          setTransactions(transactionData);
+          setIsLoading(false);
+        });      
       }
     } catch (error) {
       console.log("Error", error);
@@ -129,10 +142,10 @@ export function Transactions({ navigation}: any) {
     return /^\d+$/.test(str);
   }
 
-  const filterFromToDate = (fromDate: string, toDate: string) => {
+  const filterFromToDate = async (fromDate: string, toDate: string) => {
     const userId = userData?.id;
     if (fromDate && toDate && userId) {
-      const search: SearchFields = {
+      const search: SearchFilter = {
         ...searchFieldData,
         account_id: userId,
         ...(fromDate && { from_date: fromDate }),
@@ -141,7 +154,7 @@ export function Transactions({ navigation}: any) {
         direction: 'desc'
       };
       setSearchFieldData(search);
-      fetchTransactionsWithFilters(search);
+      await fetchTransactionsWithFilters(search);
     }
   }
 
@@ -189,7 +202,7 @@ export function Transactions({ navigation}: any) {
       return;
     }
     const { from_date, to_date } = searchFieldData;
-    const _searchFieldData: SearchFields = {
+    const _searchFieldData: SearchFilter = {
       ...(!currentSelectedSearchField && !isNumberOnly && {name: searchText}),
       ...(!currentSelectedSearchField && isNumberOnly && {min_amount: Number(searchText)}),
       ...(currentSelectedSearchField === 'bic' && {bic: searchText}),
@@ -198,11 +211,10 @@ export function Transactions({ navigation}: any) {
       ...(currentSelectedSearchField === 'min_amount'&& {min_amount: Number(searchText)}),
       ...(currentSelectedSearchField === 'iban' && {iban: searchText}),
       ...(currentSelectedSearchField === 'max_amount' && {max_amount: Number(searchText)}),
-      sort: "id",
-      direction: 'desc',
-      account_id: userId,
       ...(from_date && {from_date}),
       ...(to_date && {to_date}),
+      ...initialSearchFieldData,
+      account_id: userId,
     }
     setSearchFieldData(_searchFieldData);
     fetchTransactionsWithFilters({
@@ -210,8 +222,8 @@ export function Transactions({ navigation}: any) {
     });
   };
 
-  const handleSortByDate = () => {
-    const sortState = sortByDate ? 'asc' : 'desc';
+  const handleSortByDate = (_sortByDate: boolean) => {
+    const sortState = _sortByDate ? 'asc' : 'desc';
     fetchTransactionsWithFilters({
       ...searchFieldData,
       account_id: userData?.id,
@@ -219,26 +231,27 @@ export function Transactions({ navigation}: any) {
     });
   }
 
+  const handleShowingAdvanceFilter = () => {
+    clearFilter();
+    setIsStatusOptionSelected(false);
+    setIsMobileFilterShown(!isMobileFilterShown);
+  }
+
+  // const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}: any) => {
+  //   const paddingToBottom = 20;
+  //   return layoutMeasurement.height + contentOffset.y >=
+  //     contentSize.height - paddingToBottom;
+  // };
+
+
   useEffect(() => {
     if (currentSelectedSearchField === 'status') {
       fetchTransactionsWithFilters({
         ...searchFieldData,
-        status: searchText,
-      })
+        status: debounceSearchText,
+      });
     }
   },[debounceSearchText]);
-
-  useEffect(() => {
-    if (searchFieldData && userData) {
-      handleSortByDate();
-    }
-  },[debounceSortByDate, searchFieldData]);
-
-  useEffect(() => {
-    if (!isMobileFilterShown) {
-      clearFilter();
-    }
-  },[isMobileFilterShown]);
 
   useEffect(() => {
     if (currentSelectedSearchField === 'status') {
@@ -247,11 +260,22 @@ export function Transactions({ navigation}: any) {
       setSearchText("");
       setIsStatusOptionSelected(false);
     }
-  },[debounceCurrentSelectedSearchField]);
+  },[currentSelectedSearchField]);
 
   useEffect(() => {
     fetchTransactions();
+    return () => clearFilter();
   }, []);
+
+  // Fetch data when currentSelectedSearchField changes
+useEffect(() => {
+  if (currentSelectedSearchField === 'status') {
+    setIsStatusOptionSelected(true);
+  } else {
+    setSearchText("");
+    setIsStatusOptionSelected(false);
+  }
+}, [currentSelectedSearchField]);
 
   useEffect(() => {
     return () => clearFilter();
@@ -259,10 +283,19 @@ export function Transactions({ navigation}: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      <Spinner 
+      {/* <Spinner 
         visible={loadingTransactions}
-      />
-      <ScrollView bounces={false}>
+      /> */}
+      <ScrollView 
+        bounces={false}
+        // onMomentumScrollEnd={({nativeEvent}) => {
+        //   if (isCloseToBottom(nativeEvent)) {
+        //     fetchTransactions(limitCount);
+        //     let _limitCount = limitCount;
+        //     setLimitCount(++_limitCount);
+        //   }
+        // }}
+      >
         <View style={styles.container}>
           <Heading
             icon={<TransactionIcon size={18} color="pink" />}
@@ -310,7 +343,8 @@ export function Transactions({ navigation}: any) {
             )}
           <View>
             <TouchableOpacity
-              onPress={() => setIsMobileFilterShown(!isMobileFilterShown)}
+              onPress={handleShowingAdvanceFilter}
+              style={{paddingRight: 10}}
             >
               <Ionicons
                 name="filter-sharp"
@@ -322,7 +356,7 @@ export function Transactions({ navigation}: any) {
             </TouchableOpacity>
           </View>
         </View>
-        { debounceIsMobileFilterShown && (
+        { isMobileFilterShown && (
           <View style={{
             backgroundColor: 'white',
             display: 'flex',
@@ -403,6 +437,7 @@ export function Transactions({ navigation}: any) {
             <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
               <TouchableOpacity onPress={() => {
                   setIsLoading(true);
+                  handleSortByDate(!sortByDate);
                   setSortByDate(!sortByDate);
                 }}>
                 {sortByDate ? <ArrowDown color="blue" style={{marginTop: 5, marginLeft: 5}}/> : <AntDesign name="up" size={16} color="blue" style={{marginTop: 5, marginLeft: 5}}/>}
@@ -413,7 +448,7 @@ export function Transactions({ navigation}: any) {
             <Typography></Typography>
           </View>
           <Seperator backgroundColor={vars['grey']} />
-          <View>{ transactions ? transactions?.map((transaction, index) => {
+          <View>{ _transactions ? _transactions?.map((transaction, index) => {
             return (
               <TransactionItem data={transaction} key={index} />
             )

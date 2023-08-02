@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { api } from "../../api";
 import { Transaction } from "../../models/Transactions";
-import { UserData, SearchFilter } from "../../models/UserData";
+// import { UserData, SearchFilter } from "../../models/UserData";
 
 export interface TransactionState {
   data: Transaction[];
@@ -19,14 +19,14 @@ const initialState: TransactionState = {
   errorMessage: undefined,
 };
 
-export interface SearchFields {
+export interface SearchFilter {
   account_id: number | undefined;
   sort: string;
   name?: string;
   from_date?: string;
   to_date?: string;
   direction?: string;
-  limit?: string;
+  limit?: number;
   page?: number;
   min_amount?: number;
   max_amount?: number

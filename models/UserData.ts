@@ -36,19 +36,3 @@ export interface AccountDetails {
   info: AccountInfo;
 }
 
-export interface SearchFilter {
-  sort?: string;
-  direction?: string;
-  limit?: number;
-  page?: number;
-  iban?: string;
-  name?: string;
-  min_amount?: number;
-  max_amount?: number;
-  status?: string;
-  reference_no?: string;
-  bic?: string;
-  from_date?: string;
-  to_date?: string;
-  account_id: number;
-}

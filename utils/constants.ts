@@ -10,5 +10,4 @@ export enum TRANSACTIONS_STATUS {
     COMPLETED = 'success',
     PROCESSING = 'processing',
     FAILED = 'failed'
-
 }

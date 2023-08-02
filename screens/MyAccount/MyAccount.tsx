@@ -79,10 +79,8 @@ export function MyAccount({ navigation }: any) {
       }
     } catch (error) {
       console.log({ error });
-    }
-    finally {
+    } finally {
       setRefreshing(false);
-z
     }
   };
 

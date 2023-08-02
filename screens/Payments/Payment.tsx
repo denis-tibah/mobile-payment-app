@@ -222,6 +222,7 @@ export function Payment({ navigation }: any) {
           code: code,
           debtor_iban,
           creditor_iban,
+          creditor_name:recipientFirstname+" " +recipientLastname,
           amount: amount.toString(),
           currency,
           remarks: `${reason}, ${remarks}`,

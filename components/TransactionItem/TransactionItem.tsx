@@ -17,7 +17,7 @@ import DollarIcon from "../../assets/icons/Dollar";
 import GbpIcon from "../../assets/icons/Gbp";
 import { generateTransactionPDF } from "../../utils/files";
 import { printAsync } from "expo-print";
-import { Transaction,CardTransaction  } from "../../models/Transactions";
+import { Transaction, CardTransaction } from "../../models/Transactions";
 import Export from "../../assets/icons/Export";
 
 interface TransactionItemProps {
@@ -36,21 +36,29 @@ export function TransactionItem({ data }: TransactionItemProps) {
     await printAsync({ uri: pdfUri });
   };
 
-  const currencyIcon=(param:any)=>{
+  const currencyIcon = (param: any) => {
     // console.log("currecy is ", param);
     // console.log("data?.amount ", data?.amount );
 
-    switch(param) {
-      case 'EUR':
-        return <EuroIcon size={18} color={+data?.amount > 0 ? "green" : "red"} />
-      case 'USD':
-        return <DollarIcon size={18} color={+data?.amount > 0 ? "#278664" : "red"} />
-      case 'GBP': 
-        return <GbpIcon size={18} color={+data?.amount > 0 ? "#105ED0" : "red"} />
+    switch (param) {
+      case "EUR":
+        return (
+          <EuroIcon size={18} color={+data?.amount > 0 ? "green" : "red"} />
+        );
+      case "USD":
+        return (
+          <DollarIcon size={18} color={+data?.amount > 0 ? "#278664" : "red"} />
+        );
+      case "GBP":
+        return (
+          <GbpIcon size={18} color={+data?.amount > 0 ? "#105ED0" : "red"} />
+        );
       default:
-        return <EuroIcon size={18} color={+data?.amount > 0 ? "green" : "red"} />
-      }
-  }
+        return (
+          <EuroIcon size={18} color={+data?.amount > 0 ? "green" : "red"} />
+        );
+    }
+  };
 
   return (
     <>
@@ -58,11 +66,11 @@ export function TransactionItem({ data }: TransactionItemProps) {
         <View style={[styles.base, isOpen && styles.isOpen]}>
           <Box width="30%">
             <Text>
-            <Typography fontSize={14}> 
-              {data?.name?.length > 10
-                ? data?.name?.substring(0, 10) + "."
-                : data?.name}
-            </Typography>
+              <Typography fontSize={14}>
+                {data?.name?.length > 10
+                  ? data?.name?.substring(0, 10) + "."
+                  : data?.name}
+              </Typography>
             </Text>
           </Box>
           <Box
@@ -86,32 +94,31 @@ export function TransactionItem({ data }: TransactionItemProps) {
             flexDirection="row"
             alignItems="center"
           >
-            {data.isCardTx ?
-                (    
-                <View style={styles.cardpayments}>
-                  {currencyIcon(data?.currency)}
-                </View>
-                )
-              : currencyIcon(data?.currency)
-              }   
-          {/*       
+            {data.isCardTx ? (
+              <View style={styles.cardpayments}>
+                {currencyIcon(data?.currency)}
+              </View>
+            ) : (
+              currencyIcon(data?.currency)
+            )}
+            {/*       
           {data?.currency === "EUR"  ? (
               <EuroIcon size={18} color={+data?.amount > 0 ? "green" : "red"} />
             ) : (
               <DollarIcon size={18} color="#278664" />
             )} */}
 
-            {!data.isCardTx ?    
+            {!data.isCardTx ? (
               <Typography fontSize={14}>
                 {formatAmountTableValue(data?.amount, data?.currency)}
               </Typography>
-            : <View style={styles.cardCell}>
+            ) : (
+              <View style={styles.cardCell}>
                 <Typography fontSize={14}>
-                {formatAmountTableValue(data?.amount, data?.currency)}
-              </Typography>
-             </View>
-            }
-           
+                  {formatAmountTableValue(data?.amount, data?.currency)}
+                </Typography>
+              </View>
+            )}
           </Box>
 
           <Box
@@ -122,21 +129,17 @@ export function TransactionItem({ data }: TransactionItemProps) {
             flexDirection="row"
             alignItems="center"
           >
-          {!data.isCardTx ? 
-                <EuroIcon size={18} color= "green" />
-                : null
-              }
+            {!data.isCardTx ? <EuroIcon size={18} color="green" /> : null}
 
-        {!data.isCardTx ?    
+            {!data.isCardTx ? (
               <Typography fontSize={14}>
                 {formatAmountTableValue(data?.running_balance, data?.currency)}
               </Typography>
-            : null
-              }
+            ) : null}
 
-              <Box style={styles.cell}>
-                {isOpen ? <ArrowDown color="blue" /> : <ArrowDown color="blue" />}
-              </Box>     
+            <Box style={styles.cell}>
+              {isOpen ? <ArrowDown color="blue" /> : <ArrowDown color="blue" />}
+            </Box>
           </Box>
 
           {/* <Box style={styles.cell}>
@@ -170,19 +173,19 @@ export function TransactionItem({ data }: TransactionItemProps) {
                     {data?.description}
                   </Text>
                 </Box>
-                {!data.isCardTx  ? 
-                <Box style={styles.cardDetails}>
-                  <Box style={styles.detailMobile}>
-                    <Text style={styles.nameDetailMobile}>IBAN:</Text>
-                    <Text style={styles.valueDetailMobile}>{data?.iban}</Text>
-                  </Box>
-                  <Box style={styles.detailMobile}>
-                    <Text style={styles.nameDetailMobile}>BIC:</Text>
-                    <Text style={styles.valueDetailMobile}>{data?.bic}</Text>
-                  </Box> 
-                  {/* : '') */}
+                {!data.isCardTx ? (
+                  <Box style={styles.cardDetails}>
+                    <Box style={styles.detailMobile}>
+                      <Text style={styles.nameDetailMobile}>IBAN:</Text>
+                      <Text style={styles.valueDetailMobile}>{data?.iban}</Text>
+                    </Box>
+                    <Box style={styles.detailMobile}>
+                      <Text style={styles.nameDetailMobile}>BIC:</Text>
+                      <Text style={styles.valueDetailMobile}>{data?.bic}</Text>
+                    </Box>
+                    {/* : '') */}
 
-                  {/* <Box style={styles.detailMobile}>
+                    {/* <Box style={styles.detailMobile}>
                     <Text style={styles.nameDetailMobile}>
                       Opening Balance:
                     </Text>
@@ -190,7 +193,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
                       {data?.opening_balance}
                     </Text>
                   </Box> */}
-                  {/* <Box style={styles.detailMobile}>
+                    {/* <Box style={styles.detailMobile}>
                     <Text style={styles.nameDetailMobile}>
                       Closing Balance:
                     </Text>
@@ -198,27 +201,26 @@ export function TransactionItem({ data }: TransactionItemProps) {
                       {data?.closing_balance}
                     </Text>
                   </Box> */}
-                  <Box style={styles.detailMobile}>
-                    <Text style={styles.nameDetailMobile}>Running Balance:</Text>
-                    <Text style={styles.valueDetailMobile}>
-                      {/* {data?.balance} */}
-                     
-                      <Box style={styles.eurosign}>
-                       
-                        <EuroIcon size={18} color= "black" />
-                          
-                            <Typography fontSize={14}>
-                              {data?.running_balance}
-                            </Typography>
-                      </Box>
+                    <Box style={styles.detailMobile}>
+                      <Text style={styles.nameDetailMobile}>
+                        Running Balance:
+                      </Text>
+                      <Text style={styles.valueDetailMobile}>
+                        {/* {data?.balance} */}
 
-                      {/* {data?.running_balance} */}
-                      
-                    </Text>
+                        <Box style={styles.eurosign}>
+                          <EuroIcon size={18} color="black" />
+
+                          <Typography fontSize={14}>
+                            {data?.running_balance}
+                          </Typography>
+                        </Box>
+
+                        {/* {data?.running_balance} */}
+                      </Text>
+                    </Box>
                   </Box>
-                </Box>
-           
-           : null } 
+                ) : null}
 
                 <View style={styles.detailMobile}>
                   <Text style={styles.nameDetailMobile}>Time:</Text>
@@ -247,7 +249,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
                 {data?.status === "CANCELLED" && (
                   <Chip label="Cancelled" color="red" />
                 )}
-                  {data?.status === "PROCESSING" && (
+                {data?.status === "PROCESSING" && (
                   <Chip label="Processing" color="red" />
                 )}
               </Box>

@@ -115,7 +115,7 @@ export function getFormattedDate(dateToFormat: any) {
 
 export const formatCurrencyToLocalEn = (currency: string) => {
   if (!currency) {
-    return 0.0
+    return 0.0;
   }
   const trimString = currency.replace(/[^0-9.-]+/g, "");
   if (trimString) {
@@ -124,4 +124,8 @@ export const formatCurrencyToLocalEn = (currency: string) => {
       maximumFractionDigits: 2,
     });
   }
+};
+
+export const arrayChecker = (arr: any[]): Boolean => {
+  return arr && Array.isArray(arr) && arr.length > 0 ? true : false;
 };

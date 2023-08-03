@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { View, ScrollView, TouchableOpacity } from "react-native";
-import { useDebounce } from 'usehooks-ts'
+import { useDebounce } from "usehooks-ts";
 import { useDispatch, useSelector } from "react-redux";
-import { Ionicons, AntDesign } from '@expo/vector-icons';
+import { Ionicons, AntDesign } from "@expo/vector-icons";
 import FormGroup from "../../components/FormGroup";
 import Heading from "../../components/Heading";
 import TransactionItem from "../../components/TransactionItem";
@@ -20,8 +20,8 @@ import vars from "../../styles/vars";
 import { Seperator } from "../../components/Seperator/Seperator";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { useState } from "react";
-import DateTimePicker from '@react-native-community/datetimepicker';
-import DropDownPicker from 'react-native-dropdown-picker';
+import DateTimePicker from "@react-native-community/datetimepicker";
+import DropDownPicker from "react-native-dropdown-picker";
 import LoadingScreen from "../../components/Loader/LoadingScreen";
 import { dateFormatter } from "../../utils/dates";
 import { TRANSACTIONS_STATUS } from "../../utils/constants";
@@ -34,8 +34,8 @@ const searchOptions = [
   // { label: "BIC", value: 'bic' },
   // { label: "ReferenceNo", value: 'reference_no' },
   // { label: "IBAN", value: 'iban' },
-  { label: "Maximum amount", value: 'max_amount' },
-  { label: "Status", value: 'status' },
+  { label: "Maximum amount", value: "max_amount" },
+  { label: "Status", value: "status" },
 ];
 
 const currentDate = new Date();
@@ -58,7 +58,9 @@ export function Transactions({ navigation }: any) {
   const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState<string>("");
   const [openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
   const [openStatusOptions, setOpenStatusOptions] = useState<boolean>(false);
-  const [isStatusOptionSelected, setIsStatusOptionSelected] = useState<boolean>(false);
+
+  const [isStatusOptionSelected, setIsStatusOptionSelected] =
+    useState<boolean>(false);
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const [searchText, setSearchText] = useState<string>("");
   const debounceSearchText = useDebounce<string>(searchText, 300);
@@ -76,12 +78,14 @@ export function Transactions({ navigation }: any) {
     return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
   }
 
-  const transactionStatusOptions = Object.keys(TRANSACTIONS_STATUS).map((value) => {
-    return {
-      label: capitalizeFirstLetter(value),
-      value: TRANSACTIONS_STATUS[value as keyof typeof TRANSACTIONS_STATUS]
+  const transactionStatusOptions = Object.keys(TRANSACTIONS_STATUS).map(
+    (value) => {
+      return {
+        label: capitalizeFirstLetter(value),
+        value: TRANSACTIONS_STATUS[value as keyof typeof TRANSACTIONS_STATUS],
+      };
     }
-  });
+  );
 
   const clearFilter = () => {
     setDateFrom("");
@@ -144,7 +148,7 @@ export function Transactions({ navigation }: any) {
 
   const containsOnlyNumbers = (str: any): boolean => {
     return /^\d+$/.test(str);
-  }
+  };
 
   const filterFromToDate = async (fromDate: string, toDate: string) => {
     const userId = userData?.id;
@@ -154,18 +158,20 @@ export function Transactions({ navigation }: any) {
         account_id: userId,
         ...(fromDate && { from_date: fromDate }),
         ...(toDate && { to_date: toDate }),
-        sort: 'id',
-        direction: 'desc'
+        sort: "id",
+        direction: "desc",
       };
       setSortByDate(false);
       setSearchFieldData(search);
       await fetchTransactionsWithFilters(search);
     }
-  }
+  };
 
-  const onChangeShowPickerDateTo = (event:any) => {
-    if(event.type == "set") {
-      const formattedToDate = new Date(event.nativeEvent.timestamp).toISOString().split('T')[0];
+  const onChangeShowPickerDateTo = (event: any) => {
+    if (event.type == "set") {
+      const formattedToDate = new Date(event.nativeEvent.timestamp)
+        .toISOString()
+        .split("T")[0];
       setDateTo(formattedToDate);
       const fromDate = new Date(dateFrom);
       const toDate = new Date(dateTo);
@@ -177,11 +183,13 @@ export function Transactions({ navigation }: any) {
         filterFromToDate(dateFrom, formattedToDate);
       }
     }
-  }
+  };
 
-  const onChangeShowPickerDateFrom = (event:any) => {
-    if(event.type == "set"){
-      const formattedFromDate = new Date(event.nativeEvent.timestamp).toISOString().split('T')[0];
+  const onChangeShowPickerDateFrom = (event: any) => {
+    if (event.type == "set") {
+      const formattedFromDate = new Date(event.nativeEvent.timestamp)
+        .toISOString()
+        .split("T")[0];
       setDateFrom(formattedFromDate);
       const fromDate = new Date(dateFrom);
       const toDate = new Date(dateTo);
@@ -193,7 +201,7 @@ export function Transactions({ navigation }: any) {
         filterFromToDate(formattedFromDate, dateTo);
       }
     }
-  }
+  };
 
   const handleExportData = async () => {
     const pdfUri = await generatePDF(transactions);
@@ -274,7 +282,7 @@ export function Transactions({ navigation }: any) {
 
   // Fetch data when currentSelectedSearchField changes
   useEffect(() => {
-    if (currentSelectedSearchField === 'status') {
+    if (currentSelectedSearchField === "status") {
       setIsStatusOptionSelected(true);
     } else {
       setSearchText("");
@@ -319,7 +327,7 @@ export function Transactions({ navigation }: any) {
             title={"Last Transactions"}
             rightAction={
               <Button
-                style={{height: 34, width: 120}}
+                style={{ height: 34, width: 120 }}
                 color={"light-pink"}
                 onPress={handleExportData}
               >
@@ -329,8 +337,10 @@ export function Transactions({ navigation }: any) {
           />
         </View>
         <View style={styles.searchBar}>
-          { isStatusOptionSelected ? (
-            <View style={{width: '75%', display: 'flex', flexDirection: 'row'}}>
+          {isStatusOptionSelected ? (
+            <View
+              style={{ width: "75%", display: "flex", flexDirection: "row" }}
+            >
               <DropDownPicker
                 listMode="SCROLLVIEW"
                 setValue={setSearchText}
@@ -345,19 +355,19 @@ export function Transactions({ navigation }: any) {
                 dropDownContainerStyle={[styles.dropdownContainerStatus, { zIndex: 20 }]}
               />
             </View>
-            ) : (
+          ) : (
             <FormGroup.Input
               icon={<SearchIcon />}
               placeholder="Enter Minimum Amount"
               color={vars["black"]}
               fontSize={14}
-              fontWeight={'400'}
-              style={{width: "80%"}}
+              fontWeight={"400"}
+              style={{ width: "80%" }}
               value={searchText}
               onChangeText={(event: string) => setSearchText(event)}
               onSubmitEditing={handleOnSubmitEditing}
             />
-            )}
+          )}
           <View>
             <TouchableOpacity
               onPress={handleShowingAdvanceFilter}
@@ -367,9 +377,8 @@ export function Transactions({ navigation }: any) {
                 name="filter-sharp"
                 size={32}
                 color="#ff28b9"
-                iconStyle={{marginTop: 180, color: "#FFC0CB"}}
-              >
-              </Ionicons>
+                iconStyle={{ marginTop: 180, color: "#FFC0CB" }}
+              ></Ionicons>
             </TouchableOpacity>
           </View>
         </View>
@@ -382,7 +391,7 @@ export function Transactions({ navigation }: any) {
           }}>
             <View style={{
                 flex: 1,
-                minWidth: 72
+                minWidth: 72,
               }}
             >
               <DropDownPicker
@@ -398,18 +407,24 @@ export function Transactions({ navigation }: any) {
                 dropDownContainerStyle={styles.dropdownContainer}
               />
             </View>
-            <View style={{
-                flex: 1
+            <View
+              style={{
+                flex: 1,
               }}
             >
               <Button
-                style={{width: 110, backgroundColor: "gey", marginTop: 10, lineHeight: 25}}
+                style={{
+                  width: 110,
+                  backgroundColor: "gey",
+                  marginTop: 10,
+                  lineHeight: 25,
+                }}
                 color="black-only"
                 onPress={() => setShowPickerDateFrom(true)}
               >
-                { !dateFrom ? `From Date`: `${dateFrom}` }
+                {!dateFrom ? `From Date` : `${dateFrom}`}
               </Button>
-              { showPickerDateFrom && (
+              {showPickerDateFrom && (
                 <DateTimePicker
                   mode="date"
                   display="spinner"
@@ -417,51 +432,82 @@ export function Transactions({ navigation }: any) {
                   value={!dateFrom ? currentDate : new Date(dateFrom)}
                   onChange={onChangeShowPickerDateFrom}
                   style={{
-                    display: 'flex',
-                    flexDirection: 'row'
+                    display: "flex",
+                    flexDirection: "row",
                   }}
                 />
               )}
             </View>
-            <View style={{
-                flex: 1
+            <View
+              style={{
+                flex: 1,
               }}
+            >
+              <Button
+                style={{
+                  width: 110,
+                  backgroundColor: "grey",
+                  marginTop: 10,
+                  lineHeight: 25,
+                }}
+                color="black-only"
+                onPress={() => setShowPickerDateTo(true)}
               >
-                <Button
-                  style={{width: 110, backgroundColor: "grey", marginTop: 10, lineHeight: 25}}
-                  color="black-only"
-                  onPress={() => setShowPickerDateTo(true)}
-                >
-                  { !dateTo ? `To Date` : `${dateTo}` }
-                </Button>
-                {showPickerDateTo && (
-                  <DateTimePicker
-                    mode="date"
-                    display="spinner"
-                    value={!dateTo ? currentDate : new Date(dateTo)}
-                    onChange={onChangeShowPickerDateTo}
-                  />
-                )}
+                {!dateTo ? `To Date` : `${dateTo}`}
+              </Button>
+              {showPickerDateTo && (
+                <DateTimePicker
+                  mode="date"
+                  display="spinner"
+                  value={!dateTo ? currentDate : new Date(dateTo)}
+                  onChange={onChangeShowPickerDateTo}
+                />
+              )}
             </View>
           </View>
-          )
-        }
-        <View style={{paddingBottom: 140}}>
-          <Seperator backgroundColor={vars['grey']} />
+        )}
+        <View style={{ paddingBottom: 140 }}>
+          <Seperator backgroundColor={vars["grey"]} />
           <View style={styles.listHead}>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Name</Typography>
-            <View style={{display: 'flex', flexDirection: 'row'}}>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
-              <TouchableOpacity onPress={() => {
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold">
+              Name
+            </Typography>
+            <View style={{ display: "flex", flexDirection: "row" }}>
+              <Typography
+                fontSize={16}
+                fontFamily="Nunito-SemiBold"
+                color="accent-blue"
+              >
+                Date
+              </Typography>
+              <TouchableOpacity
+                onPress={() => {
                   setIsLoading(true);
                   handleSortByDate(!sortByDate);
                   setSortByDate(!sortByDate);
-                }}>
-                {sortByDate ? <ArrowDown color="blue" style={{marginTop: 5, marginLeft: 5}}/> : <AntDesign name="up" size={16} color="blue" style={{marginTop: 5, marginLeft: 5}}/>}
+                }}
+              >
+                {sortByDate ? (
+                  <ArrowDown
+                    color="blue"
+                    style={{ marginTop: 5, marginLeft: 5 }}
+                  />
+                ) : (
+                  <AntDesign
+                    name="up"
+                    size={16}
+                    color="blue"
+                    style={{ marginTop: 5, marginLeft: 5 }}
+                  />
+                )}
               </TouchableOpacity>
             </View>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Amount</Typography>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Balance</Typography>
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold">
+              Amount
+            </Typography>
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold">
+              Balance
+            </Typography>
             <Typography></Typography>
           </View>
           <Seperator backgroundColor={vars['grey']} />

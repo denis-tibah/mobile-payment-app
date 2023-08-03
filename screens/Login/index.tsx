@@ -101,7 +101,7 @@ export function LoginScreen({ navigation }: any) {
   useEffect(() => {
     const handleBiometricLogin = async () => {
       const credentials = await getSavedCredetails();
-      console.log({ credentials });
+      // console.log({ credentials });
       if (credentials.email && credentials.password) {
         const compatible = await checkCompatible();
         console.log({ compatible });

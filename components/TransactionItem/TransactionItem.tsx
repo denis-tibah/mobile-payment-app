@@ -65,7 +65,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
     <>
       <Pressable onPress={handleOnOpen}>
         <View style={[styles.base, isOpen && styles.isOpen]}>
-          <Box width="30%">
+          <Box width={data.isCardTx ? "45%" : "30%"}>
             <Text>
               <Typography fontSize={14}>
                 {data?.name?.length > 10

@@ -58,3 +58,25 @@ export interface CardTransaction {
   purposeDetailed: string;
   billedFeesNotZero: any[];
 }
+
+export interface TransactionDetails {
+  current_page: number;
+  data: Transaction[];
+  first_page_url: string;
+  from: number;
+  last_page: number;
+  last_page_url: string;
+  next_page_url: string | null;
+  path: string;
+  per_page: number;
+  prev_page_url: string | null;
+  to: number;
+  total: number;
+  links: Link[];
+}
+
+interface Link {
+  url: string | null;
+  label: string;
+  active: boolean;
+}

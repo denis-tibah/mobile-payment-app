@@ -5,14 +5,14 @@ import ArrowLeftIcon from "../../assets/icons/ArrowLeft";
 import ArrowRightIcon from "../../assets/icons/ArrowRight";
 import { styles } from "./styles";
 
-interface ILoginDetails {
+interface PaginationProps {
   handlePreviousPage: () => void;
   handleNextPage: () => void;
   page: number;
   lastPage: number;
 }
 
-const LoginDetails: FC<ILoginDetails> = ({
+const Pagination: FC<PaginationProps> = ({
   handlePreviousPage,
   handleNextPage,
   page,
@@ -45,4 +45,4 @@ const LoginDetails: FC<ILoginDetails> = ({
   );
 };
 
-export default LoginDetails;
+export default Pagination;

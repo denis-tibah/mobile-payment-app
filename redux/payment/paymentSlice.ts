@@ -23,6 +23,7 @@ export const paymentSlice = createSlice({
 export const initiatePayment = createAsyncThunk(
   "initiatePayment",
   async (params: any) => {
+    // console.log("*************initial params", params);
     const { data } = await api.post("/initiatepaymentfinxp", params);
     return data;
   }
@@ -44,6 +45,8 @@ export const processPayment = createAsyncThunk(
   "processPayment",
   async (params: any) => {
     try {
+      // console.log("*************process params", params);
+
       const data = await api.post("/processpaymentfinxp", params);
       return data.data;
     } catch (e) {

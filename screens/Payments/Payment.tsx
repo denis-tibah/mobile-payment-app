@@ -65,6 +65,7 @@ export function Payment({ navigation }: any) {
     transactionId,
     debtor_iban,
     creditor_iban,
+    creditor_name,
     amount,
     currency,
     reason,
@@ -110,9 +111,14 @@ export function Payment({ navigation }: any) {
 
   function getFirstAndLastName(str: string) {
     const firstSpace = str.indexOf(" ");
+    let data= str.slice(firstSpace + 1);
+    data.slice(0, data?.indexOf(" "));
     return {
       firstname: str.slice(0, firstSpace),
       lastname: str.slice(firstSpace + 1),
+      // lastname: data.slice(0, data?.indexOf(" ")),
+      
+      
     };
   }
 
@@ -187,7 +193,7 @@ export function Payment({ navigation }: any) {
     if (isExternalPayment) {
       setExternalPayment("SEPACT");
     } else {
-      setExternalPayment("null");
+      setExternalPayment("");
     }
   }, [isExternalPayment]);
 
@@ -225,7 +231,8 @@ export function Payment({ navigation }: any) {
           creditor_name:recipientFirstname+" " +recipientLastname,
           amount: amount.toString(),
           currency,
-          remarks: `${reason}, ${remarks}`,
+          // remarks: `${reason}, ${remarks}`,
+          remarks: `${reason}`,
           account,
           type: externalPayment,
         }) as any
@@ -303,6 +310,7 @@ export function Payment({ navigation }: any) {
                   .lastname,
                 debtor_iban: accountData?.iban,
                 creditor_iban: values.creditor_iban,
+                creditor_name:recipientFirstname+" " +recipientLastname,
                 bic: values.bic,
                 account: accountData?.account_number,
                 amount: values.amount,
@@ -325,6 +333,7 @@ export function Payment({ navigation }: any) {
                         ).lastname,
                         debtor_iban: accountData?.iban,
                         creditor_iban: values.creditor_iban,
+                        creditor_name:recipientFirstname+" " +recipientLastname,
                         bic: values.bic,
                         account: accountData?.account_number,
                         amount: values.amount,
@@ -510,7 +519,10 @@ export function Payment({ navigation }: any) {
                   />
                 </FormGroup>
               </View>
-              <View style={styles.externalPayment__switch}>
+
+          {/* start: date:03-08-23: temp disabled by Aristos */}
+
+              {/* <View style={styles.externalPayment__switch}>
                 <View style={styles.externalPayment__switch__text}>
                   <PaymentsIcon color="blue" size={18} />
                   <Text>External Payment Y/N</Text>
@@ -526,7 +538,9 @@ export function Payment({ navigation }: any) {
                     value={isExternalPayment}
                   />
                 </View>
-              </View>
+              </View> */}
+          {/* end: date:03-08-23: temp disabled by Aristos */}
+
               <View style={{ display: "flex", flexDirection: "row" }}>
                 <Button
                   color="blue-only"

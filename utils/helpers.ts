@@ -94,9 +94,8 @@ export const screenNames: any = {
   profileDetails: " profileDetails",
 };
 
-export function getPendingAmount(opnbal:any,currentBalance: any) {
-  
-  const pendingAmount = Math.abs(opnbal-currentBalance);
+export function getPendingAmount(opnbal: any, currentBalance: any) {
+  const pendingAmount = Math.abs(opnbal - currentBalance);
   //use toFixed(2) to format nuber to 2 decimal places
   return pendingAmount.toFixed(2) || "0.00";
 }
@@ -115,7 +114,7 @@ export function getFormattedDate(dateToFormat: any) {
 
 export const formatCurrencyToLocalEn = (currency: string) => {
   if (!currency) {
-    return 0.0
+    return 0.0;
   }
   const trimString = currency.replace(/[^0-9.-]+/g, "");
   if (trimString) {
@@ -124,4 +123,8 @@ export const formatCurrencyToLocalEn = (currency: string) => {
       maximumFractionDigits: 2,
     });
   }
+};
+
+export const arrayChecker = (arr: any[]): Boolean => {
+  return arr && Array.isArray(arr) && arr.length > 0 ? true : false;
 };

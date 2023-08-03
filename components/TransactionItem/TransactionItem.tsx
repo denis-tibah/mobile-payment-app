@@ -18,6 +18,7 @@ import GbpIcon from "../../assets/icons/Gbp";
 import { generateTransactionPDF } from "../../utils/files";
 import { printAsync } from "expo-print";
 import { Transaction, CardTransaction } from "../../models/Transactions";
+/* import { TTransaction } from "../../utils/types"; */
 import Export from "../../assets/icons/Export";
 
 interface TransactionItemProps {
@@ -39,7 +40,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
   const currencyIcon = (param: any) => {
     // console.log("currecy is ", param);
     // console.log("data?.amount ", data?.amount );
-        // console.log("data.isCardTx ", data.isCardTx );
+    // console.log("data.isCardTx ", data.isCardTx );
 
     switch (param) {
       case "EUR":

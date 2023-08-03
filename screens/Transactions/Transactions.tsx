@@ -28,6 +28,7 @@ import { TRANSACTIONS_STATUS } from "../../utils/constants";
 import ArrowDown from "../../assets/icons/ArrowDown";
 import { arrayChecker } from "../../utils/helper";
 import { Transaction, TransactionDetails } from "../../models/Transactions";
+import Pagination from "../../components/Pagination/Pagination";
 
 const searchOptions = [
   // { label: "BIC", value: 'bic' },
@@ -44,21 +45,17 @@ const initialSearchFieldData: SearchFilter = {
   direction: 'desc',
   status: "SUCCESS",
   limit: 20,
-  page: 1,
 };
 
-export function Transactions({ navigation}: any) {
+export function Transactions({ navigation }: any) {
   const dispatch = useDispatch();
   const transactions = useSelector(
     (state: RootState) => state?.transaction?.data
   );
   const [_transactions, setTransactions] = useState<Transaction[]>([]);
   const [isMobileFilterShown, setIsMobileFilterShown] = useState<boolean>(false);
-  // const debounceIsMobileFilterShown = useDebounce<boolean>(isMobileFilterShown, 300);
   const [sortByDate, setSortByDate] = useState<boolean>(false);
-  const debounceSortByDate = useDebounce<boolean>(sortByDate, 500);
   const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState<string>("");
-  const debounceCurrentSelectedSearchField = useDebounce<string>(currentSelectedSearchField, 300);
   const [openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
   const [openStatusOptions, setOpenStatusOptions] = useState<boolean>(false);
   const [isStatusOptionSelected, setIsStatusOptionSelected] = useState<boolean>(false);
@@ -71,7 +68,9 @@ export function Transactions({ navigation}: any) {
   const [showPickerDateFrom, setShowPickerDateFrom] = useState(false);
   const [dateTo, setDateTo] = useState("");
   const [dateFrom, setDateFrom] = useState("");
-  const [limitCount, setLimitCount] = useState<number>(1);
+  const [page, setPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [unfilteredTransactions, setUnfilteredTransactions] = useState<Transaction[]>([]);
 
   function capitalizeFirstLetter(str: string): string {
     return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
@@ -90,14 +89,14 @@ export function Transactions({ navigation}: any) {
     setCurrentSelectedSearchField("");
     setSearchText("");
     setIsStatusOptionSelected(false);
+    setTransactions(unfilteredTransactions);
   }
 
-  const fetchTransactions = async (page?: number) => {
+  const fetchTransactions = async () => {
     try {
       setIsLoading(true);
       let search: SearchFilter = {
         ...initialSearchFieldData,
-        limit: Number(initialSearchFieldData.limit) * (page || 1),
         account_id: userData?.id,
       }
       if (userData) {
@@ -105,7 +104,10 @@ export function Transactions({ navigation}: any) {
         .unwrap()
         .then((res: TransactionDetails[]) => {
           const [transaction] = res;
-          const {data: transactionData} = transaction;
+          const {data: transactionData, last_page, current_page} = transaction;
+          setUnfilteredTransactions(transactionData);
+          setTotalPages(last_page);
+          setPage(current_page);
           setTransactions(transactionData);
           setIsLoading(false);
         });
@@ -126,7 +128,9 @@ export function Transactions({ navigation}: any) {
         .unwrap()
         .then((res: TransactionDetails[]) => {
           const [transaction] = res;
-          const {data: transactionData} = transaction;
+          const {data: transactionData, last_page, current_page} = transaction;
+          setTotalPages(last_page);
+          setPage(current_page);
           setTransactions(transactionData);
           setIsLoading(false);
         });      
@@ -138,7 +142,7 @@ export function Transactions({ navigation}: any) {
     }
   };
 
-  const containsOnlyNumbers = (str: any) => {
+  const containsOnlyNumbers = (str: any): boolean => {
     return /^\d+$/.test(str);
   }
 
@@ -153,6 +157,7 @@ export function Transactions({ navigation}: any) {
         sort: 'id',
         direction: 'desc'
       };
+      setSortByDate(false);
       setSearchFieldData(search);
       await fetchTransactionsWithFilters(search);
     }
@@ -224,11 +229,13 @@ export function Transactions({ navigation}: any) {
 
   const handleSortByDate = (_sortByDate: boolean) => {
     const sortState = _sortByDate ? 'asc' : 'desc';
-    fetchTransactionsWithFilters({
+    const searchFilter: SearchFilter = {
       ...searchFieldData,
       account_id: userData?.id,
       direction: sortState,
-    });
+    };
+    fetchTransactionsWithFilters(searchFilter);
+    setSearchFieldData(searchFilter);
   }
 
   const handleShowingAdvanceFilter = () => {
@@ -237,22 +244,35 @@ export function Transactions({ navigation}: any) {
     setIsMobileFilterShown(!isMobileFilterShown);
   }
 
-  // const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}: any) => {
+  // const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}: any) => { //  a method for infinite scrolling feature (not used)
   //   const paddingToBottom = 20;
   //   return layoutMeasurement.height + contentOffset.y >=
   //     contentSize.height - paddingToBottom;
   // };
 
-
-  useEffect(() => {
-    if (currentSelectedSearchField === 'status') {
+  const handlePreviousPage = () => {
+    if (page > 1) {
+      const _currentPage = page - 1;
+      setPage(_currentPage);
       fetchTransactionsWithFilters({
         ...searchFieldData,
-        status: debounceSearchText,
+        page: _currentPage,
       });
     }
-  },[debounceSearchText]);
+  }
 
+  const handleNextPage = () => {
+    if (page < totalPages) {
+      const _currentPage = page + 1;
+      setPage(_currentPage);
+      fetchTransactionsWithFilters({
+        ...searchFieldData,
+        page: _currentPage,
+      });
+    }
+  }
+
+  // Fetch data when currentSelectedSearchField changes
   useEffect(() => {
     if (currentSelectedSearchField === 'status') {
       setIsStatusOptionSelected(true);
@@ -260,26 +280,23 @@ export function Transactions({ navigation}: any) {
       setSearchText("");
       setIsStatusOptionSelected(false);
     }
-  },[currentSelectedSearchField]);
+  }, [currentSelectedSearchField]);
+
+  useEffect(() => {
+    if (currentSelectedSearchField === 'status') {
+      const searchFilter: SearchFilter = {
+        ...searchFieldData,
+        status: searchText,
+      }
+      fetchTransactionsWithFilters(searchFilter);
+      setSearchFieldData(searchFilter);
+    }
+  },[debounceSearchText]);
 
   useEffect(() => {
     fetchTransactions();
     return () => clearFilter();
   }, []);
-
-  // Fetch data when currentSelectedSearchField changes
-useEffect(() => {
-  if (currentSelectedSearchField === 'status') {
-    setIsStatusOptionSelected(true);
-  } else {
-    setSearchText("");
-    setIsStatusOptionSelected(false);
-  }
-}, [currentSelectedSearchField]);
-
-  useEffect(() => {
-    return () => clearFilter();
-  },[]);
 
   return (
     <MainLayout navigation={navigation}>
@@ -288,7 +305,7 @@ useEffect(() => {
       /> */}
       <ScrollView 
         bounces={false}
-        // onMomentumScrollEnd={({nativeEvent}) => {
+        // onMomentumScrollEnd={({nativeEvent}) => { // posible feature for future improvements. this is draft for infinite scroll
         //   if (isCloseToBottom(nativeEvent)) {
         //     fetchTransactions(limitCount);
         //     let _limitCount = limitCount;
@@ -448,11 +465,21 @@ useEffect(() => {
             <Typography></Typography>
           </View>
           <Seperator backgroundColor={vars['grey']} />
-          <View>{ _transactions ? _transactions?.map((transaction, index) => {
+          <View>
+            { _transactions ? _transactions?.map((transaction, index) => {
             return (
               <TransactionItem data={transaction} key={index} />
             )
           }) : null }
+          </View>
+          <Seperator backgroundColor={vars['grey']} />
+          <View>
+            <Pagination 
+              handlePreviousPage={handlePreviousPage}
+              handleNextPage={handleNextPage}
+              page={page}
+              lastPage={totalPages}
+            />
           </View>
         </View>
         <LoadingScreen isLoading={isLoading} />

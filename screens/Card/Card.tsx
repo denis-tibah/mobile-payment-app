@@ -55,13 +55,6 @@ import TransactionItem from "../../components/TransactionItem";
 export function Card({ navigation }: any) {
   const infoData = useSelector((state: RootState) => state.account.details);
   const accountData = useSelector((state: RootState) => state.auth.userData);
-  const defaultSearchOptions = {
-    sort: 'id',
-    // status: 'PROCESSING',
-    status: 'SUCCESS',
-    account_id: 0,
-    direction: "desc",
-  };
   const transactions = useSelector(
     (state: RootState) => state?.transaction?.data
   );
@@ -94,6 +87,7 @@ export function Card({ navigation }: any) {
   const [isLoading, setIsloading] = useState<boolean>(false);
 
   const dispatch = useDispatch();
+
   const fetchCardData = async () => {
     try {
       if (userData) {
@@ -104,15 +98,19 @@ export function Card({ navigation }: any) {
             to_date: getTodaysDate(),
             type: "PREAUTH",
           })
-        );
-    //This should be disabled: This is incorrect we do not get transaction data only card transactions
-        await dispatch<any>(getTransactionsWithFilters({
-          account_id: userData?.id,
-          sort: 'id',
-          direction: 'desc',
-          // status: 'PROCESSING'
-          status: 'SUCCESS'
-        }));
+        )
+        .unwrap()
+        .then((res: any) => {
+          setCardTransactionsData(res.data);
+        });
+      //This should be disabled: This is incorrect we do not get transaction data only card transactions
+        // await dispatch<any>(getTransactionsWithFilters({
+        //   account_id: userData?.id,
+        //   sort: 'id',
+        //   direction: 'desc',
+        //   status: 'PROCESSING'
+        //   status: 'SUCCESS'
+        // }));
       }
       await dispatch<any>(getCards());
       // console.log("do we have any cards", cardData);
@@ -303,33 +301,30 @@ export function Card({ navigation }: any) {
 
   const sortCardTransactionsByDate = (sortState: boolean) => {
     if (sortState) {
-      const sortedTransactions = cardTransactionsData.sort((a: any, b: any) => {
+      const sortedTransactions = [...cardTransactionsData].sort((a: any, b: any) => {
         const dateA = new Date(a.receiptDate);
         const dateB = new Date(b.receiptDate);
         return dateA.getTime() - dateB.getTime();
       });
       setCardTransactionsData(sortedTransactions);
     } else {
-      const sortedTransactions = cardTransactionsData.sort((a: any, b: any) => {
+      const sortedTransactions = [...cardTransactionsData].sort((a: any, b: any) => {
         const dateA = new Date(a.receiptDate);
         const dateB = new Date(b.receiptDate);
         return dateB.getTime() - dateA.getTime();
       });
       setCardTransactionsData(sortedTransactions);
     }
+    setIsloading(false);
   }
 
   useEffect(() => {
     sortCardTransactionsByDate(debounceSortByDate);
   },[debounceSortByDate]);
 
-  useEffect(() => {
-    setCardTransactionsData(cardTransactions);
-  }, [cardTransactions]);
-
   return (
     <MainLayout navigation={navigation}>
-      <Spinner visible={loadingState} />
+      {/* <Spinner visible={loadingState} /> */}
       {showGetCardModal && (
         <GetCardModal
           onClose={() => setShowGetCardModal(false)}
@@ -475,18 +470,22 @@ export function Card({ navigation }: any) {
                   width: 60,
                 }}
               >
-                <Typography
-                  fontFamily="Nunito-SemiBold"
-                  color="accent-blue"
-                  fontSize={16}
+                <TouchableOpacity
+
                 >
-                  Date
-                </Typography>
+                  <Typography
+                    fontFamily="Nunito-SemiBold"
+                    color="accent-blue"
+                    fontSize={16}
+                  >
+                    Date
+                  </Typography>
+                </TouchableOpacity>
                 <TouchableOpacity
                 // temp disabled sorting logic 
                   onPress={() => {
-                    // setIsloading(!isLoading);
-                    // setSortByDate(!sortByDate);
+                    setIsloading(!isLoading);
+                    setSortByDate(!sortByDate);
                   }}
                 >
                   {sortByDate ? (
@@ -506,28 +505,26 @@ export function Card({ navigation }: any) {
             <View style={{ backgroundColor: "white" }}>
                 {cardTransactionsData?.map((transaction, index) => (
                   <View key={index} style={styles.listCardTransactions}>
-                        <TransactionItem
-                          data={{
-                            ...transaction,
-                            id: Number(transaction.id),
-                            amount: transaction.amount.toString(),
-                            name: transaction.purpose,
-                            // balance: "0.00",
-                            // closing_balance: "",
-                            // running_balance: "",
-                            // opening_balance: "",
-                            currency: transaction.transactionCurrency,
-                            description: transaction.purposeDetailed,
-                            reference_no: transaction.processingAllMessagesId.toString(),
-                            transaction_datetime: transaction?.receiptDate,
-                            isCardTx : true,
-                          }}
-                          key={index}
-                        />
-                     </View>
-
+                    <TransactionItem
+                      data={{
+                        ...transaction,
+                        id: Number(transaction.id),
+                        amount: transaction.amount.toString(),
+                        name: transaction.purpose,
+                        // balance: "0.00",
+                        // closing_balance: "",
+                        // running_balance: "",
+                        // opening_balance: "",
+                        currency: transaction.transactionCurrency,
+                        description: transaction.purposeDetailed,
+                        reference_no: transaction.processingAllMessagesId.toString(),
+                        transaction_datetime: transaction?.receiptDate,
+                        isCardTx : true,
+                      }}
+                      key={index}
+                      />
+                    </View>
                   ))}
-
             </View>
               </>
             ) : (
@@ -617,10 +614,8 @@ export function Card({ navigation }: any) {
                   </View>
                   )
                 } 
-
             </View> */}
           {/* end:02-08-2013 disabled by Aristos */}
-
           </View>
         </View>
         <LoadingScreen isLoading={isLoading} />

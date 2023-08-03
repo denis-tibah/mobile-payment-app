@@ -23,17 +23,17 @@ export const styles: any = StyleSheet.create<any>({
     justifyContent: "space-between",
     alignItems: "center",
     // margin: 12,
-    marginTop:25,
-    marginLeft:8,
-    marginRight:8,
-    marginBottom:8,
+    marginTop: 25,
+    marginLeft: 8,
+    marginRight: 8,
+    marginBottom: 8,
     borderRadius: 20,
   },
-  balancesTitleA :{
+  balancesTitleA: {
     // padding: 12,
     paddingTop: 15,
-    paddingLeft:12,
-    paddingRight:12,
+    paddingLeft: 12,
+    paddingRight: 12,
     paddingBottom: 12,
     // backgroundColor: "white",
     display: "flex",
@@ -42,13 +42,12 @@ export const styles: any = StyleSheet.create<any>({
     alignItems: "center",
     marginTop: -93,
     marginLeft: 10,
-    marginRight:14,
-    marginBottom:25,
+    marginRight: 14,
+    marginBottom: 25,
     // margin: 12,
     // borderRadius: 20,
   },
-  balancesTitleB :{
-
+  balancesTitleB: {
     padding: 12,
     // paddingBottom: 30,
     // backgroundColor: "white",
@@ -58,18 +57,17 @@ export const styles: any = StyleSheet.create<any>({
     alignItems: "center",
     marginTop: -60,
     marginLeft: 10,
-    marginRight:8,
-    marginBottom:20,
+    marginRight: 8,
+    marginBottom: 20,
     // margin: 12,
     // borderRadius: 20,
   },
-  balances :{
-
+  balances: {
     // padding: 12,
     paddingTop: 12,
-    paddingLeft:13,
-    paddingRight:10,
-    paddingBottom:12,
+    paddingLeft: 13,
+    paddingRight: 10,
+    paddingBottom: 12,
     gap: 5,
     // paddingBottom: 30,
     // backgroundColor: "white",
@@ -79,23 +77,42 @@ export const styles: any = StyleSheet.create<any>({
     alignItems: "center",
     marginTop: -50,
     marginLeft: 10,
-    marginRight:10,
-    marginBottom:20,
+    marginRight: 10,
+    marginBottom: 20,
     // margin: 12,
     // borderRadius: 20,
   },
   base: {
     backgroundColor: "white",
-    zIndex:1,
+    zIndex: 1,
   },
-  dateLabel : {
+  dateLabel: {
     paddingLeft: 30,
   },
-  amountLabel : {
+  amountLabel: {
     paddingLeft: 10,
   },
-  balanceLabel : {
+  balanceLabel: {
     // paddingLeft: -20,
     paddingRight: 10,
+  },
+  paginateContainer: {
+    backgroundColor: "white",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingTop: 20,
+    paddingBottom: 20,
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
+  paginateArrowContainer: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 2,
+  },
+  paginateTextNextPrev: {
+    marginBottom: 2,
   },
 });

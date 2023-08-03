@@ -24,6 +24,10 @@ const generateHTML = (transactions:any) => {
           transaction.amount,
           transaction.currency
         )}</td>
+        <td style="border: 1px solid black; padding: 5px;">${formatAmountTableValue(
+          transaction.running_balance,
+          transaction.currency
+        )}</td>
         <td style="border: 1px solid black; padding: 5px;">${iban}${bic}</td>
       </tr>
     `;
@@ -63,6 +67,7 @@ const generateHTML = (transactions:any) => {
             <th>Name</th>
             <th>Date</th>
             <th>Amount</th>
+            <th>Balance</th>
             <th>Details</th>
           </tr>
           ${htmlTransactions.join("")}

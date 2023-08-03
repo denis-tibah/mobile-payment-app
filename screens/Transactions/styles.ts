@@ -50,4 +50,10 @@ export const styles:any = StyleSheet.create<any>({
     backgroundColor: "#f9f9f9",
     borderColor: "transparent",
   },
+  dropdownContainerStatus: {
+    width: "78%",
+    // alignSelf: "center",
+    backgroundColor: "#f9f9f9",
+    borderColor: "transparent",
+  },
 })

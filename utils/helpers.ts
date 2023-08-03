@@ -94,9 +94,9 @@ export const screenNames: any = {
   profileDetails: " profileDetails",
 };
 
-export function getPendingAmount(opnbal:any,currentBalance: any) {
-  
-  const pendingAmount = Math.abs(opnbal-currentBalance);
+// export function getPendingAmount(opnbal:any,currentBalance: any) {
+  export function getPendingAmount(avlbal:any,currentBalance: any) {
+  const pendingAmount = Math.abs(currentBalance-avlbal);
   //use toFixed(2) to format nuber to 2 decimal places
   return pendingAmount.toFixed(2) || "0.00";
 }

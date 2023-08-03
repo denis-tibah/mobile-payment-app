@@ -292,7 +292,7 @@ export function Transactions({ navigation}: any) {
                 zIndex={101}
                 dropDownDirection="BOTTOM"
                 style={[styles.dropdown, {width: '80%', alignSelf: 'flex-start'}]}
-                dropDownContainerStyle={[styles.dropdownContainer, { zIndex: 20 }]}
+                dropDownContainerStyle={[styles.dropdownContainerStatus, { zIndex: 20 }]}
               />
             </View>
             ) : (

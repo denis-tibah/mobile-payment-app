@@ -150,7 +150,7 @@ z
             </Typography>
             <Typography color="#E53CA9"  fontWeight={400} fontSize={17}>
               {getCurrency(totalBalance?.currency)}{" "}
-              {getPendingAmount(totalBalance?.opnbal ||"0.00",totalBalance?.curbal ||"0.00")}
+              {getPendingAmount(totalBalance?.avlbal ||"0.00",totalBalance?.curbal ||"0.00")}
          
             </Typography>
             <Typography color={"medium-grey2"} fontWeight={400} fontSize={17}>

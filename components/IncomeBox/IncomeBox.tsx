@@ -119,7 +119,7 @@ export function IncomeBox() {
           
               <Typography color="#E53CA9" fontFamily="Mukta-Regular" fontSize={16}>
                 {getCurrency(infoData?.currency)}
-                {getPendingAmount(infoData?.opnbal ||"0.00",infoData?.curbal ||"0.00") || "0.00"}
+                {getPendingAmount(infoData?.avlbal ||"0.00",infoData?.curbal ||"0.00") || "0.00"}
               
               </Typography>
             </Box>

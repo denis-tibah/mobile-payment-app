@@ -1,12 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
-import {
-  View,
-  ScrollView,
-  ActivityIndicator,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { View, ScrollView, RefreshControl } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
@@ -14,27 +8,24 @@ import { styles } from "./style";
 import TransactionItem from "../../components/TransactionItem";
 import Typography from "../../components/Typography";
 import AccountIcon from "../../assets/icons/Account";
-import ArrowLeftIcon from "../../assets/icons/ArrowLeft";
-import ArrowRightIcon from "../../assets/icons/ArrowRight";
-import IncomeBox from "../../components/IncomeBox";
 import Pagination from "../../components/Pagination/Pagination";
-import {
-  getTransactions,
-  getTransactionsWithFilters,
-} from "../../redux/transaction/transactionSlice";
+import { getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
 import { RootState } from "../../store";
 import Box from "../../components/Box";
 import { getAccountDetails } from "../../redux/account/accountSlice";
 import { getCurrency } from "../../utils/helpers";
 import Spinner from "react-native-loading-spinner-overlay/lib";
-import { getPendingAmount } from "../../utils/helpers";
+import { getPendingAmount, arrayChecker } from "../../utils/helpers";
+import { TTransaction } from "../../utils/types";
+
+interface ITransactions {
+  data: TTransaction[];
+  totalPage: number;
+}
 
 export function MyAccount({ navigation }: any) {
-  const transactions = useSelector(
-    (state: RootState) => state?.transaction?.data[0]?.data
-  );
-  const transactionsAll = useSelector(
-    (state: RootState) => state?.transaction?.data[0]
+  const transactions: any = useSelector(
+    (state: RootState) => state?.transaction?.data
   );
 
   const userData = useSelector((state: RootState) => state?.auth?.userData);
@@ -45,22 +36,68 @@ export function MyAccount({ navigation }: any) {
 
   const loading = useSelector((state: RootState) => state?.transaction.loading);
   const dispatch = useDispatch();
-  const [refreshing, setRefreshing] = useState(false);
-  const [page, setPage] = useState(1);
-  const [paginateRefresh, setPaginateRefresh] = useState(false);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
+  const [paginateRefresh, setPaginateRefresh] = useState<boolean>(false);
+  const [transactionsData, setTransactionsData] = useState<ITransactions>({
+    data: [],
+    totalPage: 0,
+  });
 
-  // const onRefresh = useCallback(() => {
-  //   setRefreshing(true);
-  //   // console.log("1 account ",totalBalance);
-  //   // fetchTransactions();
-  //     setTimeout(() => {
-  //       setRefreshing(false);
-  //       // console.log("2 get new transactions for userData.id is ", userData);
-  //       fetchTransactions();
-  //     }, 5000);
-  // }, []);
+  const fetchTransactions = async () => {
+    try {
+      setPaginateRefresh(true);
+      if (userData && userData?.id) {
+        let search = {
+          account_id: userData?.id,
+          sort: "id",
+          direction: "desc",
+          // status: "PROCESSING"
+          status: "SUCCESS",
+          limit: 20,
+          page,
+        };
+        // await dispatch<any>(getTransactions(userData));
+        // console.log('userData?.id ',userData?.id);
+        await dispatch<any>(getTransactionsWithFilters(search));
+        await dispatch<any>(getAccountDetails(userData.id));
+        setPaginateRefresh(false);
+      }
+    } catch (error) {
+      console.log({ error });
+      setRefreshing(false);
+      setPaginateRefresh(false);
+    } finally {
+      setRefreshing(false);
+      setPaginateRefresh(false);
+    }
+  };
 
-  const refreshTransactions = async () => {
+  // #HACK needs improvement
+  // run only once when the component mounts/unmounts
+  // will load fetchTransactions on every mount of component/page
+  // reset page to 1 when the component unmounts
+  useFocusEffect(
+    useCallback(() => {
+      fetchTransactions();
+      return () => {
+        setPage(1);
+      };
+    }, [])
+  );
+
+  useEffect(() => {
+    if (arrayChecker(transactions) && transactions.length > 0) {
+      // get only first value of array since it contains all data ex last_page, arr of transaction etc
+      const [transactionsObj] = transactions;
+      setTransactionsData({
+        data: transactionsObj?.data || [],
+        totalPage: parseInt(transactionsObj?.last_page, 10) || 0,
+      });
+    }
+  }, [transactions]);
+
+  /* const refreshTransactions = async () => {
     try {
       setRefreshing(true);
 
@@ -82,31 +119,7 @@ export function MyAccount({ navigation }: any) {
     } finally {
       setRefreshing(false);
     }
-  };
-
-  const fetchTransactions = async () => {
-    try {
-      setPaginateRefresh(true);
-      if (userData) {
-        let search = {
-          account_id: userData?.id,
-          sort: "id",
-          direction: "desc",
-          // status: "PROCESSING"
-          status: "SUCCESS",
-          limit: 20,
-          page,
-        };
-        // await dispatch<any>(getTransactions(userData));
-        // console.log('userData?.id ',userData?.id);
-        await dispatch<any>(getTransactionsWithFilters(search));
-        await dispatch<any>(getAccountDetails(userData.id));
-        setPaginateRefresh(false);
-      }
-    } catch (error) {
-      console.log({ error });
-    }
-  };
+  }; */
 
   useEffect(() => {
     if (!!userData?.id) fetchTransactions();
@@ -132,11 +145,10 @@ export function MyAccount({ navigation }: any) {
   };
 
   const handleNextPage = () => {
-    const lastPage = parseInt(transactionsAll?.last_page, 10);
-    if (page < lastPage) {
+    if (page < transactionsData?.totalPage) {
       setPage((prevPage) => prevPage + 1);
     } else {
-      setPage(lastPage);
+      setPage(transactionsData?.totalPage);
     }
   };
   return (
@@ -148,7 +160,7 @@ export function MyAccount({ navigation }: any) {
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={refreshTransactions}
+            onRefresh={fetchTransactions}
           />
         }
       >
@@ -204,7 +216,7 @@ export function MyAccount({ navigation }: any) {
           </View>
           <View>
             <Spinner visible={loading || paginateRefresh} />
-            {!!transactions?.length ? (
+            {transactionsData?.data?.length > 0 ? (
               <>
                 <View style={styles.listHead}>
                   <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
@@ -232,7 +244,7 @@ export function MyAccount({ navigation }: any) {
                   <Typography></Typography>
                 </View>
                 <View>
-                  {transactions?.map((transaction: any) => (
+                  {transactionsData?.data.map((transaction: any) => (
                     <TransactionItem data={transaction} key={transaction.id} />
                   ))}
                 </View>
@@ -248,7 +260,7 @@ export function MyAccount({ navigation }: any) {
           <Pagination
             handlePreviousPage={handlePreviousPage}
             page={page}
-            lastPage={transactionsAll?.last_page || 0}
+            lastPage={transactionsData?.totalPage}
             handleNextPage={handleNextPage}
           />
         </View>

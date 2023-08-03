@@ -55,6 +55,13 @@ import TransactionItem from "../../components/TransactionItem";
 export function Card({ navigation }: any) {
   const infoData = useSelector((state: RootState) => state.account.details);
   const accountData = useSelector((state: RootState) => state.auth.userData);
+  const defaultSearchOptions = {
+    sort: "id",
+    // status: 'PROCESSING',
+    status: "SUCCESS",
+    account_id: 0,
+    direction: "desc",
+  };
   const transactions = useSelector(
     (state: RootState) => state?.transaction?.data
   );
@@ -83,7 +90,9 @@ export function Card({ navigation }: any) {
   const [storedIntervalId, setStoredIntervalId] = useState<any>(null);
   const [sortByDate, setSortByDate] = useState<boolean>(false);
   const debounceSortByDate = useDebounce<boolean>(sortByDate, 300);
-  const [cardTransactionsData, setCardTransactionsData] = useState<CardTransaction[]>([]);
+  const [cardTransactionsData, setCardTransactionsData] = useState<
+    CardTransaction[]
+  >([]);
   const [isLoading, setIsloading] = useState<boolean>(false);
 
   const dispatch = useDispatch();
@@ -245,10 +254,8 @@ export function Card({ navigation }: any) {
     };
 
     try {
-      
       // await dispatch<any>(getTransactionsWithFilters(_searchOptions));
       fetchCardData();
-
     } catch (error) {
       console.log(error);
     } finally {
@@ -320,7 +327,7 @@ export function Card({ navigation }: any) {
 
   useEffect(() => {
     sortCardTransactionsByDate(debounceSortByDate);
-  },[debounceSortByDate]);
+  }, [debounceSortByDate]);
 
   return (
     <MainLayout navigation={navigation}>
@@ -451,94 +458,99 @@ export function Card({ navigation }: any) {
           <View>
             <Seperator backgroundColor={vars["grey"]} />
 
-  {/* start: Added by Aritos  */}
-  <View>
-            <Spinner
-              visible={loading}
-            />
-            {!!cardTransactionsData?.length ? (
-              <>
-                <View style={styles.listHeadCardTransactions}>
-              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
-                Name
-              </Typography>
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  width: 60,
-                }}
-              >
-                <TouchableOpacity
-
-                >
-                  <Typography
-                    fontFamily="Nunito-SemiBold"
-                    color="accent-blue"
-                    fontSize={16}
-                  >
-                    Date
-                  </Typography>
-                </TouchableOpacity>
-                <TouchableOpacity
-                // temp disabled sorting logic 
-                  onPress={() => {
-                    setIsloading(!isLoading);
-                    setSortByDate(!sortByDate);
-                  }}
-                >
-                  {sortByDate ? (
-                    <ArrowDown color="blue" style={{ marginTop: 5 }} />
-                  ) : (
-                    <AntDesign
-                      name="up"
-                      size={16}
-                      color="blue"
-                      style={{ marginTop: 5 }}
-                    />
-                  )}
-                </TouchableOpacity>
-              </View>
-              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Amount</Typography>
-            </View>
-            <View style={{ backgroundColor: "white" }}>
-                {cardTransactionsData?.map((transaction, index) => (
-                  <View key={index} style={styles.listCardTransactions}>
-                    <TransactionItem
-                      data={{
-                        ...transaction,
-                        id: Number(transaction.id),
-                        amount: transaction.amount.toString(),
-                        name: transaction.purpose,
-                        // balance: "0.00",
-                        // closing_balance: "",
-                        // running_balance: "",
-                        // opening_balance: "",
-                        currency: transaction.transactionCurrency,
-                        description: transaction.purposeDetailed,
-                        reference_no: transaction.processingAllMessagesId.toString(),
-                        transaction_datetime: transaction?.receiptDate,
-                        isCardTx : true,
+            {/* start: Added by Aritos  */}
+            <View>
+              <Spinner visible={loading} />
+              {!!cardTransactionsData?.length ? (
+                <>
+                  <View style={styles.listHeadCardTransactions}>
+                    <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
+                      Name
+                    </Typography>
+                    <View
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        width: 60,
                       }}
-                      key={index}
-                      />
+                    >
+                      <Typography
+                        fontFamily="Nunito-SemiBold"
+                        color="accent-blue"
+                        fontSize={16}
+                      >
+                        Date
+                      </Typography>
+                      <TouchableOpacity
+                        // temp disabled sorting logic
+                        onPress={() => {
+                          // setIsloading(!isLoading);
+                          // setSortByDate(!sortByDate);
+                        }}
+                      >
+                        {sortByDate ? (
+                          <ArrowDown color="blue" style={{ marginTop: 5 }} />
+                        ) : (
+                          <AntDesign
+                            name="up"
+                            size={16}
+                            color="blue"
+                            style={{ marginTop: 5 }}
+                          />
+                        )}
+                      </TouchableOpacity>
                     </View>
-                  ))}
-            </View>
-              </>
-            ) : (
-              <View style={{backgroundColor: "#fff", padding: 24}}>
-                    <Typography fontFamily="Nunito-Regular" fontSize={16} style={{textAlign: 'center', marginTop: 20, backgroundColor: '#fff'}}>
-                      You don't have any transactions yet, why not add some money to your account to get started!
+                    <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
+                      Amount
                     </Typography>
                   </View>
-            )}
-          </View>
-          {/* end: Added by Aristos */}
+                  <View style={{ backgroundColor: "white" }}>
+                    {cardTransactionsData?.map((transaction, index) => (
+                      <View key={index} style={styles.listCardTransactions}>
+                        <TransactionItem
+                          data={{
+                            ...transaction,
+                            id: Number(transaction.id),
+                            amount: transaction.amount.toString(),
+                            name: transaction.purpose,
+                            // balance: "0.00",
+                            // closing_balance: "",
+                            // running_balance: "",
+                            // opening_balance: "",
+                            currency: transaction.transactionCurrency,
+                            description: transaction.purposeDetailed,
+                            reference_no:
+                              transaction.processingAllMessagesId.toString(),
+                            transaction_datetime: transaction?.receiptDate,
+                            isCardTx: true,
+                          }}
+                          key={index}
+                        />
+                      </View>
+                    ))}
+                  </View>
+                </>
+              ) : (
+                <View style={{ backgroundColor: "#fff", padding: 24 }}>
+                  <Typography
+                    fontFamily="Nunito-Regular"
+                    fontSize={16}
+                    style={{
+                      textAlign: "center",
+                      marginTop: 20,
+                      backgroundColor: "#fff",
+                    }}
+                  >
+                    You don't have any transactions yet, why not add some money
+                    to your account to get started!
+                  </Typography>
+                </View>
+              )}
+            </View>
+            {/* end: Added by Aristos */}
 
-
-       {/* start:02-08-2013 disabled by Aristos */}
+            {/* start:02-08-2013 disabled by Aristos */}
             {/* <View style={styles.listHead}>
               <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
                 Name
@@ -580,7 +592,7 @@ export function Card({ navigation }: any) {
             </View>
             <View style={{ height: "70%" }}> */}
 
-                {/* { cardTransactionsData.length > 0 ? cardTransactionsData?.map((transaction, index) => (
+            {/* { cardTransactionsData.length > 0 ? cardTransactionsData?.map((transaction, index) => (
                   <>
                     <View key={index} style={styles.listItem}>
                       <View style={styles.listItemInnerText}>

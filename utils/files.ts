@@ -5,6 +5,7 @@ const generateHTML = (transactions:any) => {
   const htmlTransactions = transactions.map((transaction:any) => {
     let iban = "";
     let bic = "";
+
     if (transaction.iban && transaction.iban.length > 0) {
       iban = `<p>IBAN: ${transaction.iban}</p>`;
     }
@@ -22,6 +23,10 @@ const generateHTML = (transactions:any) => {
         <td style="border: 1px solid black; padding: 5px;">${transactionDate}</td>
         <td style="border: 1px solid black; padding: 5px;">${formatAmountTableValue(
           transaction.amount,
+          transaction.currency
+        )}</td>
+        <td style="border: 1px solid black; padding: 5px;">${formatAmountTableValue(
+          transaction.running_balance,
           transaction.currency
         )}</td>
         <td style="border: 1px solid black; padding: 5px;">${iban}${bic}</td>
@@ -63,6 +68,7 @@ const generateHTML = (transactions:any) => {
             <th>Name</th>
             <th>Date</th>
             <th>Amount</th>
+            <th>Balance</th>
             <th>Details</th>
           </tr>
           ${htmlTransactions.join("")}

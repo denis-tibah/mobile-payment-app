@@ -196,7 +196,8 @@ export function Transactions({ navigation }: any) {
   }
 
   const handleExportData = async () => {
-    const pdfUri = await generatePDF(transactions);
+    // const pdfUri = await generatePDF(transactions);
+    const pdfUri = await generatePDF(_transactions);
     await printAsync({ uri: pdfUri });
   };
 

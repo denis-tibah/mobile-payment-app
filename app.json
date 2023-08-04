@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "zazoo-mobile",
+    "name": "zazoo",
     "scheme": "zazoomobile",
-    "slug": "zazoo-mobile",
+    "slug": "zazoo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -67,14 +67,14 @@
     },
     "extra": {
       "eas": {
-        "projectId": "53738179-17b1-4378-b234-2689d22ab698"
+        "projectId": "7454c009-85fa-4eb0-ae8c-5834ded616c2"
       }
     },
     "plugins": [
       [
         "expo-local-authentication",
         {
-          "faceIDPermission": "Allow zazoo-mobile to use Face ID."
+          "faceIDPermission": "Allow zazoo to use Face ID."
         }
       ],
       [

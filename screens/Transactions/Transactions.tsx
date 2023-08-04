@@ -31,12 +31,6 @@ import { Transaction, TransactionDetails } from "../../models/Transactions";
 import Pagination from "../../components/Pagination/Pagination";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 
-export enum TransactionStatus {
-  PENDING = 'pending',
-  PROCESSING = 'processing',
-  SUCCESS = 'success',
-  CANCELLED = 'cancelled'
-}
 export interface GroupedByDateTransaction {
   [date: string]: Transaction[];
 }
@@ -132,6 +126,7 @@ export function Transactions({ navigation }: any) {
         await dispatch<any>(getTransactions(search))
         .unwrap()
         .then((_transactions: Transaction[]) => {
+          console.log(_transactions);
           const sanitizeDate = _transactions.map((tx: Transaction) => {
             return {
               ...tx,

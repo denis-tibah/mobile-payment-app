@@ -49,6 +49,7 @@ const initialSearchFieldData: SearchFilter = {
   direction: 'desc',
   status: "SUCCESS",
   limit: 20,
+  page: 1,
 };
 
 export function Transactions({ navigation }: any) {
@@ -114,11 +115,11 @@ export function Transactions({ navigation }: any) {
   const fetchTransactions = async () => {
     try {
       setIsLoading(true);
-      let search: SearchFilter = {
-        ...initialSearchFieldData,
-        account_id: userData?.id,
-      }
       if (userData) {
+        let search: SearchFilter = {
+          ...initialSearchFieldData,
+          account_id: userData?.id,
+        }
         await dispatch<any>(getTransactionsWithFilters(search))
         .unwrap()
         .then((res: TransactionDetails[]) => {
@@ -143,7 +144,11 @@ export function Transactions({ navigation }: any) {
     try {
       setIsLoading(true);
       if (userData) {
-        await dispatch<any>(getTransactionsWithFilters(value))
+        let search: SearchFilter = {
+          ...value,
+          account_id: userData?.id,
+        }
+        await dispatch<any>(getTransactionsWithFilters(search))
         .unwrap()
         .then((res: TransactionDetails[]) => {
           const [transaction] = res;
@@ -171,9 +176,9 @@ export function Transactions({ navigation }: any) {
     if (fromDate && toDate && userId) {
       const search: SearchFilter = {
         ...searchFieldData,
-        account_id: userId,
         ...(fromDate && { from_date: fromDate }),
         ...(toDate && { to_date: toDate }),
+        account_id: userId,
         sort: "id",
         direction: "desc",
       };
@@ -528,14 +533,14 @@ export function Transactions({ navigation }: any) {
             }) : null }
           </View>
           <Seperator backgroundColor={vars['grey']} />
-          {/* <View> -- temporary disable
+          <View> 
             <Pagination 
               handlePreviousPage={handlePreviousPage}
               handleNextPage={handleNextPage}
               page={page}
               lastPage={totalPages}
             />
-          </View> */}
+          </View>
         </View>
         <LoadingScreen isLoading={isLoading} />
       </ScrollView>

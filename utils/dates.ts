@@ -9,7 +9,7 @@ export const getTodaysDate = () => {
   return `${year}-${month}-${day}`;
 };
 
-export const dateFormatter = (date: Date) => {
+export const dateFormatter = (date: string) => {
   const dateFormatted = new Date(date).toISOString().split('T')[0];
   return dateFormatted;
 }

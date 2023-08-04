@@ -29,7 +29,11 @@ import ArrowDown from "../../assets/icons/ArrowDown";
 import { arrayChecker } from "../../utils/helper";
 import { Transaction, TransactionDetails } from "../../models/Transactions";
 import Pagination from "../../components/Pagination/Pagination";
+import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 
+export interface GroupedByDateTransactionObject {
+  [date: string]: Transaction[];
+}
 const searchOptions = [
   // { label: "BIC", value: 'bic' },
   // { label: "ReferenceNo", value: 'reference_no' },
@@ -45,14 +49,12 @@ const initialSearchFieldData: SearchFilter = {
   direction: 'desc',
   status: "SUCCESS",
   limit: 20,
+  page: 1,
 };
 
 export function Transactions({ navigation }: any) {
   const dispatch = useDispatch();
-  const transactions = useSelector(
-    (state: RootState) => state?.transaction?.data
-  );
-  const [_transactions, setTransactions] = useState<Transaction[]>([]);
+  const userData = useSelector((state: RootState) => state?.auth?.userData);
   const [isMobileFilterShown, setIsMobileFilterShown] = useState<boolean>(false);
   const [sortByDate, setSortByDate] = useState<boolean>(false);
   const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState<string>("");
@@ -61,9 +63,9 @@ export function Transactions({ navigation }: any) {
 
   const [isStatusOptionSelected, setIsStatusOptionSelected] =
     useState<boolean>(false);
-  const userData = useSelector((state: RootState) => state?.auth?.userData);
   const [searchText, setSearchText] = useState<string>("");
   const debounceSearchText = useDebounce<string>(searchText, 300);
+  const [txData, setTxData] = useState<GroupedByDateTransactionObject>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchFieldData, setSearchFieldData] = useState<SearchFilter>(initialSearchFieldData);
   const [showPickerDateTo, setShowPickerDateTo] = useState(false);
@@ -72,7 +74,7 @@ export function Transactions({ navigation }: any) {
   const [dateFrom, setDateFrom] = useState("");
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(0);
-  const [unfilteredTransactions, setUnfilteredTransactions] = useState<Transaction[]>([]);
+  const [unfilteredTransactions, setUnfilteredTransactions] = useState<GroupedByDateTransactionObject>();
 
   function capitalizeFirstLetter(str: string): string {
     return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
@@ -93,30 +95,44 @@ export function Transactions({ navigation }: any) {
     setCurrentSelectedSearchField("");
     setSearchText("");
     setIsStatusOptionSelected(false);
-    setTransactions(unfilteredTransactions);
+    setTxData(unfilteredTransactions);
+  }
+
+  const groupedByDateTransactions = ( txData: Transaction[] ): GroupedByDateTransactionObject => {
+    const sanitizedDate: Transaction[] = txData.map((tx: Transaction) => {
+      return {
+        ...tx,
+        transaction_datetime: dateFormatter(tx.transaction_datetime),
+      }
+    });
+    const groupedByDateTransactions: GroupedByDateTransactionObject = sanitizedDate.reduce((current: any, element) => {
+      (current[element.transaction_datetime] ??= []).push(element);
+      return current;
+    }, {});
+    return groupedByDateTransactions;
   }
 
   const fetchTransactions = async () => {
     try {
       setIsLoading(true);
-      let search: SearchFilter = {
-        ...initialSearchFieldData,
-        account_id: userData?.id,
-      }
       if (userData) {
+        let search: SearchFilter = {
+          ...initialSearchFieldData,
+          account_id: userData?.id,
+        }
         await dispatch<any>(getTransactionsWithFilters(search))
         .unwrap()
         .then((res: TransactionDetails[]) => {
           const [transaction] = res;
           const {data: transactionData, last_page, current_page} = transaction;
-          setUnfilteredTransactions(transactionData);
           setTotalPages(last_page);
           setPage(current_page);
-          setTransactions(transactionData);
+          const _groupedByDateTransactions = groupedByDateTransactions(transactionData);
+          setTxData(_groupedByDateTransactions);
+          setUnfilteredTransactions(_groupedByDateTransactions);
           setIsLoading(false);
         });
       }
-      setSearchFieldData(search);
     } catch (error) {
       console.log({ error });
       setIsLoading(false);
@@ -128,19 +144,24 @@ export function Transactions({ navigation }: any) {
     try {
       setIsLoading(true);
       if (userData) {
-        await dispatch<any>(getTransactionsWithFilters(value))
+        let search: SearchFilter = {
+          ...value,
+          account_id: userData?.id,
+        }
+        await dispatch<any>(getTransactionsWithFilters(search))
         .unwrap()
         .then((res: TransactionDetails[]) => {
           const [transaction] = res;
           const {data: transactionData, last_page, current_page} = transaction;
           setTotalPages(last_page);
           setPage(current_page);
-          setTransactions(transactionData);
+          const _groupedByDateTransactions = groupedByDateTransactions(transactionData);
+          setTxData(_groupedByDateTransactions);
           setIsLoading(false);
         });      
       }
     } catch (error) {
-      console.log("Error", error);
+      console.log({error});
     } finally {
       setIsLoading(false);
     }
@@ -155,9 +176,9 @@ export function Transactions({ navigation }: any) {
     if (fromDate && toDate && userId) {
       const search: SearchFilter = {
         ...searchFieldData,
-        account_id: userId,
         ...(fromDate && { from_date: fromDate }),
         ...(toDate && { to_date: toDate }),
+        account_id: userId,
         sort: "id",
         direction: "desc",
       };
@@ -205,7 +226,7 @@ export function Transactions({ navigation }: any) {
 
   const handleExportData = async () => {
     // const pdfUri = await generatePDF(transactions);
-    const pdfUri = await generatePDF(_transactions);
+    const pdfUri = await generatePDF(unfilteredTransactions);
     await printAsync({ uri: pdfUri });
   };
 
@@ -467,60 +488,52 @@ export function Transactions({ navigation }: any) {
             </View>
           </View>
         )}
-        <View style={{ paddingBottom: 140 }}>
+        <View >
           <Seperator backgroundColor={vars["grey"]} />
           <View style={styles.listHead}>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold">
-              Name
-            </Typography>
-            <View style={{ display: "flex", flexDirection: "row" }}>
-              <Typography
-                fontSize={16}
-                fontFamily="Nunito-SemiBold"
-                color="accent-blue"
-              >
-                Date
-              </Typography>
-              <TouchableOpacity
-                onPress={() => {
-                  setIsLoading(true);
-                  handleSortByDate(!sortByDate);
-                  setSortByDate(!sortByDate);
-                }}
-              >
-                {sortByDate ? (
-                  <ArrowDown
-                    color="blue"
-                    style={{ marginTop: 5, marginLeft: 5 }}
-                  />
-                ) : (
-                  <AntDesign
-                    name="up"
-                    size={16}
-                    color="blue"
-                    style={{ marginTop: 5, marginLeft: 5 }}
-                  />
-                )}
-              </TouchableOpacity>
-            </View>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold">
-              Amount
-            </Typography>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold">
-              Balance
-            </Typography>
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
+            <TouchableOpacity onPress={() => setSortByDate(!sortByDate)}>
+            { sortByDate ? 
+              <Ionicons name="arrow-up" size={16} color="#4472C4" /> :
+              <Ionicons name="arrow-down" size={16} color="#4472C4" />
+            }
+            </TouchableOpacity>
+            {/* <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography> */}
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Total Amount</Typography>
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Balance</Typography>
             <Typography></Typography>
           </View>
           <Seperator backgroundColor={vars['grey']} />
           <View>
-            { _transactions ? _transactions?.map((transaction, index) => {
+          { txData ? Object.keys(txData)
+          .sort((a, b) => {
+            return sortByDate ? new Date(a).getTime() - new Date(b).getTime() : new Date(b).getTime() - new Date(a).getTime();
+          })
+          .map((date: string) => {
+            let _amount: number = 0;
+            const transactionsByDate = txData[date].map((tx, index) => {
+              const { amount } = tx;
+              _amount = Number(_amount) + Number(amount);
+              return tx;
+            });
+            const shownData = {
+              date,
+              totalAmount: _amount.toString(),
+              balance: txData[date][0].running_balance,
+              currency: txData[date][0].currency,
+            };
             return (
-              <TransactionItem data={transaction} key={index} />
+              <TransactionsByDate
+                key={txData[date][0].transaction_uuid}
+                shownData={shownData}
+                transactionsByDate={transactionsByDate}
+                totalAmount={_amount.toString()}
+              />
             )
-          }) : null }
+            }) : null }
           </View>
           <Seperator backgroundColor={vars['grey']} />
-          <View>
+          <View> 
             <Pagination 
               handlePreviousPage={handlePreviousPage}
               handleNextPage={handleNextPage}

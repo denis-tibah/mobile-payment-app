@@ -109,29 +109,18 @@ export function TransactionItem({ data }: TransactionItemProps) {
             ) : (
               <DollarIcon size={18} color="#278664" />
             )} */}
-<<<<<<< HEAD
 
             {!data.isCardTx ? (
-=======
-            {!data.isCardTx ?
->>>>>>> 6bf5d56 (added UI for showing details for each transaction)
               <Typography fontSize={14}>
                 {formatAmountTableValue(data?.amount, data?.currency)}
               </Typography>
             ) : (
               <View style={styles.cardCell}>
                 <Typography fontSize={14}>
-<<<<<<< HEAD
                   {formatAmountTableValue(data?.amount, data?.currency)}
                 </Typography>
               </View>
             )}
-=======
-                {formatAmountTableValue(data?.amount, data?.currency)}
-              </Typography>
-            </View>
-            }
->>>>>>> 6bf5d56 (added UI for showing details for each transaction)
           </Box>
 
           <Box
@@ -142,14 +131,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
             flexDirection="row"
             alignItems="center"
           >
-<<<<<<< HEAD
             {!data.isCardTx ? <EuroIcon size={18} color="green" /> : null}
-=======
-          {!data.isCardTx ? 
-            <EuroIcon size={18} color= "green" />
-            : null
-          }
->>>>>>> 6bf5d56 (added UI for showing details for each transaction)
 
             {!data.isCardTx ? (
               <Typography fontSize={14}>
@@ -221,26 +203,12 @@ export function TransactionItem({ data }: TransactionItemProps) {
                       {data?.closing_balance}
                     </Text>
                   </Box> */}
-<<<<<<< HEAD
                     <Box style={styles.detailMobile}>
                       <Text style={styles.nameDetailMobile}>
                         Running Balance:
                       </Text>
                       <Text style={styles.valueDetailMobile}>
                         {/* {data?.balance} */}
-=======
-                  <Box style={styles.detailMobile}>
-                    <Text style={styles.nameDetailMobile}>Running Balance:</Text>
-                    <Text style={styles.valueDetailMobile}>
-                      {/* {data?.balance} */}
-                      <Box style={styles.eurosign}>
-                        <EuroIcon size={18} color= "black" />
-                          
-                            <Typography fontSize={14}>
-                              {data?.running_balance}
-                            </Typography>
-                      </Box>
->>>>>>> 6bf5d56 (added UI for showing details for each transaction)
 
                         <Box style={styles.eurosign}>
                           <EuroIcon size={18} color="black" />
@@ -254,12 +222,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
                       </Text>
                     </Box>
                   </Box>
-<<<<<<< HEAD
                 ) : null}
-=======
-                </Box>
-           : null }
->>>>>>> 6bf5d56 (added UI for showing details for each transaction)
 
                 <View style={styles.detailMobile}>
                   <Text style={styles.nameDetailMobile}>Time:</Text>

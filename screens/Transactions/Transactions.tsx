@@ -31,7 +31,7 @@ import { Transaction, TransactionDetails } from "../../models/Transactions";
 import Pagination from "../../components/Pagination/Pagination";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 
-export interface GroupedByDateTransaction {
+export interface GroupedByDateTransactionObject {
   [date: string]: Transaction[];
 }
 const searchOptions = [
@@ -53,12 +53,7 @@ const initialSearchFieldData: SearchFilter = {
 
 export function Transactions({ navigation }: any) {
   const dispatch = useDispatch();
-  const loadingTransactions = useSelector((state:RootState) => state.transaction.loading)
   const userData = useSelector((state: RootState) => state?.auth?.userData);
-  const transactions = useSelector(
-    (state: RootState) => state?.transaction?.data
-  );
-  const [_transactions, setTransactions] = useState<Transaction[]>([]);
   const [isMobileFilterShown, setIsMobileFilterShown] = useState<boolean>(false);
   const [sortByDate, setSortByDate] = useState<boolean>(false);
   const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState<string>("");
@@ -69,7 +64,7 @@ export function Transactions({ navigation }: any) {
     useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const debounceSearchText = useDebounce<string>(searchText, 300);
-  const [txData, setTxData] = useState<GroupedByDateTransaction>();
+  const [txData, setTxData] = useState<GroupedByDateTransactionObject>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchFieldData, setSearchFieldData] = useState<SearchFilter>(initialSearchFieldData);
   const [showPickerDateTo, setShowPickerDateTo] = useState(false);
@@ -78,7 +73,7 @@ export function Transactions({ navigation }: any) {
   const [dateFrom, setDateFrom] = useState("");
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(0);
-  const [unfilteredTransactions, setUnfilteredTransactions] = useState<Transaction[]>([]);
+  const [unfilteredTransactions, setUnfilteredTransactions] = useState<GroupedByDateTransactionObject>();
 
   function capitalizeFirstLetter(str: string): string {
     return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
@@ -99,7 +94,21 @@ export function Transactions({ navigation }: any) {
     setCurrentSelectedSearchField("");
     setSearchText("");
     setIsStatusOptionSelected(false);
-    setTransactions(unfilteredTransactions);
+    setTxData(unfilteredTransactions);
+  }
+
+  const groupedByDateTransactions = ( txData: Transaction[] ): GroupedByDateTransactionObject => {
+    const sanitizedDate: Transaction[] = txData.map((tx: Transaction) => {
+      return {
+        ...tx,
+        transaction_datetime: dateFormatter(tx.transaction_datetime),
+      }
+    });
+    const groupedByDateTransactions: GroupedByDateTransactionObject = sanitizedDate.reduce((current: any, element) => {
+      (current[element.transaction_datetime] ??= []).push(element);
+      return current;
+    }, {});
+    return groupedByDateTransactions;
   }
 
   const fetchTransactions = async () => {
@@ -115,33 +124,12 @@ export function Transactions({ navigation }: any) {
         .then((res: TransactionDetails[]) => {
           const [transaction] = res;
           const {data: transactionData, last_page, current_page} = transaction;
-          setUnfilteredTransactions(transactionData);
           setTotalPages(last_page);
           setPage(current_page);
-          setTransactions(transactionData);
+          const _groupedByDateTransactions = groupedByDateTransactions(transactionData);
+          setTxData(_groupedByDateTransactions);
+          setUnfilteredTransactions(_groupedByDateTransactions);
           setIsLoading(false);
-        });
-      }
-      if (userData) {
-        await dispatch<any>(getTransactions(search))
-        .unwrap()
-        .then((_transactions: Transaction[]) => {
-          console.log(_transactions);
-          const sanitizeDate = _transactions.map((tx: Transaction) => {
-            return {
-              ...tx,
-              transaction_datetime: dateFormatter(tx.transaction_datetime),
-            }
-          });
-          const groupedByDateTransactions = sanitizeDate.reduce((current: any, element) => {
-            (current[element.transaction_datetime] ??= []).push(element);
-            return current;
-          }, {});
-          setTxData(groupedByDateTransactions);
-          return _transactions;
-        })
-        .catch((err: any) => {
-          console.log({ err });
         });
       }
     } catch (error) {
@@ -162,12 +150,13 @@ export function Transactions({ navigation }: any) {
           const {data: transactionData, last_page, current_page} = transaction;
           setTotalPages(last_page);
           setPage(current_page);
-          setTransactions(transactionData);
+          const _groupedByDateTransactions = groupedByDateTransactions(transactionData);
+          setTxData(_groupedByDateTransactions);
           setIsLoading(false);
         });      
       }
     } catch (error) {
-      console.log("Error", error);
+      console.log({error});
     } finally {
       setIsLoading(false);
     }
@@ -232,7 +221,7 @@ export function Transactions({ navigation }: any) {
 
   const handleExportData = async () => {
     // const pdfUri = await generatePDF(transactions);
-    const pdfUri = await generatePDF(_transactions);
+    const pdfUri = await generatePDF(unfilteredTransactions);
     await printAsync({ uri: pdfUri });
   };
 

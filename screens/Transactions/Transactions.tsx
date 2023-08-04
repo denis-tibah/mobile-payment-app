@@ -488,7 +488,7 @@ export function Transactions({ navigation }: any) {
             </View>
           </View>
         )}
-        <View style={{ paddingBottom: 140 }}>
+        <View >
           <Seperator backgroundColor={vars["grey"]} />
           <View style={styles.listHead}>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>

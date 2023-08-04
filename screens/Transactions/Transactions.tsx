@@ -60,6 +60,7 @@ export function Transactions({ navigation }: any) {
   const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState<string>("");
   const [openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
   const [openStatusOptions, setOpenStatusOptions] = useState<boolean>(false);
+  const [transactions] = useSelector((state: RootState) => state?.transaction?.data);
 
   const [isStatusOptionSelected, setIsStatusOptionSelected] =
     useState<boolean>(false);
@@ -226,7 +227,8 @@ export function Transactions({ navigation }: any) {
 
   const handleExportData = async () => {
     // const pdfUri = await generatePDF(transactions);
-    const pdfUri = await generatePDF(unfilteredTransactions);
+    const { data: transactionsData } = transactions;
+    const pdfUri = await generatePDF(transactionsData);
     await printAsync({ uri: pdfUri });
   };
 
@@ -488,7 +490,7 @@ export function Transactions({ navigation }: any) {
             </View>
           </View>
         )}
-        <View >
+        <View>
           <Seperator backgroundColor={vars["grey"]} />
           <View style={styles.listHead}>
             <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>

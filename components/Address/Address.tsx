@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Formik } from "formik";
 import { View } from "react-native";
 import FormGroup from "../FormGroup";
@@ -8,6 +9,7 @@ import { allowedCountries, getCountryName } from "../../utils/ISO3166";
 import Button from "../../components/Button";
 import Transaction from "../../assets/icons/Transaction";
 import { styles } from "./styles";
+import DropDownPicker from "react-native-dropdown-picker";
 
 export const Address = ({
   profileData,
@@ -18,6 +20,8 @@ export const Address = ({
   compact?: boolean;
   showChangeRequest: any;
 }) => {
+  const [country, setCountry] = useState(profileData?.country);
+  const [countryOpen, setCountryOpen] = useState(false);
   return (
     <Formik
       enableReinitialize
@@ -43,7 +47,7 @@ export const Address = ({
         console.log({ values });
       }}
     >
-      {({ handleChange, handleBlur, values, errors }) => (
+      {({ handleChange, handleBlur, values, errors, setValues }) => (
         <View style={styles.tabContent}>
           <View style={compact ? styles.compact : null}>
             <FormGroup validationError={errors.street}>
@@ -105,7 +109,7 @@ export const Address = ({
                 placeholder="Post Code"
               />
             </FormGroup>
-            <FormGroup validationError={errors.country}>
+            {/* <FormGroup validationError={errors.country}>
               <FormGroup.Select
                 style={compact ? styles.compactInput : styles.input}
                 icon={<WorldIcon />}
@@ -116,7 +120,26 @@ export const Address = ({
                 selectedValue={values.country}
                 placeholder="Country"
               />
-            </FormGroup>
+            </FormGroup> */}
+            <DropDownPicker
+              schema={{ label: "label", value: "value" }}
+              onSelectItem={(value: any) => {
+                const { value: salutationValue } = value;
+                setValues({
+                  ...values,
+                  country: salutationValue,
+                });
+              }}
+              listMode="SCROLLVIEW"
+              setValue={setCountry}
+              items={allowedCountries}
+              value={values.country}
+              setOpen={setCountryOpen}
+              open={countryOpen}
+              style={styles.dropdown}
+              dropDownContainerStyle={styles.dropdownContainer}
+              dropDownDirection="TOP"
+            />
             {showChangeRequest == 'Y' ? 
             <View style={{ flexDirection: "row", paddingLeft: 12 }}>
               <Button

@@ -5,16 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4b04fb15-24d0-4619-b7a8-864f736a93a0" name="Changes" comment="">
-<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/App.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/api.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/navigation/AppNavigationWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/navigation/AppNavigationWrapper.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/helpers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/utils/helpers.ts" afterDir="false" />
-=======
-      <change beforePath="$PROJECT_DIR$/components/TransactionItem/TransactionItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/TransactionItem/TransactionItem.tsx" afterDir="false" />
->>>>>>> 691a124 (removed conflict and fix filter functionality)
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -105,15 +105,15 @@ export interface TransactionDetails {
   links: Link[];
 }
 export interface TransactionDetailsNew {
-current_page: number;
-from: number;
-to: number;
-next_page: number;
-prev_page: number;
-total: number;
-last_page: number;
-per_page: number;
-transactions: transactions[];
+  current_page: number;
+  from: number;
+  to: number;
+  next_page: number;
+  prev_page: number;
+  total: number;
+  last_page: number;
+  per_page: number;
+  transactions: transactions[];
 }
 
 interface Link {

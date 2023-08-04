@@ -124,16 +124,8 @@ export function Transactions({ navigation }: any) {
         }
         await dispatch<any>(getTransactionsWithFilters(search))
         .unwrap()
-        .then((res: TransactionDetailsNew[]) => {
-          // console.log('transaction ',res)
-          // const [transaction] = res;
-          const transactionData = res.transactions;
-          const last_page=res.last_page;
-          const current_page=res.current_page;
-
-          // console.log('data ',transactionData)
-
-          // const {data: transactionData, last_page, current_page} = transaction;
+        .then((res: TransactionDetailsNew) => {
+          const {transactions: transactionData, last_page, current_page} = res;
           setTotalPages(last_page);
           setPage(current_page);
           const _groupedByDateTransactions = groupedByDateTransactions(transactionData);
@@ -161,9 +153,8 @@ export function Transactions({ navigation }: any) {
         }
         await dispatch<any>(getTransactionsWithFilters(search))
         .unwrap()
-        .then((res: TransactionDetails[]) => {
-          const [transaction] = res;
-          const {data: transactionData, last_page, current_page} = transaction;
+        .then((res: TransactionDetailsNew) => {
+          const {transactions: transactionData, last_page, current_page} = res;
           setTotalPages(last_page);
           setPage(current_page);
           const _groupedByDateTransactions = groupedByDateTransactions(transactionData);
@@ -172,7 +163,6 @@ export function Transactions({ navigation }: any) {
         });      
       }
     } catch (error) {
-      console.log("error aristos 2 ");
       console.log({error});
     } finally {
       setIsLoading(false);

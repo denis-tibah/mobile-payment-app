@@ -144,19 +144,20 @@ export function TransactionItem({ data }: TransactionItemProps) {
                 flexDirection="row"
                 alignItems="center"
               > 
-                <View style={styles.cardpayments}>
-                  {currencyIcon(data?.currency)}
-                </View>
-    
-                <View style={styles.cardCell}>
-                  <Typography fontSize={14}>
-                    {formatAmountTableValue(data?.amount, data?.currency)}
-                  </Typography>
-                </View>
+                  <View style={styles.cardpayments}>
+                    {currencyIcon(data?.currency)}
+                  </View>
+      
+                  <View style={styles.cardCell}>
+                    <Typography fontSize={14}>
+                      {formatAmountTableValue(data?.amount, data?.currency)}
+                    </Typography>
+                  </View>
+             
             </Box>
-          )}
-
-          {/* {data.isCardTx ? (
+           )}
+           
+            {/* {data.isCardTx ? (
               <View style={styles.cardpayments}>
                 {currencyIcon(data?.transfer_currency)}
               </View>
@@ -179,6 +180,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
             ) : (
               <View style={styles.cardCell}>
                 <Typography fontSize={14}>
+                 
                   {formatAmountTableValue(data?.amount, data?.currency)}
                 </Typography>
               </View>
@@ -206,16 +208,17 @@ export function TransactionItem({ data }: TransactionItemProps) {
             flexDirection="row"
             alignItems="center"
           >
-          {/* {!data.isCardTx ? <EuroIcon size={18} color="green" /> : null}
+            {/* {!data.isCardTx ? <EuroIcon size={18} color="green" /> : null}
 
-          {!data.isCardTx ? (
-            <Typography fontSize={14}>
-              {formatAmountTableValue(data?.running_balance, data?. transfer_currency)}
-            </Typography>
-          ) : null} */}
+            {!data.isCardTx ? (
+              <Typography fontSize={14}>
+                {formatAmountTableValue(data?.running_balance, data?. transfer_currency)}
+              </Typography>
+            ) : null} */}
 
             <Box style={styles.arrowCell}>
               {isOpen ? <ArrowDown color="blue" /> : <ArrowDown color="blue" />}
+            
             </Box>
           </Box>
          )}
@@ -282,6 +285,14 @@ export function TransactionItem({ data }: TransactionItemProps) {
                     </Text>
                     <Text style={styles.valueDetailMobile}>
                       {data?.opening_balance}
+                    </Text>
+                  </Box> */}
+                    {/* <Box style={styles.detailMobile}>
+                    <Text style={styles.nameDetailMobile}>
+                      Closing Balance:
+                    </Text>
+                    <Text style={styles.valueDetailMobile}>
+                      {data?.closing_balance}
                     </Text>
                   </Box> */}
                     {/* <Box style={styles.detailMobile}>

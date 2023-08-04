@@ -506,8 +506,13 @@ export function Transactions({ navigation }: any) {
             <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
             <TouchableOpacity onPress={() => setSortByDate(!sortByDate)}>
             { sortByDate ? 
+<<<<<<< HEAD
                 <Ionicons name="arrow-up" style={styles.arrow} size={16} color="#4472C4" /> :
                 <Ionicons name="arrow-down" style={styles.arrow}  size={16} color="#4472C4" />
+=======
+              <Ionicons name="arrow-up" size={16} color="#4472C4" /> :
+              <Ionicons name="arrow-down" size={16} color="#4472C4" />
+>>>>>>> a346d55 (sort date ui)
             }
             </TouchableOpacity>
             {/* <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography> */}
@@ -546,14 +551,18 @@ export function Transactions({ navigation }: any) {
             }) : null }
           </View>
           <Seperator backgroundColor={vars['grey']} />
+<<<<<<< HEAD
           <View> 
+=======
+          {/* <View> -- temporary disable
+>>>>>>> a346d55 (sort date ui)
             <Pagination 
               handlePreviousPage={handlePreviousPage}
               handleNextPage={handleNextPage}
               page={page}
               lastPage={totalPages}
             />
-          </View>
+          </View> */}
         </View>
         <LoadingScreen isLoading={isLoading} />
       </ScrollView>

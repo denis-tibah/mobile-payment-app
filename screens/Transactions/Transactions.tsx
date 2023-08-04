@@ -486,8 +486,12 @@ export function Transactions({ navigation }: any) {
         <View style={{ paddingBottom: 140 }}>
           <Seperator backgroundColor={vars["grey"]} />
           <View style={styles.listHead}>
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
             <TouchableOpacity onPress={() => setSortByDate(!sortByDate)}>
-              <Typography fontSize={16} fontFamily="Nunito-SemiBold">Date</Typography>
+            { sortByDate ? 
+              <Ionicons name="arrow-up" size={16} color="#4472C4" /> :
+              <Ionicons name="arrow-down" size={16} color="#4472C4" />
+            }
             </TouchableOpacity>
             {/* <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography> */}
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Total Amount</Typography>
@@ -524,14 +528,14 @@ export function Transactions({ navigation }: any) {
             }) : null }
           </View>
           <Seperator backgroundColor={vars['grey']} />
-          <View>
+          {/* <View> -- temporary disable
             <Pagination 
               handlePreviousPage={handlePreviousPage}
               handleNextPage={handleNextPage}
               page={page}
               lastPage={totalPages}
             />
-          </View>
+          </View> */}
         </View>
         <LoadingScreen isLoading={isLoading} />
       </ScrollView>

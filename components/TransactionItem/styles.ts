@@ -25,8 +25,13 @@ export const styles:any = StyleSheet.create<any>({
   },
   cardCell: {
 
-    paddingLeft: 5,
+    paddingLeft: 2,
     // paddingRight: 20
+  
+  },
+  arrowCell: {
+
+    paddingLeft: 15,
   
   },
   separator: {

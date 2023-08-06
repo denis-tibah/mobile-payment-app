@@ -141,7 +141,7 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({transactionsByDate,
             </Typography>
           </Box>
           <Box
-            width="40%"
+            width="45%"
             paddingLeft={80}
             display="flex"
             flexDirection="row"

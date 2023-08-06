@@ -66,7 +66,10 @@ export function TransactionItem({ data }: TransactionItemProps) {
     <>
       <Pressable onPress={handleOnOpen}>
         <View style={[styles.base, isOpen && styles.isOpen]}>
-          <Box width={data.isCardTx ? "45%" : "30%"}>
+          {/* <Box paddingLeft={data.isCardTx ? -5 : 5} width={data.isCardTx ? "45%" : "30%"}> */}
+          {/* <Box width={data.isCardTx ? "45%" : "30%"}> */}
+          <Box marginLeft={data.isCardTx ? -10 : 10} width={data.isCardTx ? "45%" : "30%"}>
+         
             <Text>
             {!data.isCardTx ? (
               <Typography fontSize={14}>
@@ -211,8 +214,9 @@ export function TransactionItem({ data }: TransactionItemProps) {
               </Typography>
             ) : null} */}
 
-            <Box style={styles.cardCell}>
+            <Box style={styles.arrowCell}>
               {isOpen ? <ArrowDown color="blue" /> : <ArrowDown color="blue" />}
+            
             </Box>
           </Box>
          )}

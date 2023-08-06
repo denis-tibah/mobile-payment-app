@@ -48,6 +48,7 @@ export const styles:any = StyleSheet.create<any>({
     position: "absolute",
     top: 0,
     right: 0,
+    paddingTop:23,
   },
   detailMobile: {
     marginBottom: 12,
@@ -125,7 +126,7 @@ export const styles:any = StyleSheet.create<any>({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 30,
+    paddingLeft: 10,
     // marginLeft: 30,
     // paddingRight: -30,
   }

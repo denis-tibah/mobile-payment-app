@@ -496,13 +496,13 @@ export function Transactions({ navigation }: any) {
             <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
             <TouchableOpacity onPress={() => setSortByDate(!sortByDate)}>
             { sortByDate ? 
-              <Ionicons name="arrow-up" size={16} color="#4472C4" /> :
-              <Ionicons name="arrow-down" size={16} color="#4472C4" />
+                <Ionicons name="arrow-up" style={styles.arrow} size={16} color="#4472C4" /> :
+                <Ionicons name="arrow-down" style={styles.arrow}  size={16} color="#4472C4" />
             }
             </TouchableOpacity>
             {/* <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography> */}
             <Typography fontSize={16} fontFamily="Nunito-SemiBold">Total Amount</Typography>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Balance</Typography>
+            {/* <Typography fontSize={16} fontFamily="Nunito-SemiBold">Balance</Typography> */}
             <Typography></Typography>
           </View>
           <Seperator backgroundColor={vars['grey']} />
@@ -521,8 +521,9 @@ export function Transactions({ navigation }: any) {
             const shownData = {
               date,
               totalAmount: _amount.toString(),
-              balance: txData[date][0].running_balance,
-              currency: txData[date][0].currency,
+              //  balance: txData[date][0].running_balance,
+              ////currency: txData[date][0].currency,
+              currency: txData[date][0].transfer_currency,
             };
             return (
               <TransactionsByDate

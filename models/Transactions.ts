@@ -18,6 +18,10 @@ export interface Transaction {
   transaction_uuid: string;
   isCardTx: boolean;
   total_amount?: string;
+  trn_type :string;
+  dr_iban: string;
+  cr_iban: string;
+  transfer_currency: string;
 }
 
 export interface CardTransaction {

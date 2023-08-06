@@ -29,7 +29,7 @@ import {
   terminateCard,
 } from "../../redux/card/cardSlice";
 import { getTodaysDate } from "../../utils/dates";
-import { getCurrency, convertImageToBase64 } from "../../utils/helpers";
+import { getCurrency, convertImageToBase64,getPendingAmount  } from "../../utils/helpers";
 import { getAccountDetails } from "../../redux/account/accountSlice";
 import { CardView } from "../../components/Card/CardView";
 import { GetCardModal } from "./GetCardModal";
@@ -396,6 +396,22 @@ export function Card({ navigation }: any) {
                 <Typography fontFamily="Mukta-Regular">
                   {getCurrency(infoData?.currency)}
                   {infoData?.curbal || "0.00"}
+                </Typography>
+              </Box>
+            </View>
+            <View style={styles.incomeBox__group}>
+              <Typography
+                fontFamily="Nunito-SemiBold"
+                color="accent-blue"
+                style={styles.imcome__groupTypography}
+              >
+                Pending:
+              </Typography>
+              <Box sx={{ marginLeft: "auto", marginBottom: 16 }}>
+                <Typography fontFamily="Mukta-Regular">
+                  {getCurrency(infoData?.currency)}
+                  {getPendingAmount(infoData?.avlbal ||"0.00",infoData?.curbal ||"0.00") || "0.00"}
+              
                 </Typography>
               </Box>
             </View>

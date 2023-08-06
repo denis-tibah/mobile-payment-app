@@ -236,11 +236,11 @@ export function MyAccount({ navigation }: any) {
                       Amount
                     </Typography>
                   </View>
-                  <View style={styles.balanceLabel}>
+                  {/* <View style={styles.balanceLabel}>
                     <Typography fontSize={16} fontFamily="Nunito-SemiBold">
                       Balance
                     </Typography>
-                  </View>
+                  </View> */}
                   <Typography></Typography>
                 </View>
                 <View>

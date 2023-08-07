@@ -126,11 +126,12 @@ export function TransactionItem({ data }: TransactionItemProps) {
                 alignItems="center"
               >
                   <View>
-                    {currencyIcon(data?.transfer_currency)}
+                    {currencyIcon(data?.currency)}
                   </View>
 
                   <Typography fontSize={14}>
-                    {formatAmountTableValue(data?.amount, data?.transfer_currency)}
+                    {formatAmountTableValue(data?.amount, data?.currency)}
+                    
                   </Typography>
           </Box>
           ) : (
@@ -143,7 +144,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
                 alignItems="center"
               > 
                   <View style={styles.cardpayments}>
-                    {currencyIcon(data?.transfer_currency)}
+                    {currencyIcon(data?.currency)}
                   </View>
       
                   <View style={styles.cardCell}>

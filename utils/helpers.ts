@@ -4,9 +4,10 @@ export function formatDateTableValue(date = "") {
 
 //added by Aristos
 export function formatAmountTableValue(amount: any = "", currency = "") {
-  if (!amount || !currency) return;
-
-  return Number.parseFloat(amount).toFixed(2);
+  if (!amount || !currency) return Number.parseFloat('0').toFixed(2); 
+    // console.log(amount)
+    // console.log("formated ", Number.parseFloat(amount).toFixed(2));
+    return Number.parseFloat(amount).toFixed(2);
 }
 
 export function formatAmountTableValue_old(amount: any = "", currency = "") {

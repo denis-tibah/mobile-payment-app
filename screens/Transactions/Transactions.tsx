@@ -523,7 +523,7 @@ export function Transactions({ navigation }: any) {
               totalAmount: _amount.toString(),
               //  balance: txData[date][0].running_balance,
               ////currency: txData[date][0].currency,
-              currency: txData[date][0].transfer_currency,
+              currency: txData[date][0].currency,
             };
             return (
               <TransactionsByDate

@@ -8,14 +8,6 @@ const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
 // live backend
 // const baseURL = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
 
-// export const exportedBaseUrl = process.env.APIURL || "https://zazoostg.com/reg/ziyl";
-
-// staging backend v2
-// export const exportedBaseUrl = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
-// live backend
-export const exportedBaseUrl =
-  process.env.APIURL || "https://zazooapi.com/prod/ziyl";
-
 export const api = axios.create({ baseURL });
 let _store: any;
 let _signoutAction: any;

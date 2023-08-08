@@ -126,18 +126,17 @@ export function LoginScreen({ navigation }: any) {
         }
       }
     };
-
     handleBiometricLogin();
 
+    // get geolocation to send in mobile login finxp
     const handleAsyncGetIp = async () => {
-      let ipResponse = await getIpAddress().catch((error) => {
+      const ipResponse = await getIpAddress().catch((error) => {
         console.log("error getting ip", error);
       });
-      if (ipResponse) {
+      if (ipResponse && Object.keys(ipResponse).length > 0) {
         setIp(ipResponse);
       }
     };
-
     handleAsyncGetIp();
   }, []);
 
@@ -186,10 +185,16 @@ export function LoginScreen({ navigation }: any) {
                   const result = await dispatch<any>(
                     signin({ values, navigate, ip })
                   ).unwrap();
+                  console.log(
+                    "🚀 ~ file: index.tsx:188 ~ onSubmit={ ~ result:",
+                    result
+                  );
 
                   if (
-                    result?.payload?.biometricYN &&
-                    result?.payload?.biometricYN == "Y"
+                    [
+                      result?.payload?.biometricYN.toUpperCase(),
+                      result?.biometricYN.toUpperCase(),
+                    ].includes("Y")
                   ) {
                     console.log("Use biometic ");
                     await saveSecureCredetails(

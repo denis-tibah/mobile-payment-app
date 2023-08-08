@@ -58,9 +58,10 @@ export const signin = createAsyncThunk(
 
         if (data.code === "200" || data.code === "201")
           return fulfillWithValue(data);
+      } else {
+        return rejectWithValue("Failed to load ip location");
       }
     } catch (error: any) {
-      console.log("catch error", error);
       return rejectWithValue("Something went wrong");
     }
   }

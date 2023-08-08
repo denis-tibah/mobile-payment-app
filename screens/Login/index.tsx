@@ -185,10 +185,6 @@ export function LoginScreen({ navigation }: any) {
                   const result = await dispatch<any>(
                     signin({ values, navigate, ip })
                   ).unwrap();
-                  console.log(
-                    "🚀 ~ file: index.tsx:188 ~ onSubmit={ ~ result:",
-                    result
-                  );
 
                   if (
                     [

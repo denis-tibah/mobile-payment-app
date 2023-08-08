@@ -25,7 +25,7 @@ import { TTransaction } from "../../utils/types";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 interface ITransactions {
-  data: TTransaction[];
+  data: Transaction[];
   totalPage: number;
 }
 
@@ -159,6 +159,11 @@ export function MyAccount({ navigation }: any) {
     if (!!userData?.id) fetchTransactions();
     // console.log("hit this");
   }, [userData?.id, page]);
+
+  useEffect(() => {
+    console.log('transactionsData ',transactionsData);
+    console.log('userData ',userData);
+  },[transactionsData, userData])
 
   //get transactionns every 15 mins
   /*  useEffect(() => {

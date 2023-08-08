@@ -1,4 +1,4 @@
-export type TTransaction = {
+export type Transaction = {
   amount: string;
   bic: string;
   currency: string;

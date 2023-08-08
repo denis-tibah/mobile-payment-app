@@ -41,7 +41,7 @@ export const signin = createAsyncThunk(
   "signin",
   async ({ values, ip }: any, { rejectWithValue, fulfillWithValue }) => {
     try {
-      if (ip) {
+      if (ip && Object.keys(ip).length > 0) {
         const { data } = await api.post("/loginfinxpmobile", {
           ...values,
           ipAddress: ip,

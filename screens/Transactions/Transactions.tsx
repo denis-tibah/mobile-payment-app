@@ -47,9 +47,9 @@ const initialSearchFieldData: SearchFilter = {
   account_id: 0,
   sort:  "id",
   direction: 'desc',
-  status: "SUCCESS",
-  limit: 20,
-  page: 1,
+  status: "",
+  // limit: 20,
+  // page: 1,
 };
 
 export function Transactions({ navigation }: any) {
@@ -60,7 +60,8 @@ export function Transactions({ navigation }: any) {
   const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState<string>("");
   const [openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
   const [openStatusOptions, setOpenStatusOptions] = useState<boolean>(false);
-  const [transactions] = useSelector((state: RootState) => state?.transaction?.data);
+  // const [transactions] = useSelector((state: RootState) => state?.transaction?.data); disabled temporarily since finxp is not returning the correct data - Arjay
+  const transactions = useSelector((state: RootState) => state?.transaction?.data);
 
   const [isStatusOptionSelected, setIsStatusOptionSelected] =
     useState<boolean>(false);
@@ -136,6 +137,7 @@ export function Transactions({ navigation }: any) {
       }
     } catch (error) {
       console.log({ error });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -227,8 +229,8 @@ export function Transactions({ navigation }: any) {
 
   const handleExportData = async () => {
     // const pdfUri = await generatePDF(transactions);
-    const { data: transactionsData } = transactions;
-    const pdfUri = await generatePDF(transactionsData);
+    // const { data: transactionsData } = transactions; - Arjay: disabled temporarily since finxp change the format of response
+    const pdfUri = await generatePDF(transactions);
     await printAsync({ uri: pdfUri });
   };
 

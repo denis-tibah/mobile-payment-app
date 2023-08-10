@@ -75,6 +75,7 @@ export const styles:any = StyleSheet.create<any>({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    paddingRight: 35,
   },
   nameDetailMobile: {
     color: "#086AFB",

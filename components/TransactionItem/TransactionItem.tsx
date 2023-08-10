@@ -28,6 +28,7 @@ interface TransactionItemProps {
 export function TransactionItem({ data }: TransactionItemProps) {
   const [isOpen, setIsOpen] = useState(false);
 
+
   const handleOnOpen = () => {
     setIsOpen(!isOpen);
   };
@@ -258,7 +259,8 @@ export function TransactionItem({ data }: TransactionItemProps) {
                       <Text style={styles.nameDetailMobile}>Type:</Text>
                       <Text style={styles.valueDetailMobile}>
                         {/* Invoice_{data?.reference_no} */}
-                        {data?.trn_type}
+                        {/* {data?.trn_type} */}
+                        {data?.service}
                       </Text>
                     </Box>
                  ) : null}

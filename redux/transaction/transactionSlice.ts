@@ -134,6 +134,7 @@ export const getTransactionsWithFilters = createAsyncThunk<Transaction[], Search
         to_date: searchFilter?.to_date,
         account_id: searchFilter.account_id
       });
+        //  console.log("data ",data);
       return fulfillWithValue(data);
     } catch (error) {
       // console.log("error with transaction search",error);

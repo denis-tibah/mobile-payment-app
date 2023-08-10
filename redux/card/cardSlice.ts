@@ -202,6 +202,8 @@ export const getCardTransactions = createAsyncThunk(
   async (params: any) => {
     try {
       const { data } = await api.post("/getCardTransactionsfinxp", params);
+      // console.log("card transaction",params);
+      // console.log("card transaction response",data);
       return data;
     } catch (error) {
       console.log({ error: JSON.stringify(error) });

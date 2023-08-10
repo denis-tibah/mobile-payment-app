@@ -110,7 +110,9 @@ export function Card({ navigation }: any) {
         )
         .unwrap()
         .then((res: any) => {
-          setCardTransactionsData(res.data);
+          //added this modificaton because Response has changed
+          // setCardTransactionsData(res.data);
+          setCardTransactionsData(res);
         });
       //This should be disabled: This is incorrect we do not get transaction data only card transactions
         // await dispatch<any>(getTransactionsWithFilters({

@@ -33,6 +33,7 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({transactionsByDate,
     setIsOpen(!isOpen);
   };
 
+
   const handleExportData = async (): Promise<void> => {
     const pdfUri = await generateTransactionPDF([transactionsByDate]);
     await printAsync({ uri: pdfUri });
@@ -87,7 +88,8 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({transactionsByDate,
                       <Text style={styles.nameDetailMobile}>Type:</Text>
                       <Text style={styles.valueDetailMobile}>
                         {/* Invoice_{data?.reference_no} */}
-                        {transaction?.trn_type}
+                        {/* {transaction?.trn_type} */}
+                        {transaction?.service}
                       </Text>
                     </Box>
                   {/* <Box style={styles.cardDetails}> */}

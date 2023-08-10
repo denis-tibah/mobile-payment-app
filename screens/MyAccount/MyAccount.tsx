@@ -28,6 +28,7 @@ export function MyAccount({ navigation }: any) {
     (state: RootState) => state?.transaction?.data
   );
 
+
   const userData = useSelector((state: RootState) => state?.auth?.userData);
 
   const totalBalance = useSelector(
@@ -53,7 +54,8 @@ export function MyAccount({ navigation }: any) {
           sort: "id",
           direction: "desc",
           // status: "PROCESSING"
-          status: "SUCCESS",
+          // status: "SUCCESS",
+          status: "S",
           limit: 20,
           page,
         };
@@ -86,6 +88,7 @@ export function MyAccount({ navigation }: any) {
     }, [])
   );
 
+
   useEffect(() => {
     if (arrayChecker(transactions) && transactions.length > 0) {
       // get only first value of array since it contains all data ex last_page, arr of transaction etc
@@ -96,6 +99,9 @@ export function MyAccount({ navigation }: any) {
       });
     }
   }, [transactions]);
+
+
+
 
   /* const refreshTransactions = async () => {
     try {
@@ -216,6 +222,9 @@ export function MyAccount({ navigation }: any) {
           </View>
           <View>
             <Spinner visible={loading || paginateRefresh} />
+
+            <Typography>llll{ transactionsData?.data?.length} </Typography>
+
             {transactionsData?.data?.length > 0 ? (
               <>
                 <View style={styles.listHead}>

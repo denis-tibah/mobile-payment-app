@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "zazoostg",
-    "scheme": "zazoomobilestg",
+    "name": "zazoo",
+    "scheme": "zazoomobile",
     "slug": "zazoo",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -26,14 +26,14 @@
         ],
         "NSFaceIDUsageDescription": "We need your permission to authenticate using Face ID"
       },
-      "bundleIdentifier": "com.zazoostg.zazoomobilestg"
+      "bundleIdentifier": "com.zazoostg.zazoomobile"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.zazoostg.zazoomobilestg",
+      "package": "com.zazoostg.zazoomobile",
       "permissions": [
         "INTERNET",
         "android.permission.SECURE_STORAGE"
@@ -50,7 +50,7 @@
                "pathPrefix": "/"
              },
              {
-               "scheme": "zazoomobilestg",
+               "scheme": "zazoomobile",
                "host": "*",
                "pathPrefix": "/"
              }

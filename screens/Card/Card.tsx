@@ -247,23 +247,22 @@ export function Card({ navigation }: any) {
     await delayCode(100);
   };
 
-  const handleFetchTransactions = async (userId: number) => {
-    const isAscending = sortByDate ? "asc" : "desc";
-    const _searchOptions = {
-      ...defaultSearchOptions,
-      account_id: userId,
-      direction: isAscending,
-    };
+  // const handleFetchTransactions = async (userId: number) => {
+  //   const isAscending = sortByDate ? "asc" : "desc";
+  //   const _searchOptions = {
+  //     ...defaultSearchOptions,
+  //     account_id: userId,
+  //     direction: isAscending,
+  //   };
 
-    try {
-      // await dispatch<any>(getTransactionsWithFilters(_searchOptions));
-      fetchCardData();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsloading(false);
-    }
-  };
+  //   try {
+  //     await dispatch<any>(getTransactionsWithFilters(_searchOptions));
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     setIsloading(false);
+  //   }
+  // };
 
   // useEffect(() => {
   //   if (userData && userData.id) {

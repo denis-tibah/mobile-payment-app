@@ -48,8 +48,8 @@ const initialSearchFieldData: SearchFilter = {
   sort:  "id",
   direction: 'desc',
   status: "",
-  // limit: 20,
-  // page: 1,
+  limit: 20,
+  page: 1,
 };
 
 export function Transactions({ navigation }: any) {
@@ -124,16 +124,14 @@ export function Transactions({ navigation }: any) {
         }
         await dispatch<any>(getTransactionsWithFilters(search))
         .unwrap()
-        .then((res: TransactionDetailsNew[]) => {
-          // console.log('transaction ',res)
+        .then((res: TransactionDetailsNew) => {
           // const [transaction] = res;
-          const transactionData = res.transactions;
-          const last_page=res.last_page;
-          const current_page=res.current_page;
-
+          // const transactionData = res.transactions;
+          // const last_page=res.last_page;
+          // const current_page=res.current_page;
           // console.log('data ',transactionData)
 
-          // const {data: transactionData, last_page, current_page} = transaction;
+          const {transactions: transactionData, last_page, current_page} = res;
           setTotalPages(last_page);
           setPage(current_page);
           const _groupedByDateTransactions = groupedByDateTransactions(transactionData);
@@ -161,9 +159,8 @@ export function Transactions({ navigation }: any) {
         }
         await dispatch<any>(getTransactionsWithFilters(search))
         .unwrap()
-        .then((res: TransactionDetails[]) => {
-          const [transaction] = res;
-          const {data: transactionData, last_page, current_page} = transaction;
+        .then((res: TransactionDetailsNew) => {
+          const {transactions: transactionData, last_page, current_page} = res;
           setTotalPages(last_page);
           setPage(current_page);
           const _groupedByDateTransactions = groupedByDateTransactions(transactionData);
@@ -286,6 +283,9 @@ export function Transactions({ navigation }: any) {
     setIsStatusOptionSelected(false);
     setIsMobileFilterShown(!isMobileFilterShown);
   }
+  useEffect(() => {
+    console.log(totalPages, page);
+  }, [totalPages, page]);
 
   // const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}: any) => { //  a method for infinite scrolling feature (not used)
   //   const paddingToBottom = 20;

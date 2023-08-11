@@ -503,8 +503,8 @@ export function Card({ navigation }: any) {
                       <TouchableOpacity
                         // temp disabled sorting logic
                         onPress={() => {
-                          // setIsloading(!isLoading);
-                          // setSortByDate(!sortByDate);
+                          setIsloading(!isLoading);
+                          setSortByDate(!sortByDate);
                         }}
                       >
                         {sortByDate ? (

@@ -128,8 +128,8 @@ export function Transactions({ navigation }: any) {
           // console.log('transaction ',res)
           // const [transaction] = res;
           const transactionData = res.transactions;
-          const last_page=res.last_page ??= 0;
-          const current_page=res.current_page ??= 0 ;
+          const last_page=res.last_page;
+          const current_page=res.current_page;
 
           // console.log('data ',transactionData)
 

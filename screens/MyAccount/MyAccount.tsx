@@ -111,7 +111,7 @@ export function MyAccount({ navigation }: any) {
     if (arrayChecker(transactions.transactions) && transactions.transactions.length > 0) {
       // get only first value of array since it contains all data ex last_page, arr of transaction etc
       // const [transactionsObj] = transactions.transactions;
-      console.log("transactionsObj", transactions.transactions.length);
+      // console.log("transactionsObj", transactions.transactions.length);
   
       setTransactionsData({
         data: transactions.transactions || [],

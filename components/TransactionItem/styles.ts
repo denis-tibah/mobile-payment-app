@@ -75,28 +75,7 @@ export const styles:any = StyleSheet.create<any>({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    paddingRight: 35,
-  },
-  detailMobile: {
-    marginBottom: 12,
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap'
-  },
-  detailMobileForEachTransactionContainer: {
-    backgroundColor: '#fff',
-    display: 'flex',
-    flexDirection: 'column',
-    flexWrap: 'wrap',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    border: '1px solid #E5E5E5',
-  },
-  detailMobileForEachTransactionWrapper: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    paddingRight: 48,
   },
   nameDetailMobile: {
     color: "#086AFB",

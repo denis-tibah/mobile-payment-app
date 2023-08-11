@@ -70,7 +70,6 @@ export function TransactionItem({ data }: TransactionItemProps) {
           {/* <Box paddingLeft={data.isCardTx ? -5 : 5} width={data.isCardTx ? "45%" : "30%"}> */}
           {/* <Box width={data.isCardTx ? "45%" : "30%"}> */}
           <Box marginLeft={data.isCardTx ? -10 : 10} width={data.isCardTx ? "45%" : "30%"}>
-         
             <Text>
             {!data.isCardTx ? (
               <Typography fontSize={14}>
@@ -78,14 +77,13 @@ export function TransactionItem({ data }: TransactionItemProps) {
                   ? data?.name?.substring(0, 20) + "."
                   : data?.name}
               </Typography>
-               ) : (
+                ) : (
                 <Typography fontSize={14}>
                 {data?.name?.length > 10
                   ? data?.name?.substring(0, 15) + "."
                   : data?.name}
               </Typography>
               )}
-
             </Text>
           </Box>
           {!data.isCardTx ? (
@@ -102,7 +100,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
               {getFormattedDate(data?.transaction_datetime)}
             </Typography>
           </Box>
-           ) : (
+            ) : (
             <Box
               display="flex"
               paddingLeft={-5}
@@ -116,8 +114,8 @@ export function TransactionItem({ data }: TransactionItemProps) {
                 {getFormattedDate(data?.transaction_datetime)}
               </Typography>
             </Box>
-           )}
-          {!data.isCardTx ? (  
+          )}
+          {!data.isCardTx ? (
               <Box
                 width="30%"
                 // paddingLeft={20}

@@ -2,6 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../api";
 import { UserData } from "../../models/UserData";
+import { getIpAddress } from "../../utils/getIpAddress";
 
 export interface AuthState {
   data?: any;
@@ -39,9 +40,9 @@ export const refreshUserData = createAsyncThunk(
 
 export const signin = createAsyncThunk(
   "signin",
-  async ({ values, ip }: any, { rejectWithValue, fulfillWithValue }) => {
+  async ({ values /* , ip */ }: any, { rejectWithValue, fulfillWithValue }) => {
     try {
-      if (ip && Object.keys(ip).length > 0) {
+      /* if (ip && Object.keys(ip).length > 0) {
         const { data } = await api.post("/loginfinxpmobile", {
           ...values,
           ipAddress: ip,
@@ -60,6 +61,30 @@ export const signin = createAsyncThunk(
           return fulfillWithValue(data);
       } else {
         return rejectWithValue("Failed to load ip location");
+      } */
+      const ipResponse = await getIpAddress().catch((error) => {
+        console.log("error getting ip", error);
+      });
+      console.log("🚀 ~ file: authSlice.ts:68 ~ ipResponse:", ipResponse);
+      if (ipResponse && Object.keys(ipResponse).length > 0) {
+        const { data } = await api.post("/loginfinxpmobile", {
+          ...values,
+          ipAddress: ipResponse,
+          browserfingerprint: "react native app",
+        });
+
+        const { message } = data;
+
+        if (data.code === 401 || !data)
+          return rejectWithValue("Invalid email or password");
+
+        if (data.code !== "200" && data.code !== "201")
+          return rejectWithValue(message);
+
+        if (data.code === "200" || data.code === "201")
+          return fulfillWithValue(data);
+      } else {
+        return fulfillWithValue("Failed to load ip location");
       }
     } catch (error: any) {
       return rejectWithValue("Something went wrong");

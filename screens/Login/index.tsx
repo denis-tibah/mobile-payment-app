@@ -129,7 +129,7 @@ export function LoginScreen({ navigation }: any) {
     handleBiometricLogin();
 
     // get geolocation to send in mobile login finxp
-    const handleAsyncGetIp = async () => {
+    /* const handleAsyncGetIp = async () => {
       const ipResponse = await getIpAddress().catch((error) => {
         console.log("error getting ip", error);
       });
@@ -137,7 +137,7 @@ export function LoginScreen({ navigation }: any) {
         setIp(ipResponse);
       }
     };
-    handleAsyncGetIp();
+    handleAsyncGetIp(); */
   }, []);
 
   return (
@@ -183,7 +183,7 @@ export function LoginScreen({ navigation }: any) {
                 setIsLoading(true);
                 try {
                   const result = await dispatch<any>(
-                    signin({ values, navigate, ip })
+                    signin({ values, navigate /* , ip */ })
                   ).unwrap();
 
                   if (

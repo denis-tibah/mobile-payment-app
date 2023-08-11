@@ -108,7 +108,7 @@ export function MyAccount({ navigation }: any) {
 
   //added by Aristos
   useEffect(() => {
-    if (arrayChecker(transactions.transactions) && transactions.transactions.length > 0) {
+    if (arrayChecker(transactions?.transactions) && transactions?.transactions.length > 0) {
       // get only first value of array since it contains all data ex last_page, arr of transaction etc
       // const [transactionsObj] = transactions.transactions;
       // console.log("transactionsObj", transactions.transactions.length);
@@ -119,10 +119,6 @@ export function MyAccount({ navigation }: any) {
       
       });
     }
-
-
-    console.log("length", transactionsData?.data.length);
-
   }, [transactions]);
 
 

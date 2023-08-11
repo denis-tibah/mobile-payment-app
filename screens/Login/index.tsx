@@ -1,27 +1,30 @@
 import { useEffect, useState } from "react";
-import { Alert, Pressable, TouchableHighlight, View } from "react-native";
+import { Alert, Pressable, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import * as LocalAuthentication from "expo-local-authentication";
+import * as SecureStore from "expo-secure-store";
+import { Formik } from "formik";
+
 import Button from "../../components/Button";
 import FormGroup from "../../components/FormGroup";
 import MainLayout from "../../layout/Main";
 import FixedBottomAction from "../../components/FixedBottomAction";
 import { styles } from "./styles";
-import { Formik } from "formik";
 import Typography from "../../components/Typography";
 import ProfileIcon from "../../assets/icons/Profile";
 import EmailIcon from "../../assets/icons/Email";
 import LockIcon from "../../assets/icons/Lock";
-import { useDispatch } from "react-redux";
 import { refreshUserData, signin } from "../../redux/auth/authSlice";
-import { useNavigation } from "@react-navigation/native";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
-import * as LocalAuthentication from "expo-local-authentication";
-import * as SecureStore from "expo-secure-store";
+import { getIpAddress } from "../../utils/getIpAddress";
 
 export function LoginScreen({ navigation }: any) {
   const [apiErrorMessage, setApiErrorMessage] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [ip, setIp] = useState<any>(null);
   const { navigate }: any = useNavigation();
   const dispatch = useDispatch();
 
@@ -63,14 +66,8 @@ export function LoginScreen({ navigation }: any) {
   const getSavedCredetails = async () => {
     const email = await SecureStore.getItemAsync("email");
     const password = await SecureStore.getItemAsync("password");
-    // const biometricYN = await SecureStore.getItemAsync("biometricYN" );
-
-    // console.log("get saved biometricYN",  biometricYN);
 
     if (email && password) {
-      //Added by Aristos
-      // if (email && password && biometricYN =='Y' ) {
-
       return { email, password };
     }
     return {};
@@ -129,8 +126,18 @@ export function LoginScreen({ navigation }: any) {
         }
       }
     };
-
     handleBiometricLogin();
+
+    // get geolocation to send in mobile login finxp
+    const handleAsyncGetIp = async () => {
+      const ipResponse = await getIpAddress().catch((error) => {
+        console.log("error getting ip", error);
+      });
+      if (ipResponse && Object.keys(ipResponse).length > 0) {
+        setIp(ipResponse);
+      }
+    };
+    handleAsyncGetIp();
   }, []);
 
   return (
@@ -163,10 +170,6 @@ export function LoginScreen({ navigation }: any) {
             <Seperator marginBottom={36} backgroundColor={vars["grey"]} />
             <Formik
               initialValues={{
-                // email: "Aristosc@iqgp.io",
-                // password: "Secret@123456789",
-                // email: "alex@kalytex.com",
-                // password: "Q@werty123",
                 email: "",
                 password: "",
               }}
@@ -178,24 +181,39 @@ export function LoginScreen({ navigation }: any) {
               }}
               onSubmit={async (values) => {
                 setIsLoading(true);
-                const result = await dispatch<any>(
-                  signin({ values, navigate })
-                );
-                // console.log('result.payload.biometricYN ',result.payload.biometricYN );
+                try {
+                  const result = await dispatch<any>(
+                    signin({ values, navigate, ip })
+                  ).unwrap();
 
-                if (result.payload.biometricYN == "Y") {
-                  console.log("Use biometic ");
-                  await saveSecureCredetails(
-                    values.email,
-                    values.password
-                    //Addd by aristos
-                    // result.payload.biometricYN
-                  );
-                } else {
-                  console.log("Do not use biometric");
-                  await SecureStore.deleteItemAsync("email");
-                  await SecureStore.deleteItemAsync("password");
+                  if (
+                    [
+                      result?.payload?.biometricYN.toUpperCase(),
+                      result?.biometricYN.toUpperCase(),
+                    ].includes("Y")
+                  ) {
+                    console.log("Use biometic ");
+                    await saveSecureCredetails(
+                      values.email,
+                      values.password
+                      //Addd by aristos
+                      // result.payload.biometricYN
+                    );
+                  } else {
+                    console.log("Do not use biometric");
+                    await SecureStore.deleteItemAsync("email");
+                    await SecureStore.deleteItemAsync("password");
+                  }
+                  await dispatch<any>(refreshUserData()).unwrap();
+                  if (result.error)
+                    setApiErrorMessage({ message: result.payload });
+                  else setApiErrorMessage({});
+                  setIsLoading(false);
+                } catch (error) {
+                  setApiErrorMessage({ message: "Something went wrong" });
+                  setIsLoading(false);
                 }
+
                 //disabled by Aristos do not need this popup
                 // Alert.alert(
                 //   "",
@@ -218,11 +236,6 @@ export function LoginScreen({ navigation }: any) {
                 //     },
                 //   ]
                 // );
-                await dispatch<any>(refreshUserData());
-                if (result.error)
-                  setApiErrorMessage({ message: result.payload });
-                else setApiErrorMessage({});
-                setIsLoading(false);
               }}
             >
               {({ handleSubmit, handleChange, handleBlur, values, errors }) => (

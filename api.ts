@@ -24,13 +24,13 @@ api.interceptors.request.use(
       const state = JSON.parse(JSON.stringify(_store.getState()));
       config.headers[
         "AuthorizationFinxp"
-      ] = `Bearer ${state?.auth?.data.access_token}`;
+      ] = `Bearer ${state?.auth?.data?.access_token}`;
       config.headers[
         "Authorization"
-      ] = `Bearer ${state?.auth?.data.token_ziyl}`;
+      ] = `Bearer ${state?.auth?.data?.token_ziyl}`;
       config.headers[
         "AuthorizationReceiveMobileNotifications"
-      ] = `Bearer ${state?.auth?.data.token_receive_mobile_notifications}`;
+      ] = `Bearer ${state?.auth?.data?.token_receive_mobile_notifications}`;
     }
 
     return config;

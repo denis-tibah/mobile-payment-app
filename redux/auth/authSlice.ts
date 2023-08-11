@@ -1,7 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../api";
-import { getIpAddress } from "../../utils/getIpAddress";
 import { UserData } from "../../models/UserData";
 
 export interface AuthState {
@@ -40,37 +39,29 @@ export const refreshUserData = createAsyncThunk(
 
 export const signin = createAsyncThunk(
   "signin",
-  async ({ values }: any, { rejectWithValue, fulfillWithValue }) => {
+  async ({ values, ip }: any, { rejectWithValue, fulfillWithValue }) => {
     try {
-      const ip = await getIpAddress();
-      if (!ip) return;
+      if (ip && Object.keys(ip).length > 0) {
+        const { data } = await api.post("/loginfinxpmobile", {
+          ...values,
+          ipAddress: ip,
+          browserfingerprint: "react native app",
+        });
 
-      //original ws
-      // const { data } = await api.post("/loginfinxp", {
-      //   ...values,
-      //   ipAddress: ip,
-      //   browserfingerprint: "react native app",
-      // });
+        const { message } = data;
 
-      //new ws for mobile
-      const { data } = await api.post("/loginfinxpmobile", {
-        ...values,
-        ipAddress: ip,
-        browserfingerprint: "react native app",
-      });
+        if (data.code === 401 || !data)
+          return rejectWithValue("Invalid email or password");
 
-      const { message } = data;
+        if (data.code !== "200" && data.code !== "201")
+          return rejectWithValue(message);
 
-      if (data.code === 401 || !data)
-        return rejectWithValue("Invalid email or password");
-
-      if (data.code !== "200" && data.code !== "201")
-        return rejectWithValue(message);
-
-      if (data.code === "200" || data.code === "201")
-        return fulfillWithValue(data);
-    } catch (error) {
-      console.log(error);
+        if (data.code === "200" || data.code === "201")
+          return fulfillWithValue(data);
+      } else {
+        return rejectWithValue("Failed to load ip location");
+      }
+    } catch (error: any) {
       return rejectWithValue("Something went wrong");
     }
   }

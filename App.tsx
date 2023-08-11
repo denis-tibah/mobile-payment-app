@@ -18,7 +18,7 @@ export default function App() {
 
  const prefix = Linking.createURL('/');
  const appScheme = prefix;
- const urlScheme =  "https://www.gozazoo.com/zazoomobile";
+ const urlScheme =  "https://www.gozazoo.com/zazoomobilestg";
 
 const prefixes = [appScheme,urlScheme]
 

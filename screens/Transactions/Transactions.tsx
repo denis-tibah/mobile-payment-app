@@ -283,9 +283,6 @@ export function Transactions({ navigation }: any) {
     setIsStatusOptionSelected(false);
     setIsMobileFilterShown(!isMobileFilterShown);
   }
-  useEffect(() => {
-    console.log(totalPages, page);
-  }, [totalPages, page]);
 
   // const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}: any) => { //  a method for infinite scrolling feature (not used)
   //   const paddingToBottom = 20;

@@ -265,12 +265,12 @@ export function Card({ navigation }: any) {
     }
   };
 
-  useEffect(() => {
-    if (userData && userData.id) {
-      // console.log("sorting logic");
-      handleFetchTransactions(userData.id);
-    }
-  }, [sortByDate]);
+  // useEffect(() => {
+  //   if (userData && userData.id) {
+  //     // console.log("sorting logic");
+  //     handleFetchTransactions(userData.id);
+  //   }
+  // }, [sortByDate]);
 
   useEffect(() => {
     if (!!userData?.id) fetchCardData();

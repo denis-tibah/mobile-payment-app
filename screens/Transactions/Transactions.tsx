@@ -27,7 +27,7 @@ import { dateFormatter } from "../../utils/dates";
 import { TRANSACTIONS_STATUS } from "../../utils/constants";
 import ArrowDown from "../../assets/icons/ArrowDown";
 import { arrayChecker } from "../../utils/helper";
-import { Transaction, TransactionDetails } from "../../models/Transactions";
+import { Transaction, TransactionDetails,TransactionDetailsNew } from "../../models/Transactions";
 import Pagination from "../../components/Pagination/Pagination";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 
@@ -124,9 +124,16 @@ export function Transactions({ navigation }: any) {
         }
         await dispatch<any>(getTransactionsWithFilters(search))
         .unwrap()
-        .then((res: TransactionDetails[]) => {
-          const [transaction] = res;
-          const {data: transactionData, last_page, current_page} = transaction;
+        .then((res: TransactionDetailsNew[]) => {
+          // console.log('transaction ',res)
+          // const [transaction] = res;
+          const transactionData = res.transactions;
+          const last_page=res.last_page ??= 0;
+          const current_page=res.current_page ??= 0 ;
+
+          // console.log('data ',transactionData)
+
+          // const {data: transactionData, last_page, current_page} = transaction;
           setTotalPages(last_page);
           setPage(current_page);
           const _groupedByDateTransactions = groupedByDateTransactions(transactionData);
@@ -136,6 +143,7 @@ export function Transactions({ navigation }: any) {
         });
       }
     } catch (error) {
+      console.log("error aristos 1");
       console.log({ error });
     } finally {
       setIsLoading(false);
@@ -164,6 +172,7 @@ export function Transactions({ navigation }: any) {
         });      
       }
     } catch (error) {
+      console.log("error aristos 2 ");
       console.log({error});
     } finally {
       setIsLoading(false);

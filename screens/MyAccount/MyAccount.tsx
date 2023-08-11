@@ -54,8 +54,7 @@ export function MyAccount({ navigation }: any) {
           sort: "id",
           direction: "desc",
           // status: "PROCESSING"
-          // status: "SUCCESS",
-          status: "S",
+          status: "SUCCESS",
           limit: 20,
           page,
         };
@@ -75,6 +74,10 @@ export function MyAccount({ navigation }: any) {
     }
   };
 
+  // console.log(" transactionsData?.data?.length",  arrayChecker(transactions.transactions), ' ',transactions.transactions.length,' ',transactions.last_page);
+
+  // console.log(" transactionsData",  transactions);
+
   // #HACK needs improvement
   // run only once when the component mounts/unmounts
   // will load fetchTransactions on every mount of component/page
@@ -88,17 +91,40 @@ export function MyAccount({ navigation }: any) {
     }, [])
   );
 
+  // :start:disabled by Aristos because json reponse has changed
+  // useEffect(() => {
+  //   if (arrayChecker(transactions) && transactions.length > 0) {
+  //     // get only first value of array since it contains all data ex last_page, arr of transaction etc
+  //     const [transactionsObj] = transactions;
+  //     setTransactionsData({
+  //       data: transactionsObj?.data || [],
+  //       totalPage: parseInt(transactionsObj?.last_page, 10) || 0,
+  //     });
+  //   }
+  // }, [transactions]);
 
+ // :end:disabled by Aristos because json reponse has changed
+
+
+  //added by Aristos
   useEffect(() => {
-    if (arrayChecker(transactions) && transactions.length > 0) {
+    if (arrayChecker(transactions.transactions) && transactions.transactions.length > 0) {
       // get only first value of array since it contains all data ex last_page, arr of transaction etc
-      const [transactionsObj] = transactions;
+      // const [transactionsObj] = transactions.transactions;
+      console.log("transactionsObj", transactions.transactions.length);
+  
       setTransactionsData({
-        data: transactionsObj?.data || [],
-        totalPage: parseInt(transactionsObj?.last_page, 10) || 0,
+        data: transactions.transactions || [],
+        totalPage: parseInt(transactions.last_page, 10) || 0,
+      
       });
     }
+
+
+    console.log("length", transactionsData?.data.length);
+
   }, [transactions]);
+
 
 
 
@@ -222,8 +248,6 @@ export function MyAccount({ navigation }: any) {
           </View>
           <View>
             <Spinner visible={loading || paginateRefresh} />
-
-            <Typography>llll{ transactionsData?.data?.length} </Typography>
 
             {transactionsData?.data?.length > 0 ? (
               <>

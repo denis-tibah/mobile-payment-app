@@ -24,6 +24,32 @@ export interface Transaction {
   transfer_currency: string;
 }
 
+export interface transactions {
+  amount: string;
+  balance: string | null;
+  bic: string;
+  closing_balance: string | null;
+  running_balance: string | null;
+  currency: string;
+  description: string;
+  iban: string;
+  id: number;
+  name: string;
+  opening_balance: string | null;
+  reference_no: string | null;
+  service: any;
+  status: string;
+  transaction_datetime: string;
+  transaction_id: number;
+  transaction_uuid: string;
+  isCardTx: boolean;
+  total_amount?: string;
+  trn_type :string;
+  dr_iban: string;
+  cr_iban: string;
+  transfer_currency: string;
+}
+
 export interface CardTransaction {
   id: string;
   dsName: string;
@@ -77,6 +103,17 @@ export interface TransactionDetails {
   to: number;
   total: number;
   links: Link[];
+}
+export interface TransactionDetailsNew {
+current_page: number;
+from: number;
+to: number;
+next_page: number;
+prev_page: number;
+total: number;
+last_page: number;
+per_page: number;
+transactions: transactions[];
 }
 
 interface Link {

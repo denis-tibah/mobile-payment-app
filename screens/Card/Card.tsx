@@ -76,6 +76,7 @@ export function Card({ navigation }: any) {
   const [cardPin, setCardPin] = useState("");
   const [remainingTime, setRemainingTime] = useState(30);
   const loadingState = useSelector((state: RootState) => state?.card.loading);
+  const load = useSelector((state: RootState) => state?.card);
   const cardData = useSelector((state: RootState) => state.card?.data);
   const cardTransactions = useSelector(
     (state: RootState) => state?.card?.transactions
@@ -101,7 +102,10 @@ export function Card({ navigation }: any) {
     CardTransaction[]
   >([]);
   const [isLoading, setIsloading] = useState<boolean>(false);
-  const [isEnrollmentSuccess, setEnrollmentStatus] = useState(false);
+  const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
+  const [isFetchingCardTransactions, setFetchingCardTransactions] =
+    useState<boolean>(true);
+  const [isFetchingCardInfo, setFetchingCardInfo] = useState<boolean>(true);
 
   const dispatch = useDispatch();
 
@@ -118,9 +122,15 @@ export function Card({ navigation }: any) {
         )
           .unwrap()
           .then((res: any) => {
+            console.log("🚀 ~ file: Card.tsx:128 ~ .then ~ res:", res);
             //added this modificaton because Response has changed
             // setCardTransactionsData(res.data);
-            setCardTransactionsData(res);
+            if (res && arrayChecker(res)) {
+              setCardTransactionsData(res);
+              setFetchingCardTransactions(false);
+            } else {
+              setFetchingCardTransactions(false);
+            }
           });
         //This should be disabled: This is incorrect we do not get transaction data only card transactions
         // await dispatch<any>(getTransactionsWithFilters({
@@ -131,11 +141,16 @@ export function Card({ navigation }: any) {
         //   status: 'SUCCESS'
         // }));
       }
-      await dispatch<any>(getCards());
+      const getCardReq = await dispatch<any>(getCards()).unwrap();
+      if ((getCardReq && Object.keys(getCardReq).length > 0) || !getCardReq) {
+        setFetchingCardInfo(false);
+      }
       // console.log("do we have any cards", cardData);
       if (userData) await dispatch<any>(getAccountDetails(userData.id));
     } catch (error) {
       console.log({ error });
+      setFetchingCardTransactions(false);
+      setFetchingCardInfo(false);
     }
   };
 
@@ -279,7 +294,12 @@ export function Card({ navigation }: any) {
   //   }
   // }, [sortByDate]);
 
-  // for card enrollment
+  /* 
+    for card enrollment 
+    -isFetchingCardTransactions and isFetchingCardInfo are two related api calls for card. 
+    -if these two(isFetchingCardTransactions, isFetchingCardTransactions) are not done yet dont execute card enrollment as we need to know
+    if the customer has card.
+  */
   useEffect(() => {
     const enrollCard = async () => {
       try {
@@ -299,10 +319,19 @@ export function Card({ navigation }: any) {
       }
     };
     // only trigger card enrollment if cardData is empty
-    if (!arrayChecker(cardData) && accountData?.id) {
-      enrollCard();
+    if (!isFetchingCardTransactions) {
+      if (!isFetchingCardInfo) {
+        if (!arrayChecker(cardData) && accountData?.id) {
+          enrollCard();
+        }
+      }
     }
-  }, [arrayChecker(cardData), accountData?.id]);
+  }, [
+    arrayChecker(cardData),
+    accountData?.id,
+    isFetchingCardTransactions,
+    isFetchingCardInfo,
+  ]);
 
   useEffect(() => {
     if (!!userData?.id) fetchCardData();

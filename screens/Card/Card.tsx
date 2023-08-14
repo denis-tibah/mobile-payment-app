@@ -62,7 +62,6 @@ import { arrayChecker } from "../../utils/helpers";
 export function Card({ navigation }: any) {
   const infoData = useSelector((state: RootState) => state.account.details);
   const accountData = useSelector((state: RootState) => state.auth.userData);
-  console.log("🚀 ~ file: Card.tsx:63 ~ Card ~ accountData:", accountData);
   const defaultSearchOptions = {
     sort: "id",
     // status: 'PROCESSING',

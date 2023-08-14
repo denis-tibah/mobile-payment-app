@@ -122,7 +122,6 @@ export function Card({ navigation }: any) {
         )
           .unwrap()
           .then((res: any) => {
-            console.log("🚀 ~ file: Card.tsx:128 ~ .then ~ res:", res);
             //added this modificaton because Response has changed
             // setCardTransactionsData(res.data);
             if (res && arrayChecker(res)) {

@@ -318,7 +318,13 @@ export function Card({ navigation }: any) {
         console.log("error in card enrollment ", error);
       }
     };
-    // only trigger card enrollment if cardData is empty
+
+    /* only trigger card enrollment if ff conditions are met 
+    -account_id(accountData?.id) is ready
+    -!isFetchingCardTransactions, after fetching card transactions if theres any
+    -!isFetchingCardInfo, after fetching card info if theres any
+    -if cardData is empty, meaning no card information is found
+    */
     if (!isFetchingCardTransactions) {
       if (!isFetchingCardInfo) {
         if (!arrayChecker(cardData) && accountData?.id) {

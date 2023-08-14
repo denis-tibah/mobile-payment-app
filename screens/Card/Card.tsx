@@ -27,9 +27,14 @@ import {
   showCardDetails,
   showCardPinNumber,
   terminateCard,
+  enrollforCardScheme,
 } from "../../redux/card/cardSlice";
 import { getTodaysDate } from "../../utils/dates";
-import { getCurrency, convertImageToBase64,getPendingAmount  } from "../../utils/helpers";
+import {
+  getCurrency,
+  convertImageToBase64,
+  getPendingAmount,
+} from "../../utils/helpers";
 import { getAccountDetails } from "../../redux/account/accountSlice";
 import { CardView } from "../../components/Card/CardView";
 import { GetCardModal } from "./GetCardModal";
@@ -51,10 +56,13 @@ import LoadingScreen from "../../components/Loader/LoadingScreen";
 import { CardTransaction } from "../../models/Transactions";
 import moment from "moment";
 import TransactionItem from "../../components/TransactionItem";
+import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
+import { arrayChecker } from "../../utils/helpers";
 
 export function Card({ navigation }: any) {
   const infoData = useSelector((state: RootState) => state.account.details);
   const accountData = useSelector((state: RootState) => state.auth.userData);
+  console.log("🚀 ~ file: Card.tsx:63 ~ Card ~ accountData:", accountData);
   const defaultSearchOptions = {
     sort: "id",
     // status: 'PROCESSING',
@@ -94,6 +102,7 @@ export function Card({ navigation }: any) {
     CardTransaction[]
   >([]);
   const [isLoading, setIsloading] = useState<boolean>(false);
+  const [isEnrollmentSuccess, setEnrollmentStatus] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -108,13 +117,13 @@ export function Card({ navigation }: any) {
             type: "PREAUTH",
           })
         )
-        .unwrap()
-        .then((res: any) => {
-          //added this modificaton because Response has changed
-          // setCardTransactionsData(res.data);
-          setCardTransactionsData(res);
-        });
-      //This should be disabled: This is incorrect we do not get transaction data only card transactions
+          .unwrap()
+          .then((res: any) => {
+            //added this modificaton because Response has changed
+            // setCardTransactionsData(res.data);
+            setCardTransactionsData(res);
+          });
+        //This should be disabled: This is incorrect we do not get transaction data only card transactions
         // await dispatch<any>(getTransactionsWithFilters({
         //   account_id: userData?.id,
         //   sort: 'id',
@@ -271,6 +280,31 @@ export function Card({ navigation }: any) {
   //   }
   // }, [sortByDate]);
 
+  // for card enrollment
+  useEffect(() => {
+    const enrollCard = async () => {
+      try {
+        setIsloading(true);
+        const enrollCardPayload = await dispatch<any>(
+          enrollforCardScheme({ account_id: accountData?.id })
+        ).unwrap();
+        if (enrollCardPayload) {
+          setIsloading(false);
+          if (enrollCardPayload?.code === "409") {
+            setEnrollmentStatus(true);
+          }
+        }
+      } catch (error) {
+        setIsloading(false);
+        console.log("error in card enrollment ", error);
+      }
+    };
+    // only trigger card enrollment if cardData is empty
+    if (!arrayChecker(cardData) && accountData?.id) {
+      enrollCard();
+    }
+  }, [arrayChecker(cardData), accountData?.id]);
+
   useEffect(() => {
     if (!!userData?.id) fetchCardData();
   }, [userData?.id]);
@@ -309,22 +343,26 @@ export function Card({ navigation }: any) {
 
   const sortCardTransactionsByDate = (sortState: boolean) => {
     if (sortState) {
-      const sortedTransactions = [...cardTransactionsData].sort((a: any, b: any) => {
-        const dateA = new Date(a.receiptDate);
-        const dateB = new Date(b.receiptDate);
-        return dateA.getTime() - dateB.getTime();
-      });
+      const sortedTransactions = [...cardTransactionsData].sort(
+        (a: any, b: any) => {
+          const dateA = new Date(a.receiptDate);
+          const dateB = new Date(b.receiptDate);
+          return dateA.getTime() - dateB.getTime();
+        }
+      );
       setCardTransactionsData(sortedTransactions);
     } else {
-      const sortedTransactions = [...cardTransactionsData].sort((a: any, b: any) => {
-        const dateA = new Date(a.receiptDate);
-        const dateB = new Date(b.receiptDate);
-        return dateB.getTime() - dateA.getTime();
-      });
+      const sortedTransactions = [...cardTransactionsData].sort(
+        (a: any, b: any) => {
+          const dateA = new Date(a.receiptDate);
+          const dateB = new Date(b.receiptDate);
+          return dateB.getTime() - dateA.getTime();
+        }
+      );
       setCardTransactionsData(sortedTransactions);
     }
     setIsloading(false);
-  }
+  };
 
   useEffect(() => {
     sortCardTransactionsByDate(debounceSortByDate);
@@ -411,8 +449,10 @@ export function Card({ navigation }: any) {
               <Box sx={{ marginLeft: "auto", marginBottom: 16 }}>
                 <Typography fontFamily="Mukta-Regular">
                   {getCurrency(infoData?.currency)}
-                  {getPendingAmount(infoData?.avlbal ||"0.00",infoData?.curbal ||"0.00") || "0.00"}
-              
+                  {getPendingAmount(
+                    infoData?.avlbal || "0.00",
+                    infoData?.curbal || "0.00"
+                  ) || "0.00"}
                 </Typography>
               </Box>
             </View>
@@ -565,6 +605,14 @@ export function Card({ navigation }: any) {
                 </View>
               )}
             </View>
+            {isEnrollmentSuccess && (
+              <SuccessModal
+                title={"Card enrollment"}
+                text={"Card Registered"}
+                isOpen
+                onClose={() => setEnrollmentStatus(false)}
+              />
+            )}
             {/* end: Added by Aristos */}
 
             {/* start:02-08-2013 disabled by Aristos */}
@@ -644,7 +692,7 @@ export function Card({ navigation }: any) {
                   )
                 } 
             </View> */}
-          {/* end:02-08-2013 disabled by Aristos */}
+            {/* end:02-08-2013 disabled by Aristos */}
           </View>
         </View>
         <LoadingScreen isLoading={isLoading} />

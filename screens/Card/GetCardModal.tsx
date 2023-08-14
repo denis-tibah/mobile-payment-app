@@ -16,7 +16,7 @@ import {
 import { CodeModal } from "../../components/CodeModal/CodeModal";
 import { delayCode } from "../../utils/delay";
 import { getAccountDetails } from "../../redux/account/accountSlice";
-import { RadioButton } from 'react-native-paper';
+import { RadioButton } from "react-native-paper";
 
 interface GerCardModalProps {
   onClose: () => void;
@@ -41,14 +41,14 @@ export const GetCardModal = ({
   const [loading, setLoading] = useState(false);
 
   // const [cardType, setCardType] = useState();
-  const [cardType, setCardType] = useState('');
+  const [cardType, setCardType] = useState("");
   // const [checked, setChecked] = useState('');
   const [currency, setCurrency] = useState<any>({
     label: "USD",
     value: "usd",
   });
-  const VirtualCard ="V";
-  const showChangeRequest ='N';
+  const VirtualCard = "V";
+  const showChangeRequest = "N";
 
   const [open, setOpen] = useState(false);
   const [openCurrency, setOpenCurrency] = useState(false);
@@ -212,55 +212,48 @@ export const GetCardModal = ({
                   zIndex={2}
                 /> */}
 
-      {/* only show card that has not been ordered yet--added by Aristos  19/06/2023        */}
-      {/* if we do not have any cards, show both options and enrol for a card by calling showcardregistrationfinxpV2 */}
-        {  !cardData.length ?   <View style={styles.cardTypeCombo} >
-                                    <RadioButton
-                                        value="P"
-                                        status={ cardType === 'P' ? 'checked' : 'unchecked' }
-                                          onPress={() => setCardType('P')} 
-                                        color='#E7038E'
-                                      />  
-                                      <Text style={styles.cardTypeText}>Physical Card</Text>
-                                    
-                                    <RadioButton
-                                    value="V"
-                                    status={ cardType === 'V' ? 'checked' : 'unchecked' }
-                                    onPress={() => setCardType('V')}
-                                    color='#E7038E'
-                                  />
-                                <Text style={styles.cardTypeText}>Virtual Card</Text>
-                      
-                             </View> 
-                               
-        
-        
-        : 
-                      cardData[0].type == VirtualCard ? 
-                              <View style={styles.cardTypeCombo} >
-                                      <RadioButton
-                                          value="P"
-                                          status={ cardType === 'P' ? 'checked' : 'unchecked' }
-                                            onPress={() => setCardType('P')} 
-                                          color='#E7038E'
-                                        />  
-                                        <Text style={styles.cardTypeText}>Physical Card</Text>
-                            
-                                  </View>
-                                        :
-                                        <View style={styles.cardTypeCombo} >
-                                              <RadioButton
-                                              value="V"
-                                              status={ cardType === 'V' ? 'checked' : 'unchecked' }
-                                              onPress={() => setCardType('V')}
-                                              color='#E7038E'
-                                            />
-                                          <Text style={styles.cardTypeText}>Virtual Card</Text>
-                                  
-                                      </View> 
-                
-                }
-      
+                {/* only show card that has not been ordered yet--added by Aristos  19/06/2023        */}
+                {/* if we do not have any cards, show both options and enrol for a card by calling showcardregistrationfinxpV2 */}
+                {!cardData.length ? (
+                  <View style={styles.cardTypeCombo}>
+                    <RadioButton
+                      value="P"
+                      status={cardType === "P" ? "checked" : "unchecked"}
+                      onPress={() => setCardType("P")}
+                      color="#E7038E"
+                    />
+                    <Text style={styles.cardTypeText}>Physical Card</Text>
+
+                    <RadioButton
+                      value="V"
+                      status={cardType === "V" ? "checked" : "unchecked"}
+                      onPress={() => setCardType("V")}
+                      color="#E7038E"
+                    />
+                    <Text style={styles.cardTypeText}>Virtual Card</Text>
+                  </View>
+                ) : cardData[0].type == VirtualCard ? (
+                  <View style={styles.cardTypeCombo}>
+                    <RadioButton
+                      value="P"
+                      status={cardType === "P" ? "checked" : "unchecked"}
+                      onPress={() => setCardType("P")}
+                      color="#E7038E"
+                    />
+                    <Text style={styles.cardTypeText}>Physical Card</Text>
+                  </View>
+                ) : (
+                  <View style={styles.cardTypeCombo}>
+                    <RadioButton
+                      value="V"
+                      status={cardType === "V" ? "checked" : "unchecked"}
+                      onPress={() => setCardType("V")}
+                      color="#E7038E"
+                    />
+                    <Text style={styles.cardTypeText}>Virtual Card</Text>
+                  </View>
+                )}
+
                 <DropDownPicker
                   placeholder="Currency"
                   style={styles.dropdownCurrency}
@@ -273,17 +266,21 @@ export const GetCardModal = ({
                   dropDownContainerStyle={styles.dropdownContainer}
                   zIndex={1}
                 />
-            </View>
+              </View>
             )}
-            
-                {!getCardSuccessResponse &&
-                  !getCardErrorResponse &&
-                  cardType === "P" && (
-                    <View style={styles.physicalCardAddress}>
-                      <Address compact profileData={profile?.data} showChangeRequest={showChangeRequest} />
-                    </View>
-                  )}
-              
+
+            {!getCardSuccessResponse &&
+              !getCardErrorResponse &&
+              cardType === "P" && (
+                <View style={styles.physicalCardAddress}>
+                  <Address
+                    compact
+                    profileData={profile?.data}
+                    showChangeRequest={showChangeRequest}
+                  />
+                </View>
+              )}
+
             {!getCardSuccessResponse &&
               getCardErrorResponse &&
               getCardSuccessResponse && <Text>Your card has been ordered</Text>}
@@ -375,7 +372,7 @@ const styles = StyleSheet.create<any>({
     borderColor: "transparent",
     marginTop: -40,
     marginBottom: 20,
-    marginLeft:70,
+    marginLeft: 70,
     left: 60,
     // paddingTop: 20,
   },
@@ -389,7 +386,7 @@ const styles = StyleSheet.create<any>({
     justifyContent: "center",
     marginTop: -40,
     marginBottom: 20,
-    marginLeft:70,
+    marginLeft: 70,
     left: 60,
   },
   physicalCardAddress: {

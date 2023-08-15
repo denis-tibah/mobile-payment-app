@@ -12,6 +12,7 @@ import MyAccountScreen from "../screens/MyAccount";
 import TransactionApprovalScreen from "../screens/TransactionApproval/index";
 import PaymentReceivedScreen from "../screens/PaymentReceivedMessage";
 import EmailVerifiedScreen from "../screens/EmailVerifiedMessage";
+import ForgottenPassword from "../screens/ForgottenPassword";
 
 import TransactionsScreen from "../screens/Transactions";
 import CardScreen from "../screens/Card";
@@ -384,6 +385,13 @@ export default function AppNavigationWrapper() {
             <Root.Screen
               name={"signup"}
               component={SignupScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Root.Screen
+              name={"forgottenPassword"}
+              component={ForgottenPassword}
               options={{
                 headerShown: false,
               }}

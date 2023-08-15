@@ -270,12 +270,14 @@ export function LoginScreen({ navigation }: any) {
                       </FormGroup>
                     </View>
                     <View style={styles.cardBodyLink}>
-                      <Typography
-                        color="accent-blue"
-                        fontFamily="Mukta-Regular"
-                      >
-                        Forgotten Password
-                      </Typography>
+                      <Pressable onPress={() => navigate("forgottenPassword")}>
+                        <Typography
+                          color="accent-blue"
+                          fontFamily="Mukta-Regular"
+                        >
+                          Forgotten Password
+                        </Typography>
+                      </Pressable>
                     </View>
                     {/* <View
                       style={[styles.cardBodyLink, styles.cardBodyLinkMargin]}
@@ -307,7 +309,7 @@ export function LoginScreen({ navigation }: any) {
                       onPress={handleSubmit}
                       leftIcon={<ProfileIcon size={14} />}
                     >
-                      {isLoading ? "Authenticating..." : "Sign in"}
+                      Submit
                     </Button>
                   </FixedBottomAction>
                 </View>

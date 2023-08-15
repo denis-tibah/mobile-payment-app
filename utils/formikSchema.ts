@@ -266,6 +266,12 @@ const verifyPhoneNumberSchema = Yup.object({
   phoneNumber: Yup.string().required("Phone number is required"),
 });
 
+const forgottenPasswordSchema = Yup.object({
+  email: Yup.string()
+    .email("Invalid email address")
+    .required("Email is required"),
+});
+
 export {
   addressDetailsSchema,
   financialDetailsSchema,
@@ -273,4 +279,5 @@ export {
   profileDetailsSchema,
   termsAndConditionSchema,
   verifyPhoneNumberSchema,
+  forgottenPasswordSchema,
 };

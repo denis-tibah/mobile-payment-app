@@ -108,6 +108,14 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
+export const forgottenPassword = createAsyncThunk(
+  "forgottenPassword",
+  async (params) => {
+    const { data } = await api.post("/RequestForgotPasswordfinxp", params);
+    return data;
+  }
+);
+
 export const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -157,6 +165,12 @@ export const authSlice = createSlice({
       state.loading = false;
     });
     builder.addCase(changePassword.rejected, (state) => {
+      state.error = true;
+    });
+    builder.addCase(forgottenPassword.fulfilled, (state) => {
+      state.loading = false;
+    });
+    builder.addCase(forgottenPassword.rejected, (state) => {
       state.error = true;
     });
   },

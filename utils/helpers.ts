@@ -4,8 +4,8 @@ export function formatDateTableValue(date = "") {
 
 //added by Aristos
 export function formatAmountTableValue(amount: any = "", currency = "") {
-  if (!amount || !currency) return Number.parseFloat('0').toFixed(2); 
-    return Number.parseFloat(amount).toFixed(2);
+  if (!amount || !currency) return Number.parseFloat("0").toFixed(2);
+  return Number.parseFloat(amount).toFixed(2);
 }
 
 export function formatAmountTableValue_old(amount: any = "", currency = "") {
@@ -91,11 +91,12 @@ export const screenNames: any = {
   receivedPayment: "receivedPayment",
   emailVerified: "emailVerified",
   profileDetails: " profileDetails",
+  forgottenPassword: "forgottenPassword",
 };
 
 // export function getPendingAmount(opnbal:any,currentBalance: any) {
-  export function getPendingAmount(avlbal:any,currentBalance: any) {
-  const pendingAmount = Math.abs(currentBalance-avlbal);
+export function getPendingAmount(avlbal: any, currentBalance: any) {
+  const pendingAmount = Math.abs(currentBalance - avlbal);
   //use toFixed(2) to format nuber to 2 decimal places
   return pendingAmount.toFixed(2) || "0.00";
 }

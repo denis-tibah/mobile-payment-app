@@ -100,6 +100,10 @@ const Verifications: FC<IVerifications> = ({
           })
         )
           .then((payload: any) => {
+            console.log(
+              "🚀 ~ file: Verifications.tsx:81 ~ .then ~ payload:",
+              payload
+            );
             if (payload) {
               setIsLoading(false);
               setSMSResent(true);

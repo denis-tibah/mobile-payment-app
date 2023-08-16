@@ -78,6 +78,10 @@ const Verifications: FC<IVerifications> = ({
           })
         )
           .then((payload: any) => {
+            console.log(
+              "🚀 ~ file: Verifications.tsx:81 ~ .then ~ payload:",
+              payload
+            );
             if (payload) {
               setIsLoading(false);
               setSMSResent(true);
@@ -97,6 +101,18 @@ const Verifications: FC<IVerifications> = ({
   const handleVerifyPhoneNumber = () => {
     // dispatch action to send all the registration data
     setIsLoading(true);
+    console.log(
+      "🚀 ~ file: Verifications.tsx:107 ~ handleVerifyPhoneNumber ~ registration.data:",
+      registration.data
+    );
+    console.log(
+      "🚀 ~ file: Verifications.tsx:112 ~ handleVerifyPhoneNumber ~ otp:",
+      otp
+    );
+    console.log(
+      "🚀 ~ file: Verifications.tsx:118 ~ handleVerifyPhoneNumber ~ registration.data.country_of_birth:",
+      registration.data.country_of_birth
+    );
     dispatch(
       getSumsubVerificationCode({
         ...registration.data,
@@ -115,7 +131,7 @@ const Verifications: FC<IVerifications> = ({
                 sumsubToken: payload[0].data.token,
               })
             );
-            localStorage.setItem("token_ziyl", payload[0].token_ziyl);
+            // localStorage.setItem("token_ziyl", payload[0].token_ziyl);
             handleNextStep();
             return;
           }

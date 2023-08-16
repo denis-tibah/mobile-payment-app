@@ -56,7 +56,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
       }) => {
         dispatch(
           setRegistrationData({
-            annual_salary: annualSalary,
+            annual_salary: parseInt(annualSalary, 10),
             source_of_wealth: sourceOfWealth,
             employment_status: employmentStatus,
             occupation,

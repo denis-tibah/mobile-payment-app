@@ -147,8 +147,8 @@ const AddressDetails: FC<IAddressDetails> = ({
         state,
         postCode,
         country,
-        noOfMonths,
-        noOfYears,
+        noOfMonths: parseInt(noOfMonths, 10),
+        noOfYears: parseInt(noOfYears, 10),
       };
       const secondAddressObj = {
         street: additionalStreet,
@@ -157,8 +157,8 @@ const AddressDetails: FC<IAddressDetails> = ({
         state: additionalState,
         postCode: additionalPostcode,
         country: additionalCountry,
-        noOfMonths: additionalNoofmonths,
-        noOfYears: additionalNoofyears,
+        noOfMonths: parseInt(additionalNoofmonths, 10),
+        noOfYears: parseInt(additionalNoofyears, 10),
       };
 
       let addresses = [firstAddressObj];

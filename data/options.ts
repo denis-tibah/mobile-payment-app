@@ -14,6 +14,7 @@ export const registrationPhonePrefix = [
   { label: "+90", value: "+90" }, // Turkey
   { label: "+32", value: "+32" }, // Belguim
   { label: "+54", value: "+54" }, // Argentina
+  { label: "+63", value: "+63" }, // Philippines
 ];
 
 export const salutations = [

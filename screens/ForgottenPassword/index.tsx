@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Alert, Pressable, View } from "react-native";
+import { useState } from "react";
+import { Alert, View } from "react-native";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
@@ -20,7 +20,7 @@ import { forgottenPassword } from "../../redux/auth/authSlice";
 
 export function ForgottenPassword({ navigation }: any) {
   const [isLoading, setIsLoading] = useState(false);
-  const { navigate }: any = useNavigation();
+
   const dispatch = useDispatch();
 
   const {
@@ -43,6 +43,10 @@ export function ForgottenPassword({ navigation }: any) {
             email,
           })
         ).unwrap();
+        console.log(
+          "🚀 ~ file: index.tsx:46 ~ onSubmit: ~ forgottenPasswordReq:",
+          forgottenPasswordReq
+        );
 
         if (
           forgottenPasswordReq &&
@@ -68,6 +72,7 @@ export function ForgottenPassword({ navigation }: any) {
           error
         );
         setIsLoading(false);
+        Alert.alert("Something went wrong please try again");
       }
     },
   });

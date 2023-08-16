@@ -92,8 +92,8 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({transactionsByDate,
                   <Box>
                     <Box style={styles.detailMobile}>
                       <Text style={styles.nameDetailMobile}>IBAN:</Text>
-                      {/* <Text style={styles.valueDetailMobile}>{transaction?.iban}</Text> */}
-                      <Text style={styles.valueDetailMobile}>{transaction?.cr_iban}</Text>
+                      <Text style={styles.valueDetailMobile}>{transaction?.iban}</Text>
+                      {/* <Text style={styles.valueDetailMobile}>{transaction?.cr_iban}</Text> */}
                     </Box>
                     {/* <Box style={styles.detailMobile}>
                       <Text style={styles.nameDetailMobile}>BIC:</Text>

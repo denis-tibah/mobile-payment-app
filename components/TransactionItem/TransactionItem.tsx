@@ -267,8 +267,8 @@ export function TransactionItem({ data }: TransactionItemProps) {
                   <Box>
                     <Box style={styles.detailMobile}>
                       <Text style={styles.nameDetailMobile}>IBAN:</Text>
-                      {/* <Text style={styles.valueDetailMobile}>{data?.iban}</Text> */}
-                      <Text style={styles.valueDetailMobile}>{data?.cr_iban}</Text>
+                      <Text style={styles.valueDetailMobile}>{data?.iban}</Text>
+                      {/* <Text style={styles.valueDetailMobile}>{data?.cr_iban}</Text> */}
                     </Box>
                     {/* <Box style={styles.detailMobile}>
                       <Text style={styles.nameDetailMobile}>BIC:</Text>

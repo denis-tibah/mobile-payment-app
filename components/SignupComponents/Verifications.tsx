@@ -99,36 +99,52 @@ const Verifications: FC<IVerifications> = ({
     });
 
   const handleVerifyPhoneNumber = () => {
+    /*  {
+      ...registration.data,
+      code: otp ? otp.toString() : null,
+      provider: "ziyl",
+      country: registration.data.country_of_birth,
+    } */
     // dispatch action to send all the registration data
     setIsLoading(true);
-    console.log(
+    /* console.log(
       "🚀 ~ file: Verifications.tsx:107 ~ handleVerifyPhoneNumber ~ registration.data:",
       registration.data
     );
     console.log(
       "🚀 ~ file: Verifications.tsx:112 ~ handleVerifyPhoneNumber ~ otp:",
-      otp
+      typeof otp
     );
     console.log(
       "🚀 ~ file: Verifications.tsx:118 ~ handleVerifyPhoneNumber ~ registration.data.country_of_birth:",
       registration.data.country_of_birth
+    ); */
+    const regData = {
+      ...registration.data,
+      code: otp ? otp.toString() : null,
+      provider: "ziyl",
+      country: registration.data.country_of_birth,
+    };
+    console.log(
+      "🚀 ~ file: Verifications.tsx:123 ~ handleVerifyPhoneNumber ~ regData:",
+      regData
     );
-    dispatch(
-      getSumsubVerificationCode({
-        ...registration.data,
-        code: otp,
-        provider: "ziyl",
-        country: registration.data.country_of_birth,
-      })
-    )
+    dispatch(getSumsubVerificationCode(regData))
       .unwrap()
       .then((payload: any) => {
         if (payload) {
-          if (payload[0].code === 201) {
+          console.log(
+            "🚀 ~ file: Verifications.tsx:136 ~ .then ~ payload:",
+            payload
+          );
+          if (
+            (payload?.code === 201 || payload?.code === "201") &&
+            payload?.status === "success"
+          ) {
             setIsLoading(false);
             dispatch(
               setRegistrationData({
-                sumsubToken: payload[0].data.token,
+                sumsubToken: payload?.data?.token,
               })
             );
             // localStorage.setItem("token_ziyl", payload[0].token_ziyl);
@@ -137,7 +153,7 @@ const Verifications: FC<IVerifications> = ({
           }
           setIsLoading(false);
           // if the response code is not 201 will assume there was an error submitting the application
-          setErrorsOtp((prev) => ({ ...prev, message: payload[0].message }));
+          setErrorsOtp((prev) => ({ ...prev, message: payload?.message }));
         }
       })
       .catch((error: any) => {

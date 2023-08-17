@@ -93,6 +93,7 @@ export const getSumsubVerificationCode = createAsyncThunk(
   "getSumsubVerificationCode",
   async (params) => {
     const { data } = await api.post("/registrationfinxpv3", params);
+    console.log("🚀 ~ file: registrationSlice.ts:96 ~ data:", data);
     return data;
   }
 );

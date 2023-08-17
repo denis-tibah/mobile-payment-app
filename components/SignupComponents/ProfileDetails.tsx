@@ -17,10 +17,12 @@ import { setRegistrationData } from "../../redux/registration/registrationSlice"
 import Typography from "../../components/Typography";
 import { Seperator } from "../../components/Seperator/Seperator";
 import FixedBottomAction from "../../components/FixedBottomAction";
+import { arrayChecker } from "../../utils/helpers";
 import ButtonSubmit from "../../components/Button";
 
 import vars from "../../styles/vars";
 import { styles } from "./styles";
+import { boolean } from "yup";
 
 interface IProfileDetails {
   handlePrevStep: () => void;
@@ -80,6 +82,12 @@ const ProfileDetails: FC<IProfileDetails> = ({
       : { label: null, value: null };
   };
 
+  const formatDOBToDash = (paramDOB: string): string | null => {
+    const arrDOB: string[] | boolean = paramDOB ? paramDOB.split("-") : false;
+    const [year, month, day] = arrDOB ? arrDOB : [];
+    return year && month && day ? `${month}/${day}/${year}` : null;
+  };
+
   const {
     handleSubmit,
     handleChange,
@@ -93,7 +101,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
       salutation: registration.data?.salutation || "",
       firstName: registration.data?.firstname || "",
       lastName: registration.data?.lastname || "",
-      dob: registration.data?.dob || "",
+      dob: formatDOBToDash(registration.data?.dob) || "",
       placeOfBirth: registration.data?.place_of_birth || "",
       countryOfBirth: registration.data?.country_of_birth,
       nationality: registration.data?.nationality,
@@ -108,12 +116,17 @@ const ProfileDetails: FC<IProfileDetails> = ({
       countryOfBirth,
       nationality,
     }) => {
+      const arrDOB: string[] | boolean = dob ? dob.split("/") : false;
+      const [month, day, year] = arrDOB ? arrDOB : [];
       dispatch(
         setRegistrationData({
           salutation,
           firstname: firstName,
           lastname: lastName,
-          dob,
+          dob:
+            month && day && year
+              ? `${year}-${month.length === 2 ? month : `0${month}`}-${day}`
+              : "",
           place_of_birth: placeOfBirth,
           gender: GENDER[salutation],
           country_of_birth: countryOfBirth,

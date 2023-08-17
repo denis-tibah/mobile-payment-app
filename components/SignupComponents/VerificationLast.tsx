@@ -35,6 +35,10 @@ const VerificationLast: FC<IVerificationLast> = ({
   const dispatch = useDispatch<AppDispatch>();
   const fromtEndURL = process.env.APIURL;
   const registration = useSelector((state: any) => state.registration);
+  console.log(
+    "🚀 ~ file: VerificationLast.tsx:38 ~ registration:",
+    registration
+  );
   const handleSendToMobile = () => {
     const messages: MessageProps = [
       {

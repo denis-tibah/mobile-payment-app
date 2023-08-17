@@ -209,7 +209,6 @@ export function LoginScreen({ navigation }: any) {
                     setApiErrorMessage({ message: result.payload });
                   else setApiErrorMessage({});
                 } catch (error: any) {
-                  console.log("errorrrrrrrr", error);
                   console.log({ error });
                   if ( error?.message === SIGNIN_SUCCESS_MESSAGES.EXPIRED) {
                     Alert.alert(SIGNIN_SUCCESS_MESSAGES.EXPIRED);

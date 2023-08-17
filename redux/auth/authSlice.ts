@@ -75,7 +75,7 @@ export const signin = createAsyncThunk(
       const ipResponse = await getIpAddress().catch((error) => {
         console.log("error getting ip", error);
       });
-      console.log("🚀 ~ file: authSlice.ts:68 ~ ipResponse:", ipResponse);
+      // console.log("🚀 ~ file: authSlice.ts:68 ~ ipResponse:", ipResponse);
       if (ipResponse && Object.keys(ipResponse).length > 0) {
         const { data } = await api.post("/loginfinxpmobile", {
           ...values,
@@ -84,9 +84,18 @@ export const signin = createAsyncThunk(
         });
 
         const { message } = data;
-
-        if (data.code === 401 || !data)
+        console.log("data", data);
+        if (data.code === 401 || !data) {
           return rejectWithValue("Invalid email or password");
+        }
+
+        if (data.code === "400" && message === SIGNIN_SUCCESS_MESSAGES.EXPIRED) {
+          console.log("🚀 ~ file: authSlice.ts:68 ~ message", message);
+          return rejectWithValue({
+            message,
+            resetToken: data.access_token,
+          });
+        }
 
         if (data.code !== "200" && data.code !== "201")
           return rejectWithValue(message);

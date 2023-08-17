@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Alert, Pressable, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as LocalAuthentication from "expo-local-authentication";
 import * as SecureStore from "expo-secure-store";
 import { Formik } from "formik";
@@ -28,7 +28,6 @@ export function LoginScreen({ navigation }: any) {
   const [ip, setIp] = useState<any>(null);
   const { navigate }: any = useNavigation();
   const dispatch = useDispatch();
-
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
   };
@@ -209,12 +208,18 @@ export function LoginScreen({ navigation }: any) {
                   if (result.error)
                     setApiErrorMessage({ message: result.payload });
                   else setApiErrorMessage({});
-                } catch (error) {
+                } catch (error: any) {
+                  console.log("errorrrrrrrr", error);
                   console.log({ error });
-                  error === SIGNIN_SUCCESS_MESSAGES.EXPIRED ? navigate(screenNames.resetPassword, {
-                    email: values.email
-                  }) : 
-                  setApiErrorMessage({ message: error });
+                  if ( error?.message === SIGNIN_SUCCESS_MESSAGES.EXPIRED) {
+                    Alert.alert(SIGNIN_SUCCESS_MESSAGES.EXPIRED);
+                    navigate(screenNames.resetPassword, {
+                      email: values.email,
+                      resetToken: error.resetToken,
+                    });
+                  } else {
+                    setApiErrorMessage({ message: error });
+                  }
                 } finally {
                   setIsLoading(false);
                 }

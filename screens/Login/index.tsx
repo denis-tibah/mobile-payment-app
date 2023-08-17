@@ -15,10 +15,11 @@ import Typography from "../../components/Typography";
 import ProfileIcon from "../../assets/icons/Profile";
 import EmailIcon from "../../assets/icons/Email";
 import LockIcon from "../../assets/icons/Lock";
-import { refreshUserData, signin } from "../../redux/auth/authSlice";
+import { SIGNIN_SUCCESS_MESSAGES, refreshUserData, signin } from "../../redux/auth/authSlice";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
 import { getIpAddress } from "../../utils/getIpAddress";
+import { screenNames } from "../../utils/helpers";
 
 export function LoginScreen({ navigation }: any) {
   const [apiErrorMessage, setApiErrorMessage] = useState<any>({});
@@ -208,9 +209,13 @@ export function LoginScreen({ navigation }: any) {
                   if (result.error)
                     setApiErrorMessage({ message: result.payload });
                   else setApiErrorMessage({});
-                  setIsLoading(false);
                 } catch (error) {
-                  setApiErrorMessage({ message: "Something went wrong" });
+                  console.log({ error });
+                  error === SIGNIN_SUCCESS_MESSAGES.EXPIRED ? navigate(screenNames.resetPassword, {
+                    email: values.email
+                  }) : 
+                  setApiErrorMessage({ message: error });
+                } finally {
                   setIsLoading(false);
                 }
 

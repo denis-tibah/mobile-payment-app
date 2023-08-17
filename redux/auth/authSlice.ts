@@ -4,6 +4,10 @@ import { api } from "../../api";
 import { UserData } from "../../models/UserData";
 import { getIpAddress } from "../../utils/getIpAddress";
 
+export const SIGNIN_SUCCESS_MESSAGES = {
+  EXPIRED: 'Your password is Expired. Please update.',
+  SUCCESS: 'Logged in successfully',
+}
 export interface AuthState {
   data?: any;
   isAuthenticated: boolean;
@@ -51,12 +55,18 @@ export const signin = createAsyncThunk(
 
         const { message } = data;
 
+        if (data.code === 400 && data.message === SIGNIN_SUCCESS_MESSAGES.EXPIRED) {
+          return rejectWithValue(SIGNIN_SUCCESS_MESSAGES.EXPIRED);
+        }
+
         if (data.code === 401 || !data)
           return rejectWithValue("Invalid email or password");
 
         if (data.code !== "200" && data.code !== "201")
           return rejectWithValue(message);
-
+        if (data.code === "200" || data.code === "201" && data.message === SIGNIN_SUCCESS_MESSAGES.EXPIRED) {
+          return rejectWithValue(message);
+        }
         if (data.code === "200" || data.code === "201")
           return fulfillWithValue(data);
       } else {
@@ -100,10 +110,23 @@ export const changePassword = createAsyncThunk(
   }
 );
 
+export interface ResetPasswordPayloadRequest {
+  email: string;
+  password: string;
+  password_confirmation: string;
+  token: string;
+}
 export const resetPassword = createAsyncThunk(
   "resetPassword",
-  async (params) => {
-    const { data } = await api.post("/resetPasswordfinxp", params);
+  async (params: ResetPasswordPayloadRequest) => {
+    const { email, password, password_confirmation, token } = params;
+    const payloadRequest: ResetPasswordPayloadRequest = {
+      email,
+      password,
+      password_confirmation,
+      token,
+    } 
+    const { data } = await api.post("/resetPasswordfinxp", payloadRequest);
     return data;
   }
 );

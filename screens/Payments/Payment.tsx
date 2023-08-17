@@ -36,7 +36,7 @@ import vars from "../../styles/vars";
 import { RootState } from "../../store";
 import { getTransactions } from "../../redux/transaction/transactionSlice";
 import Spinner from "react-native-loading-spinner-overlay/lib";
-import { SearchFilter, UserData } from "../../models/UserData";
+import { UserData } from "../../models/UserData";
 import { Text } from "react-native-paper";
 import { validationPaymentSchema } from "../../utils/validation";
 import { formatCurrencyToLocalEn } from "../../utils/helpers";

@@ -84,7 +84,6 @@ export const signin = createAsyncThunk(
         });
 
         const { message } = data;
-        console.log("data", data);
         if (data.code === 401 || !data) {
           return rejectWithValue("Invalid email or password");
         }

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { View, ScrollView, RefreshControl } from "react-native";
+import { View, ScrollView, RefreshControl, TouchableOpacity } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import Heading from "../../components/Heading";
@@ -39,6 +39,8 @@ export function MyAccount({ navigation }: any) {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
+  const [sortByDate, setSortByDate] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [paginateRefresh, setPaginateRefresh] = useState<boolean>(false);
   const [transactionsData, setTransactionsData] = useState<ITransactions>({
     data: [],
@@ -222,12 +224,10 @@ export function MyAccount({ navigation }: any) {
         <Typography color={"medium-grey2"} fontWeight={400} fontSize={17}>
               {getCurrency(totalBalance?.currency)}{" "}
               {totalBalance?.curbal || "0.0"}
-              
             </Typography>
             <Typography color="#E53CA9"  fontWeight={400} fontSize={17}>
               {getCurrency(totalBalance?.currency)}{" "}
               {getPendingAmount(totalBalance?.avlbal ||"0.00",totalBalance?.curbal ||"0.00")}
-         
             </Typography>
             <Typography color={"medium-grey2"} fontWeight={400} fontSize={17}>
               {getCurrency(totalBalance?.currency)}{" "}
@@ -243,7 +243,7 @@ export function MyAccount({ navigation }: any) {
             />
           </View>
           <View>
-            <Spinner visible={loading || paginateRefresh} />
+            <Spinner visible={loading || paginateRefresh || isLoading} />
 
             {transactionsData?.data?.length > 0 ? (
               <>
@@ -252,13 +252,20 @@ export function MyAccount({ navigation }: any) {
                     Name
                   </Typography>
                   <View style={styles.dateLabel}>
-                    <Typography
-                      fontFamily="Nunito-SemiBold"
-                      color="accent-blue"
-                      fontSize={16}
-                    >
-                      Date{" "}
-                    </Typography>
+                    <TouchableOpacity onPress={() => {
+                      setIsLoading(true);
+                      setSortByDate(!sortByDate);
+                      console.log(sortByDate);
+                      setIsLoading(false);
+                    }}>
+                      <Typography
+                        fontFamily="Nunito-SemiBold"
+                        color="accent-blue"
+                        fontSize={16}
+                      >
+                        Date{" "}
+                      </Typography>
+                    </TouchableOpacity>
                   </View>
                   <View style={styles.amountLabel}>
                     <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
@@ -273,7 +280,12 @@ export function MyAccount({ navigation }: any) {
                   <Typography></Typography>
                 </View>
                 <View>
-                  {transactionsData?.data.map((transaction: any) => (
+                  {[...transactionsData?.data]
+                  .sort((a, b) => {
+                    return sortByDate ? new Date(a.transaction_datetime).getTime() - new Date(b.transaction_datetime).getTime() :
+                    new Date(b.transaction_datetime).getTime() - new Date(a.transaction_datetime).getTime();
+                  })
+                  .map((transaction: any) => (
                     <TransactionItem data={transaction} key={transaction.id} />
                   ))}
                 </View>

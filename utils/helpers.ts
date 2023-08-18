@@ -92,6 +92,7 @@ export const screenNames: any = {
   emailVerified: "emailVerified",
   profileDetails: " profileDetails",
   forgottenPassword: "forgottenPassword",
+  resetPassword: "Reset Password",
 };
 
 // export function getPendingAmount(opnbal:any,currentBalance: any) {

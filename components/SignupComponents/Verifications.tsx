@@ -20,6 +20,7 @@ import {
   sendSMSVerification,
   getSumsubVerificationCode,
 } from "../../redux/registration/registrationSlice";
+import { SuccessModal } from "../SuccessModal/SuccessModal";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
 
@@ -39,8 +40,13 @@ const Verifications: FC<IVerifications> = ({
   const [isLoading, setIsLoading] = useState<Boolean>(false);
   const [isDisabledOtp, setIsDisabledOtp] = useState<Boolean>(true);
   const [SMSResent, setSMSResent] = useState<Boolean>(false);
-  const [errorsOtp, setErrorsOtp] = useState({});
   const [otp, setOtp] = useState<Number>();
+  const [statusMessage, setStatusMessage] = useState<{
+    header: string;
+    body: string;
+    isOpen: boolean;
+    isError: boolean;
+  }>({ header: "", body: "", isOpen: false, isError: false });
 
   useEffect(() => {
     if (otp && otp.toString().length && otp.toString().length === 6) {
@@ -78,10 +84,6 @@ const Verifications: FC<IVerifications> = ({
           })
         )
           .then((payload: any) => {
-            console.log(
-              "🚀 ~ file: Verifications.tsx:81 ~ .then ~ payload:",
-              payload
-            );
             if (payload) {
               setIsLoading(false);
               setSMSResent(true);
@@ -89,7 +91,13 @@ const Verifications: FC<IVerifications> = ({
           })
           .catch((error: any) => {
             setIsLoading(false);
-            console.error(
+            setStatusMessage({
+              header: "Error",
+              body: "Something went wrong",
+              isOpen: true,
+              isError: true,
+            });
+            console.log(
               `*** resent sms verification to ${countryCode}${phoneNumber} failed: ${error} ***`
             );
           });
@@ -99,44 +107,17 @@ const Verifications: FC<IVerifications> = ({
     });
 
   const handleVerifyPhoneNumber = () => {
-    /*  {
-      ...registration.data,
-      code: otp ? otp.toString() : null,
-      provider: "ziyl",
-      country: registration.data.country_of_birth,
-    } */
-    // dispatch action to send all the registration data
     setIsLoading(true);
-    /* console.log(
-      "🚀 ~ file: Verifications.tsx:107 ~ handleVerifyPhoneNumber ~ registration.data:",
-      registration.data
-    );
-    console.log(
-      "🚀 ~ file: Verifications.tsx:112 ~ handleVerifyPhoneNumber ~ otp:",
-      typeof otp
-    );
-    console.log(
-      "🚀 ~ file: Verifications.tsx:118 ~ handleVerifyPhoneNumber ~ registration.data.country_of_birth:",
-      registration.data.country_of_birth
-    ); */
     const regData = {
       ...registration.data,
       code: otp ? otp.toString() : null,
       provider: "ziyl",
       country: registration.data.country_of_birth,
     };
-    console.log(
-      "🚀 ~ file: Verifications.tsx:123 ~ handleVerifyPhoneNumber ~ regData:",
-      regData
-    );
     dispatch(getSumsubVerificationCode(regData))
       .unwrap()
       .then((payload: any) => {
         if (payload) {
-          console.log(
-            "🚀 ~ file: Verifications.tsx:136 ~ .then ~ payload:",
-            payload
-          );
           if (
             (payload?.code === 201 || payload?.code === "201") &&
             payload?.status === "success"
@@ -153,17 +134,44 @@ const Verifications: FC<IVerifications> = ({
           }
           setIsLoading(false);
           // if the response code is not 201 will assume there was an error submitting the application
-          setErrorsOtp((prev) => ({ ...prev, message: payload?.message }));
+          setStatusMessage({
+            header: "Error",
+            body: "Application submission failed",
+            isOpen: true,
+            isError: true,
+          });
         }
       })
       .catch((error: any) => {
+        setStatusMessage({
+          header: "Error",
+          body: "Something went wrong",
+          isOpen: true,
+          isError: true,
+        });
         setIsLoading(false);
-        console.error(`*** send data to backend error: ***`, error);
+        console.log(`*** send data to backend error: ***`, error);
       });
+  };
+
+  const onCloseModal = (): void => {
+    setStatusMessage({
+      header: "",
+      body: "",
+      isOpen: false,
+      isError: false,
+    });
   };
 
   return (
     <View style={styles.card}>
+      <SuccessModal
+        isOpen={statusMessage?.isOpen}
+        title={statusMessage.header}
+        text={statusMessage.body}
+        isError={statusMessage.isError}
+        onClose={onCloseModal}
+      />
       <View style={styles.cardTitle}>
         <Typography fontSize={18} fontFamily="Nunito-SemiBold" fontWeight="600">
           Verify your phone number

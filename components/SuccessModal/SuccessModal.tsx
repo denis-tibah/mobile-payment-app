@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import ChangeIcon from "../../assets/icons/Change";
+import CloseIcon from "../../assets/icons/Close";
 import { Modal } from "../Modal/Modal";
 import Button from "../Button";
 
@@ -10,11 +11,13 @@ export const SuccessModal = ({
   title,
   onClose,
   text,
+  isError,
 }: {
   isOpen: boolean;
   title: string;
   onClose: () => void;
   text: string;
+  isError: boolean;
 }) => {
   return (
     <Modal
@@ -33,7 +36,11 @@ export const SuccessModal = ({
       )}
     >
       <View style={styles.container}>
-        <ChangeIcon style={styles.icon} color="pink" size={48} />
+        {isError ? (
+          <CloseIcon style={styles.icon} color="pink" size={48} />
+        ) : (
+          <ChangeIcon style={styles.icon} color="pink" size={48} />
+        )}
         <Text style={styles.text}>{text}</Text>
       </View>
     </Modal>

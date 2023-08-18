@@ -396,6 +396,7 @@ export function Payment({ navigation }: any) {
               )}
               {paymentSuccessful && !displayModal && (
                 <SuccessModal
+                  isError={false}
                   title={"Payment Successful"}
                   text={"Your payment was successful"}
                   isOpen

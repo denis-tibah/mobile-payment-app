@@ -431,15 +431,12 @@ export function Card({ navigation }: any) {
           onCancel={() => setShowCardOtpModal(false)}
         />
       )}
-      <View style={{flex:1}}>
+      <View style={{ flex: 1 }}>
         <ScrollView
           bounces={true}
-          style={{flex: 1}}
+          style={{ flex: 1 }}
           refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={fetchCardData}
-            />
+            <RefreshControl refreshing={refreshing} onRefresh={fetchCardData} />
           }
         >
           <Pressable>
@@ -519,19 +516,19 @@ export function Card({ navigation }: any) {
               <ScrollView horizontal>
                 <View style={styles.cardActionsButtonMargin}>
                   <Pressable>
-                  <Button
-                    color={frozen === "Y" ? "blue" : "light-blue"}
-                    leftIcon={
-                      <FreezeIcon
-                        color={frozen === "Y" ? "white" : "blue"}
-                        size={14}
-                      />
-                    }
-                    onPress={freezeCard}
-                    disabled={freezeLoading}
-                  >
-                    Freeze card
-                  </Button>
+                    <Button
+                      color={frozen === "Y" ? "blue" : "light-blue"}
+                      leftIcon={
+                        <FreezeIcon
+                          color={frozen === "Y" ? "white" : "blue"}
+                          size={14}
+                        />
+                      }
+                      onPress={freezeCard}
+                      disabled={freezeLoading}
+                    >
+                      Freeze card
+                    </Button>
                   </Pressable>
                 </View>
                 <View style={styles.cardActionsButtonMargin}>
@@ -663,8 +660,8 @@ export function Card({ navigation }: any) {
                         backgroundColor: "#fff",
                       }}
                     >
-                      You don't have any transactions yet, why not add some money
-                      to your account to get started!
+                      You don't have any transactions yet, why not add some
+                      money to your account to get started!
                     </Typography>
                   </View>
                 )}

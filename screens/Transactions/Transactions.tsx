@@ -236,7 +236,10 @@ export function Transactions({ navigation }: any) {
   const handleExportData = async () => {
     // const pdfUri = await generatePDF(transactions);
     // const { data: transactionsData } = transactions; - Arjay: disabled temporarily since finxp change the format of response
-    const pdfUri = await generatePDF(transactions);
+  
+    // const pdfUri = await generatePDF(transactions);
+    //modified by Aristos: 18-4-2023 due to finXP response changing
+    const pdfUri = await generatePDF(transactions?.transactions);
     await printAsync({ uri: pdfUri });
   };
 

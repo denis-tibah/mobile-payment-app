@@ -85,17 +85,19 @@ export function Payment({ navigation }: any) {
   const { navigate }: any = useNavigation();
 
   useEffect(() => {
+
     if (!beneficiaryList.length) {
       fetchAllPayees();
     }
-    setBeneficiaryOptions([
-      ...beneficiaryList.map((beneficiary: any) => ({
-        label: beneficiary.name,
-        value: beneficiary.uuid,
-      })),
-      { label: "Add New", value: "none" },
-    ]);
-  }, [beneficiaryList]);
+        setBeneficiaryOptions([
+          ...beneficiaryList.map((beneficiary: any) => ({
+            label: beneficiary.name,
+            value: beneficiary.uuid,
+          })),
+          { label: "Add New", value: "none" },
+        ]);
+  // }, [beneficiaryList]);
+}, [beneficiaryList?.length]);
 
   function handleDisplayModal() {
     setDisplayModal(!displayModal);

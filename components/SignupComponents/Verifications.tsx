@@ -49,6 +49,22 @@ const Verifications: FC<IVerifications> = ({
   }>({ header: "", body: "", isOpen: false, isError: false });
 
   useEffect(() => {
+    dispatch(
+      sendSMSVerification({
+        identifier: registration.data.phone_number,
+      })
+    ).catch((error) => {
+      setStatusMessage({
+        header: "Error",
+        body: "Something went wrong",
+        isOpen: true,
+        isError: true,
+      });
+      console.log(`*** sending SMS verification error: ${error} ***`);
+    });
+  }, []);
+
+  useEffect(() => {
     if (otp && otp.toString().length && otp.toString().length === 6) {
       setIsDisabledOtp(false);
     } else {

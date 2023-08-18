@@ -100,10 +100,6 @@ const Verifications: FC<IVerifications> = ({
           })
         )
           .then((payload: any) => {
-            console.log(
-              "🚀 ~ file: Verifications.tsx:81 ~ .then ~ payload:",
-              payload
-            );
             if (payload) {
               setIsLoading(false);
               setSMSResent(true);
@@ -127,44 +123,17 @@ const Verifications: FC<IVerifications> = ({
     });
 
   const handleVerifyPhoneNumber = () => {
-    /*  {
-      ...registration.data,
-      code: otp ? otp.toString() : null,
-      provider: "ziyl",
-      country: registration.data.country_of_birth,
-    } */
-    // dispatch action to send all the registration data
     setIsLoading(true);
-    /* console.log(
-      "🚀 ~ file: Verifications.tsx:107 ~ handleVerifyPhoneNumber ~ registration.data:",
-      registration.data
-    );
-    console.log(
-      "🚀 ~ file: Verifications.tsx:112 ~ handleVerifyPhoneNumber ~ otp:",
-      typeof otp
-    );
-    console.log(
-      "🚀 ~ file: Verifications.tsx:118 ~ handleVerifyPhoneNumber ~ registration.data.country_of_birth:",
-      registration.data.country_of_birth
-    ); */
     const regData = {
       ...registration.data,
       code: otp ? otp.toString() : null,
       provider: "ziyl",
       country: registration.data.country_of_birth,
     };
-    console.log(
-      "🚀 ~ file: Verifications.tsx:123 ~ handleVerifyPhoneNumber ~ regData:",
-      regData
-    );
     dispatch(getSumsubVerificationCode(regData))
       .unwrap()
       .then((payload: any) => {
         if (payload) {
-          console.log(
-            "🚀 ~ file: Verifications.tsx:136 ~ .then ~ payload:",
-            payload
-          );
           if (
             (payload?.code === 201 || payload?.code === "201") &&
             payload?.status === "success"

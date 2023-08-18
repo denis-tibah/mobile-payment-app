@@ -88,6 +88,12 @@ export const styles: any = StyleSheet.create<any>({
   },
   dateLabel: {
     paddingLeft: 30,
+    display: "flex",
+    flexDirection: "row",
+  },
+  arrow: {
+    paddingTop: 5,
+    marginLeft: 7
   },
   amountLabel: {
     paddingLeft: 10,

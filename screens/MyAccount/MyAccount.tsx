@@ -17,6 +17,7 @@ import { getCurrency } from "../../utils/helpers";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { getPendingAmount, arrayChecker } from "../../utils/helpers";
 import { TTransaction } from "../../utils/types";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 interface ITransactions {
   data: TTransaction[];
@@ -252,19 +253,24 @@ export function MyAccount({ navigation }: any) {
                     Name
                   </Typography>
                   <View style={styles.dateLabel}>
-                    <TouchableOpacity onPress={() => {
-                      setIsLoading(true);
-                      setSortByDate(!sortByDate);
-                      console.log(sortByDate);
-                      setIsLoading(false);
-                    }}>
-                      <Typography
+                    <Typography
                         fontFamily="Nunito-SemiBold"
                         color="accent-blue"
                         fontSize={16}
                       >
-                        Date{" "}
-                      </Typography>
+                      Date{" "}
+                    </Typography>
+                    <TouchableOpacity onPress={() => {
+                      setIsLoading(true);
+                      setSortByDate(!sortByDate);
+                      setTimeout(() => {
+                        setIsLoading(false);
+                      }, 400);
+                    }}>
+                      { sortByDate ? 
+                        <Ionicons name="arrow-up" style={styles.arrow} size={16} color="#4472C4" /> :
+                        <Ionicons name="arrow-down" style={styles.arrow}  size={16} color="#4472C4" />
+                        }
                     </TouchableOpacity>
                   </View>
                   <View style={styles.amountLabel}>

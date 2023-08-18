@@ -7,6 +7,7 @@ import { getIpAddress } from "../../utils/getIpAddress";
 export const SIGNIN_SUCCESS_MESSAGES = {
   EXPIRED: 'Your password is Expired. Please update.',
   SUCCESS: 'Logged in successfully',
+  CHANGE_PASSWORD: 'Change Password',
 }
 export interface AuthState {
   data?: any;
@@ -84,16 +85,17 @@ export const signin = createAsyncThunk(
         });
 
         const { message } = data;
-        if (data.code === 401 || !data) {
-          return rejectWithValue("Invalid email or password");
-        }
 
-        if (data.code === "400" && message === SIGNIN_SUCCESS_MESSAGES.EXPIRED) {
+        if (data.code === "400" && (message === SIGNIN_SUCCESS_MESSAGES.EXPIRED || message === SIGNIN_SUCCESS_MESSAGES.CHANGE_PASSWORD)) {
           console.log("🚀 ~ file: authSlice.ts:68 ~ message", message);
           return rejectWithValue({
             message,
             resetToken: data.access_token,
           });
+        }
+
+        if (data.code === 401 || !data) {
+          return rejectWithValue("Invalid email or password");
         }
 
         if (data.code !== "200" && data.code !== "201")

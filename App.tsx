@@ -16,11 +16,10 @@ import * as Linking from 'expo-linking';
 export default function App() {
   // added by Aristos for deep linking
 
- const prefix = Linking.createURL('/');
- const appScheme = prefix;
- const urlScheme =  "https://www.gozazoo.com/zazoomobilestg";
-
-const prefixes = [appScheme,urlScheme]
+  const prefix = Linking.createURL('/');
+  const appScheme = prefix;
+  const urlScheme =  "https://www.gozazoo.com/zazoomobilestg";
+  const prefixes = [appScheme,urlScheme]
 
   const linking = {
     prefixes, 
@@ -29,6 +28,8 @@ const prefixes = [appScheme,urlScheme]
           screens: {
             login: "login",
             signup: "signup",
+            ResetPassword: "ResetPassword",
+            NotFound: "*",
           },
         },
   };
@@ -63,7 +64,6 @@ const prefixes = [appScheme,urlScheme]
   if (!fontsLoaded) {
     return null;
   }
-
 
   return (
     <Provider store={store}>

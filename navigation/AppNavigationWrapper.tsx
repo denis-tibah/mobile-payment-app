@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import LoginScreen from "../screens/Login";
 import SignupScreen from "../screens/Signup";
+import ResetPassword from "../screens/ResetPassword";
 import ProfileDetails from "../components/SignupComponents/ProfileDetails";
 import MyAccountScreen from "../screens/MyAccount";
 import TransactionApprovalScreen from "../screens/TransactionApproval/index";
@@ -30,6 +31,7 @@ import { RootState } from "../store";
 import { AppState } from "react-native";
 import { signout } from "../redux/auth/authSlice";
 import * as SecureStore from "expo-secure-store";
+
 
 // import * as TaskManager from 'expo-task-manager';
 
@@ -392,6 +394,13 @@ export default function AppNavigationWrapper() {
             <Root.Screen
               name={"forgottenPassword"}
               component={ForgottenPassword}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Root.Screen
+              name={screenNames.resetPassword}
+              component={ResetPassword}
               options={{
                 headerShown: false,
               }}

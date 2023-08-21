@@ -58,7 +58,24 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({transactionsByDate,
                 <View style={{ alignSelf: 'flex-end', flex: 1}}>
                   <Text style={[styles.amountDetailMobile, Number(transaction.amount) > 0 ? styles.amountAddedDetail : styles.amountDeductedDetail]}>
                     {/* {`${isBalanceAdded ? `+ ` : `- `} ${transaction.amount}`} */}
-                    {transaction.amount}
+                    <Box
+                        width="45%"
+                        marginTop={5}
+                        display="flex"
+                        flexDirection="row"
+                        alignItems="center"
+                      >
+                        {shownData.currency === "EUR" ? (
+                            <EuroIcon  size={18} color={+transaction.amount > 0 ? "green" : "red"} />
+                        ) : (
+                            <DollarIcon size={18} color="#278664" />
+                        
+                        )}
+                    </Box> 
+                    {/* {transaction.amount} */}
+             
+                        {formatAmountTableValue(transaction.amount,shownData.currency)}
+                  
                     <TouchableOpacity onPress={() => handleToggleDetails(index)} style={{paddingTop: 10, paddingLeft: 10}}>
                       { openTransactionIndex === index ? <ArrowDown color="pink" size={10} style={{ paddingRight:15 }}/> : <ArrowRight color="pink" size={10}/>}
                     </TouchableOpacity>

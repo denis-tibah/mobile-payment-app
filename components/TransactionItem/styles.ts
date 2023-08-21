@@ -91,7 +91,8 @@ export const styles:any = StyleSheet.create<any>({
     fontSize: 14,
     fontWeight: 'bold',
     flex: 1,
-    alignSelf: 'flex-end'
+    alignSelf: 'flex-end',
+    marginTop: -5
   },
   amountAddedDetail: {
     color: 'green'
@@ -135,5 +136,13 @@ export const styles:any = StyleSheet.create<any>({
     paddingLeft: 10,
     // marginLeft: 30,
     // paddingRight: -30,
+  },
+  currencyIcon: {
+    // display: "flex",
+    // flexDirection: "row",
+    // alignItems: "center",
+    marginTop: 20
+    // paddingTop: 30
+
   }
 });

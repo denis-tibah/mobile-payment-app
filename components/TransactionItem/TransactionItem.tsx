@@ -329,6 +329,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
                   </Button>
                 </Box>
               </Box>
+              {!data.isCardTx ? (
               <Box style={styles.statusItem}>
                 {data?.status === "SUCCESS" && (
                   <Chip label="Completed" color="green" />
@@ -343,6 +344,16 @@ export function TransactionItem({ data }: TransactionItemProps) {
                   <Chip label="Processing" color="red" />
                 )}
               </Box>
+                  ) : <Box style={styles.statusItem}>
+                  {data?.revenueType === "CLEARING" && (
+                    <Chip label="Clearing" color="green" />
+                  )}
+                  {data?.revenueType === "PREAUTH" && (
+                    <Chip label="Preauth" color="orange" />
+                  )}
+                 
+                </Box>
+                  }
             </Box>
           </Box>
         </Box>

@@ -22,6 +22,7 @@ export interface Transaction {
   dr_iban: string;
   cr_iban: string;
   transfer_currency: string;
+  revenueType:string;
 }
 
 export interface transactions {

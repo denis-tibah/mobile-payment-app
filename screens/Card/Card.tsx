@@ -117,7 +117,8 @@ export function Card({ navigation }: any) {
             account_id: userData?.id,
             from_date: "2022-06-02",
             to_date: getTodaysDate(),
-            type: "PREAUTH",
+            // type: "PREAUTH",
+            type: "ALL",
           })
         )
           .unwrap()

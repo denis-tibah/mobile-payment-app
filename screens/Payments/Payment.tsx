@@ -1,5 +1,9 @@
-import { View, ScrollView, Switch } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { View, ScrollView, Switch, PanResponder } from "react-native";
+import {
+  useNavigation,
+  useIsFocused,
+  useRoute,
+} from "@react-navigation/native";
 import DropDownPicker from "react-native-dropdown-picker";
 import CheckBox from "expo-checkbox";
 import Heading from "../../components/Heading";
@@ -16,7 +20,7 @@ import DocumentIcon from "../../assets/icons/Document";
 import ProfileIcon from "../../assets/icons/Profile";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrency } from "../../utils/helpers";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { CodeModal } from "../../components/CodeModal/CodeModal";
 import {
   initiatePayment,
@@ -60,6 +64,9 @@ export function Payment({ navigation }: any) {
   const [beneficiaryOptions, setBeneficiaryOptions] = useState<any>([]);
   const [toggledSavePayee, setToggledSavePayee] = useState<boolean>(false);
   const [isAddNewPayee, setIsAddNewPayee] = useState<boolean>(false);
+
+  const route = useRoute();
+  const screenName = route.name;
 
   const {
     transactionId,
@@ -113,14 +120,12 @@ export function Payment({ navigation }: any) {
 
   function getFirstAndLastName(str: string) {
     const firstSpace = str.indexOf(" ");
-    let data= str.slice(firstSpace + 1);
+    let data = str.slice(firstSpace + 1);
     data.slice(0, data?.indexOf(" "));
     return {
       firstname: str.slice(0, firstSpace),
       lastname: str.slice(firstSpace + 1),
       // lastname: data.slice(0, data?.indexOf(" ")),
-      
-      
     };
   }
 
@@ -230,7 +235,7 @@ export function Payment({ navigation }: any) {
           code: code,
           debtor_iban,
           creditor_iban,
-          creditor_name:recipientFirstname+" " +recipientLastname,
+          creditor_name: recipientFirstname + " " + recipientLastname,
           amount: amount.toString(),
           currency,
           // remarks: `${reason}, ${remarks}`,
@@ -312,7 +317,7 @@ export function Payment({ navigation }: any) {
                   .lastname,
                 debtor_iban: accountData?.iban,
                 creditor_iban: values.creditor_iban,
-                creditor_name:recipientFirstname+" " +recipientLastname,
+                creditor_name: recipientFirstname + " " + recipientLastname,
                 bic: values.bic,
                 account: accountData?.account_number,
                 amount: values.amount,
@@ -335,7 +340,8 @@ export function Payment({ navigation }: any) {
                         ).lastname,
                         debtor_iban: accountData?.iban,
                         creditor_iban: values.creditor_iban,
-                        creditor_name:recipientFirstname+" " +recipientLastname,
+                        creditor_name:
+                          recipientFirstname + " " + recipientLastname,
                         bic: values.bic,
                         account: accountData?.account_number,
                         amount: values.amount,
@@ -522,7 +528,7 @@ export function Payment({ navigation }: any) {
                 </FormGroup>
               </View>
 
-          {/* start: date:03-08-23: temp disabled by Aristos */}
+              {/* start: date:03-08-23: temp disabled by Aristos */}
 
               {/* <View style={styles.externalPayment__switch}>
                 <View style={styles.externalPayment__switch__text}>
@@ -541,7 +547,7 @@ export function Payment({ navigation }: any) {
                   />
                 </View>
               </View> */}
-          {/* end: date:03-08-23: temp disabled by Aristos */}
+              {/* end: date:03-08-23: temp disabled by Aristos */}
 
               <View style={{ display: "flex", flexDirection: "row" }}>
                 <Button

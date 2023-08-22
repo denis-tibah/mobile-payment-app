@@ -1,6 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
-import { View, ScrollView, RefreshControl, TouchableOpacity } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
+import {
+  View,
+  ScrollView,
+  RefreshControl,
+  TouchableOpacity,
+} from "react-native";
+import { useFocusEffect, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
@@ -29,7 +34,6 @@ export function MyAccount({ navigation }: any) {
     (state: RootState) => state?.transaction?.data
   );
 
-
   const userData = useSelector((state: RootState) => state?.auth?.userData);
 
   const totalBalance = useSelector(
@@ -47,6 +51,9 @@ export function MyAccount({ navigation }: any) {
     data: [],
     totalPage: 0,
   });
+
+  const route = useRoute();
+  const screenName = route.name;
 
   const fetchTransactions = async () => {
     try {
@@ -106,27 +113,24 @@ export function MyAccount({ navigation }: any) {
   //   }
   // }, [transactions]);
 
- // :end:disabled by Aristos because json reponse has changed
-
+  // :end:disabled by Aristos because json reponse has changed
 
   //added by Aristos
   useEffect(() => {
-    if (arrayChecker(transactions?.transactions) && transactions?.transactions.length > 0) {
+    if (
+      arrayChecker(transactions?.transactions) &&
+      transactions?.transactions.length > 0
+    ) {
       // get only first value of array since it contains all data ex last_page, arr of transaction etc
       // const [transactionsObj] = transactions.transactions;
       // console.log("transactionsObj", transactions.transactions.length);
-  
+
       setTransactionsData({
         data: transactions.transactions || [],
         totalPage: parseInt(transactions.last_page, 10) || 0,
-      
       });
     }
   }, [transactions]);
-
-
-
-
 
   /* const refreshTransactions = async () => {
     try {
@@ -222,20 +226,22 @@ export function MyAccount({ navigation }: any) {
         </View>
 
         <View style={styles.balances}>
-        <Typography color={"medium-grey2"} fontWeight={400} fontSize={17}>
-              {getCurrency(totalBalance?.currency)}{" "}
-              {totalBalance?.curbal || "0.0"}
-            </Typography>
-            <Typography color="#E53CA9"  fontWeight={400} fontSize={17}>
-              {getCurrency(totalBalance?.currency)}{" "}
-              {getPendingAmount(totalBalance?.avlbal ||"0.00",totalBalance?.curbal ||"0.00")}
-            </Typography>
-            <Typography color={"medium-grey2"} fontWeight={400} fontSize={17}>
-              {getCurrency(totalBalance?.currency)}{" "}
-              {totalBalance?.avlbal || "0.00"}
-              
-            </Typography>
-          </View>
+          <Typography color={"medium-grey2"} fontWeight={400} fontSize={17}>
+            {getCurrency(totalBalance?.currency)}{" "}
+            {totalBalance?.curbal || "0.0"}
+          </Typography>
+          <Typography color="#E53CA9" fontWeight={400} fontSize={17}>
+            {getCurrency(totalBalance?.currency)}{" "}
+            {getPendingAmount(
+              totalBalance?.avlbal || "0.00",
+              totalBalance?.curbal || "0.00"
+            )}
+          </Typography>
+          <Typography color={"medium-grey2"} fontWeight={400} fontSize={17}>
+            {getCurrency(totalBalance?.currency)}{" "}
+            {totalBalance?.avlbal || "0.00"}
+          </Typography>
+        </View>
         <View>
           <View style={styles.base}>
             <Heading
@@ -254,23 +260,36 @@ export function MyAccount({ navigation }: any) {
                   </Typography>
                   <View style={styles.dateLabel}>
                     <Typography
-                        fontFamily="Nunito-SemiBold"
-                        color="accent-blue"
-                        fontSize={16}
-                      >
+                      fontFamily="Nunito-SemiBold"
+                      color="accent-blue"
+                      fontSize={16}
+                    >
                       Date{" "}
                     </Typography>
-                    <TouchableOpacity onPress={() => {
-                      setIsLoading(true);
-                      setSortByDate(!sortByDate);
-                      setTimeout(() => {
-                        setIsLoading(false);
-                      }, 400);
-                    }}>
-                      { sortByDate ? 
-                        <Ionicons name="arrow-up" style={styles.arrow} size={16} color="#4472C4" /> :
-                        <Ionicons name="arrow-down" style={styles.arrow}  size={16} color="#4472C4" />
-                        }
+                    <TouchableOpacity
+                      onPress={() => {
+                        setIsLoading(true);
+                        setSortByDate(!sortByDate);
+                        setTimeout(() => {
+                          setIsLoading(false);
+                        }, 400);
+                      }}
+                    >
+                      {sortByDate ? (
+                        <Ionicons
+                          name="arrow-up"
+                          style={styles.arrow}
+                          size={16}
+                          color="#4472C4"
+                        />
+                      ) : (
+                        <Ionicons
+                          name="arrow-down"
+                          style={styles.arrow}
+                          size={16}
+                          color="#4472C4"
+                        />
+                      )}
                     </TouchableOpacity>
                   </View>
                   <View style={styles.amountLabel}>
@@ -287,13 +306,19 @@ export function MyAccount({ navigation }: any) {
                 </View>
                 <View>
                   {[...transactionsData?.data]
-                  .sort((a, b) => {
-                    return sortByDate ? new Date(a.transaction_datetime).getTime() - new Date(b.transaction_datetime).getTime() :
-                    new Date(b.transaction_datetime).getTime() - new Date(a.transaction_datetime).getTime();
-                  })
-                  .map((transaction: any) => (
-                    <TransactionItem data={transaction} key={transaction.id} />
-                  ))}
+                    .sort((a, b) => {
+                      return sortByDate
+                        ? new Date(a.transaction_datetime).getTime() -
+                            new Date(b.transaction_datetime).getTime()
+                        : new Date(b.transaction_datetime).getTime() -
+                            new Date(a.transaction_datetime).getTime();
+                    })
+                    .map((transaction: any) => (
+                      <TransactionItem
+                        data={transaction}
+                        key={transaction.id}
+                      />
+                    ))}
                 </View>
               </>
             ) : (

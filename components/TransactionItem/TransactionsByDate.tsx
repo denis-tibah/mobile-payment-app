@@ -25,66 +25,97 @@ interface TransactionItemProps {
   shownData: any;
 }
 
-const TransactionsByDate: React.FC<TransactionItemProps> = ({transactionsByDate, totalAmount, shownData}) => {
+const TransactionsByDate: React.FC<TransactionItemProps> = ({
+  transactionsByDate,
+  totalAmount,
+  shownData,
+}) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const handleOnOpen = (): void => {
     setIsOpen(!isOpen);
   };
-
 
   const handleExportData = async (): Promise<void> => {
     const pdfUri = await generateTransactionPDF([transactionsByDate]);
     await printAsync({ uri: pdfUri });
   };
 
-
-
   // create a box from material ui showing the name and amount of each transactions
 
-  const TransactionByDate = ({transactions}: any) => {
-    const [openTransactionIndex, setOpenTransactionIndex] = useState<number | null>(null);
+  const TransactionByDate = ({ transactions }: any) => {
+    const [openTransactionIndex, setOpenTransactionIndex] = useState<
+      number | null
+    >(null);
 
     const handleToggleDetails = (index: number) => {
-      setOpenTransactionIndex(prevIndex => (prevIndex === index ? null : index));
+      setOpenTransactionIndex((prevIndex) =>
+        prevIndex === index ? null : index
+      );
     };
 
     return (
       <>
         {transactions.map((transaction: Transaction, index: number) => (
-            <Box style={styles.detailMobileForEachTransactionContainer} key={index}>
-              <Box style={styles.detailMobileForEachTransactionWrapper}>
-                <Text style={styles.nameDetailMobile}>Name:</Text>
-                <Text style={styles.valueDetailMobile}>{transaction.name}</Text>
-                <View style={{ alignSelf: 'flex-end', flex: 1}}>
-                  <Text style={[styles.amountDetailMobile, Number(transaction.amount) > 0 ? styles.amountAddedDetail : styles.amountDeductedDetail]}>
-                    {/* {`${isBalanceAdded ? `+ ` : `- `} ${transaction.amount}`} */}
-                    <Box
-                        width="45%"
-                        marginTop={5}
-                        display="flex"
-                        flexDirection="row"
-                        alignItems="center"
-                      >
-                        {shownData.currency === "EUR" ? (
-                            <EuroIcon  size={18} color={+transaction.amount > 0 ? "green" : "red"} />
-                        ) : (
-                            <DollarIcon size={18} color="#278664" />
-                        
-                        )}
-                    </Box> 
-                    {/* {transaction.amount} */}
-             
-                        {formatAmountTableValue(transaction.amount,shownData.currency)}
-                  
-                    <TouchableOpacity onPress={() => handleToggleDetails(index)} style={{paddingTop: 10, paddingLeft: 10}}>
-                      { openTransactionIndex === index ? <ArrowDown color="pink" size={10} style={{ paddingRight:15 }}/> : <ArrowRight color="pink" size={10}/>}
-                    </TouchableOpacity>
-                  </Text>
-                </View>
-              </Box>
-              <View>
-                { openTransactionIndex === index ? (
-                  <>
+          <Box
+            style={styles.detailMobileForEachTransactionContainer}
+            key={index}
+          >
+            <Box style={styles.detailMobileForEachTransactionWrapper}>
+              <Text style={styles.nameDetailMobile}>Name:</Text>
+              <Text style={styles.valueDetailMobile}>{transaction.name}</Text>
+              <View style={{ alignSelf: "flex-end", flex: 1 }}>
+                <Text
+                  style={[
+                    styles.amountDetailMobile,
+                    Number(transaction.amount) > 0
+                      ? styles.amountAddedDetail
+                      : styles.amountDeductedDetail,
+                  ]}
+                >
+                  {/* {`${isBalanceAdded ? `+ ` : `- `} ${transaction.amount}`} */}
+                  <Box
+                    width="45%"
+                    marginTop={5}
+                    display="flex"
+                    flexDirection="row"
+                    alignItems="center"
+                  >
+                    {shownData.currency === "EUR" ? (
+                      <EuroIcon
+                        size={18}
+                        color={+transaction.amount > 0 ? "green" : "red"}
+                      />
+                    ) : (
+                      <DollarIcon size={18} color="#278664" />
+                    )}
+                  </Box>
+                  {/* {transaction.amount} */}
+
+                  {formatAmountTableValue(
+                    transaction.amount,
+                    shownData.currency
+                  )}
+
+                  <TouchableOpacity
+                    onPress={() => handleToggleDetails(index)}
+                    style={{ paddingTop: 10, paddingLeft: 10 }}
+                  >
+                    {openTransactionIndex === index ? (
+                      <ArrowDown
+                        color="pink"
+                        size={10}
+                        style={{ paddingRight: 15 }}
+                      />
+                    ) : (
+                      <ArrowRight color="pink" size={10} />
+                    )}
+                  </TouchableOpacity>
+                </Text>
+              </View>
+            </Box>
+            <View>
+              {openTransactionIndex === index ? (
+                <>
                   <Box style={styles.detailMobile}>
                     <Text style={styles.nameDetailMobile}>Reference:</Text>
                     <Text style={styles.valueDetailMobile}>
@@ -97,19 +128,21 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({transactionsByDate,
                       {transaction?.description}
                     </Text>
                   </Box>
-                    <Box style={styles.detailMobile}>
-                      <Text style={styles.nameDetailMobile}>Type:</Text>
-                      <Text style={styles.valueDetailMobile}>
-                        {/* Invoice_{data?.reference_no} */}
-                        {/* {transaction?.trn_type} */}
-                        {transaction?.service}
-                      </Text>
-                    </Box>
+                  <Box style={styles.detailMobile}>
+                    <Text style={styles.nameDetailMobile}>Type:</Text>
+                    <Text style={styles.valueDetailMobile}>
+                      {/* Invoice_{data?.reference_no} */}
+                      {/* {transaction?.trn_type} */}
+                      {transaction?.service}
+                    </Text>
+                  </Box>
                   {/* <Box style={styles.cardDetails}> */}
                   <Box>
                     <Box style={styles.detailMobile}>
                       <Text style={styles.nameDetailMobile}>IBAN:</Text>
-                      <Text style={styles.valueDetailMobile}>{transaction?.iban}</Text>
+                      <Text style={styles.valueDetailMobile}>
+                        {transaction?.iban}
+                      </Text>
                       {/* <Text style={styles.valueDetailMobile}>{transaction?.cr_iban}</Text> */}
                     </Box>
                     {/* <Box style={styles.detailMobile}>
@@ -129,18 +162,17 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({transactionsByDate,
                       </Text>
                     </Box> */}
                   </Box>
-                  </>
-                ) : null}
-              </View>
-            </Box>
-          )
-        )}
+                </>
+              ) : null}
+            </View>
+          </Box>
+        ))}
       </>
-    )
-  }
+    );
+  };
 
   return (
-    <>
+    <View>
       <Pressable onPress={handleOnOpen}>
         <View style={[styles.base, isOpen && styles.isOpen]}>
           <Box
@@ -152,7 +184,8 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({transactionsByDate,
           >
             <CalenderEmptyIcon size={14} color="blue" />
             <Typography fontSize={14}>
-              {" "}{getFormattedDate(shownData.date)}
+              {" "}
+              {getFormattedDate(shownData.date)}
             </Typography>
           </Box>
           <Box
@@ -163,7 +196,6 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({transactionsByDate,
             alignItems="center"
           >
             {shownData.currency === "EUR" ? (
-
               <EuroIcon size={18} color={+totalAmount > 0 ? "green" : "red"} />
             ) : (
               <DollarIcon size={18} color="#278664" />
@@ -178,23 +210,27 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({transactionsByDate,
             flexDirection="row"
             alignItems="center"
           >
-          {/* <EuroIcon size={18} color= "green" />
+            {/* <EuroIcon size={18} color= "green" />
           <Typography fontSize={14}>
               {formatAmountTableValue(shownData.balance, shownData.currency)}
             </Typography> */}
-                <Box style={styles.cell}>
-                  {isOpen ? <ArrowDown color="blue" /> : <ArrowRight color="blue" />}
-                </Box>
+            <Box style={styles.cell}>
+              {isOpen ? (
+                <ArrowDown color="blue" />
+              ) : (
+                <ArrowRight color="blue" />
+              )}
+            </Box>
           </Box>
         </View>
       </Pressable>
       {/* show list of all transactionsByDate */}
-      { isOpen && (
+      {isOpen && (
         <>
-          <TransactionByDate transactions={transactionsByDate}/>
+          <TransactionByDate transactions={transactionsByDate} />
         </>
       )}
-    </>
+    </View>
   );
-}
+};
 export default TransactionsByDate;

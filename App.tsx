@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { RootSiblingParent } from 'react-native-root-siblings'
+import { RootSiblingParent } from "react-native-root-siblings";
 import { Text, View } from "react-native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
@@ -9,29 +9,39 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { persistor, store } from "./store";
 import AppNavigationWrapper from "./navigation/AppNavigationWrapper";
 import { PersistGate } from "redux-persist/integration/react";
-import * as Linking from 'expo-linking';
+import UserInactivity from "react-native-user-detector-active-inactive";
+import { useDispatch, useSelector } from "react-redux";
+import * as Linking from "expo-linking";
+import { createNavigationContainerRef } from "@react-navigation/native";
+import AppNavigationContainer from "./navigation/AppNavigationContainer";
 
-
+import { signout } from "./redux/auth/authSlice";
 
 export default function App() {
   // added by Aristos for deep linking
 
-  const prefix = Linking.createURL('/');
+  const prefix = Linking.createURL("/");
   const appScheme = prefix;
-  const urlScheme =  "https://www.gozazoo.com/zazoomobilestg";
-  const prefixes = [appScheme,urlScheme]
+  const urlScheme = "https://www.gozazoo.com/zazoomobilestg";
+  const prefixes = [appScheme, urlScheme];
+
+  const [currentRoute, setCurrentRoute] = useState("");
+
+  /* const authData = useSelector((state: any) => state?.auth?.data);
+  console.log("🚀 ~ file: App.tsx:30 ~ App ~ authData:", authData);
+  const dispatch = useDispatch(); */
 
   const linking = {
-    prefixes, 
+    prefixes,
     // prefixes: [prefix],
     config: {
-          screens: {
-            login: "login",
-            signup: "signup",
-            ResetPassword: "ResetPassword",
-            NotFound: "*",
-          },
-        },
+      screens: {
+        login: "login",
+        signup: "signup",
+        ResetPassword: "ResetPassword",
+        NotFound: "*",
+      },
+    },
   };
 
   //// const url = Linking.useURL();
@@ -45,7 +55,6 @@ export default function App() {
   //     },
   //   },
   // };
-
 
   const [fontsLoaded] = useFonts({
     "Nunito-Regular": require("./assets/fonts/Nunito-Regular.ttf"),
@@ -64,17 +73,40 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
+  const navigationRef = createNavigationContainerRef();
 
+  const onStateChange = (state: any) => {
+    setCurrentRoute(state?.routes[state.index]?.name);
+  };
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor} loading={null}>
         <SafeAreaProvider onLayout={onLayoutRootView}>
           {/* <NavigationContainer>  */}
-          <NavigationContainer linking={linking} fallback={<Text>Loading...</Text>}>
-            <RootSiblingParent>
-              <AppNavigationWrapper />
-            </RootSiblingParent>
-          </NavigationContainer>
+          {/* <UserInactivity
+            currentScreen={currentRoute}
+            skipKeyboard={false}
+            timeForInactivity={20}
+            onHandleActiveInactive={function () {
+              console.log("inactive");
+            }}
+            consoleTimer={true}
+            consoleComponentChange={true}
+            consoleTouchScreen={true}
+            consoleLongPress={true}
+          >
+            <NavigationContainer
+              ref={navigationRef}
+              onStateChange={onStateChange}
+              linking={linking}
+              fallback={<Text>Loading...</Text>}
+            >
+              <RootSiblingParent>
+                <AppNavigationWrapper />
+              </RootSiblingParent>
+            </NavigationContainer>
+          </UserInactivity> */}
+          <AppNavigationContainer />
         </SafeAreaProvider>
       </PersistGate>
     </Provider>

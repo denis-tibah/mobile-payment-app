@@ -44,7 +44,7 @@ const searchOptions = [
 
 const currentDate = new Date();
 const initialSearchFieldData: SearchFilter = {
-  account_id: 0,
+  account_id: "",
   sort:  "id",
   direction: 'desc',
   status: "",
@@ -120,7 +120,7 @@ export function Transactions({ navigation }: any) {
       if (userData) {
         let search: SearchFilter = {
           ...initialSearchFieldData,
-          account_id: userData?.id,
+          account_id: `${userData?.id}`,
         }
         await dispatch<any>(getTransactionsWithFilters(search))
         .unwrap()
@@ -141,7 +141,6 @@ export function Transactions({ navigation }: any) {
         });
       }
     } catch (error) {
-      console.log("error aristos 1");
       console.log({ error });
     } finally {
       setIsLoading(false);
@@ -152,10 +151,10 @@ export function Transactions({ navigation }: any) {
   const fetchTransactionsWithFilters = async (value: SearchFilter) => {
     try {
       setIsLoading(true);
-      if (userData) {
+      if (userData && userData?.id) {
         let search: SearchFilter = {
           ...value,
-          account_id: userData?.id,
+          account_id: `${userData?.id}`,
         }
         await dispatch<any>(getTransactionsWithFilters(search))
         .unwrap()
@@ -187,7 +186,7 @@ export function Transactions({ navigation }: any) {
         ...searchFieldData,
         ...(fromDate && { from_date: fromDate }),
         ...(toDate && { to_date: toDate }),
-        account_id: userId,
+        account_id: `${userId}`,
         sort: "id",
         direction: "desc",
       };
@@ -262,7 +261,7 @@ export function Transactions({ navigation }: any) {
       ...(from_date && {from_date}),
       ...(to_date && {to_date}),
       ...initialSearchFieldData,
-      account_id: userId,
+      account_id: `${userId}`,
     }
     setSearchFieldData(_searchFieldData);
     fetchTransactionsWithFilters({
@@ -274,7 +273,7 @@ export function Transactions({ navigation }: any) {
     const sortState = _sortByDate ? 'asc' : 'desc';
     const searchFilter: SearchFilter = {
       ...searchFieldData,
-      account_id: userData?.id,
+      account_id: `${userData?.id}`,
       direction: sortState,
     };
     fetchTransactionsWithFilters(searchFilter);
@@ -520,7 +519,7 @@ export function Transactions({ navigation }: any) {
           <View>
           { txData ? Object.keys(txData)
           .sort((a, b) => {
-            return sortByDate ? new Date(a).getTime() - new Date(b).getTime() : new Date(b).getTime() - new Date(a).getTime();
+            return !sortByDate ? new Date(a).getTime() - new Date(b).getTime() : new Date(b).getTime() - new Date(a).getTime();
           })
           .map((date: string) => {
             let _amount: number = 0;

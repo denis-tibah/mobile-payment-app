@@ -61,9 +61,26 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
             key={index}
           >
             <Box style={styles.detailMobileForEachTransactionWrapper}>
-              <Text style={styles.nameDetailMobile}>Name:</Text>
-              <Text style={styles.valueDetailMobile}>{transaction.name}</Text>
-              <View style={{ alignSelf: "flex-end", flex: 1 }}>
+              <View style={styles.nameContainer}>
+                <Text style={styles.nameDetailMobile}>Name:</Text>
+                <Text numberOfLines={1} style={styles.valueDetailMobile}>{transaction.name}</Text>
+              </View>
+              <View style={{ flex: 1, display: 'flex', flexDirection: 'row', alignSelf: 'auto', justifyContent: 'flex-end' }}>
+                <Box
+                  style={{ marginTop: 8 }}
+                >
+                  {shownData.currency === "EUR" ? (
+                    <EuroIcon
+                      size={18}
+                      color={+transaction.amount > 0 ? "green" : "red"}
+                    />
+                  ) : (
+                    <DollarIcon
+                    size={18}
+                    color="#278664"
+                    />
+                  )}
+                </Box>
                 <Text
                   style={[
                     styles.amountDetailMobile,
@@ -73,24 +90,7 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                   ]}
                 >
                   {/* {`${isBalanceAdded ? `+ ` : `- `} ${transaction.amount}`} */}
-                  <Box
-                    width="45%"
-                    marginTop={5}
-                    display="flex"
-                    flexDirection="row"
-                    alignItems="center"
-                  >
-                    {shownData.currency === "EUR" ? (
-                      <EuroIcon
-                        size={18}
-                        color={+transaction.amount > 0 ? "green" : "red"}
-                      />
-                    ) : (
-                      <DollarIcon size={18} color="#278664" />
-                    )}
-                  </Box>
                   {/* {transaction.amount} */}
-
                   {formatAmountTableValue(
                     transaction.amount,
                     shownData.currency

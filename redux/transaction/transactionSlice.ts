@@ -1,10 +1,22 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { api } from "../../api";
-import { Transaction } from "../../models/Transactions";
+import { Transaction, TransactionDetailsNew } from "../../models/Transactions";
 // import { UserData, SearchFilter } from "../../models/UserData";
 
+const defaultTransactionsDetails: TransactionDetailsNew = {
+  current_page: 0,
+  from: 0,
+  to: 0,
+  next_page: 0,
+  prev_page: 0,
+  total: 0,
+  last_page: 0,
+  per_page: 0,
+  transactions: [],
+};
+
 export interface TransactionState {
-  data: Transaction[];
+  data: TransactionDetailsNew;
   search: Transaction[];
   loading: boolean;
   error: boolean;
@@ -12,7 +24,7 @@ export interface TransactionState {
 }
 
 const initialState: TransactionState = {
-  data: [],
+  data: defaultTransactionsDetails,
   search: [],
   loading: true,
   error: false,
@@ -20,7 +32,7 @@ const initialState: TransactionState = {
 };
 
 export interface SearchFilter {
-  account_id: number | undefined;
+  account_id: string | undefined;
   sort: string;
   name?: string;
   from_date?: string;
@@ -94,7 +106,7 @@ export const transactionSlice = createSlice({
 //     }
 //   }
 // );
-export const getTransactions = createAsyncThunk<Transaction[], SearchFilter>(
+export const getTransactions = createAsyncThunk<TransactionDetailsNew, SearchFilter>(
   "getTransactions",
   async (searchFilter, { rejectWithValue, fulfillWithValue }) => {
     try {
@@ -113,7 +125,7 @@ export const getTransactions = createAsyncThunk<Transaction[], SearchFilter>(
   }
 );
 
-export const getTransactionsWithFilters = createAsyncThunk<Transaction[], SearchFilter>(
+export const getTransactionsWithFilters = createAsyncThunk<TransactionDetailsNew, SearchFilter>(
   "getTransactionsWithfilters",
   async (searchFilter, { rejectWithValue, fulfillWithValue }) => {
     try {

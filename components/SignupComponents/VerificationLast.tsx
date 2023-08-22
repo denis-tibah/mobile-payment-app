@@ -22,24 +22,26 @@ interface IVerificationLast {
   handlePrevStep: () => void;
 }
 
-type MessageProps = {
+/* type MessageProps = {
   channel: string;
   to: string;
   content: string;
-}[];
+}[]; */
 
 const VerificationLast: FC<IVerificationLast> = ({
   handleNextStep,
   handlePrevStep,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const fromtEndURL = process.env.APIURL;
+  // staging backend v1
+  // const baseURL = process.env.APIURL || "https://zazoostg.com/reg/ziyl";
+  // staging backend v2
+  // const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
+  // live backend
+  const baseURL = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
+
   const registration = useSelector((state: any) => state.registration);
-  console.log(
-    "🚀 ~ file: VerificationLast.tsx:38 ~ registration:",
-    registration
-  );
-  const handleSendToMobile = () => {
+  /*   const handleSendToMobile = () => {
     const messages: MessageProps = [
       {
         channel: "sms",
@@ -51,21 +53,8 @@ const VerificationLast: FC<IVerificationLast> = ({
       },
     ];
 
-    dispatch(sendSubsubToMobile({ messages }))
-      .unwrap()
-      .then((payload) => {
-        console.log(
-          "🚀 ~ file: VerificationLast.tsx:55 ~ dispatch ~ payload:",
-          payload
-        );
-      })
-      .catch((error) => {
-        console.log(
-          "🚀 ~ file: VerificationLast.tsx:62 ~ .then ~ error:",
-          error
-        );
-      });
-  };
+    dispatch(sendSubsubToMobile({ messages }));
+  }; */
 
   const handleContinue = (): void => {
     handleNextStep();
@@ -75,7 +64,7 @@ const VerificationLast: FC<IVerificationLast> = ({
     dispatch(
       sendSubsubToEmail({
         message:
-          fromtEndURL +
+          baseURL +
           "/app/Sumsublinked/token?token=" +
           registration?.data?.sumsubToken,
         recipientAddress: [
@@ -84,22 +73,9 @@ const VerificationLast: FC<IVerificationLast> = ({
           },
         ],
         from: "noreply@zazoo.money",
-        subject: "Sumsub Link",
+        subject: "continue zazoo registration later",
       })
-    )
-      .unwrap()
-      .then((payload) => {
-        console.log(
-          "🚀 ~ file: VerificationLast.tsx:55 ~ dispatch ~ payload:",
-          payload
-        );
-      })
-      .catch((error) => {
-        console.log(
-          "🚀 ~ file: VerificationLast.tsx:62 ~ .then ~ error:",
-          error
-        );
-      });
+    );
   };
 
   return (
@@ -203,20 +179,29 @@ const VerificationLast: FC<IVerificationLast> = ({
             <View
               style={{
                 width: "100%",
-                alignItems: "center",
+                /* alignItems: "center", */
                 flexDirection: "row",
                 flexWrap: "wrap",
+                justifyContent: "space-between",
                 paddingRight: 20,
                 gap: 8,
                 paddingBottom: 34,
               }}
             >
-              <Button
+              {/* <Button
                 color="light-pink"
                 onPress={handleSendToMobile}
                 leftIcon={<ArrowRightLong size={14} />}
               >
                 Send to Mobile
+              </Button> */}
+
+              <Button
+                color="light-pink"
+                onPress={handleDoItLater}
+                leftIcon={<ArrowRightLong size={14} />}
+              >
+                Do it later
               </Button>
               <Button
                 color="light-pink"
@@ -224,13 +209,6 @@ const VerificationLast: FC<IVerificationLast> = ({
                 leftIcon={<ArrowRightLong size={14} />}
               >
                 Continue
-              </Button>
-              <Button
-                color="light-pink"
-                onPress={handleDoItLater}
-                leftIcon={<ArrowRightLong size={14} />}
-              >
-                Do it later
               </Button>
             </View>
           </FixedBottomAction>

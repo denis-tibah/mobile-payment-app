@@ -236,7 +236,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
               <Box style={styles.detailMobileWrapper}>
                 <Box style={styles.detailMobile}>
                   <Text style={styles.nameDetailMobile}>Name:</Text>
-                  <Text style={styles.valueDetailMobile}>{data?.name}</Text>
+                  <Text numberOfLines={1} style={styles.valueDetailMobile}>{data?.name}</Text>
                 </Box>
                 <Box style={styles.detailMobile}>
                   <Text style={styles.nameDetailMobile}>Reference:</Text>

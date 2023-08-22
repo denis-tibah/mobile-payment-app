@@ -59,7 +59,8 @@ export const styles:any = StyleSheet.create<any>({
     marginBottom: 12,
     display: 'flex',
     flexDirection: 'row',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    maxWidth: 230,
   },
   detailMobileForEachTransactionContainer: {
     backgroundColor: '#fff',
@@ -75,13 +76,19 @@ export const styles:any = StyleSheet.create<any>({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    paddingRight: 48,
+    // paddingRight: 35,
+    width: '100%',
   },
   nameDetailMobile: {
     color: "#086AFB",
     fontFamily: "Nunito-Regular",
     fontSize: 14,
     paddingRight: 10,
+  },
+  nameContainer: {
+    maxWidth: 250,
+    flex: 1,
+    marginRight: 50
   },
   valueDetailMobile: {
     color: "#000000",
@@ -91,11 +98,11 @@ export const styles:any = StyleSheet.create<any>({
     fontSize: 14,
     fontWeight: 'bold',
     flex: 1,
-    alignSelf: 'flex-end',
-    marginTop: -5
+    // alignSelf: 'flex-end',
+    // marginTop: -5
   },
   amountAddedDetail: {
-    color: 'green'
+    color: 'green',
   },
   amountDeductedDetail: {
     color: 'red'

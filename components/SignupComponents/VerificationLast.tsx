@@ -88,20 +88,7 @@ const VerificationLast: FC<IVerificationLast> = ({
         from: "noreply@zazoo.money",
         subject: "continue zazoo registration later",
       })
-    )
-      .unwrap()
-      .then((payload) => {
-        console.log(
-          "🚀 ~ file: VerificationLast.tsx:55 ~ dispatch ~ payload:",
-          payload
-        );
-      })
-      .catch((error) => {
-        console.log(
-          "🚀 ~ file: VerificationLast.tsx:62 ~ .then ~ error:",
-          error
-        );
-      });
+    );
   };
 
   return (

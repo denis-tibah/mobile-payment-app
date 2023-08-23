@@ -55,10 +55,10 @@ export default function PaymentReceivedScreen({
       if (userData) {
         let search= {     
           account_id: userData?.id,
-          sort: "id",
+          // sort: "id",
           direction: "desc",
           // status: "PROCESSING"
-          status: "SUCCESS"
+          // status: "SUCCESS"
       }
         await dispatch<any>(getTransactions(search))
       }

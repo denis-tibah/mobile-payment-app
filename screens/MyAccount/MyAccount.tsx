@@ -54,10 +54,10 @@ export function MyAccount({ navigation }: any) {
       if (userData && userData?.id) {
         let search = {
           account_id: userData?.id,
-          sort: "id",
+          // sort: "id",
           direction: "desc",
           // status: "PROCESSING"
-          status: "SUCCESS",
+          // status: "SUCCESS",
           limit: 20,
           page,
         };

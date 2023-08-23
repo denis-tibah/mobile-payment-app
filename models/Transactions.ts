@@ -22,7 +22,7 @@ export interface Transaction {
   dr_iban: string;
   cr_iban: string;
   transfer_currency: string;
-  revenueType:string;
+  revenueType: string;
 }
 
 export interface transactions {
@@ -90,9 +90,12 @@ export interface CardTransaction {
   billedFeesNotZero: any[];
 }
 
+/**
+ * @deprecated Use `TransactionDetailsNew` instead.
+ */
 export interface TransactionDetails {
   current_page: number;
-  data: Transaction[];
+  transactions: Transaction[];
   first_page_url: string;
   from: number;
   last_page: number;
@@ -114,7 +117,7 @@ export interface TransactionDetailsNew {
   total: number;
   last_page: number;
   per_page: number;
-  transactions: transactions[];
+  transactions: Transaction[];
 }
 
 interface Link {

@@ -32,7 +32,6 @@ import { AppState } from "react-native";
 import { signout } from "../redux/auth/authSlice";
 import * as SecureStore from "expo-secure-store";
 
-
 // import * as TaskManager from 'expo-task-manager';
 
 const Tab = createBottomTabNavigator();

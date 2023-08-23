@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { RefreshControl } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
@@ -89,6 +90,7 @@ export function Card({ navigation }: any) {
   const frozen = useSelector(
     (state: RootState) => state?.card?.data[0]?.frozenYN
   );
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const [cardDetails, setCardDetails] = useState<ICardDetails>({});
   const [freezeLoading, setFreezeLoading] = useState(false);
   const [showCardOtpModal, setShowCardOtpModal] = useState(false);
@@ -112,6 +114,7 @@ export function Card({ navigation }: any) {
   const fetchCardData = async () => {
     try {
       if (userData) {
+        setIsloading(true);
         await dispatch<any>(
           getCardTransactions({
             account_id: userData?.id,
@@ -151,6 +154,10 @@ export function Card({ navigation }: any) {
       console.log({ error });
       setFetchingCardTransactions(false);
       setFetchingCardInfo(false);
+    } finally {
+      setIsloading(false);
+      setRefreshing(false);
+      setIsloading(false);
     }
   };
 
@@ -423,7 +430,15 @@ export function Card({ navigation }: any) {
           onCancel={() => setShowCardOtpModal(false)}
         />
       )}
-      <ScrollView bounces={false}>
+      <ScrollView 
+        bounces={true}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={fetchCardData}
+          />
+        }
+      >
         <View style={styles.container}>
           <Heading
             icon={<CardIcon size={18} color="pink" />}
@@ -548,10 +563,8 @@ export function Card({ navigation }: any) {
           />
           <View>
             <Seperator backgroundColor={vars["grey"]} />
-
             {/* start: Added by Aritos  */}
             <View>
-              <Spinner visible={loading} />
               {!!cardTransactionsData?.length ? (
                 <>
                   <View style={styles.listHeadCardTransactions}>
@@ -729,7 +742,8 @@ export function Card({ navigation }: any) {
             {/* end:02-08-2013 disabled by Aristos */}
           </View>
         </View>
-        <LoadingScreen isLoading={isLoading} />
+        <LoadingScreen isLoading={isLoading || loading} />
+        {/* <Spinner visible={loading} /> */}
       </ScrollView>
     </MainLayout>
   );

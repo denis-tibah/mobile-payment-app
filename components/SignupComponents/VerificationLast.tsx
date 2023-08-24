@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { View, Text } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -9,8 +9,9 @@ import WebcamIcon from "../../assets/icons/Webcam";
 import FixedBottomAction from "../../components/FixedBottomAction";
 import ArrowRightLong from "../../assets/icons/ArrowRightLong";
 import {
-  sendSubsubToMobile,
+  /* sendSubsubToMobile, */
   sendSubsubToEmail,
+  setRegistrationData,
 } from "../../redux/registration/registrationSlice";
 import { AppDispatch } from "../../store";
 import Button from "../../components/Button";
@@ -36,11 +37,16 @@ const VerificationLast: FC<IVerificationLast> = ({
   // staging backend v1
   // const baseURL = process.env.APIURL || "https://zazoostg.com/reg/ziyl";
   // staging backend v2
-  // const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
+  //const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
   // live backend
   const baseURL = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
 
-  const registration = useSelector((state: any) => state.registration);
+  const registration = useSelector((state: any) => state?.registration);
+  console.log(
+    "🚀 ~ file: VerificationLast.tsx:45 ~ registration:",
+    registration
+  );
+
   /*   const handleSendToMobile = () => {
     const messages: MessageProps = [
       {
@@ -88,6 +94,19 @@ const VerificationLast: FC<IVerificationLast> = ({
         from: "noreply@zazoo.money",
         subject: "continue zazoo registration later",
       })
+        .unwrap()
+        .then((payload) => {
+          console.log(
+            "🚀 ~ file: VerificationLast.tsx:80 ~ .then ~ payload:",
+            payload
+          );
+        })
+        .catch((error) => {
+          console.log(
+            "🚀 ~ file: VerificationLast.tsx:86 ~ handleDoItLater ~ error:",
+            error
+          );
+        })
     );
   };
 

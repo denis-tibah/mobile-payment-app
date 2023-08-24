@@ -111,6 +111,7 @@ export const sendSubsubToEmail = createAsyncThunk(
     const { data } = await api.post("/sendemailzazoo", params, {
       responseType: "text",
     });
+    console.log("🚀 ~ file: registrationSlice.ts:114 ~ data:", data);
     return data;
   }
 );

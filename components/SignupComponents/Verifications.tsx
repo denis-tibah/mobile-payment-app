@@ -2,6 +2,7 @@ import { FC, useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, Platform } from "react-native";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Button from "../../components/Button";
 import Typography from "../../components/Typography";
@@ -122,6 +123,16 @@ const Verifications: FC<IVerifications> = ({
       },
     });
 
+  const storeData = async (value: string) => {
+    console.log("🚀 ~ file: Verifications.tsx:127 ~ storeData ~ value:", value);
+    try {
+      await AsyncStorage.setItem("registrationAuthorization", value);
+    } catch (e) {
+      console.log("🚀 ~ file: Verifications.tsx:130 ~ storeData ~ e:", e);
+      // saving error
+    }
+  };
+
   const handleVerifyPhoneNumber = () => {
     setIsLoading(true);
     const regData = {
@@ -130,6 +141,7 @@ const Verifications: FC<IVerifications> = ({
       provider: "ziyl",
       country: registration.data.country_of_birth,
     };
+
     dispatch(getSumsubVerificationCode(regData))
       .unwrap()
       .then((payload: any) => {
@@ -138,6 +150,16 @@ const Verifications: FC<IVerifications> = ({
             (payload?.code === 201 || payload?.code === "201") &&
             payload?.status === "success"
           ) {
+            console.log(
+              "🚀 ~ file: Verifications.tsx:145 ~ .then ~ payload:",
+              payload?.data?.token_ziyl
+            );
+
+            /* await AsyncStorage.setItem(
+              "registrationAuthorization",
+              payload?.data?.token_ziyl
+            ); */
+            storeData(payload?.data?.token_ziyl);
             setIsLoading(false);
             dispatch(
               setRegistrationData({

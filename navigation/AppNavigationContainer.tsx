@@ -8,8 +8,10 @@ import { Text } from "react-native";
 import * as Linking from "expo-linking";
 import UserInactivity from "react-native-user-detector-active-inactive";
 import { useDispatch, useSelector } from "react-redux";
+import ErrorBoundary from "react-native-error-boundary";
 
 import AppNavigationWrapper from "./AppNavigationWrapper";
+import ErrorFallback from "../components/ErrorFallback";
 import { signout } from "../redux/auth/authSlice";
 
 const AppNavigationContainer = () => {
@@ -39,6 +41,11 @@ const AppNavigationContainer = () => {
   const onStateChange = (state: any) => {
     setCurrentRoute(state?.routes[state.index]?.name);
   };
+
+  const handleJSErrorForErrorBoundary = (error: any, stackTrace: string) => {
+    // Show error locally on DEBUG mode
+    console.log(stackTrace, error);
+  };
   return (
     <UserInactivity
       currentScreen={currentRoute}
@@ -54,16 +61,21 @@ const AppNavigationContainer = () => {
       consoleTouchScreen={true}
       consoleLongPress={true} */
     >
-      <NavigationContainer
-        ref={navigationRef}
-        onStateChange={onStateChange}
-        linking={linking}
-        fallback={<Text>Loading...</Text>}
+      <ErrorBoundary
+        onError={handleJSErrorForErrorBoundary}
+        FallbackComponent={ErrorFallback}
       >
-        <RootSiblingParent>
-          <AppNavigationWrapper />
-        </RootSiblingParent>
-      </NavigationContainer>
+        <NavigationContainer
+          ref={navigationRef}
+          onStateChange={onStateChange}
+          linking={linking}
+          fallback={<Text>Loading...</Text>}
+        >
+          <RootSiblingParent>
+            <AppNavigationWrapper />
+          </RootSiblingParent>
+        </NavigationContainer>
+      </ErrorBoundary>
     </UserInactivity>
   );
 };

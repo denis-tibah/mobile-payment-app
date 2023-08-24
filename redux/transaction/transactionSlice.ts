@@ -41,7 +41,7 @@ export interface SearchFilter {
   limit?: number;
   page?: number;
   min_amount?: number;
-  max_amount?: number
+  max_amount?: number;
   status?: string;
   iban?: string;
   reference_no?: number;
@@ -67,7 +67,6 @@ export const transactionSlice = createSlice({
       state.loading = false;
     });
 
-
     builder.addCase(getTransactions.rejected, (state) => {
       state.loading = false;
       state.error = true;
@@ -88,9 +87,7 @@ export const transactionSlice = createSlice({
       state.loading = false;
       state.error = true;
     });
-
   },
-  
 });
 
 // export const getTransactions = createAsyncThunk<Transaction[], UserData>(
@@ -106,26 +103,32 @@ export const transactionSlice = createSlice({
 //     }
 //   }
 // );
-export const getTransactions = createAsyncThunk<TransactionDetailsNew, SearchFilter>(
+export const getTransactions = createAsyncThunk<
+  TransactionDetailsNew,
+  SearchFilter
+>(
   "getTransactions",
   async (searchFilter, { rejectWithValue, fulfillWithValue }) => {
     try {
       const { data } = await api.post("/getTransactionsV2finxp", {
         account_id: searchFilter.account_id,
-        sort:       searchFilter.sort,
-        direction:  searchFilter.direction,
-        status:     searchFilter.status,
-        limit :     20,
+        sort: searchFilter.sort,
+        direction: searchFilter.direction,
+        status: searchFilter.status,
+        limit: 20,
       });
       return fulfillWithValue(data);
     } catch (error) {
-      console.log('error aristos ',error);
+      console.log("error aristos ", error);
       rejectWithValue(error);
     }
   }
 );
 
-export const getTransactionsWithFilters = createAsyncThunk<TransactionDetailsNew, SearchFilter>(
+export const getTransactionsWithFilters = createAsyncThunk<
+  TransactionDetailsNew,
+  SearchFilter
+>(
   "getTransactionsWithfilters",
   async (searchFilter, { rejectWithValue, fulfillWithValue }) => {
     try {
@@ -139,14 +142,14 @@ export const getTransactionsWithFilters = createAsyncThunk<TransactionDetailsNew
         name: searchFilter?.name,
         min_amount: searchFilter?.min_amount,
         max_amount: searchFilter?.max_amount,
-        status:   searchFilter?.status,
+        status: searchFilter?.status,
         reference_no: searchFilter?.reference_no,
         bic: searchFilter?.bic,
         from_date: searchFilter?.from_date,
         to_date: searchFilter?.to_date,
-        account_id: searchFilter.account_id
+        account_id: searchFilter.account_id,
       });
-        //  console.log("data ",data);
+      //  console.log("data ",data);
       return fulfillWithValue(data);
     } catch (error) {
       // console.log("error with transaction search",error);

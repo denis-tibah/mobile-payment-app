@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useRef } from "react";
 import {
   Keyboard,
   Pressable,
@@ -43,7 +43,7 @@ export function SignupScreen({ navigation, route }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const { navigate }: any = useNavigation();
   const [selectedNavIndex, setNavIndex] = useState<number>(0);
-
+  const scrollViewRef = useRef(null);
   const dispatch = useDispatch();
   const keyboardDismiss = () => {
     Keyboard.dismiss();
@@ -119,7 +119,10 @@ export function SignupScreen({ navigation, route }: any) {
         <TouchableWithoutFeedback onPress={keyboardDismiss}>
           <ScrollView keyboardDismissMode="on-drag">
             <View style={styles.container}>
-              <View style={styles.innerContainer}>
+              <View
+                style={styles.innerContainer}
+                onStartShouldSetResponder={() => true}
+              >
                 <KeyboardAvoidingView style={{ flex: 1 }} enabled>
                   {steps[selectedNavIndex]}
                 </KeyboardAvoidingView>

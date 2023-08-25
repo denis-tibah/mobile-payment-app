@@ -42,10 +42,6 @@ const VerificationLast: FC<IVerificationLast> = ({
   const baseURL = "https://gozazoo.com/";
 
   const registration = useSelector((state: any) => state?.registration);
-  console.log(
-    "🚀 ~ file: VerificationLast.tsx:45 ~ registration:",
-    registration
-  );
 
   const [statusMessage, setStatusMessage] = useState<{
     header: string;

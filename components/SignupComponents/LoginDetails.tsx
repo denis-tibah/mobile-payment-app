@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button as Btn } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import * as Linking from "expo-linking";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { registrationPhonePrefix } from "../../data/options";
 import Typography from "../../components/Typography";
@@ -101,7 +102,6 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
           alternateEmail ? alternateEmail : email,
           ""
         ).then((token: any) => {
-          setExpoPushToken(token), console.log("hit here", token);
           dispatch(
             setLoginCredentials({
               email: alternateEmail ? alternateEmail : email,
@@ -118,8 +118,6 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
                 payload === "new activation email sent"
               ) {
                 setIsValidEmail(true);
-
-                console.log("payload ", payload);
               }
               setIsLoading(false);
             })
@@ -156,7 +154,6 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
             countryCode,
           })
         );
-
         // handleNextStep();
       },
     });

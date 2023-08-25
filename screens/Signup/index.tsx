@@ -93,10 +93,6 @@ export function SignupScreen({ navigation, route }: any) {
       handlePrevStep={handlePrevStep}
     />,
     <Sumsub handlePrevStep={handlePrevStep} />,
-    {
-      /* <VerificationLast nextRegistrationForm={nextRegistrationForm} />,
-    <Sumsub />, */
-    },
   ];
   return (
     <Fragment>

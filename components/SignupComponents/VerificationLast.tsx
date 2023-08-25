@@ -1,6 +1,7 @@
-import { FC, useEffect } from "react";
+import { FC, useState } from "react";
 import { View, Text } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 
 import Typography from "../../components/Typography";
 import { Seperator } from "../../components/Seperator/Seperator";
@@ -11,11 +12,13 @@ import ArrowRightLong from "../../assets/icons/ArrowRightLong";
 import {
   /* sendSubsubToMobile, */
   sendSubsubToEmail,
-  setRegistrationData,
+  /*   setRegistrationData, */
 } from "../../redux/registration/registrationSlice";
 import { AppDispatch } from "../../store";
 import Button from "../../components/Button";
+import { SuccessModal } from "../SuccessModal/SuccessModal";
 import vars from "../../styles/vars";
+import { screenNames } from "../../utils/helpers";
 import { styles } from "./styles";
 
 interface IVerificationLast {
@@ -33,19 +36,23 @@ const VerificationLast: FC<IVerificationLast> = ({
   handleNextStep,
   handlePrevStep,
 }) => {
+  const { navigate }: any = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
-  // staging backend v1
-  // const baseURL = process.env.APIURL || "https://zazoostg.com/reg/ziyl";
-  // staging backend v2
-  //const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
-  // live backend
-  const baseURL = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
+  // gozazoo backend
+  const baseURL = "https://gozazoo.com/";
 
   const registration = useSelector((state: any) => state?.registration);
   console.log(
     "🚀 ~ file: VerificationLast.tsx:45 ~ registration:",
     registration
   );
+
+  const [statusMessage, setStatusMessage] = useState<{
+    header: string;
+    body: string;
+    isOpen: boolean;
+    isError: boolean;
+  }>({ header: "", body: "", isOpen: false, isError: false });
 
   /*   const handleSendToMobile = () => {
     const messages: MessageProps = [
@@ -82,36 +89,77 @@ const VerificationLast: FC<IVerificationLast> = ({
   const handleDoItLater = (): void => {
     dispatch(
       sendSubsubToEmail({
-        message:
-          baseURL +
-          "/app/Sumsublinked/token?token=" +
-          registration?.data?.sumsubToken,
-        recipientAddress: [
-          {
-            to: registration?.data?.email,
-          },
-        ],
-        from: "noreply@zazoo.money",
-        subject: "continue zazoo registration later",
+        registrationAuthentication:
+          registration?.data?.registrationAuthentication,
+        emailPayload: {
+          message:
+            baseURL +
+            "/app/Sumsublinked/token?token=" +
+            registration?.data?.sumsubToken,
+          recipientAddress: [
+            {
+              to: registration?.data?.email,
+            },
+          ],
+          from: "noreply@zazoo.money",
+          subject: "continue zazoo registration later",
+        },
       })
-        .unwrap()
-        .then((payload) => {
-          console.log(
-            "🚀 ~ file: VerificationLast.tsx:80 ~ .then ~ payload:",
-            payload
-          );
-        })
-        .catch((error) => {
-          console.log(
-            "🚀 ~ file: VerificationLast.tsx:86 ~ handleDoItLater ~ error:",
-            error
-          );
-        })
-    );
+    )
+      .unwrap()
+      .then((payload: any) => {
+        if (
+          (payload?.status === 200 || payload?.status === "200") &&
+          payload?.data
+        ) {
+          setStatusMessage({
+            header: "Success",
+            body: payload?.data,
+            isOpen: true,
+            isError: false,
+          });
+        } else {
+          setStatusMessage({
+            header: "Error",
+            body: "Opps theres an error in data",
+            isOpen: true,
+            isError: true,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(
+          "🚀 ~ file: VerificationLast.tsx:86 ~ handleDoItLater ~ error:",
+          error
+        );
+        setStatusMessage({
+          header: "Error",
+          body: "Something went wrong",
+          isOpen: true,
+          isError: true,
+        });
+      });
+  };
+
+  const onCloseModal = (): void => {
+    setStatusMessage({
+      header: "",
+      body: "",
+      isOpen: false,
+      isError: false,
+    });
+    navigate(screenNames.login);
   };
 
   return (
     <View style={styles.card}>
+      <SuccessModal
+        isOpen={statusMessage?.isOpen}
+        title={statusMessage.header}
+        text={statusMessage.body}
+        isError={statusMessage.isError}
+        onClose={onCloseModal}
+      />
       <View style={styles.cardTitle}>
         <Typography fontSize={18} fontFamily="Nunito-SemiBold" fontWeight="600">
           Last step from your free account

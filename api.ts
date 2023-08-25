@@ -4,9 +4,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // staging backend v1
 // const baseURL = process.env.APIURL || "https://zazoostg.com/reg/ziyl";
 // staging backend v2
-// const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
+const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
 // live backend
-const baseURL = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
+// const baseURL = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
+
+// export const exportedBaseUrl = process.env.APIURL || "https://zazoostg.com/reg/ziyl";
+// staging backend v2
+export const exportedBaseUrl =
+  process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
+// live backend
+// export const exportedBaseUrl = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
 
 export const api = axios.create({ baseURL });
 let _store: any;
@@ -17,36 +24,18 @@ export function setApiStore(store: any, signoutAction: any) {
   _signoutAction = signoutAction;
 }
 
-const getAuthorization = async () => {
-  try {
-    const value = await AsyncStorage.getItem("registrationAuthorization");
-    if (value) {
-      // value previously stored
-      return value;
-    }
-    return null;
-  } catch (e) {
-    console.log("🚀 ~ file: api.ts:28 ~ getAuthorization ~ e:", e);
-    // error reading value
-  }
-};
-
 // this will append the headers before the request is sent
 // on all requests when the user is authenticated
 api.interceptors.request.use(
   (config) => {
     if (_store) {
       const state = JSON.parse(JSON.stringify(_store.getState()));
-      console.log(
-        "🚀 ~ file: api.ts:33 ~ getAuthorization ~ getAuthorization:",
-        getAuthorization()
-      );
       config.headers[
         "AuthorizationFinxp"
       ] = `Bearer ${state?.auth?.data?.access_token}`;
-      config.headers["Authorization"] = `Bearer ${
-        getAuthorization() || state?.auth?.data?.token_ziyl
-      }`;
+      config.headers[
+        "Authorization"
+      ] = `Bearer ${state?.auth?.data?.token_ziyl}`;
       config.headers[
         "AuthorizationReceiveMobileNotifications"
       ] = `Bearer ${state?.auth?.data?.token_receive_mobile_notifications}`;

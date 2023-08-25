@@ -17,7 +17,7 @@ export const SuccessModal = ({
   title: string;
   onClose: () => void;
   text: string;
-  isError: boolean;
+  isError?: boolean;
 }) => {
   return (
     <Modal

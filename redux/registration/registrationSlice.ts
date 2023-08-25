@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 import { api } from "../../api";
+import { exportedBaseUrl } from "../../api";
 
 const initialState = {
   data: {},
@@ -105,7 +107,7 @@ export const sendSubsubToMobile = createAsyncThunk(
   }
 );
 
-export const sendSubsubToEmail = createAsyncThunk(
+/* export const sendSubsubToEmail = createAsyncThunk(
   "sendSubsubToEmail",
   async (params: any) => {
     const { data } = await api.post("/sendemailzazoo", params, {
@@ -113,6 +115,24 @@ export const sendSubsubToEmail = createAsyncThunk(
     });
     console.log("🚀 ~ file: registrationSlice.ts:114 ~ data:", data);
     return data;
+  }
+); */
+
+export const sendSubsubToEmail = createAsyncThunk(
+  "sendSubsubToEmail",
+  async (params: any) => {
+    const { emailPayload, registrationAuthentication } = params;
+    const resSubsubToEmail = await axios.post(
+      `${exportedBaseUrl}/sendemailzazoo`,
+      emailPayload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${registrationAuthentication}`,
+        },
+      }
+    );
+    return resSubsubToEmail;
   }
 );
 

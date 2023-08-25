@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { RefreshControl } from "react-native";
+import { Dimensions, Pressable, RefreshControl } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
@@ -63,6 +63,7 @@ import { arrayChecker } from "../../utils/helpers";
 export function Card({ navigation }: any) {
   const infoData = useSelector((state: RootState) => state.account.details);
   const accountData = useSelector((state: RootState) => state.auth.userData);
+  const screenHeight = Dimensions.get("window").height;
   const defaultSearchOptions = {
     sort: "id",
     // status: 'PROCESSING',
@@ -152,9 +153,9 @@ export function Card({ navigation }: any) {
       if (userData) await dispatch<any>(getAccountDetails(userData.id));
     } catch (error) {
       console.log({ error });
+    } finally {
       setFetchingCardTransactions(false);
       setFetchingCardInfo(false);
-    } finally {
       setIsloading(false);
       setRefreshing(false);
       setIsloading(false);
@@ -430,321 +431,338 @@ export function Card({ navigation }: any) {
           onCancel={() => setShowCardOtpModal(false)}
         />
       )}
-      <ScrollView 
-        bounces={true}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={fetchCardData}
-          />
-        }
-      >
-        <View style={styles.container}>
-          <Heading
-            icon={<CardIcon size={18} color="pink" />}
-            title={"Card"}
-            rightAction={
-              <Button
-                onPress={() => setShowGetCardModal(true)}
-                color={"light-pink"}
-                rightIcon={<AddIcon color="pink" size={14} />}
-              >
-                Get Card
-              </Button>
-            }
-          />
-        </View>
-        <View style={styles.cardSection}>
-          <View style={styles.cardImages}>
-            <Carousel
-              data={cardData}
-              renderItem={_renderItem}
-              sliderWidth={500}
-              itemWidth={303}
-              layout="default"
+      <View style={{flex:1}}>
+        <ScrollView
+          bounces={true}
+          style={{flex: 1}}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={fetchCardData}
             />
-            {cardDetails?.cardNumber ? (
-              <TouchableOpacity onPress={handleCopyToClipboard}>
-                <View style={styles.clipboardContainer}>
-                  <CopyClipboard color="light-pink" size={18} />
-                </View>
-              </TouchableOpacity>
-            ) : null}
-          </View>
-          <View style={styles.incomeBox}>
-            <View style={styles.incomeBox__group}>
-              <Typography
-                fontFamily="Nunito-SemiBold"
-                color="accent-blue"
-                style={styles.imcome__groupTypography}
-              >
-                Total Balance:
-              </Typography>
-              <Box sx={{ marginLeft: "auto", marginBottom: 16 }}>
-                <Typography fontFamily="Mukta-Regular">
-                  {getCurrency(infoData?.currency)}
-                  {infoData?.curbal || "0.00"}
-                </Typography>
-              </Box>
-            </View>
-            <View style={styles.incomeBox__group}>
-              <Typography
-                fontFamily="Nunito-SemiBold"
-                color="accent-blue"
-                style={styles.imcome__groupTypography}
-              >
-                Pending:
-              </Typography>
-              <Box sx={{ marginLeft: "auto", marginBottom: 16 }}>
-                <Typography fontFamily="Mukta-Regular">
-                  {getCurrency(infoData?.currency)}
-                  {getPendingAmount(
-                    infoData?.avlbal || "0.00",
-                    infoData?.curbal || "0.00"
-                  ) || "0.00"}
-                </Typography>
-              </Box>
-            </View>
-          </View>
-          <View style={styles.cardActions}>
-            <ScrollView horizontal>
-              <View style={styles.cardActionsButtonMargin}>
-                <Button
-                  color={frozen === "Y" ? "blue" : "light-blue"}
-                  leftIcon={
-                    <FreezeIcon
-                      color={frozen === "Y" ? "white" : "blue"}
-                      size={14}
-                    />
-                  }
-                  onPress={freezeCard}
-                  disabled={freezeLoading}
-                >
-                  Freeze card
-                </Button>
-              </View>
-              <View style={styles.cardActionsButtonMargin}>
-                <Button
-                  color={cardPin ? "blue" : "light-blue"}
-                  leftIcon={
-                    <PinIcon color={cardPin ? "white" : "blue"} size={14} />
-                  }
-                  onPress={!cardPin ? showPin : resetCard}
-                  disabled={loading}
-                >
-                  Show pin
-                </Button>
-              </View>
-              <View style={styles.cardActionsButtonMargin}>
-                <Button
-                  color="light-blue"
-                  onPress={requestShowCard}
-                  leftIcon={<EyeIcon color="blue" size={14} />}
-                >
-                  Show card
-                </Button>
-              </View>
-              <View style={styles.cardActionsButtonMargin}>
-                <Button
-                  color="light-pink"
-                  rightIcon={<LostCardIcon color="pink" size={14} />}
-                  onPress={handleLostCard}
-                >
-                  Lost card
-                </Button>
-              </View>
-            </ScrollView>
-          </View>
-        </View>
-        <View style={styles.cardTransactions}>
-          <Heading
-            icon={<TransactionIcon color="pink" size={18} />}
-            title={"Latest Card Transactions"}
-          />
-          <View>
-            <Seperator backgroundColor={vars["grey"]} />
-            {/* start: Added by Aritos  */}
-            <View>
-              {!!cardTransactionsData?.length ? (
-                <>
-                  <View style={styles.listHeadCardTransactions}>
-                    <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
-                      Name
-                    </Typography>
-                    <View
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        width: 60,
-                      }}
-                    >
-                      <Typography
-                        fontFamily="Nunito-SemiBold"
-                        color="accent-blue"
-                        fontSize={16}
-                      >
-                        Date
-                      </Typography>
-                      <TouchableOpacity
-                        // temp disabled sorting logic
-                        onPress={() => {
-                          setIsloading(!isLoading);
-                          setSortByDate(!sortByDate);
-                        }}
-                      >
-                        {sortByDate ? (
-                          <ArrowDown color="blue" style={{ marginTop: 5 }} />
-                        ) : (
-                          <AntDesign
-                            name="up"
-                            size={16}
-                            color="blue"
-                            style={{ marginTop: 5 }}
-                          />
-                        )}
-                      </TouchableOpacity>
-                    </View>
-                    <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
-                      Amount
-                    </Typography>
-                  </View>
-                  <View style={{ backgroundColor: "white" }}>
-                    {cardTransactionsData?.map((transaction, index) => (
-                      <View key={index} style={styles.listCardTransactions}>
-                        <TransactionItem
-                          data={{
-                            ...transaction,
-                            id: Number(transaction.id),
-                            amount: transaction.amount.toString(),
-                            name: transaction.purpose,
-                            // balance: "0.00",
-                            // closing_balance: "",
-                            // running_balance: "",
-                            // opening_balance: "",
-                            currency: transaction.transactionCurrency,
-                            description: transaction.purposeDetailed,
-                            reference_no:
-                              transaction.processingAllMessagesId.toString(),
-                            transaction_datetime: transaction?.receiptDate,
-                            isCardTx: true,
-                          }}
-                          key={index}
-                        />
-                      </View>
-                    ))}
-                  </View>
-                </>
-              ) : (
-                <View style={{ backgroundColor: "#fff", padding: 24 }}>
-                  <Typography
-                    fontFamily="Nunito-Regular"
-                    fontSize={16}
-                    style={{
-                      textAlign: "center",
-                      marginTop: 20,
-                      backgroundColor: "#fff",
-                    }}
+          }
+        >
+          <Pressable>
+            <View style={styles.container}>
+              <Heading
+                icon={<CardIcon size={18} color="pink" />}
+                title={"Card"}
+                rightAction={
+                  <Button
+                    onPress={() => setShowGetCardModal(true)}
+                    color={"light-pink"}
+                    rightIcon={<AddIcon color="pink" size={14} />}
                   >
-                    You don't have any transactions yet, why not add some money
-                    to your account to get started!
-                  </Typography>
-                </View>
-              )}
-            </View>
-            {isEnrollmentSuccess && (
-              <SuccessModal
-                title={"Card enrollment"}
-                text={"Card Registered"}
-                isOpen
-                onClose={() => setEnrollmentStatus(false)}
+                    Get Card
+                  </Button>
+                }
               />
-            )}
-            {/* end: Added by Aristos */}
-
-            {/* start:02-08-2013 disabled by Aristos */}
-            {/* <View style={styles.listHead}>
-              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
-                Name
-              </Typography>
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  width: 60,
-                }}
-              >
+            </View>
+          </Pressable>
+          <View style={styles.cardSection}>
+            <Pressable>
+              <View style={styles.cardImages}>
+                <Carousel
+                  data={cardData}
+                  renderItem={_renderItem}
+                  sliderWidth={500}
+                  itemWidth={303}
+                  layout="default"
+                />
+                {cardDetails?.cardNumber ? (
+                  <TouchableOpacity onPress={handleCopyToClipboard}>
+                    <View style={styles.clipboardContainer}>
+                      <CopyClipboard color="light-pink" size={18} />
+                    </View>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+            </Pressable>
+            <View style={styles.incomeBox}>
+              <Pressable>
+                <View style={styles.incomeBox__group}>
+                  <Typography
+                    fontFamily="Nunito-SemiBold"
+                    color="accent-blue"
+                    style={styles.imcome__groupTypography}
+                  >
+                    Total Balance:
+                  </Typography>
+                  <Box sx={{ marginLeft: "auto", marginBottom: 16 }}>
+                    <Typography fontFamily="Mukta-Regular">
+                      {getCurrency(infoData?.currency)}
+                      {infoData?.curbal || "0.00"}
+                    </Typography>
+                  </Box>
+                </View>
+              </Pressable>
+              <View style={styles.incomeBox__group}>
                 <Typography
                   fontFamily="Nunito-SemiBold"
                   color="accent-blue"
-                  fontSize={16}
+                  style={styles.imcome__groupTypography}
                 >
-                  Date
+                  Pending:
                 </Typography>
-                <TouchableOpacity
-                  onPress={() => {
-                    setIsloading(!isLoading);
-                    setSortByDate(!sortByDate);
-                  }}
-                >
-                  {sortByDate ? (
-                    <ArrowDown color="blue" style={{ marginTop: 5 }} />
-                  ) : (
-                    <AntDesign
-                      name="up"
-                      size={16}
-                      color="blue"
-                      style={{ marginTop: 5 }}
-                    />
-                  )}
-                </TouchableOpacity>
+                <Box sx={{ marginLeft: "auto", marginBottom: 16 }}>
+                  <Typography fontFamily="Mukta-Regular">
+                    {getCurrency(infoData?.currency)}
+                    {getPendingAmount(
+                      infoData?.avlbal || "0.00",
+                      infoData?.curbal || "0.00"
+                    ) || "0.00"}
+                  </Typography>
+                </Box>
               </View>
-              <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Amount</Typography>
             </View>
-            <View style={{ height: "70%" }}> */}
-
-            {/* { cardTransactionsData.length > 0 ? cardTransactionsData?.map((transaction, index) => (
+            <View style={styles.cardActions}>
+              <ScrollView horizontal>
+                <View style={styles.cardActionsButtonMargin}>
+                  <Pressable>
+                  <Button
+                    color={frozen === "Y" ? "blue" : "light-blue"}
+                    leftIcon={
+                      <FreezeIcon
+                        color={frozen === "Y" ? "white" : "blue"}
+                        size={14}
+                      />
+                    }
+                    onPress={freezeCard}
+                    disabled={freezeLoading}
+                  >
+                    Freeze card
+                  </Button>
+                  </Pressable>
+                </View>
+                <View style={styles.cardActionsButtonMargin}>
+                  <Pressable>
+                    <Button
+                      color={cardPin ? "blue" : "light-blue"}
+                      leftIcon={
+                        <PinIcon color={cardPin ? "white" : "blue"} size={14} />
+                      }
+                      onPress={!cardPin ? showPin : resetCard}
+                      disabled={loading}
+                    >
+                      Show pin
+                    </Button>
+                  </Pressable>
+                </View>
+                <View style={styles.cardActionsButtonMargin}>
+                  <Pressable>
+                    <Button
+                      color="light-blue"
+                      onPress={requestShowCard}
+                      leftIcon={<EyeIcon color="blue" size={14} />}
+                    >
+                      Show card
+                    </Button>
+                  </Pressable>
+                </View>
+                <View style={styles.cardActionsButtonMargin}>
+                  <Pressable>
+                    <Button
+                      color="light-pink"
+                      rightIcon={<LostCardIcon color="pink" size={14} />}
+                      onPress={handleLostCard}
+                    >
+                      Lost card
+                    </Button>
+                  </Pressable>
+                </View>
+              </ScrollView>
+            </View>
+          </View>
+          <View style={styles.cardTransactions}>
+            <Heading
+              icon={<TransactionIcon color="pink" size={18} />}
+              title={"Latest Card Transactions"}
+            />
+            <View>
+              <Seperator backgroundColor={vars["grey"]} />
+              {/* start: Added by Aritos  */}
+              <View>
+                {!!cardTransactionsData?.length ? (
                   <>
-                    <View key={index} style={styles.listItem}>
-                      <View style={styles.listItemInnerText}>
-                        <Typography fontFamily="Nunito-Regular" fontSize={14}>
-                          {transaction?.dsName}
+                    <View style={styles.listHeadCardTransactions}>
+                      <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
+                        Name
+                      </Typography>
+                      <View
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          width: 60,
+                        }}
+                      >
+                        <Typography
+                          fontFamily="Nunito-SemiBold"
+                          color="accent-blue"
+                          fontSize={16}
+                        >
+                          Date
                         </Typography>
+                        <TouchableOpacity
+                          // temp disabled sorting logic
+                          onPress={() => {
+                            setIsloading(!isLoading);
+                            setSortByDate(!sortByDate);
+                          }}
+                        >
+                          {sortByDate ? (
+                            <ArrowDown color="blue" style={{ marginTop: 5 }} />
+                          ) : (
+                            <AntDesign
+                              name="up"
+                              size={16}
+                              color="blue"
+                              style={{ marginTop: 5 }}
+                            />
+                          )}
+                        </TouchableOpacity>
                       </View>
-                      <View style={styles.listItemInnerText}>
-                        <Typography fontFamily="Nunito-Regular" fontSize={14}>
-                          {moment(transaction?.receiptDate).format("DD MMM YYYY")}
-                        </Typography>
-                      </View>
-                      <View style={styles.listItemInnerText}>
-                        <View style={{display: 'flex', flexDirection: 'row'}}>
-                          <Typography fontFamily="Nunito-Regular" fontSize={14} color={ transaction?.transactionAmount >= 0 ? `#4bd8b7` : `#fd7a7a`}>
-                            {getCurrency(infoData?.currency)}
-                          </Typography>
-                          <Typography fontFamily="Nunito-Regular" fontSize={14}>
-                            {" "}
-                            {transaction?.transactionAmount}
-                          </Typography>
+                      <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
+                        Amount
+                      </Typography>
+                    </View>
+                    <View style={{ backgroundColor: "white" }}>
+                      {cardTransactionsData?.map((transaction, index) => (
+                        <View key={index} style={styles.listCardTransactions}>
+                          <TransactionItem
+                            data={{
+                              ...transaction,
+                              id: Number(transaction.id),
+                              amount: transaction.amount.toString(),
+                              name: transaction.purpose,
+                              // balance: "0.00",
+                              // closing_balance: "",
+                              // running_balance: "",
+                              // opening_balance: "",
+                              currency: transaction.transactionCurrency,
+                              description: transaction.purposeDetailed,
+                              reference_no:
+                                transaction.processingAllMessagesId.toString(),
+                              transaction_datetime: transaction?.receiptDate,
+                              isCardTx: true,
+                            }}
+                            key={index}
+                          />
                         </View>
-                      </View>
+                      ))}
                     </View>
                   </>
-                )) : (
-                  <View style={{backgroundColor: "#fff", padding: 24}}>
-                    <Typography fontFamily="Nunito-Regular" fontSize={16} style={{textAlign: 'center', marginTop: 20, backgroundColor: '#fff'}}>
-                      You don't have any transactions yet, why not add some money to your account to get started!
+                ) : (
+                  <View style={{ backgroundColor: "#fff", padding: 24 }}>
+                    <Typography
+                      fontFamily="Nunito-Regular"
+                      fontSize={16}
+                      style={{
+                        textAlign: "center",
+                        marginTop: 20,
+                        backgroundColor: "#fff",
+                      }}
+                    >
+                      You don't have any transactions yet, why not add some money
+                      to your account to get started!
                     </Typography>
                   </View>
-                  )
-                } 
-            </View> */}
-            {/* end:02-08-2013 disabled by Aristos */}
+                )}
+              </View>
+              {isEnrollmentSuccess && (
+                <SuccessModal
+                  title={"Card enrollment"}
+                  text={"Card Registered"}
+                  isOpen
+                  onClose={() => setEnrollmentStatus(false)}
+                />
+              )}
+              {/* end: Added by Aristos */}
+
+              {/* start:02-08-2013 disabled by Aristos */}
+              {/* <View style={styles.listHead}>
+                <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
+                  Name
+                </Typography>
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    width: 60,
+                  }}
+                >
+                  <Typography
+                    fontFamily="Nunito-SemiBold"
+                    color="accent-blue"
+                    fontSize={16}
+                  >
+                    Date
+                  </Typography>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setIsloading(!isLoading);
+                      setSortByDate(!sortByDate);
+                    }}
+                  >
+                    {sortByDate ? (
+                      <ArrowDown color="blue" style={{ marginTop: 5 }} />
+                    ) : (
+                      <AntDesign
+                        name="up"
+                        size={16}
+                        color="blue"
+                        style={{ marginTop: 5 }}
+                      />
+                    )}
+                  </TouchableOpacity>
+                </View>
+                <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Amount</Typography>
+              </View>
+              <View style={{ height: "70%" }}> */}
+
+              {/* { cardTransactionsData.length > 0 ? cardTransactionsData?.map((transaction, index) => (
+                    <>
+                      <View key={index} style={styles.listItem}>
+                        <View style={styles.listItemInnerText}>
+                          <Typography fontFamily="Nunito-Regular" fontSize={14}>
+                            {transaction?.dsName}
+                          </Typography>
+                        </View>
+                        <View style={styles.listItemInnerText}>
+                          <Typography fontFamily="Nunito-Regular" fontSize={14}>
+                            {moment(transaction?.receiptDate).format("DD MMM YYYY")}
+                          </Typography>
+                        </View>
+                        <View style={styles.listItemInnerText}>
+                          <View style={{display: 'flex', flexDirection: 'row'}}>
+                            <Typography fontFamily="Nunito-Regular" fontSize={14} color={ transaction?.transactionAmount >= 0 ? `#4bd8b7` : `#fd7a7a`}>
+                              {getCurrency(infoData?.currency)}
+                            </Typography>
+                            <Typography fontFamily="Nunito-Regular" fontSize={14}>
+                              {" "}
+                              {transaction?.transactionAmount}
+                            </Typography>
+                          </View>
+                        </View>
+                      </View>
+                    </>
+                  )) : (
+                    <View style={{backgroundColor: "#fff", padding: 24}}>
+                      <Typography fontFamily="Nunito-Regular" fontSize={16} style={{textAlign: 'center', marginTop: 20, backgroundColor: '#fff'}}>
+                        You don't have any transactions yet, why not add some money to your account to get started!
+                      </Typography>
+                    </View>
+                    )
+                  } 
+              </View> */}
+              {/* end:02-08-2013 disabled by Aristos */}
+            </View>
           </View>
-        </View>
-        <LoadingScreen isLoading={isLoading || loading} />
-        {/* <Spinner visible={loading} /> */}
-      </ScrollView>
+          {/* <LoadingScreen isLoading={isLoading || loading} /> */}
+          <Spinner visible={loading || isLoading} />
+        </ScrollView>
+      </View>
     </MainLayout>
   );
 }

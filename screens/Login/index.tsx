@@ -177,6 +177,7 @@ export function LoginScreen({ navigation }: any) {
                 email: "",
                 password: "",
               }}
+              // validationSchema={}
               validate={(values) => {
                 let errors: any = {};
                 if (!values.email) errors.email = "required";

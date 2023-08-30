@@ -93,6 +93,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
     handleChange,
     handleBlur,
     values,
+
     touched,
     errors,
     setFieldValue,
@@ -125,7 +126,9 @@ const ProfileDetails: FC<IProfileDetails> = ({
           lastname: lastName,
           dob:
             month && day && year
-              ? `${year}-${month.length === 2 ? month : `0${month}`}-${day}`
+              ? `${year}-${month.length === 2 ? month : `0${month}`}-${
+                  day.length === 2 ? day : `0${day}`
+                }`
               : "",
           place_of_birth: placeOfBirth,
           gender: GENDER[salutation],
@@ -136,7 +139,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
       handleNextStep();
     },
   });
-
+  console.log("🚀 ~ file: ProfileDetails.tsx:96 ~ values:", values);
   return (
     <View style={styles.card}>
       <View style={styles.cardTitle}>

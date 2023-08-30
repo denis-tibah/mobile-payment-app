@@ -1967,17 +1967,17 @@
   resolved "https://registry.npmjs.org/@sumsub/websdk-react/-/websdk-react-1.4.0.tgz"
   integrity sha512-cydHjQmdkXGsj0COFaukmBHz8NzkrbeSU6ZeNbrlI83KoTkaKbuBkkkOaxY9p80L0LyMwMp1F3B1yRZr4gpLBw==
 
-"@sumsub/websdk@^1.3.0":
-  version "1.4.1"
-  resolved "https://registry.npmjs.org/@sumsub/websdk/-/websdk-1.4.1.tgz"
-  integrity sha512-WBIGhJ2fGa3zHGBKvPYYbnceDQFO+2gUhG+BNycaU9TpZ4dzytfBgftqP13SKDHXnW/I/v7Bvt0qHeva9GjBxw==
+"@sumsub/websdk-react@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@sumsub/websdk-react/-/websdk-react-2.0.1.tgz#5884b76da87267c837da39554257edebe9ef729a"
+  integrity sha512-PLbbGqTHvpGRjotytmNUl3AJOH6OVVo73UZtqmgBtX0OAT2REzwWjNDLjby3i3tFMCB8fxEgPW318NrgjCSBFA==
 
-"@svgr/babel-plugin-add-jsx-attribute@^6.5.1":
-  version "6.5.1"
-  resolved "https://registry.npmjs.org/@svgr/babel-plugin-add-jsx-attribute/-/babel-plugin-add-jsx-attribute-6.5.1.tgz"
-  integrity sha512-9PYGcXrAxitycIjRmZB+Q0JaN07GZIWaTBIGQzfaZv+qr1n8X1XUEJ5rZ/vx6OVD9RRYlrNnXWExQXcmZeD/BQ==
+"@sumsub/websdk@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@sumsub/websdk/-/websdk-2.0.1.tgz#be841452f64b459901dfe3114e023e5869b16ad8"
+  integrity sha512-uNwBKX97+dnmLQfi7DnaHVaqbSSgpwdBWyPjGEpPpBI2/jgE6qGTwki6b4qg4etno6yucjGlDqFL65SdcyFk8w==
 
-"@svgr/babel-plugin-remove-jsx-attribute@*":
+"@svgr/babel-plugin-add-jsx-attribute@8.0.0":
   version "8.0.0"
   resolved "https://registry.npmjs.org/@svgr/babel-plugin-remove-jsx-attribute/-/babel-plugin-remove-jsx-attribute-8.0.0.tgz"
   integrity sha512-BcCkm/STipKvbCl6b7QFrMh/vx00vIP63k2eM66MfHJzPr6O2U0jYEViXkHJWqXqQYjdeA9cuCl5KWmlwjDvbA==
@@ -4471,15 +4471,15 @@ escape-html@~1.0.3:
   resolved "https://registry.npmjs.org/escape-html/-/escape-html-1.0.3.tgz"
   integrity sha512-NiSupZ4OeuGwr68lGIeym/ksIZMJodUGOSCZ/FSnTxcrekbvqrgdUxlJOMpijaKZVjAJrWrGs/6Jy8OMuyj9ow==
 
+escape-string-regexp@2.0.0, escape-string-regexp@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz#a30304e99daa32e23b2fd20f51babd07cffca344"
+  integrity sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==
+
 escape-string-regexp@^1.0.5:
   version "1.0.5"
   resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz"
   integrity sha512-vbRorB5FUQWvla16U8R/qgaFIya2qGzwDrNmCZuYKrbdSUMG6I1ZCGQRefkRVhuOkIGVne7BQ35DSfo1qvJqFg==
-
-escape-string-regexp@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz"
-  integrity sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==
 
 escape-string-regexp@^4.0.0:
   version "4.0.0"
@@ -5794,7 +5794,7 @@ internal-ip@4.3.0:
     default-gateway "^4.2.0"
     ipaddr.js "^1.9.0"
 
-invariant@*, invariant@^2.2.4:
+invariant@*, invariant@2.2.4, invariant@^2.2.4:
   version "2.2.4"
   resolved "https://registry.npmjs.org/invariant/-/invariant-2.2.4.tgz"
   integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
@@ -8466,7 +8466,15 @@ react-native-vector-icons@*, react-native-vector-icons@^9.2.0:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
-react-native@*, "react-native@^0.0.0-0 || 0.60 - 0.71 || 1000.0.0", "react-native@>= 0.62", react-native@>=0.23.1, react-native@>=0.45.0, react-native@>=0.47.0, react-native@>=0.57, react-native@>=0.57.0, react-native@>=0.57.7, react-native@>=0.59, react-native@>=0.59.0, react-native@>=0.65.0, react-native@0.71.8:
+react-native-webview@^13.4.0:
+  version "13.4.0"
+  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-13.4.0.tgz#8cea2ba2b7c40813886eba7fec3575133e71b023"
+  integrity sha512-yJFfUNsFH7fetbDlhfk0WvxjyyvSZYlH8HRE0phE7EvakDUS1kyJpk6TBiL6KjH2+3Zc13N9SY4k1IUsZ6bZ9g==
+  dependencies:
+    escape-string-regexp "2.0.0"
+    invariant "2.2.4"
+
+react-native@0.71.8:
   version "0.71.8"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.71.8.tgz"
   integrity sha512-ftMAuhpgTkbHU9brrqsEyxcNrpYvXKeATY+if22Nfhhg1zW+6wn95w9otwTnA3xHkljPCbng8mUhmmERjGEl7g==

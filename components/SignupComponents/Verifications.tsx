@@ -130,7 +130,6 @@ const Verifications: FC<IVerifications> = ({
       provider: "ziyl",
       country: registration.data.country_of_birth,
     };
-
     dispatch(getSumsubVerificationCode(regData))
       .unwrap()
       .then((payload: any) => {

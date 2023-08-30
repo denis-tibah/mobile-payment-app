@@ -6,6 +6,13 @@ export const styles = StyleSheet.create({
     backgroundColor: "white",
     marginBottom: 10,
     borderRadius: 20,
+    width: "100%",
+  },
+  sumSubCard: {
+    borderRadius: 20,
+    backgroundColor: "white",
+    overflow: "hidden",
+    width: "100%",
   },
   cardTitle: {
     paddingTop: 20,

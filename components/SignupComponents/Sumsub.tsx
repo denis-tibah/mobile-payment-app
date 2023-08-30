@@ -11,7 +11,7 @@ import vars from "../../styles/vars";
 import { styles } from "./styles";
 
 interface ISumsub {
- handlePrevStep: () => void;
+  handlePrevStep: () => void;
 }
 
 const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
@@ -34,11 +34,9 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
       <ScrollView>
         <View
           style={{
-            height: 700,
+            height: 1300,
             overflow: "scroll",
             flex: 1,
-            width: "140%",
-            right: "20%",
           }}
         >
           <WebView
@@ -135,4 +133,4 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
   );
 };
 
-// export default Sumsub;
+export default Sumsub;

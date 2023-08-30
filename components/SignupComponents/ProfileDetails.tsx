@@ -139,7 +139,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
       handleNextStep();
     },
   });
-  console.log("🚀 ~ file: ProfileDetails.tsx:96 ~ values:", values);
+
   return (
     <View style={styles.card}>
       <View style={styles.cardTitle}>

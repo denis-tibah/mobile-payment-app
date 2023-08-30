@@ -76,6 +76,12 @@
         {
           "photoPermission": "The app accesses your photos to let you share them"
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
+        }
       ]
     ]
   }

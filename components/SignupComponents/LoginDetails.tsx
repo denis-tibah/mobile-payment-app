@@ -2,7 +2,7 @@ import { useState, FC, useEffect } from "react";
 import { View, Text, TouchableOpacity, Platform } from "react-native";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { Button as Btn } from "react-native";
+/* import { Button as Btn } from "react-native"; */
 import { useNavigation } from "@react-navigation/native";
 import * as Linking from "expo-linking";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -102,6 +102,10 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
           alternateEmail ? alternateEmail : email,
           ""
         ).then((token: any) => {
+          console.log(
+            "🚀 ~ file: LoginDetails.tsx:105 ~ ).then ~ token:",
+            token
+          );
           dispatch(
             setLoginCredentials({
               email: alternateEmail ? alternateEmail : email,
@@ -311,7 +315,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
             </Button>
             {/* <Btn
               onPress={() => {
-                navigation.navigate("emailVerified");
+                navigation.navigate("emailVerified", { isOpen: true });
               }}
               title="notif"
             /> */}

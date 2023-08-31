@@ -120,11 +120,32 @@ export default function AppNavigationWrapper() {
   //     );
   //   }, []);
 
-  useEffect(() => {
-    if (userData?.id && auth?.data?.uuid && !expoPushToken)
-      registerForPushNotificationsAsync(userData.id, auth?.data?.uuid).then(
-        (token) => setExpoPushToken(token)
+  /* useEffect(() => {
+    if (!expoPushToken) {
+      registerForPushNotificationsAsync(0, "0").then((token) =>
+        setExpoPushToken(token)
       );
+      notificationListener.current =
+        Notifications.addNotificationReceivedListener((notification) => {
+          handlePushNotification(notification);
+        });
+
+      responseListener.current =
+        Notifications.addNotificationResponseReceivedListener((response) => {
+          handlePushNotification(response.notification);
+        });
+    }
+  }, []); */
+
+  useEffect(() => {
+    if (userData?.id && auth?.data?.uuid && !expoPushToken) {
+      console.log("going here");
+      registerForPushNotificationsAsync(userData.id, auth?.data?.uuid).then(
+        (token) => {
+          setExpoPushToken(token);
+        }
+      );
+    }
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
@@ -147,8 +168,16 @@ export default function AppNavigationWrapper() {
   }, [userData?.id, expoPushToken, auth?.data?.uuid]);
 
   const handlePushNotification = (notification: any) => {
+    console.log(
+      "🚀 ~ file: AppNavigationWrapper.tsx:152 ~ handlePushNotification ~ notification:",
+      notification
+    );
     if (notification?.request?.identifier === lastNotification) return;
     const transactionDetails = notification?.request?.content?.data;
+    console.log(
+      "🚀 ~ file: AppNavigationWrapper.tsx:155 ~ handlePushNotification ~ transactionDetails:",
+      transactionDetails
+    );
     const emailverificationDetails =
       notification?.request?.trigger?.remoteMessage?.data;
 
@@ -189,6 +218,7 @@ export default function AppNavigationWrapper() {
         data: { emailverificationDetails, userId: userData?.id },
       });
       navigation.navigate(screenNames.emailVerified, {
+        isOpenEmailVerified: true,
         emailverificationDetails,
         userId: userData?.id,
       });
@@ -368,11 +398,6 @@ export default function AppNavigationWrapper() {
               name={screenNames.receivedPayment}
               component={PaymentReceivedScreen}
             />
-            <Root.Screen
-              options={{ headerShown: false }}
-              name={screenNames.emailVerified}
-              component={EmailVerifiedScreen}
-            />
           </>
         ) : (
           <>
@@ -404,12 +429,12 @@ export default function AppNavigationWrapper() {
                 headerShown: false,
               }}
             />
-            {/* to text emailVerified component*/}
-            {/* <Root.Screen
-              options={{ headerShown: false }}
+            {/* emailVerified component*/}
+            <Root.Screen
               name={screenNames.emailVerified}
+              options={{ headerShown: true }}
               component={EmailVerifiedScreen}
-            /> */}
+            />
           </>
         )}
       </Root.Navigator>

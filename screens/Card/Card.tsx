@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Dimensions, Pressable, RefreshControl } from "react-native";
+import { Dimensions, Pressable, RefreshControl, View, ScrollView, TouchableOpacity, Image } from "react-native";
+import OTPInputView from '@twotalltotems/react-native-otp-input';
 import { useDispatch, useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
-import { View, ScrollView, TouchableOpacity, Image } from "react-native";
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
 import Button from "../../components/Button";
@@ -19,7 +19,7 @@ import LostCardIcon from "../../assets/icons/LostCard";
 import TransactionIcon from "../../assets/icons/Transaction";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
 import Box from "../../components/Box";
-import ZazooVirtualCard from "../../assets/images/zazoo-virtual-card.png";
+// import ZazooVirtualCard from "../../assets/images/zazoo-virtual-card.png";
 import {
   getCardTransactions,
   getCards,
@@ -493,24 +493,26 @@ export function Card({ navigation }: any) {
                   </Box>
                 </View>
               </Pressable>
-              <View style={styles.incomeBox__group}>
-                <Typography
-                  fontFamily="Nunito-SemiBold"
-                  color="accent-blue"
-                  style={styles.imcome__groupTypography}
-                >
-                  Pending:
-                </Typography>
-                <Box sx={{ marginLeft: "auto", marginBottom: 16 }}>
-                  <Typography fontFamily="Mukta-Regular">
-                    {getCurrency(infoData?.currency)}
-                    {getPendingAmount(
-                      infoData?.avlbal || "0.00",
-                      infoData?.curbal || "0.00"
-                    ) || "0.00"}
+              <Pressable>
+                <View style={styles.incomeBox__group}>
+                  <Typography
+                    fontFamily="Nunito-SemiBold"
+                    color="accent-blue"
+                    style={styles.imcome__groupTypography}
+                  >
+                    Pending:
                   </Typography>
-                </Box>
-              </View>
+                  <Box sx={{ marginLeft: "auto", marginBottom: 16 }}>
+                    <Typography fontFamily="Mukta-Regular">
+                      {getCurrency(infoData?.currency)}
+                      {getPendingAmount(
+                        infoData?.avlbal || "0.00",
+                        infoData?.curbal || "0.00"
+                      ) || "0.00"}
+                    </Typography>
+                  </Box>
+                </View>
+              </Pressable>
             </View>
             <View style={styles.cardActions}>
               <ScrollView horizontal>

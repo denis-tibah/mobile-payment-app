@@ -39,7 +39,9 @@ const VerificationLast: FC<IVerificationLast> = ({
   const { navigate }: any = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
   // gozazoo backend
-  const baseURL = "https://gozazoo.com/";
+  // const baseURL = "https://gozazoo.com/";
+  // staging
+  const baseURL = "https://zazoostg.com/reg/ziyl";
 
   const registration = useSelector((state: any) => state?.registration);
 

@@ -100,10 +100,6 @@ export default function AppNavigationWrapper() {
     show: false,
     data: {},
   });
-  console.log(
-    "🚀 ~ file: AppNavigationWrapper.tsx:103 ~ AppNavigationWrapper ~ showEmailVerified:",
-    showEmailVerified
-  );
 
   /*  const appState = useRef(AppState.currentState); */
 

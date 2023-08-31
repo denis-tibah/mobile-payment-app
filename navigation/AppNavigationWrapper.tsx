@@ -353,11 +353,11 @@ export default function AppNavigationWrapper() {
         data={showReceivedPayment?.data}
         setShowReceivedPayment={setShowReceivedPayment}
       />
-      <EmailVerifiedScreen
+      {/* <EmailVerifiedScreen
         isOpen={showEmailVerified?.show}
         data={showEmailVerified?.data}
         setShowEmailVerified={setShowEmailVerified}
-      />
+      /> */}
 
       <Root.Navigator
         screenOptions={{

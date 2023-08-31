@@ -34,7 +34,11 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.zazoostg.zazoomobile",
-      "permissions": ["INTERNET", "android.permission.SECURE_STORAGE"],
+      "permissions": [
+        "INTERNET",
+        "android.permission.SECURE_STORAGE",
+        "android.permission.CAMERA"
+      ],
       "googleServicesFile": "./google-services.json",
       "intentFilters": [
         {

@@ -326,7 +326,7 @@ export function LoginScreen({ navigation }: any) {
                     >
                       Submit
                     </Button>
-                    {/* <Btn
+                    {/*  <Btn
                       onPress={() => {
                         navigate("emailVerified", {
                           isOpenEmailVerified: true,

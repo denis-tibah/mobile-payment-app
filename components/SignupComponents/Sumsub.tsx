@@ -1,5 +1,6 @@
 import { FC, useRef, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Camera } from "expo-camera";
 import { View, TouchableOpacity, Text, ScrollView } from "react-native";
 /* import SumsubWebSdk from "@sumsub/websdk-react"; */
 
@@ -22,6 +23,14 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
   /* const [testToken, setTestToken] = useState(
     "_act-sbx-ed969f88-34dd-4127-9eed-ba937c02e8d"
   ); */
+  const [hasPermission, setHasPermission] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === "granted");
+    })();
+  }, []);
 
   return (
     <View style={styles.sumSubCard}>
@@ -39,25 +48,41 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
             flex: 1,
           }}
         >
-          <WebView
-            ref={webviewRef}
-            javaScriptEnabled={true}
-            startInLoadingState={true}
-            onMessage={(event) => {
-              // Handle messages received from the web SDK
-              const data = JSON.parse(event.nativeEvent.data);
-              if (data.type === "sumsubEvent") {
-                // Handle Sumsub events here
-                console.log(
-                  "Received Sumsub event:",
-                  data.eventType,
-                  data.payload
-                );
-              }
-              console.log("Sumsub");
-            }}
-            source={{
-              html: `<html>
+          {hasPermission && (
+            <WebView
+              // iOS specific:
+              allowsInlineMediaPlayback={true}
+              cacheEnabled={true}
+              geolocationEnabled={false}
+              javaScriptEnabledAndroid={true}
+              mediaPlaybackRequiresUserAction={false}
+              originWhitelist={["*"]}
+              scalesPageToFit
+              // Android specific:
+              javaScriptEnabled
+              domStorageEnabled
+              mixedContentMode={"compatibility"}
+              useWebkit
+              userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36"
+              bounces
+              ref={webviewRef}
+              startInLoadingState={true}
+              onMessage={(event) => {
+                // Handle messages received from the web SDK
+                const data = JSON.parse(event.nativeEvent.data);
+                if (data.type === "sumsubEvent") {
+                  // Handle Sumsub events here
+                  console.log(
+                    "Received Sumsub event:",
+                    data.eventType,
+                    data.payload
+                  );
+                }
+                console.log("Sumsub");
+              }}
+              source={{
+                uri: "https://static.sumsub.com/idensic/static/sns-websdk-builder.js",
+                html: `<html>
                     <head>
                     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
                       <style>
@@ -125,8 +150,9 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
                 }
                 launchWebSdk("${accessToken}");
               </script>`,
-            }}
-          />
+              }}
+            />
+          )}
         </View>
       </ScrollView>
     </View>

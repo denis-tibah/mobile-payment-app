@@ -100,6 +100,10 @@ export default function AppNavigationWrapper() {
     show: false,
     data: {},
   });
+  console.log(
+    "🚀 ~ file: AppNavigationWrapper.tsx:103 ~ AppNavigationWrapper ~ showEmailVerified:",
+    showEmailVerified
+  );
 
   /*  const appState = useRef(AppState.currentState); */
 
@@ -218,6 +222,7 @@ export default function AppNavigationWrapper() {
         data: { emailverificationDetails, userId: userData?.id },
       });
       navigation.navigate(screenNames.emailVerified, {
+        isOpenEmailVerified: true,
         emailverificationDetails,
         userId: userData?.id,
       });
@@ -397,11 +402,6 @@ export default function AppNavigationWrapper() {
               name={screenNames.receivedPayment}
               component={PaymentReceivedScreen}
             />
-            <Root.Screen
-              options={{ headerShown: false }}
-              name={screenNames.emailVerified}
-              component={EmailVerifiedScreen}
-            />
           </>
         ) : (
           <>
@@ -433,12 +433,12 @@ export default function AppNavigationWrapper() {
                 headerShown: false,
               }}
             />
-            {/* to text emailVerified component*/}
-            {/* <Root.Screen
-              options={{ headerShown: false }}
+            {/* emailVerified component*/}
+            <Root.Screen
               name={screenNames.emailVerified}
+              options={{ headerShown: true }}
               component={EmailVerifiedScreen}
-            /> */}
+            />
           </>
         )}
       </Root.Navigator>

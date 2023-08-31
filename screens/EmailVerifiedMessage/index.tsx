@@ -12,11 +12,8 @@ export default function EmailVerifiedScreen({
   setShowEmailVerified,
   route,
 }: any) {
-  console.log("🚀 ~ file: index.tsx:15 ~ route:", route);
-
   const { navigate }: any = useNavigation();
   const [isOpenModal, setOpenModal] = useState<Boolean>(false);
-  console.log("🚀 ~ file: index.tsx:19 ~ isOpenModal:", isOpenModal);
 
   useEffect(() => {
     if (isOpen || route?.params?.isOpenEmailVerified) {
@@ -26,14 +23,6 @@ export default function EmailVerifiedScreen({
       setShowEmailVerified({ show: false, data: {} });
     };
   }, []);
-
-  /* useFocusEffect(
-    useCallback(() => {
-      if (!isOpen) {
-        navigate(screenNames.login);
-      }
-    }, [isOpen])
-  ); */
 
   const closePopup = async () => {
     //Add navigation route to next step to registration process

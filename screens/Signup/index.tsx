@@ -36,8 +36,8 @@ import ProfileDetails from "../../components/SignupComponents/ProfileDetails";
 import TermsAndSecurity from "../../components/SignupComponents/TermsAndSecurity";
 import Verifications from "../../components/SignupComponents/Verifications";
 import VerificationLast from "../../components/SignupComponents/VerificationLast";
-// import Sumsub from "../../components/SignupComponents/Sumsub";
-import SumsubProcess from "../../components/SignupComponents/SumsubProcess";
+import Sumsub from "../../components/SignupComponents/Sumsub";
+/* import SumsubProcess from "../../components/SignupComponents/SumsubProcess"; */
 import EmailVerifiedScreen from "../EmailVerifiedMessage";
 
 export function SignupScreen({ navigation, route }: any) {
@@ -93,8 +93,8 @@ export function SignupScreen({ navigation, route }: any) {
       handleNextStep={handleNextStep}
       handlePrevStep={handlePrevStep}
     />,
-    // <Sumsub handlePrevStep={handlePrevStep} />,
-    <SumsubProcess handlePrevStep={handlePrevStep} />,
+    <Sumsub handlePrevStep={handlePrevStep} />,
+    // <SumsubProcess handlePrevStep={handlePrevStep} />,
   ];
   return (
     <Fragment>

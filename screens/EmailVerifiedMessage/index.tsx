@@ -15,8 +15,12 @@ export default function EmailVerifiedScreen({
   const { navigate }: any = useNavigation();
   const [isOpenModal, setOpenModal] = useState<Boolean>(false);
 
+
+  console.log("hit verifications message");
+
   useEffect(() => {
     if (isOpen || route?.params?.isOpenEmailVerified) {
+      console.log("open email verifications message");
       setOpenModal(true);
     }
     /* return () => {

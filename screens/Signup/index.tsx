@@ -38,7 +38,8 @@ import Verifications from "../../components/SignupComponents/Verifications";
 import VerificationLast from "../../components/SignupComponents/VerificationLast";
 import Sumsub from "../../components/SignupComponents/Sumsub";
 /* import SumsubProcess from "../../components/SignupComponents/SumsubProcess"; */
-import EmailVerifiedScreen from "../EmailVerifiedMessage";
+// import EmailVerifiedScreen from "../EmailVerifiedMessage";
+
 
 export function SignupScreen({ navigation, route }: any) {
   const [isLoading, setIsLoading] = useState(false);

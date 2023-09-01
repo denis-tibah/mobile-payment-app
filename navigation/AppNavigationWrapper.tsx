@@ -13,6 +13,9 @@ import MyAccountScreen from "../screens/MyAccount";
 import TransactionApprovalScreen from "../screens/TransactionApproval/index";
 import PaymentReceivedScreen from "../screens/PaymentReceivedMessage";
 import EmailVerifiedScreen from "../screens/EmailVerifiedMessage";
+
+import EmailVerifiedMessageV2 from "../screens/EmailVerifiedMessageV2"
+
 import ForgottenPassword from "../screens/ForgottenPassword";
 
 import TransactionsScreen from "../screens/Transactions";
@@ -137,6 +140,8 @@ export default function AppNavigationWrapper() {
     }
   }, []); */
 
+  // console.log("*********hit transactionDetails.requestType********* ");
+
   useEffect(() => {
     if (userData?.id && auth?.data?.uuid && !expoPushToken) {
       // console.log("going here");
@@ -173,13 +178,15 @@ export default function AppNavigationWrapper() {
       notification
     );
     if (notification?.request?.identifier === lastNotification) return;
+    
     const transactionDetails = notification?.request?.content?.data;
+    // const emailverificationDetails = notification?.request?.trigger?.remoteMessage?.data;
+    const emailverificationDetails = notification?.request?.content?.data;
+
     console.log(
       "🚀 ~ file: AppNavigationWrapper.tsx:155 ~ handlePushNotification ~ transactionDetails:",
       transactionDetails
     );
-    const emailverificationDetails =
-      notification?.request?.trigger?.remoteMessage?.data;
 
     if (transactionDetails.requestType === "TransactionApproval") {
       setLastNotification(notification?.request?.identifier);
@@ -192,7 +199,8 @@ export default function AppNavigationWrapper() {
         userId: userData?.id,
       });
     }
-    // console.log("hit PaymentReceived1");
+
+
     if (transactionDetails.requestType === "PaymentReceived") {
       console.log("hit PaymentReceived2");
 
@@ -209,20 +217,52 @@ export default function AppNavigationWrapper() {
     }
 
     if (transactionDetails.requestType === "EmailVerified") {
-      console.log("hit EmailVerified ", emailverificationDetails);
+      console.log("hit PaymentReceived2");
 
       setLastNotification(notification?.request?.identifier);
+
+      // setShowReceivedPayment({
+      //   show: true,
+      //   data: { transactionDetails, userId: userData?.id },
+      // });
 
       setShowEmailVerified({
         show: true,
         data: { emailverificationDetails, userId: userData?.id },
       });
-      navigation.navigate(screenNames.emailVerified, {
-        isOpenEmailVerified: true,
-        emailverificationDetails,
-        userId: userData?.id,
-      });
+
+      // navigation.navigate(screenNames.receivedPayment, {
+      //   transactionDetails,
+      //   userId: userData?.id,
+      // });
+
+        navigation.navigate(screenNames.emailVerified, {
+            // isOpenEmailVerified: true,
+            emailverificationDetails,
+            userId: userData?.id,
+          });
+
     }
+
+    // if (transactionDetails.requestType === "EmailVerified") {
+    //   console.log("hit EmailVerified ", emailverificationDetails);
+
+    //   setLastNotification(notification?.request?.identifier);
+
+    //   setShowEmailVerified({
+    //     show: true,
+    //     data: { emailverificationDetails, userId: userData?.id },
+    //   });
+    //   navigation.navigate(screenNames.emailVerified, {
+    //     isOpenEmailVerified: true,
+    //     emailverificationDetails,
+    //     userId: userData?.id,
+    //   });
+    // }
+
+
+
+
   };
 
   const isBiometric = async () => {
@@ -434,8 +474,13 @@ export default function AppNavigationWrapper() {
             <Root.Screen
               name={screenNames.emailVerified}
               options={{ headerShown: true }}
-              component={EmailVerifiedScreen}
+              component={EmailVerifiedMessageV2}
             />
+              {/* <Root.Screen
+              name={screenNames.emailVerified}
+              options={{ headerShown: true }}
+              component={EmailVerifiedScreen}
+            /> */}
           </>
         )}
       </Root.Navigator>

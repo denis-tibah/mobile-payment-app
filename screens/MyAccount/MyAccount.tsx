@@ -21,7 +21,7 @@ import { getAccountDetails } from "../../redux/account/accountSlice";
 import { getCurrency } from "../../utils/helpers";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { getPendingAmount, arrayChecker } from "../../utils/helpers";
-import { TTransaction } from "../../utils/types";
+import { Transaction } from "../../utils/types";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 interface ITransactions {
@@ -159,11 +159,6 @@ export function MyAccount({ navigation }: any) {
     if (!!userData?.id) fetchTransactions();
     // console.log("hit this");
   }, [userData?.id, page]);
-
-  useEffect(() => {
-    console.log('transactionsData ',transactionsData);
-    console.log('userData ',userData);
-  },[transactionsData, userData])
 
   //get transactionns every 15 mins
   /*  useEffect(() => {

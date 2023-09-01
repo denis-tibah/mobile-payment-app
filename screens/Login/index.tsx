@@ -193,10 +193,11 @@ export function LoginScreen({ navigation }: any) {
                   ).unwrap();
 
                   if (
-                    [
-                      result?.payload?.biometricYN.toUpperCase(),
-                      result?.biometricYN.toUpperCase(),
-                    ].includes("Y")
+                    // [ -- disabled since finxp's response got changed
+                    //   result?.payload?.biometricYN.toUpperCase(),
+                    //   result?.biometricYN.toUpperCase(),
+                    // ].includes("Y")
+                    result?.payload?.biometricYN === "Y"
                   ) {
                     console.log("Use biometic ");
                     await saveSecureCredetails(

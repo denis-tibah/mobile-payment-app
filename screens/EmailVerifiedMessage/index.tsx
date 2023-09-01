@@ -19,18 +19,18 @@ export default function EmailVerifiedScreen({
     if (isOpen || route?.params?.isOpenEmailVerified) {
       setOpenModal(true);
     }
-    return () => {
+    /* return () => {
       setShowEmailVerified({ show: false, data: {} });
-    };
+    }; */
   }, []);
 
   const closePopup = async () => {
     //Add navigation route to next step to registration process
     // setShowEmailVerified({ show: false, data: {} });
+    setOpenModal(false);
     navigate(screenNames.signup, {
       stepIndex: 1,
     });
-    setOpenModal(false);
   };
 
   return (
@@ -43,7 +43,7 @@ export default function EmailVerifiedScreen({
           <View style={styles.transactionDetails}>
             <Text>{data?.emailverificationDetails?.message}</Text>
           </View>
-          <Button color={"green"} onPress={() => closePopup()}>
+          <Button color={"green"} onPress={closePopup}>
             <Text style={styles.buttonText}>Next Step</Text>
           </Button>
         </View>

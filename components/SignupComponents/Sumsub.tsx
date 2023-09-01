@@ -43,7 +43,7 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
       <ScrollView>
         <View
           style={{
-            height: 1300,
+            height: 1200,
             overflow: "scroll",
             flex: 1,
           }}
@@ -63,10 +63,12 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
               domStorageEnabled
               mixedContentMode={"compatibility"}
               useWebkit
-              userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36"
-              bounces
+              userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
+              bounces={false}
               ref={webviewRef}
               startInLoadingState={true}
+              showsHorizontalScrollIndicator={true}
+              showsVerticalScrollIndicator={true}
               onMessage={(event) => {
                 // Handle messages received from the web SDK
                 const data = JSON.parse(event.nativeEvent.data);
@@ -79,6 +81,9 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
                   );
                 }
                 console.log("Sumsub");
+              }}
+              onError={(param) => {
+                console.log("🚀 ~ file: Sumsub.tsx:84 ~ param:", param);
               }}
               source={{
                 uri: "https://static.sumsub.com/idensic/static/sns-websdk-builder.js",

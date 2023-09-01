@@ -11,6 +11,8 @@ export const registerForPushNotificationsAsync = async (
 ) => {
   let token;
 
+  console.log("Device ", Device);
+
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("default", {
       name: "default",
@@ -21,6 +23,7 @@ export const registerForPushNotificationsAsync = async (
   }
 
   if (Device.isDevice) {
+    console.log("hit this ");
     try {
       const { status: existingStatus } =
         await Notifications.getPermissionsAsync();

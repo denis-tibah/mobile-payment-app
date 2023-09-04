@@ -11,7 +11,7 @@ export const registerForPushNotificationsAsync = async (
 ) => {
   let token;
 
-  console.log("Device ", Device);
+  console.log("********Platform.OS*********** ", Platform.OS);
 
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("default", {
@@ -42,7 +42,7 @@ export const registerForPushNotificationsAsync = async (
         })
       ).data;
 
-console.log("expo token ", token);
+console.log("***expo token*** ", token);
 
       await api.post("/registerPushToken", {
         token,

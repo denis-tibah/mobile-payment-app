@@ -96,6 +96,7 @@ export default function PaymentReceivedScreen({
             <Text>
               You have just received a Payment of{" "}
               {transactionDetails.amount}
+        
             </Text>
           </View>
         )}

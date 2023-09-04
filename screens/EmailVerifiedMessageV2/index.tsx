@@ -21,7 +21,7 @@ export default function EmailVerifiedMessageV2({
     message: "",
     title: "",
   },
-  uuid = "",
+  userId = "",
 } = data || {};
  
   const { navigate }: any = useNavigation();
@@ -62,7 +62,7 @@ export default function EmailVerifiedMessageV2({
         {/* { emailDetails && ( */}
           <View style={styles.transactionDetails}>
             <Text>
-              { emailDetails.message}
+              {emailDetails.message}
             </Text>
           </View>
         {/* )} */}

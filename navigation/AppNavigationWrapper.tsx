@@ -142,9 +142,21 @@ export default function AppNavigationWrapper() {
 
   // console.log("*********hit transactionDetails.requestType********* ");
 
+  // useEffect(() => {
+  //   if (!expoPushToken) {
+  //     console.log("*******Aristos expo going here********");
+  //     registerForPushNotificationsAsync(0, auth?.data?.uuid).then(
+  //       (token) => {
+  //         setExpoPushToken(token);
+  //         console.log("*******expo token********", token);
+  //       }
+  //     );
+  //   }
+  // }, []);
+
   useEffect(() => {
     if (userData?.id && auth?.data?.uuid && !expoPushToken) {
-      console.log("*******ecpo going here********");
+      console.log("*******expo going here********");
       registerForPushNotificationsAsync(userData.id, auth?.data?.uuid).then(
         (token) => {
           setExpoPushToken(token);

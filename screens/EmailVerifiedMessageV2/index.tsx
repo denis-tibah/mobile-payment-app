@@ -21,7 +21,7 @@ export default function EmailVerifiedMessageV2({
     message: "",
     title: "",
   },
-  userId = "",
+  uuid = "",
 } = data || {};
  
   const { navigate }: any = useNavigation();

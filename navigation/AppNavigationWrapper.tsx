@@ -181,7 +181,7 @@ export default function AppNavigationWrapper() {
     
     const transactionDetails = notification?.request?.content?.data;
     // const emailverificationDetails = notification?.request?.trigger?.remoteMessage?.data;
-    const emailverificationDetails = notification?.request?.content;
+    // const emailverificationDetails = notification?.request?.content;
     // const emailverificationData = notification?.request?.content?.data;
 
     console.log(
@@ -238,18 +238,18 @@ export default function AppNavigationWrapper() {
 
 
     //email verificationL his is triggerd by /verifyemailfinxp webservice
-    if (transactionDetails.requestType === "APPROVE") {
+    if (transactionDetails.requestType === "EmailVerified") {
 
       setLastNotification(notification?.request?.identifier); 
 
       setShowEmailVerified({
         show: true,
-        data: { emailverificationDetails, userId: userData?.id },
+        data: { transactionDetails, userId: userData?.id },
       });
 
         navigation.navigate(screenNames.emailVerified, {
             // isOpenEmailVerified: true,
-            emailverificationDetails,
+            transactionDetails,
             userId: userData?.id,
           });
 

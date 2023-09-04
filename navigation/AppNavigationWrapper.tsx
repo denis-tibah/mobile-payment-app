@@ -406,7 +406,7 @@ export default function AppNavigationWrapper() {
       />
       <EmailVerifiedMessageV2
         isOpen={showEmailVerified?.show}
-        data={showEmailVerified}
+        data={showEmailVerified?.data}
         setShowEmailVerified={setShowEmailVerified}
       />
 

@@ -25,7 +25,8 @@ import { loginCredentialsSchema } from "../../utils/formikSchema";
 import { AppDispatch } from "../../store";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
-import { registerForPushNotificationsRegistrationAsync } from "../PushNotification copy";
+// import { registerForPushNotificationsRegistrationAsync } from "../PushNotification copy";
+import { registerForPushNotificationsAsync } from "../PushNotification";
 
 interface ILoginDetails {
   handleNextStep: () => void;
@@ -98,7 +99,8 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
         setIsLoading(true);
         //added by Aristos
         //generate expo token
-        registerForPushNotificationsRegistrationAsync(
+        // registerForPushNotificationsRegistrationAsync(
+        registerForPushNotificationsAsync (
           alternateEmail ? alternateEmail : email,
           ""
         ).then((token: any) => {

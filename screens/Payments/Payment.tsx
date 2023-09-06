@@ -38,7 +38,7 @@ import {
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
 import { RootState } from "../../store";
-import { getTransactions } from "../../redux/transaction/transactionSlice";
+import { SearchFilter, getTransactions } from "../../redux/transaction/transactionSlice";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { UserData } from "../../models/UserData";
 import { Text } from "react-native-paper";
@@ -58,7 +58,7 @@ export function Payment({ navigation }: any) {
   const [isOtpValid, setIsOtpValid] = useState(false);
 
   const [displayModal, setDisplayModal] = useState(false);
-  const [paymentSuccessful, setPaymentSuccessful] = useState(false);
+  const [showPaymentStatusModal, setShowPaymentStatusModal] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedPayee, setSelectedPayee] = useState(null);
   const [beneficiaryOptions, setBeneficiaryOptions] = useState<any>([]);
@@ -88,6 +88,12 @@ export function Payment({ navigation }: any) {
   const loading = useSelector((state: any) => state.beneficiary.loading);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isExternalPayment, setIsExternalPayment] = useState(false);
+  const paymentContentDefault = {
+    title: "Payment Failed",
+    text: "Your payment was not successful",
+    isError: false,
+  };
+  const [paymentModalContent, setPaymentModalContent] = useState<{ title: string, text: string, isError: boolean}>(paymentContentDefault);
   const [externalPayment, setExternalPayment] = useState("");
   const { navigate }: any = useNavigation();
 
@@ -171,7 +177,7 @@ export function Payment({ navigation }: any) {
           // sort:       sort,
           // direction:  direction,
           // status:     status
-          account_id: id,
+          account_id: id.toString(),
           sort: sort,
           direction: direction,
           status: status,
@@ -210,7 +216,11 @@ export function Payment({ navigation }: any) {
       .then((data: any) => {
         if (data) {
           if (data.code === 200) {
-            setPaymentSuccessful(true);
+            setPaymentModalContent({
+              title: "Payment Successful",
+              text: "Your payment was successful",
+              isError: false,
+            })
           }
         }
       })
@@ -218,12 +228,11 @@ export function Payment({ navigation }: any) {
         console.error(error);
       })
       .finally(() => {
+        setShowPaymentStatusModal(true);
         setIsLoading(false);
       });
-
     setDisplayModal(false);
     await delayCode(1000);
-    setPaymentSuccessful(true);
     await fetchTransactions();
   };
 
@@ -309,6 +318,7 @@ export function Payment({ navigation }: any) {
             reason: "",
           }}
           onSubmit={(values) => {
+            setIsLoading(true);
             dispatch(
               initiatePayment({
                 recipientFirstname: getFirstAndLastName(values.recipientname)
@@ -363,6 +373,10 @@ export function Payment({ navigation }: any) {
                       .unwrap()
                       .then((payload: any) => {
                         if (payload) setIsOtpValid(true);
+                      })
+                      .catch((error: any) => {
+                        console.error(error);
+                        setIsOtpValid(false);
                       });
                     handleDisplayModal();
                   }
@@ -370,6 +384,10 @@ export function Payment({ navigation }: any) {
               })
               .catch((error: any) => {
                 console.error(error);
+              })
+              .finally(() => {
+                setShowPaymentStatusModal(true);
+                setIsLoading(false);
               });
           }}
         >
@@ -383,7 +401,7 @@ export function Payment({ navigation }: any) {
             touched,
           }) => (
             <View style={styles.content}>
-              {displayModal && !paymentSuccessful && (
+              {displayModal && !showPaymentStatusModal && (
                 <CodeModal
                   title={"Verify your payment"}
                   subtitle={
@@ -394,13 +412,13 @@ export function Payment({ navigation }: any) {
                   onCancel={() => setDisplayModal(false)}
                 />
               )}
-              {paymentSuccessful && !displayModal && (
+              {showPaymentStatusModal && !displayModal && (
                 <SuccessModal
-                  isError={false}
-                  title={"Payment Successful"}
-                  text={"Your payment was successful"}
+                  isError={paymentModalContent.isError}
+                  title={paymentModalContent.title}
+                  text={paymentModalContent.text}
                   isOpen
-                  onClose={() => setPaymentSuccessful(false)}
+                  onClose={() => setShowPaymentStatusModal(false)}
                 />
               )}
               <View style={{ zIndex: 1 }}>

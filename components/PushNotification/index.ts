@@ -9,7 +9,10 @@ export const registerForPushNotificationsAsync = async (
   userId: number,
   uuid: string
 ) => {
+
   let token;
+  let projectId = '7454c009-85fa-4eb0-ae8c-5834ded616c2'
+
 
   console.log("********Platform.OS*********** ", Platform.OS);
 
@@ -25,9 +28,9 @@ export const registerForPushNotificationsAsync = async (
   if (Device.isDevice) {
     console.log("hit this ");
     try {
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
+
       if (existingStatus !== "granted") {
         const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
@@ -36,10 +39,17 @@ export const registerForPushNotificationsAsync = async (
         alert("Failed to get push token for push notification!");
         return;
       }
+
+    } 
+      catch (error) {
+        console.log({ notificationRegError: error });
+      }
+
+    try {
       token = (
         await Notifications.getExpoPushTokenAsync({
           // projectId: "53738179-17b1-4378-b234-2689d22ab698",
-          projectId: '7454c009-85fa-4eb0-ae8c-5834ded616c2',
+          projectId: projectId,
         })
       ).data;
 
@@ -51,7 +61,7 @@ console.log("***expo token*** ", token);
         uuid,
       });
     } catch (error) {
-      console.log({ notificationRegError: error });
+      console.log({ getingTokenError: error });
     }
   } else {
     alert("Must use physical device for Push Notifications");

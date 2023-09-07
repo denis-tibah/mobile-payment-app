@@ -100,14 +100,10 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
         //added by Aristos
         //generate expo token
         // registerForPushNotificationsRegistrationAsync(
-        registerForPushNotificationsAsync (
+        registerForPushNotificationsAsync(
           alternateEmail ? alternateEmail : email,
           ""
         ).then((token: any) => {
-          console.log(
-            "🚀 ~ file: LoginDetails.tsx:105 ~ ).then ~ token:",
-            token
-          );
           dispatch(
             setLoginCredentials({
               email: alternateEmail ? alternateEmail : email,
@@ -125,6 +121,14 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
               ) {
                 setIsValidEmail(true);
               }
+              dispatch(
+                setRegistrationData({
+                  email: alternateEmail ? alternateEmail : email,
+                  phone_number: `${countryCode}${phoneNumber}`,
+                  identifier: `${countryCode}${phoneNumber}`,
+                  /* countryCode, */
+                })
+              );
               setIsLoading(false);
             })
             .catch((error: any) => {
@@ -144,9 +148,9 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
             setRegistrationData({
               email: alternateEmail ? alternateEmail : email,
               phone_number: `${countryCode}${phoneNumber}`,
-              phoneNumber,
+              /*  phoneNumber, */
               identifier: `${countryCode}${phoneNumber}`,
-              countryCode,
+              /* countryCode, */
             })
           );
           return;
@@ -157,7 +161,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
             email: alternateEmail ? alternateEmail : email,
             phone_number: `${countryCode}${phoneNumber}`,
             identifier: `${countryCode}${phoneNumber}`,
-            countryCode,
+            /* countryCode, */
           })
         );
         // handleNextStep();

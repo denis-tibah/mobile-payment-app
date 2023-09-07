@@ -16,18 +16,13 @@ export default function EmailVerifiedMessageV2({
   route,
 }: any) {
   
-  const {
-  emailDetails = {
-    message: "",
-    title: "",
-  },
-  userId = "",
-} = data || {};
  
   const { navigate }: any = useNavigation();
   const dispatch = useDispatch();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const [isOpenModal, setIsOpenModal] = useState<Boolean>(false);
+
+  console.log('*****data*****', data?.emailverificationData);
 
   // useEffect(() => {
   //   // if (isOpen || route?.params?.isOpenEmailVerified) {
@@ -62,7 +57,7 @@ export default function EmailVerifiedMessageV2({
         {/* { emailDetails && ( */}
           <View style={styles.transactionDetails}>
             <Text>
-              {emailDetails.message}
+              {data?.emailverificationData?.message}
             </Text>
           </View>
         {/* )} */}

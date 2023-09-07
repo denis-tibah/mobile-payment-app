@@ -185,21 +185,22 @@ export default function AppNavigationWrapper() {
   }, [userData?.id, expoPushToken, auth?.data?.uuid]);
 
   const handlePushNotification = (notification: any) => {
-    console.log(
-      "🚀 ~ file: AppNavigationWrapper.tsx:152 ~ handlePushNotification ~ notification:",
-      notification
-    );
+    // console.log(
+    //   "*************** ~ file: AppNavigationWrapper.tsx:152 ~ handlePushNotification ~ notification:",
+    //   notification
+    // );
+    
     if (notification?.request?.identifier === lastNotification) return;
     
     const transactionDetails = notification?.request?.content?.data;
-    // const emailverificationDetails = notification?.request?.trigger?.remoteMessage?.data;
-    // const emailverificationDetails = notification?.request?.content;
-    // const emailverificationData = notification?.request?.content?.data;
+    const emailverificationData = notification?.request?.content?.data;
 
-    console.log(
-      "🚀 ~ file: AppNavigationWrapper.tsx:155 ~ handlePushNotification ~ transactionDetails:",
-      transactionDetails
-    );
+    // console.log("***********notification?.request?.content********************",notification?.request?.content.data.message);
+
+    // console.log(
+    //   "*********~ file: AppNavigationWrapper.tsx:155 ~ handlePushNotification ~ transactionDetails:",
+    //   transactionDetails
+    // );
 
     if (transactionDetails.requestType === "TransactionApproval") {
       setLastNotification(notification?.request?.identifier);
@@ -228,40 +229,23 @@ export default function AppNavigationWrapper() {
         userId: userData?.id,
       });
     }
-    //this is triggerd by /sendPushNotification webservice
-
-    // if (transactionDetails.requestType === "EmailVerified") {
-    //   console.log("hit PaymentReceived2");
-
-    //   setLastNotification(notification?.request?.identifier);
-
-    //   setShowEmailVerified({
-    //     show: true,
-    //     data: { emailverificationData, userId: userData?.id },
-    //   });
-
-    //     navigation.navigate(screenNames.emailVerified, {
-    //         // isOpenEmailVerified: true,
-    //         emailverificationDetails,
-    //         userId: userData?.id,
-    //       });
-
-    // }
-
 
     //email verificationL his is triggerd by /verifyemailfinxp webservice
-    if (transactionDetails.requestType === "EmailVerified") {
+    if (emailverificationData.requestType === "EmailVerified") {
 
       setLastNotification(notification?.request?.identifier); 
 
       setShowEmailVerified({
         show: true,
-        data: { transactionDetails, userId: userData?.id },
+        data: { emailverificationData, userId: userData?.id },
       });
+
+      console.log("***********emailverificationData ********************",emailverificationData );
+
 
         navigation.navigate(screenNames.emailVerified, {
             // isOpenEmailVerified: true,
-            transactionDetails,
+            emailverificationData,
             userId: userData?.id,
           });
 
@@ -494,16 +478,12 @@ export default function AppNavigationWrapper() {
               }}
             />
             {/* emailVerified component*/}
-            <Root.Screen
+            {/* <Root.Screen
               name={screenNames.emailVerified}
               options={{ headerShown: true }}
               component={EmailVerifiedMessageV2}
-            />
-              {/* <Root.Screen
-              name={screenNames.emailVerified}
-              options={{ headerShown: true }}
-              component={EmailVerifiedScreen}
             /> */}
+      
           </>
         )}
       </Root.Navigator>

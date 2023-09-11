@@ -151,6 +151,8 @@ export function Transactions({ navigation }: any) {
   const fetchTransactionsWithFilters = async (value: SearchFilter) => {
     try {
       setIsLoading(true);
+console.log("SearchFilter ",value);
+
       if (userData && userData?.id) {
         let search: SearchFilter = {
           ...value,
@@ -244,7 +246,11 @@ export function Transactions({ navigation }: any) {
 
   const handleOnSubmitEditing = (event: any) => {
     const isNumberOnly = containsOnlyNumbers(searchText);
-    const userId = userData?.id;
+    const userId = userData?.id
+
+// console.log("Serach item is ",searchText);
+
+
     if (!userId) {
       return;
     }

@@ -5,9 +5,17 @@ export const countries = [
     {label: "Netherlands", value: "NLD"}
 ]
 
+// export enum TRANSACTIONS_STATUS {
+//     PENDING = 'pending'.toUpperCase(),
+//     COMPLETED = 'complete'.toUpperCase(),
+//     // SUCCESS = 'success'.toUpperCase(),
+//     PROCESSING = 'processing'.toUpperCase(),
+//     FAILED = 'failed'.toUpperCase()
+// }
+
 export enum TRANSACTIONS_STATUS {
-    PENDING = 'pending'.toUpperCase(),
-    COMPLETED = 'success'.toUpperCase(),
-    PROCESSING = 'processing'.toUpperCase(),
-    FAILED = 'failed'.toUpperCase()
+    PENDING='PENDING',
+    COMPLETED = 'SUCCESS',
+    PROCESSING='PROCESSING',
+    FAILED='FAILED'
 }

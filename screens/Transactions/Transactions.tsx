@@ -84,6 +84,8 @@ export function Transactions({ navigation }: any) {
 
   const transactionStatusOptions = Object.keys(TRANSACTIONS_STATUS).map(
     (value) => {
+      // console.log('*****status value*******',value);
+
       return {
         label: capitalizeFirstLetter(value),
         value: TRANSACTIONS_STATUS[value as keyof typeof TRANSACTIONS_STATUS],

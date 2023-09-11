@@ -57,6 +57,7 @@ import Toast from "react-native-root-toast";
 import DropDownPicker from "react-native-dropdown-picker";
 import { getPendingAmount } from "../../utils/helpers";
 import { ToggleButton } from "react-native-paper";
+import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 
 
 export interface SelectOption {
@@ -80,7 +81,11 @@ export function Profile({ route, navigation }: any) {
   const profileData = useSelector(
     (state: any) => state?.profile?.profile
   )?.data;
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [isUpdateLimitSuccess, setIsUpdateLimitSuccess] = useState<{
+    state: boolean;
+    isModalOpen: boolean;
+  }>({ state: false, isModalOpen: false});
   const biometricSetting = useSelector(
     (state: any) => state.auth.data.biometricYN
   );
@@ -98,7 +103,7 @@ export function Profile({ route, navigation }: any) {
   const [helpTopicOpen, setHelpTopicOpen] = useState(false);
   const [openListForSalutation, setOpenListForSalutation] =
     useState<boolean>(false);
-  const [selectedSalutation, setSelectedSalutation] = useState(null);
+  // const [selectedSalutation, setSelectedSalutation] = useState(null);
   const [openListForSourceOfWealth, setOpenListForSourceOfWealth] =
     useState<boolean>(false);
   const [selectedSourceOfWealth, setSelectedSourceOfWealth] = useState(null);
@@ -193,20 +198,38 @@ export function Profile({ route, navigation }: any) {
         });
       }
     });
-    console.log(_updateRequest);
+    if (_updateRequest.length === 0) {
+      return;
+    }
     try {
       // this is temporary approach to update limits
       await Promise.all(
         _updateRequest.map((request) => dispatch(updateLimits(request) as any))
       );
+      setIsUpdateLimitSuccess({ state: true, isModalOpen: true });
     } catch (error) {
       console.log('error:', error);
+      setIsUpdateLimitSuccess({ state: false, isModalOpen: true });
+    } finally {
+      setUpdateLimitToggles({});
+      setLimitValueToUpdate({});
+      setIsLoading(false);
     }
   }
 
   return (
     <MainLayout navigation={navigation}>
       <Spinner visible={loadingUserProfileData} />
+      <Spinner visible={isLoading} />
+      <SuccessModal isOpen={isUpdateLimitSuccess.isModalOpen}
+        isError={!isUpdateLimitSuccess.state}
+        title={isUpdateLimitSuccess.state ? "Success" : "Error"}
+        text={isUpdateLimitSuccess.state ? "Request for limits update is on the process." : "Something went wrong"}
+        onClose={() => setIsUpdateLimitSuccess({
+          state: false,
+          isModalOpen: false
+        })}
+      />
       <ScrollView bounces={false}>
         <IncomeBox />
         {/* content */}
@@ -263,7 +286,7 @@ export function Profile({ route, navigation }: any) {
                             });
                           }}
                           listMode="SCROLLVIEW"
-                          setValue={setSelectedSalutation}
+                          // setValue={setSelectedSalutation}
                           items={salutationOptions}
                           value={values.salutation}
                           setOpen={setOpenListForSalutation}
@@ -588,7 +611,11 @@ export function Profile({ route, navigation }: any) {
                       <Button
                         leftIcon={<TransactionIcon color="blue" />}
                         color="light-blue"
-                        onPress={updateLimitRequest}
+                        onPress={() => {
+                          setIsLoading(true);
+                          updateLimitRequest();
+                        }}
+                        // disabled
                       >
                         Change request
                       </Button>

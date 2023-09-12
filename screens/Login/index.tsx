@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as LocalAuthentication from "expo-local-authentication";
 import * as SecureStore from "expo-secure-store";
 import { Formik } from "formik";
-/* import { Button as Btn } from "react-native"; */
+// import { Button as Btn } from "react-native";
 
 import Button from "../../components/Button";
 import FormGroup from "../../components/FormGroup";
@@ -193,10 +193,11 @@ export function LoginScreen({ navigation }: any) {
                   ).unwrap();
 
                   if (
-                    [
-                      result?.payload?.biometricYN.toUpperCase(),
-                      result?.biometricYN.toUpperCase(),
-                    ].includes("Y")
+                    // [ -- disabled since finxp's response got changed
+                    //   result?.payload?.biometricYN.toUpperCase(),
+                    //   result?.biometricYN.toUpperCase(),
+                    // ].includes("Y")
+                    result?.payload?.biometricYN === "Y"
                   ) {
                     console.log("Use biometic ");
                     await saveSecureCredetails(
@@ -326,7 +327,7 @@ export function LoginScreen({ navigation }: any) {
                     >
                       Submit
                     </Button>
-                    {/*  <Btn
+                    {/* <Btn
                       onPress={() => {
                         navigate("emailVerified", {
                           isOpenEmailVerified: true,

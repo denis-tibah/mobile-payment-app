@@ -4,7 +4,7 @@ import accountSlice from "./redux/account/accountSlice";
 import transactionSlice, {
   TransactionState,
 } from "./redux/transaction/transactionSlice";
-import settingSlice from "./redux/setting/settingSlice";
+import settingSlice, { SettingState } from "./redux/setting/settingSlice";
 import beneficiarySlice from "./redux/beneficiary/beneficiarySlice";
 import registrationSlice from "./redux/registration/registrationSlice";
 import profileSlice from "./redux/profile/profileSlice";
@@ -32,7 +32,7 @@ export interface RootState {
   auth: AuthState;
   account: any;
   transaction: TransactionState;
-  setting: any;
+  setting: SettingState;
   beneficiary: any;
   profile: any;
   registration: any;

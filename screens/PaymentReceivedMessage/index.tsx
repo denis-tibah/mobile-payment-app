@@ -50,8 +50,6 @@ export default function PaymentReceivedScreen({
   const fetchTransactions = async () => {
     try {
 
-      console.log('userData?.id', userData?.id);
-
       if (userData) {
         let search= {     
           account_id: userData?.id,

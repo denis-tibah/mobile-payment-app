@@ -72,7 +72,11 @@
     "react-native-swiper": "^1.6.0",
     "react-native-user-detector-active-inactive": "^0.0.8",
     "react-native-vector-icons": "^9.2.0",
+<<<<<<< HEAD
     "react-native-webview": "11.26.0",
+=======
+    "react-native-webview": "11",
+>>>>>>> 63ccfe4c2a5798e37600e94f46b72d76e4eeb46e
     "react-redux": "^8.0.5",
     "redux": "^4.2.1",
     "redux-persist": "^6.0.0",

@@ -16,6 +16,9 @@ import EmailVerifiedScreen from "../screens/EmailVerifiedMessage";
 
 import EmailVerifiedMessageV2 from "../screens/EmailVerifiedMessageV2"
 
+
+import EmailVerifiedMessageV2 from "../screens/EmailVerifiedMessageV2"
+
 import ForgottenPassword from "../screens/ForgottenPassword";
 
 import TransactionsScreen from "../screens/Transactions";
@@ -113,6 +116,7 @@ export default function AppNavigationWrapper() {
   /* const [appCurrentState, setAppState] = useState(AppState.currentState); */
   const [isAppInactive, setIsAppInactive] = useState(false);
   const INACTIVE_TIMEOUT = 60000; // 60 seconds (adjust as needed)
+  const INACTIVE_TIMEOUT = 60000; // 60 seconds (adjust as needed)
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   //register token hen app opens
@@ -139,6 +143,20 @@ export default function AppNavigationWrapper() {
         });
     }
   }, []); */
+
+  // console.log("*********hit transactionDetails.requestType********* ");
+
+  // useEffect(() => {
+  //   if (!expoPushToken) {
+  //     console.log("*******Aristos expo going here********");
+  //     registerForPushNotificationsAsync(0, auth?.data?.uuid).then(
+  //       (token) => {
+  //         setExpoPushToken(token);
+  //         console.log("*******expo token********", token);
+  //       }
+  //     );
+  //   }
+  // }, []);
 
   // console.log("*********hit transactionDetails.requestType********* ");
 
@@ -190,9 +208,23 @@ export default function AppNavigationWrapper() {
     //   notification
     // );
     
+    // console.log(
+    //   "*************** ~ file: AppNavigationWrapper.tsx:152 ~ handlePushNotification ~ notification:",
+    //   notification
+    // );
+    
     if (notification?.request?.identifier === lastNotification) return;
     
+    
     const transactionDetails = notification?.request?.content?.data;
+    const emailverificationData = notification?.request?.content?.data;
+
+    // console.log("***********notification?.request?.content********************",notification?.request?.content.data.message);
+
+    // console.log(
+    //   "*********~ file: AppNavigationWrapper.tsx:155 ~ handlePushNotification ~ transactionDetails:",
+    //   transactionDetails
+    // );
     const emailverificationData = notification?.request?.content?.data;
 
     // console.log("***********notification?.request?.content********************",notification?.request?.content.data.message);
@@ -215,6 +247,8 @@ export default function AppNavigationWrapper() {
     }
 
 
+
+
     if (transactionDetails.requestType === "PaymentReceived") {
       console.log("hit PaymentReceived2");
 
@@ -230,6 +264,8 @@ export default function AppNavigationWrapper() {
       });
     }
 
+    //email verificationL his is triggerd by /verifyemailfinxp webservice
+    if (emailverificationData.requestType === "EmailVerified") {
     //email verificationL his is triggerd by /verifyemailfinxp webservice
     if (emailverificationData.requestType === "EmailVerified") {
 
@@ -249,7 +285,37 @@ export default function AppNavigationWrapper() {
             userId: userData?.id,
           });
 
+
+      console.log("***********emailverificationData ********************",emailverificationData );
+
+
+        navigation.navigate(screenNames.emailVerified, {
+            // isOpenEmailVerified: true,
+            emailverificationData,
+            userId: userData?.id,
+          });
+
     }
+
+    // if (transactionDetails.requestType === "EmailVerified") {
+    //   console.log("hit EmailVerified ", emailverificationDetails);
+
+    //   setLastNotification(notification?.request?.identifier);
+
+    //   setShowEmailVerified({
+    //     show: true,
+    //     data: { emailverificationDetails, userId: userData?.id },
+    //   });
+    //   navigation.navigate(screenNames.emailVerified, {
+    //     isOpenEmailVerified: true,
+    //     emailverificationDetails,
+    //     userId: userData?.id,
+    //   });
+    // }
+
+
+
+
 
     // if (transactionDetails.requestType === "EmailVerified") {
     //   console.log("hit EmailVerified ", emailverificationDetails);
@@ -388,6 +454,7 @@ export default function AppNavigationWrapper() {
       }
     };
   }, []);
+
   return (
     <>
       <TransactionApprovalScreen
@@ -479,8 +546,12 @@ export default function AppNavigationWrapper() {
             />
             {/* emailVerified component*/}
             {/* <Root.Screen
+            {/* <Root.Screen
               name={screenNames.emailVerified}
               options={{ headerShown: true }}
+              component={EmailVerifiedMessageV2}
+            /> */}
+      
               component={EmailVerifiedMessageV2}
             /> */}
       

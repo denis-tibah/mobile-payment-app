@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, ScrollView, Switch } from "react-native";
+import { StyleSheet, Text, View, ScrollView, Switch, Pressable } from "react-native";
 import { Tabs } from "../../components/Tabs/Tabs";
 import MainLayout from "../../layout/Main";
 import FormGroup from "../../components/FormGroup";
@@ -36,7 +36,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { signout } from "../../redux/auth/authSlice";
 import { Seperator } from "../../components/Seperator/Seperator";
 import TransactionIcon from "../../assets/icons/Transaction";
-import { getLimits } from "../../redux/setting/settingSlice";
+import { DefaultResponse, LimitsData, UpdateLimitsRequest, getLimits, updateLimits } from "../../redux/setting/settingSlice";
 import { RootState } from "../../store";
 import * as SecureStore from "expo-secure-store";
 import Camera from "../../assets/icons/Camera";
@@ -56,12 +56,15 @@ import {
 import Toast from "react-native-root-toast";
 import DropDownPicker from "react-native-dropdown-picker";
 import { getPendingAmount } from "../../utils/helpers";
+import { ToggleButton } from "react-native-paper";
+import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 
 
 export interface SelectOption {
   label: string;
   value: string;
 }
+
 export function Profile({ route, navigation }: any) {
   const getRedirectScreen = route.params?.screen;
   const dispatch = useDispatch();
@@ -74,25 +77,33 @@ export function Profile({ route, navigation }: any) {
     { label: "Salary", value: "salary" },
     { label: "Self employed", value: "self-employed" },
   ];
-  const settings = useSelector((state: RootState) => state.setting.data);
+  const settings = useSelector((state: RootState) => state.setting.limits);
   const profileData = useSelector(
     (state: any) => state?.profile?.profile
   )?.data;
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [isUpdateLimitSuccess, setIsUpdateLimitSuccess] = useState<{
+    state: boolean;
+    isModalOpen: boolean;
+  }>({ state: false, isModalOpen: false});
   const biometricSetting = useSelector(
     (state: any) => state.auth.data.biometricYN
   );
 
   const [isEnabled, setIsEnabled] = useState(false);
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
-
-  const [limitIsEnabled, setLimitIsEnabled] = useState<boolean>(false);
+  const [updateLimitToggles, setUpdateLimitToggles] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [limitValueToUpdate, setLimitValueToUpdate] = useState<{
+    [key: string]: string;
+  }>({});
   const [dropDownOpen, setDropDownOpen] = useState(false);
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const [helpTopicOpen, setHelpTopicOpen] = useState(false);
   const [openListForSalutation, setOpenListForSalutation] =
     useState<boolean>(false);
-  const [selectedSalutation, setSelectedSalutation] = useState(null);
+  // const [selectedSalutation, setSelectedSalutation] = useState(null);
   const [openListForSourceOfWealth, setOpenListForSourceOfWealth] =
     useState<boolean>(false);
   const [selectedSourceOfWealth, setSelectedSourceOfWealth] = useState(null);
@@ -175,13 +186,50 @@ export function Profile({ route, navigation }: any) {
     });
   }
 
-  function toggleLimitIsEnabled(value: boolean) {
-    setLimitIsEnabled(value);
+  const updateLimitRequest = async () => {
+    if (!userData?.id) return;
+    let _updateRequest: UpdateLimitsRequest[] = [];
+    Object.keys(updateLimitToggles).forEach((key) => {
+      if (updateLimitToggles[key]) {
+        _updateRequest.push({
+          account_id: userData.id.toString(),
+          type: key,
+          limit: limitValueToUpdate[key],
+        });
+      }
+    });
+    if (_updateRequest.length === 0) {
+      return;
+    }
+    try {
+      // this is temporary approach to update limits
+      await Promise.all(
+        _updateRequest.map((request) => dispatch(updateLimits(request) as any))
+      );
+      setIsUpdateLimitSuccess({ state: true, isModalOpen: true });
+    } catch (error) {
+      console.log('error:', error);
+      setIsUpdateLimitSuccess({ state: false, isModalOpen: true });
+    } finally {
+      setUpdateLimitToggles({});
+      setLimitValueToUpdate({});
+      setIsLoading(false);
+    }
   }
 
   return (
     <MainLayout navigation={navigation}>
       <Spinner visible={loadingUserProfileData} />
+      <Spinner visible={isLoading} />
+      <SuccessModal isOpen={isUpdateLimitSuccess.isModalOpen}
+        isError={!isUpdateLimitSuccess.state}
+        title={isUpdateLimitSuccess.state ? "Success" : "Error"}
+        text={isUpdateLimitSuccess.state ? "Request for limits update is on the process." : "Something went wrong"}
+        onClose={() => setIsUpdateLimitSuccess({
+          state: false,
+          isModalOpen: false
+        })}
+      />
       <ScrollView bounces={false}>
         <IncomeBox />
         {/* content */}
@@ -238,7 +286,7 @@ export function Profile({ route, navigation }: any) {
                             });
                           }}
                           listMode="SCROLLVIEW"
-                          setValue={setSelectedSalutation}
+                          // setValue={setSelectedSalutation}
                           items={salutationOptions}
                           value={values.salutation}
                           setOpen={setOpenListForSalutation}
@@ -522,55 +570,58 @@ export function Profile({ route, navigation }: any) {
                 onSubmit={() => {}}
               >
                 {({}) => (
+                  <Pressable>
                   <View style={styles.tabContent}>
-                    <FormGroup>
-                      <FormGroup.Label> 1 day limit </FormGroup.Label>
-                      <FormGroup.Input
-                        editable={false}
-                        placeholder={
-                          "€" +
-                          settings?.daily?.limit_reached +
-                          "/" +
-                          "€" +
-                          settings?.daily?.limit
-                        }
-                      />
-                    </FormGroup>
-                    <FormGroup>
-                      <FormGroup.Label>7 day limit</FormGroup.Label>
-                      <FormGroup.Input
-                        editable={false}
-                        placeholder={
-                          "€" +
-                          settings?.weekly?.limit_reached +
-                          "/" +
-                          "€" +
-                          settings?.weekly?.limit
-                        }
-                      />
-                    </FormGroup>
-                    <FormGroup>
-                      <FormGroup.Label>1 month limit</FormGroup.Label>
-                      <FormGroup.Input
-                        editable={false}
-                        placeholder={
-                          "€" +
-                          settings?.monthly?.limit_reached +
-                          "/" +
-                          "€" +
-                          settings?.monthly?.limit
-                        }
-                      />
-                    </FormGroup>
+                    {settings.map((setting: LimitsData, index: number) => {
+                      const { type } = setting;
+                      const limitType =type.charAt(0).toUpperCase() + type.slice(1);
+                      return (
+                        <FormGroup key={index}>
+                          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+                            <FormGroup.Label> {`${limitType}`} limit</FormGroup.Label>
+                            <Switch
+                              trackColor={{ false: "#767577", true: "#81b0ff" }}
+                              thumbColor={
+                                updateLimitToggles[type] ? "white" : vars["light-blue"]
+                              }
+                              style={{marginTop: -17}}
+                              ios_backgroundColor="#3e3e3e"
+                              onValueChange={(e) => setUpdateLimitToggles({
+                                ...updateLimitToggles,
+                                [type]: e
+                              })}
+                              value={updateLimitToggles[type]}
+                            />
+                          </View>
+                          <FormGroup.Input
+                            editable={updateLimitToggles[type] ? updateLimitToggles[type] : false}
+                            placeholder={`€${setting.limit_reached} / €${setting.limit}`}
+                            onChangeText={(value: string) => {
+                              setLimitValueToUpdate({
+                                ...limitValueToUpdate,
+                                [type]: value
+                              })
+                              }
+                            }
+                          />
+                        </FormGroup>
+                      )}
+                    )}
                     <View style={{ flexDirection: "row", paddingLeft: 12 }}>
                       <Button
                         leftIcon={<TransactionIcon color="blue" />}
                         color="light-blue"
+                        onPress={() => {
+                          setIsLoading(true);
+                          updateLimitRequest();
+                        }}
+                        // disabled
                       >
                         Change request
                       </Button>
                     </View>
                   </View>
+                  </Pressable>
                 )}
                 
               </Formik>

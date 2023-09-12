@@ -12,10 +12,6 @@ import ProfileDetails from "../components/SignupComponents/ProfileDetails";
 import MyAccountScreen from "../screens/MyAccount";
 import TransactionApprovalScreen from "../screens/TransactionApproval/index";
 import PaymentReceivedScreen from "../screens/PaymentReceivedMessage";
-import EmailVerifiedScreen from "../screens/EmailVerifiedMessage";
-
-import EmailVerifiedMessageV2 from "../screens/EmailVerifiedMessageV2"
-
 
 import EmailVerifiedMessageV2 from "../screens/EmailVerifiedMessageV2"
 
@@ -116,10 +112,9 @@ export default function AppNavigationWrapper() {
   /* const [appCurrentState, setAppState] = useState(AppState.currentState); */
   const [isAppInactive, setIsAppInactive] = useState(false);
   const INACTIVE_TIMEOUT = 60000; // 60 seconds (adjust as needed)
-  const INACTIVE_TIMEOUT = 60000; // 60 seconds (adjust as needed)
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  //register token hen app opens
+  //register token when app opens
   // useEffect(() => {
   //   if (!expoPushToken)
   //     registerForPushNotificationsAsync(0, '0').then(
@@ -158,19 +153,6 @@ export default function AppNavigationWrapper() {
   //   }
   // }, []);
 
-  // console.log("*********hit transactionDetails.requestType********* ");
-
-  // useEffect(() => {
-  //   if (!expoPushToken) {
-  //     console.log("*******Aristos expo going here********");
-  //     registerForPushNotificationsAsync(0, auth?.data?.uuid).then(
-  //       (token) => {
-  //         setExpoPushToken(token);
-  //         console.log("*******expo token********", token);
-  //       }
-  //     );
-  //   }
-  // }, []);
 
   useEffect(() => {
     if (userData?.id && auth?.data?.uuid && !expoPushToken) {
@@ -219,20 +201,6 @@ export default function AppNavigationWrapper() {
     const transactionDetails = notification?.request?.content?.data;
     const emailverificationData = notification?.request?.content?.data;
 
-    // console.log("***********notification?.request?.content********************",notification?.request?.content.data.message);
-
-    // console.log(
-    //   "*********~ file: AppNavigationWrapper.tsx:155 ~ handlePushNotification ~ transactionDetails:",
-    //   transactionDetails
-    // );
-    const emailverificationData = notification?.request?.content?.data;
-
-    // console.log("***********notification?.request?.content********************",notification?.request?.content.data.message);
-
-    // console.log(
-    //   "*********~ file: AppNavigationWrapper.tsx:155 ~ handlePushNotification ~ transactionDetails:",
-    //   transactionDetails
-    // );
 
     if (transactionDetails.requestType === "TransactionApproval") {
       setLastNotification(notification?.request?.identifier);
@@ -266,8 +234,6 @@ export default function AppNavigationWrapper() {
 
     //email verificationL his is triggerd by /verifyemailfinxp webservice
     if (emailverificationData.requestType === "EmailVerified") {
-    //email verificationL his is triggerd by /verifyemailfinxp webservice
-    if (emailverificationData.requestType === "EmailVerified") {
 
       setLastNotification(notification?.request?.identifier); 
 
@@ -276,64 +242,15 @@ export default function AppNavigationWrapper() {
         data: { emailverificationData, userId: userData?.id },
       });
 
-      console.log("***********emailverificationData ********************",emailverificationData );
+      // console.log("***********emailverificationData ********************",emailverificationData );
 
-
-        navigation.navigate(screenNames.emailVerified, {
-            // isOpenEmailVerified: true,
-            emailverificationData,
-            userId: userData?.id,
-          });
-
-
-      console.log("***********emailverificationData ********************",emailverificationData );
-
-
-        navigation.navigate(screenNames.emailVerified, {
-            // isOpenEmailVerified: true,
-            emailverificationData,
-            userId: userData?.id,
-          });
+      //   navigation.navigate(screenNames.emailVerified, {
+      //       // isOpenEmailVerified: true,
+      //       emailverificationData,
+      //       userId: userData?.id,
+      //     });
 
     }
-
-    // if (transactionDetails.requestType === "EmailVerified") {
-    //   console.log("hit EmailVerified ", emailverificationDetails);
-
-    //   setLastNotification(notification?.request?.identifier);
-
-    //   setShowEmailVerified({
-    //     show: true,
-    //     data: { emailverificationDetails, userId: userData?.id },
-    //   });
-    //   navigation.navigate(screenNames.emailVerified, {
-    //     isOpenEmailVerified: true,
-    //     emailverificationDetails,
-    //     userId: userData?.id,
-    //   });
-    // }
-
-
-
-
-
-    // if (transactionDetails.requestType === "EmailVerified") {
-    //   console.log("hit EmailVerified ", emailverificationDetails);
-
-    //   setLastNotification(notification?.request?.identifier);
-
-    //   setShowEmailVerified({
-    //     show: true,
-    //     data: { emailverificationDetails, userId: userData?.id },
-    //   });
-    //   navigation.navigate(screenNames.emailVerified, {
-    //     isOpenEmailVerified: true,
-    //     emailverificationDetails,
-    //     userId: userData?.id,
-    //   });
-    // }
-
-
 
 
   };
@@ -347,69 +264,6 @@ export default function AppNavigationWrapper() {
     return false;
   };
 
-  // useEffect(() => {
-  //   var counter = 0;
-  //   console.log('aState ',aState ,' ', appState.current);
-
-  // const interval = setInterval(() => {
-  //   // console.log('This will run every 5s is !', counter);
-  //   counter ++;
-  //   // if (counter == 15) {
-  //   //     clearInterval(interval);
-  //   //     // console.log('logout!');
-  //   //    }
-
-  //   if (aState ==='background') {
-  //       if (counter == 10) {
-  //       clearInterval(interval);
-  //       console.log('logout!');
-  //      }
-  //     // setHasExpiryTimeOutReached(true);
-  //     // clearInterval(interval);
-
-  //   }
-  //   if (aState ==='active') {
-  //     // counter = 15;
-  //     console.log('This will run every 5s is !', counter);
-  //     clearInterval(interval);
-  //     if (counter == 5) {
-  //         console.log('do not logout!');
-  //     }
-  //     // setHasExpiryTimeOutReached(false);
-  //   }
-
-  // }, 1000);
-
-  // }, [aState]);
-
-  /*  useEffect(() => {
-    console.log("mounting");
-    const handleChange = AppState.addEventListener(
-      "change",
-      async (nextAppState) => {
-        const isBiometricAuth = await isBiometric();
-        console.log(
-          "🚀 ~ file: AppNavigationWrapper.tsx:250 ~ isBiometricAuth:",
-          isBiometricAuth
-        );
-        if (
-          appState.current.match(/background|inactive/) &&
-          nextAppState === "active" &&
-          isBiometricAuth
-        ) {
-          dispatch(signout());
-        }
-        if (nextAppState === "background") {
-        }
-        appState.current = nextAppState;
-      }
-    );
-
-    return () => {
-      console.log("unmounted");
-      handleChange.remove();
-    };
-  }, []); */
 
   useEffect(() => {
     const handleAppStateChange = async (nextAppState: any) => {
@@ -549,9 +403,6 @@ export default function AppNavigationWrapper() {
             {/* <Root.Screen
               name={screenNames.emailVerified}
               options={{ headerShown: true }}
-              component={EmailVerifiedMessageV2}
-            /> */}
-      
               component={EmailVerifiedMessageV2}
             /> */}
       

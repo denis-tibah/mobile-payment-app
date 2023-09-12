@@ -12,9 +12,7 @@ import ProfileDetails from "../components/SignupComponents/ProfileDetails";
 import MyAccountScreen from "../screens/MyAccount";
 import TransactionApprovalScreen from "../screens/TransactionApproval/index";
 import PaymentReceivedScreen from "../screens/PaymentReceivedMessage";
-
-import EmailVerifiedMessageV2 from "../screens/EmailVerifiedMessageV2"
-
+import EmailVerifiedMessageV2 from "../screens/EmailVerifiedMessageV2";
 import ForgottenPassword from "../screens/ForgottenPassword";
 
 import TransactionsScreen from "../screens/Transactions";
@@ -91,7 +89,9 @@ function DashboardStack() {
 export default function AppNavigationWrapper() {
   const auth = useSelector((state: RootState) => state.auth);
   const userData = useSelector((state: RootState) => state.auth.userData);
-  const isUserInavtive = useSelector((state: RootState) => state.account.inactivityState);
+  const isUserInavtive = useSelector(
+    (state: RootState) => state.account.inactivityState
+  );
   const [lastNotification, setLastNotification] = useState("");
   const navigation: any = useNavigation();
   const dispatch = useDispatch();
@@ -104,7 +104,7 @@ export default function AppNavigationWrapper() {
     show: false,
     data: {},
   });
-  
+
   /*  const appState = useRef(AppState.currentState); */
 
   const [expoPushToken, setExpoPushToken] = useState<string>();
@@ -141,29 +141,16 @@ export default function AppNavigationWrapper() {
     }
   }, []); */
 
-  // console.log("*********hit transactionDetails.requestType********* ");
-
-  // useEffect(() => {
-  //   if (!expoPushToken) {
-  //     console.log("*******Aristos expo going here********");
-  //     registerForPushNotificationsAsync(0, auth?.data?.uuid).then(
-  //       (token) => {
-  //         setExpoPushToken(token);
-  //         console.log("*******expo token********", token);
-  //       }
-  //     );
-  //   }
-  // }, []);
-
-
   useEffect(() => {
     if (userData?.id && auth?.data?.uuid && !expoPushToken) {
       // console.log("*******expo going here********");
-      registerForPushNotificationsAsync(userData.id, auth?.data?.uuid,auth?.data?.email).then(
-        (token) => {
-          setExpoPushToken(token);
-        }
-      );
+      registerForPushNotificationsAsync(
+        userData.id,
+        auth?.data?.uuid,
+        auth?.data?.email
+      ).then((token) => {
+        setExpoPushToken(token);
+      });
     }
 
     notificationListener.current =
@@ -187,25 +174,12 @@ export default function AppNavigationWrapper() {
   }, [userData?.id, expoPushToken, auth?.data?.uuid]);
 
   const handlePushNotification = (notification: any) => {
-    // console.log(
-    //   "*************** ~ file: AppNavigationWrapper.tsx:152 ~ handlePushNotification ~ notification:",
-    //   notification
-    // );
-    
-    // console.log(
-    //   "*************** ~ file: AppNavigationWrapper.tsx:152 ~ handlePushNotification ~ notification:",
-    //   notification
-    // );
-    
     if (notification?.request?.identifier === lastNotification) return;
-    
-    
+
     const transactionDetails = notification?.request?.content?.data;
     const emailverificationData = notification?.request?.content?.data;
 
-
     if (transactionDetails.requestType === "TransactionApproval") {
-
       //save notification id so we can remove it from the taskbar
       setLastNotification(notification?.request?.identifier);
       setShowApproval({
@@ -218,11 +192,7 @@ export default function AppNavigationWrapper() {
       });
     }
 
-
-
-
     if (transactionDetails.requestType === "PaymentReceived") {
-
       //save notification id so we can remove it from the taskbar
       setLastNotification(notification?.request?.identifier);
       setShowReceivedPayment({
@@ -237,8 +207,7 @@ export default function AppNavigationWrapper() {
 
     //email verificationL his is triggerd by /verifyemailfinxp webservice
     if (emailverificationData.requestType === "EmailVerified") {
-      //save notification id so we can remove it from the taskbar
-      setLastNotification(notification?.request?.identifier); 
+      setLastNotification(notification?.request?.identifier);
 
       setShowEmailVerified({
         show: true,
@@ -247,15 +216,12 @@ export default function AppNavigationWrapper() {
 
       // console.log("***********emailverificationData ********************",emailverificationData );
 
-      //   navigation.navigate(screenNames.emailVerified, {
-      //       // isOpenEmailVerified: true,
-      //       emailverificationData,
-      //       userId: userData?.id,
-      //     });
-
+      // navigation.navigate(screenNames.emailVerified, {
+      //     // isOpenEmailVerified: true,
+      //     emailverificationData,
+      //     userId: userData?.id,
+      //   });
     }
-
-
   };
 
   const isBiometric = async () => {
@@ -266,7 +232,6 @@ export default function AppNavigationWrapper() {
     }
     return false;
   };
-
 
   useEffect(() => {
     const handleAppStateChange = async (nextAppState: any) => {
@@ -415,7 +380,6 @@ export default function AppNavigationWrapper() {
               options={{ headerShown: true }}
               component={EmailVerifiedMessageV2}
             /> */}
-      
           </>
         )}
       </Root.Navigator>

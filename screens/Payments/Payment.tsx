@@ -57,7 +57,7 @@ export function Payment({ navigation }: any) {
   );
   const [isOtpValid, setIsOtpValid] = useState(false);
 
-  const [displayModal, setDisplayModal] = useState(false);
+  // const [displayModal, setDisplayModal] = useState(false);
   const [showPaymentStatusModal, setShowPaymentStatusModal] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedPayee, setSelectedPayee] = useState(null);
@@ -95,6 +95,7 @@ export function Payment({ navigation }: any) {
   };
   const [paymentModalContent, setPaymentModalContent] = useState<{ title: string, text: string, isError: boolean}>(paymentContentDefault);
   const [externalPayment, setExternalPayment] = useState("");
+  const [displayOTPModal, setDisplayOTPModal] = useState<boolean>(false);
   const { navigate }: any = useNavigation();
 
   useEffect(() => {
@@ -111,10 +112,6 @@ export function Payment({ navigation }: any) {
         ]);
   // }, [beneficiaryList]);
 }, [beneficiaryList?.length]);
-
-  function handleDisplayModal() {
-    setDisplayModal(!displayModal);
-  }
 
   const fetchAllPayees = async () => {
     try {
@@ -214,24 +211,26 @@ export function Payment({ navigation }: any) {
     setIsLoading(true);
     await handleProccessPayment({ code })
       .then((data: any) => {
-        if (data) {
-          if (data.code === 200) {
-            setPaymentModalContent({
-              title: "Payment Successful",
-              text: "Your payment was successful",
-              isError: false,
-            })
-          }
+        if (data.code === 200) {
+          setPaymentModalContent({
+            title: "Payment Successful",
+            text: "Your payment was successful",
+            isError: false,
+          })
         }
       })
       .catch((error: any) => {
         console.error(error);
+        setPaymentModalContent({
+          title: "Payment Failed",
+          text: "Your payment was not successful",
+          isError: true,
+        });
       })
       .finally(() => {
         setShowPaymentStatusModal(true);
         setIsLoading(false);
       });
-    setDisplayModal(false);
     await delayCode(1000);
     await fetchTransactions();
   };
@@ -337,56 +336,57 @@ export function Payment({ navigation }: any) {
               }) as any
             )
               .unwrap()
-              .then((payload: any) => {
-                if (payload) {
-                  if (payload.transaction_id) {
-                    dispatch(
-                      setInitiatePaymentData({
-                        recipientFirstname: getFirstAndLastName(
-                          values.recipientname
-                        ).firstname,
-                        recipientLastname: getFirstAndLastName(
-                          values.recipientname
-                        ).lastname,
-                        debtor_iban: accountData?.iban,
-                        creditor_iban: values.creditor_iban,
-                        creditor_name:
-                          recipientFirstname + " " + recipientLastname,
-                        bic: values.bic,
-                        account: accountData?.account_number,
-                        amount: values.amount,
-                        currency: "EUR",
-                        reason: values.reason,
-                        transactionId: payload.transaction_id,
-                        savePayee,
-                        type: externalPayment,
-                      })
-                    );
-                    dispatch(
-                      sendSmsPaymentVerification({
-                        identifier: payload.transaction_id,
-                        type: "transfer",
-                        amount: values.amount,
-                        currency: values.currency,
-                      }) as any
-                    )
-                      .unwrap()
-                      .then((payload: any) => {
-                        if (payload) setIsOtpValid(true);
-                      })
-                      .catch((error: any) => {
-                        console.error(error);
-                        setIsOtpValid(false);
-                      });
-                    handleDisplayModal();
-                  }
+              .then((payload: {transaction_id: string}) => {
+                console.log("payload", payload);
+                if (payload.transaction_id) {
+                  dispatch(
+                    setInitiatePaymentData({
+                      recipientFirstname: getFirstAndLastName(
+                        values.recipientname
+                      ).firstname,
+                      recipientLastname: getFirstAndLastName(
+                        values.recipientname
+                      ).lastname,
+                      debtor_iban: accountData?.iban,
+                      creditor_iban: values.creditor_iban,
+                      creditor_name:
+                        recipientFirstname + " " + recipientLastname,
+                      bic: values.bic,
+                      account: accountData?.account_number,
+                      amount: values.amount,
+                      currency: "EUR",
+                      reason: values.reason,
+                      transactionId: payload.transaction_id,
+                      savePayee,
+                      type: externalPayment,
+                    })
+                  );
+                  dispatch(
+                    sendSmsPaymentVerification({
+                      identifier: payload.transaction_id,
+                      type: "transfer",
+                      amount: values.amount,
+                      currency: values.currency,
+                    }) as any
+                  )
+                  .unwrap()
+                  .then((payload: { message: string, status: string }) => {
+                    const { status } = payload;
+                    if (status === "success") {
+                      setIsOtpValid(true);
+                      setDisplayOTPModal(true);
+                    }
+                  })
+                  .catch((error: any) => {
+                    console.error(error);
+                    setIsOtpValid(false);
+                  });
                 }
               })
               .catch((error: any) => {
                 console.error(error);
               })
               .finally(() => {
-                setShowPaymentStatusModal(true);
                 setIsLoading(false);
               });
           }}
@@ -401,7 +401,7 @@ export function Payment({ navigation }: any) {
             touched,
           }) => (
             <View style={styles.content}>
-              {displayModal && !showPaymentStatusModal && (
+              {displayOTPModal && (
                 <CodeModal
                   title={"Verify your payment"}
                   subtitle={
@@ -409,10 +409,10 @@ export function Payment({ navigation }: any) {
                   }
                   isOpen
                   onSubmit={handleSubmitOTP}
-                  onCancel={() => setDisplayModal(false)}
+                  onCancel={() => setDisplayOTPModal(false)}
                 />
               )}
-              {showPaymentStatusModal && !displayModal && (
+              {showPaymentStatusModal && (
                 <SuccessModal
                   isError={paymentModalContent.isError}
                   title={paymentModalContent.title}

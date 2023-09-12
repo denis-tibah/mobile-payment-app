@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Dimensions, Pressable, RefreshControl, View, ScrollView, TouchableOpacity, Image } from "react-native";
-import OTPInputView from '@twotalltotems/react-native-otp-input';
 import { useDispatch, useSelector } from "react-redux";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
@@ -59,6 +58,7 @@ import moment from "moment";
 import TransactionItem from "../../components/TransactionItem";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { arrayChecker } from "../../utils/helpers";
+import { Circle } from "react-native-svg";
 
 export function Card({ navigation }: any) {
   const infoData = useSelector((state: RootState) => state.account.details);
@@ -412,7 +412,7 @@ export function Card({ navigation }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      {/* <Spinner visible={loadingState} /> */}
+      <Spinner visible={loadingState} />
       {showGetCardModal && (
         <GetCardModal
           onClose={() => setShowGetCardModal(false)}
@@ -573,10 +573,21 @@ export function Card({ navigation }: any) {
             </View>
           </View>
           <View style={styles.cardTransactions}>
-            <Heading
-              icon={<TransactionIcon color="pink" size={18} />}
-              title={"Latest Card Transactions"}
-            />
+            <View>
+              <Heading
+                icon={<TransactionIcon color="pink" size={18} />}
+                title={"Latest Transactions"}
+                rightAction={
+                  <Button
+                    onPress={fetchCardData}
+                    color={"light-blue"}
+                    leftIcon={<Ionicons name="refresh" size={24} color="black" />}
+                  >
+                    Refresh
+                  </Button>
+                }
+              />
+            </View>
             <View>
               <Seperator backgroundColor={vars["grey"]} />
               {/* start: Added by Aritos  */}

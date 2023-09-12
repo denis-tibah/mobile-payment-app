@@ -2,6 +2,7 @@ import { FC, useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, Platform } from "react-native";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
+import Spinner from "react-native-loading-spinner-overlay/lib";
 
 import Button from "../../components/Button";
 import Typography from "../../components/Typography";
@@ -36,17 +37,21 @@ const Verifications: FC<IVerifications> = ({
   const dispatch = useDispatch();
   const registration = useSelector((state: any) => state.registration);
 
-  const [isUpdatePhoneNumber, setUpdatePhoneNumber] = useState<Boolean>(false);
-  const [isLoading, setIsLoading] = useState<Boolean>(false);
-  const [isDisabledOtp, setIsDisabledOtp] = useState<Boolean>(true);
-  const [SMSResent, setSMSResent] = useState<Boolean>(false);
-  const [otp, setOtp] = useState<Number>();
+  const [isUpdatePhoneNumber, setUpdatePhoneNumber] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isDisabledOtp, setIsDisabledOtp] = useState<boolean>(true);
+  const [SMSResent, setSMSResent] = useState<boolean>(false);
+  const [otp, setOtp] = useState<number>();
   const [statusMessage, setStatusMessage] = useState<{
     header: string;
     body: string;
     isOpen: boolean;
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
+  const [resetMessage, setResentMessage] = useState<{
+    message: string | undefined;
+    status: string;
+  }>({ message: "", status: "" });
 
   useEffect(() => {
     dispatch(
@@ -71,8 +76,57 @@ const Verifications: FC<IVerifications> = ({
       setIsDisabledOtp(true);
     }
   }, [otp]);
-  const handlePinCodeChange = (otpNum: Number): void => {
+  const handlePinCodeChange = (otpNum: number): void => {
     setOtp(otpNum);
+  };
+
+  const getOtp = ({
+    wholePhoneNumber,
+    countryCode,
+    phoneNumber,
+  }: {
+    wholePhoneNumber: string;
+    countryCode: string;
+    phoneNumber: string;
+  }): void => {
+    setIsLoading(true);
+    dispatch(
+      sendSMSVerification({
+        identifier: wholePhoneNumber,
+      })
+    )
+      .then((payload: any) => {
+        setIsLoading(false);
+        setSMSResent(true);
+        if (payload?.payload?.status === "success") {
+          setResentMessage({
+            message:
+              payload?.payload?.message ||
+              "We resent verification code to your number",
+            status: payload?.payload?.status,
+          });
+        } else if (
+          payload?.payload?.status === "failed" ||
+          payload?.payload?.code === 400
+        ) {
+          setResentMessage({
+            message: payload?.payload?.message || "Something went wrong",
+            status: payload?.payload?.status,
+          });
+        }
+      })
+      .catch((error: any) => {
+        setIsLoading(false);
+        setStatusMessage({
+          header: "Error",
+          body: "Something went wrong",
+          isOpen: true,
+          isError: true,
+        });
+        console.log(
+          `*** resent sms verification to ${countryCode}${phoneNumber} failed: ${error} ***`
+        );
+      });
   };
 
   const handleChangePhoneNumber = (): void => {
@@ -94,30 +148,11 @@ const Verifications: FC<IVerifications> = ({
             identifier: `${countryCode}${phoneNumber}`,
           })
         );
-        dispatch(
-          sendSMSVerification({
-            identifier: `${countryCode}${phoneNumber}`,
-          })
-        )
-          .then((payload: any) => {
-            if (payload) {
-              setIsLoading(false);
-              setSMSResent(true);
-            }
-          })
-          .catch((error: any) => {
-            setIsLoading(false);
-            setStatusMessage({
-              header: "Error",
-              body: "Something went wrong",
-              isOpen: true,
-              isError: true,
-            });
-            console.log(
-              `*** resent sms verification to ${countryCode}${phoneNumber} failed: ${error} ***`
-            );
-          });
-
+        getOtp({
+          wholePhoneNumber: `${countryCode}${phoneNumber}`,
+          countryCode,
+          phoneNumber,
+        });
         setUpdatePhoneNumber(false);
       },
     });
@@ -184,8 +219,20 @@ const Verifications: FC<IVerifications> = ({
     });
   };
 
+  const handleGetanotherVerificationcode = () => {
+    getOtp({
+      wholePhoneNumber:
+        values?.countryCode && values?.phoneNumber
+          ? `${values?.countryCode}${values?.phoneNumber}`
+          : registration.data.phone_number,
+      countryCode: values?.countryCode,
+      phoneNumber: values?.phoneNumber,
+    });
+  };
+
   return (
     <View style={styles.card}>
+      <Spinner visible={isLoading} />
       <SuccessModal
         isOpen={statusMessage?.isOpen}
         title={statusMessage.header}
@@ -216,9 +263,11 @@ const Verifications: FC<IVerifications> = ({
                 fieldCount={6}
                 onChange={handlePinCodeChange}
               />
-              <Text style={styles.noCode}>
-                Did not get a verification code?
-              </Text>
+              <TouchableOpacity onPress={handleGetanotherVerificationcode}>
+                <Text style={styles.noCode}>
+                  Did not get a verification code?
+                </Text>
+              </TouchableOpacity>
             </View>
             <View style={styles.phoneNumberContainer}>
               <View>
@@ -315,15 +364,26 @@ const Verifications: FC<IVerifications> = ({
               </View>
             )}
             {SMSResent ? (
-              <View style={styles.smsResentContainer}>
+              <View
+                style={[
+                  styles.smsResentContainer,
+                  resetMessage?.status === "failed"
+                    ? {
+                        backgroundColor: vars["accent-pink"],
+                      }
+                    : { backgroundColor: "#0dca9d" },
+                ]}
+              >
                 <View style={styles.smsResentInnerContainer}>
-                  <Text
-                    style={[styles.smsResentText, styles.smsResentFirstText]}
-                  >
-                    Updated phone number
-                  </Text>
+                  {values?.countryCode && values?.phoneNumber && (
+                    <Text
+                      style={[styles.smsResentText, styles.smsResentFirstText]}
+                    >
+                      Updated phone number
+                    </Text>
+                  )}
                   <Text style={styles.smsResentText}>
-                    We resent the verification code to your new number
+                    {resetMessage?.message}
                   </Text>
                 </View>
               </View>
@@ -337,23 +397,26 @@ const Verifications: FC<IVerifications> = ({
                 alignItems: "center",
                 flexDirection: "row",
                 justifyContent: "space-between",
-                paddingRight: 20,
+                /* paddingRight: 20, */
+                flexWrap: "wrap",
               }}
             >
-              <Button
-                color="light-pink"
-                onPress={handlePrevStep}
-                leftIcon={<ArrowLeft size={14} />}
-              >
-                Back
-              </Button>
+              <View style={{ marginBottom: 6 }}>
+                <Button
+                  color="light-pink"
+                  onPress={handlePrevStep}
+                  leftIcon={<ArrowLeft size={12} />}
+                >
+                  Back
+                </Button>
+              </View>
               <Button
                 loading={isLoading}
                 color={isDisabledOtp || isLoading ? "grey" : "light-pink"}
                 onPress={handleVerifyPhoneNumber}
                 leftIcon={
                   <TickIcon
-                    size={14}
+                    size={12}
                     color={
                       vars[
                         isDisabledOtp || isLoading

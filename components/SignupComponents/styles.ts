@@ -113,7 +113,7 @@ export const styles = StyleSheet.create({
     padding: 24,
   },
   smsResentContainer: {
-    backgroundColor: "#0dca9d",
+    /* backgroundColor: "#0dca9d", */
   },
   smsResentInnerContainer: {
     flexDirection: "column",

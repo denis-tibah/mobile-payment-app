@@ -156,6 +156,8 @@ export function Payment({ navigation }: any) {
       bic: beneficiarySelected.bic,
       creditor_iban: beneficiarySelected?.iban,
     });
+
+    // console.log('*****Value*****',values);
   };
 
   const fetchTransactions = async () => {
@@ -241,6 +243,7 @@ export function Payment({ navigation }: any) {
     }
     if (isOtpValid) {
     setIsLoading(true);
+    console.log( '*****creditor_name:***********' ,recipientFirstname+ " " + recipientLastname)
     await dispatch(
         processPayment({
           identifier: transactionId,
@@ -335,6 +338,9 @@ export function Payment({ navigation }: any) {
           }}
           onSubmit={(values) => {
             setIsLoading(true);
+            // console.log( '*****1  creditor_name:***********' ,getFirstAndLastName(values.recipientname) + " " + getFirstAndLastName(values.recipientname))
+            console.log('******1 beneficiaryOptions*************',values.recipientname);
+
             dispatch(
               initiatePayment({
                 recipientFirstname: getFirstAndLastName(values.recipientname)
@@ -343,7 +349,8 @@ export function Payment({ navigation }: any) {
                   .lastname,
                 debtor_iban: accountData?.iban,
                 creditor_iban: values.creditor_iban,
-                creditor_name: recipientFirstname + " " + recipientLastname,
+                // creditor_name: recipientFirstname + " " + recipientLastname,
+                creditor_name: values.recipientname,
                 bic: values.bic,
                 account: accountData?.account_number,
                 amount: values.amount,
@@ -355,6 +362,8 @@ export function Payment({ navigation }: any) {
               .unwrap()
               .then((payload: {transaction_id: string}) => {
                 console.log("payload", payload);
+                // console.log( '*****2 creditor_name:***********' ,getFirstAndLastName(values.recipientname) + " " + getFirstAndLastName(values.recipientname))
+                console.log('******2 beneficiaryOptions*************',values.recipientname);
                 if (payload.transaction_id) {
                   dispatch(
                     setInitiatePaymentData({
@@ -366,8 +375,8 @@ export function Payment({ navigation }: any) {
                       ).lastname,
                       debtor_iban: accountData?.iban,
                       creditor_iban: values.creditor_iban,
-                      creditor_name:
-                        recipientFirstname + " " + recipientLastname,
+                      // creditor_name:recipientFirstname + " " + recipientLastname,
+                      creditor_name: values.recipientname,
                       bic: values.bic,
                       account: accountData?.account_number,
                       amount: values.amount,

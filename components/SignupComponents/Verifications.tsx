@@ -343,6 +343,7 @@ const Verifications: FC<IVerifications> = ({
                           onChangeText={handleChange("phoneNumber")}
                           onBlur={handleBlur("phoneNumber")}
                           value={values.phoneNumber}
+                          placeholderTextColor={vars["ios-default-text"]}
                           placeholder="Phone Number"
                           icon={<PhoneIcon />}
                         />

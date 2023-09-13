@@ -190,6 +190,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
                 onBlur={handleBlur("email")}
                 value={values.email}
                 placeholder="Email Address"
+                placeholderTextColor={vars["ios-default-text"]}
                 icon={<EmailIcon />}
               />
             </FormGroup>
@@ -241,6 +242,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
                 onBlur={handleBlur("phoneNumber")}
                 value={values.phoneNumber}
                 placeholder="Phone Number"
+                placeholderTextColor={vars["ios-default-text"]}
                 icon={<PhoneIcon />}
               />
             </FormGroup>

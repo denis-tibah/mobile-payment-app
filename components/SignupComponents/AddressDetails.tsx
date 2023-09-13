@@ -245,6 +245,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                 onChangeText={handleChange("street")}
                 onBlur={handleBlur("street")}
                 value={values.street}
+                placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Address"
                 icon={<KeyIcon />}
               />
@@ -262,6 +263,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                 onChangeText={handleChange("subStreet")}
                 onBlur={handleBlur("subStreet")}
                 value={values.subStreet}
+                placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Address 2"
                 icon={<KeyIcon />}
               />
@@ -279,6 +281,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                 onChangeText={handleChange("postCode")}
                 onBlur={handleBlur("postCode")}
                 value={values.postCode}
+                placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Post code"
                 icon={<MapIcon />}
               />
@@ -294,6 +297,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                 onChangeText={handleChange("town")}
                 onBlur={handleBlur("town")}
                 value={values.town}
+                placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Town"
                 icon={<LocationIcon />}
               />
@@ -309,6 +313,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                 onChangeText={handleChange("state")}
                 onBlur={handleBlur("state")}
                 value={values.state}
+                placeholderTextColor={vars["ios-default-text"]}
                 placeholder="State"
                 icon={<MapIcon />}
               />
@@ -451,6 +456,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                       onChangeText={handleChange("additionalStreet")}
                       onBlur={handleBlur("additionalStreet")}
                       value={values.additionalStreet}
+                      placeholderTextColor={vars["ios-default-text"]}
                       placeholder="Address"
                       icon={<KeyIcon />}
                     />
@@ -470,6 +476,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                       onChangeText={handleChange("additionalSubStreet")}
                       onBlur={handleBlur("additionalSubStreet")}
                       value={values.additionalSubStreet}
+                      placeholderTextColor={vars["ios-default-text"]}
                       placeholder="Address 2"
                       icon={<KeyIcon />}
                     />
@@ -489,6 +496,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                       onChangeText={handleChange("additionalPostcode")}
                       onBlur={handleBlur("additionalPostcode")}
                       value={values.additionalPostcode}
+                      placeholderTextColor={vars["ios-default-text"]}
                       placeholder="Post code"
                       icon={<MapIcon />}
                     />
@@ -508,6 +516,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                       onChangeText={handleChange("additionalTown")}
                       onBlur={handleBlur("additionalTown")}
                       value={values.additionalTown}
+                      placeholderTextColor={vars["ios-default-text"]}
                       placeholder="Town"
                       icon={<LocationIcon />}
                     />
@@ -527,6 +536,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                       onChangeText={handleChange("additionalState")}
                       onBlur={handleBlur("additionalState")}
                       value={values.additionalState}
+                      placeholderTextColor={vars["ios-default-text"]}
                       placeholder="State"
                       icon={<MapIcon />}
                     />

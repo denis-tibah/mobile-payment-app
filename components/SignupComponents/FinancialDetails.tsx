@@ -94,6 +94,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 onChangeText={handleChange("annualSalary")}
                 onBlur={handleBlur("annualSalary")}
                 value={values.annualSalary}
+                placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Monthly account deposits"
                 icon={<PigIcon />}
               />
@@ -183,6 +184,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 onChangeText={handleChange("occupation")}
                 onBlur={handleBlur("occupation")}
                 value={values.occupation}
+                placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Occupation"
                 icon={<ProfileIcon />}
               />
@@ -202,6 +204,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 onChangeText={handleChange("employerName")}
                 onBlur={handleBlur("employerName")}
                 value={values.employerName}
+                placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Employer name"
                 icon={<SalutationIcon />}
               />
@@ -221,6 +224,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 onChangeText={handleChange("positionHeld")}
                 onBlur={handleBlur("positionHeld")}
                 value={values.positionHeld}
+                placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Position held"
                 icon={<ProfileIcon />}
               />
@@ -240,6 +244,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 onChangeText={handleChange("lengthWithEmployer")}
                 onBlur={handleBlur("lengthWithEmployer")}
                 value={values.lengthWithEmployer}
+                placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Length with employer"
                 icon={<ProfileIcon />}
               />

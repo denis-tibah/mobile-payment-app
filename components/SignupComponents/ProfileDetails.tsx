@@ -197,6 +197,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                 onBlur={handleBlur("firstName")}
                 value={values.firstName}
                 placeholder="First Name"
+                placeholderTextColor={vars["ios-default-text"]}
                 icon={<ProfileIcon />}
               />
             </FormGroup>
@@ -214,6 +215,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                 onBlur={handleBlur("lastName")}
                 value={values.lastName}
                 placeholder="Last Name"
+                placeholderTextColor={vars["ios-default-text"]}
                 icon={<ProfileIcon />}
               />
             </FormGroup>
@@ -252,6 +254,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                 onChangeText={handleChange("placeOfBirth")}
                 onBlur={handleBlur("placeOfBirth")}
                 value={values.placeOfBirth}
+                placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Place of birth"
                 icon={<ProfileIcon />}
               />

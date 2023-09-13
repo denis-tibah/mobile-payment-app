@@ -91,7 +91,7 @@ export function Payment({ navigation }: any) {
   const paymentContentDefault = {
     title: "Payment Failed",
     text: "Your payment was not successful",
-    isError: false,
+    isError: true,
   };
   const [paymentModalContent, setPaymentModalContent] = useState<{ title: string, text: string, isError: boolean}>(paymentContentDefault);
   const [externalPayment, setExternalPayment] = useState("");
@@ -207,37 +207,41 @@ export function Payment({ navigation }: any) {
     }
   }, [isExternalPayment]);
 
-  const handleSubmitOTP = async ({ code }: { code: string }) => {
-    setIsLoading(true);
-    await handleProccessPayment({ code })
-      .then((data: any) => {
-        if (data.code === 200) {
-          setPaymentModalContent({
-            title: "Payment Successful",
-            text: "Your payment was successful",
-            isError: false,
-          })
-        }
-      })
-      .catch((error: any) => {
-        console.error(error);
-        setPaymentModalContent({
-          title: "Payment Failed",
-          text: "Your payment was not successful",
-          isError: true,
-        });
-      })
-      .finally(() => {
-        setShowPaymentStatusModal(true);
-        setIsLoading(false);
-      });
-    await delayCode(1000);
-    await fetchTransactions();
-  };
+  // const handleSubmitOTP = async ({ code }: { code: string }) => { // -- idk why this method is created. doesnt makes sense. - arjay 
+  //   setIsLoading(true);
+  //   await handleProccessPayment({ code })
+  //     .then((data: any) => {
+  //       if (data.code === 200) {
+  //         setPaymentModalContent({
+  //           title: "Payment Successful",
+  //           text: "Your payment was successful",
+  //           isError: false,
+  //         })
+  //       }
+  //     })
+  //     .catch((error: any) => {
+  //       console.error(error);
+  //       setPaymentModalContent({
+  //         title: "Payment Failed",
+  //         text: "Your payment was not successful",
+  //         isError: true,
+  //       });
+  //     })
+  //     .finally(() => {
+  //       setShowPaymentStatusModal(true);
+  //       setIsLoading(false);
+  //     });
+  //   await delayCode(1000);
+  //   await fetchTransactions();
+  // };
 
-  const handleProccessPayment = async ({ code }: { code: string }) => {
+  const handleProccessPayment = async ({ code } : { code: string }) => {
+    if (!isOtpValid) {
+      return;
+    }
     if (isOtpValid) {
-      await dispatch(
+    setIsLoading(true);
+    await dispatch(
         processPayment({
           identifier: transactionId,
           code: code,
@@ -254,24 +258,37 @@ export function Payment({ navigation }: any) {
       )
         .unwrap()
         .then((payload: any) => {
-          if (payload) {
-            if (payload.code === 200) {
+          if (payload.code === 200) {
+            setPaymentModalContent({
+              title: "Payment Successful",
+              text: "Your payment was successful",
+              isError: false,
+            })
               // if the user chose to save as a beneficiary
-              if (toggledSavePayee) {
-                dispatch(
-                  addNewBeneficiary({
-                    beneficiary_name: `${recipientFirstname} ${recipientLastname}`,
-                    beneficiary_iban: creditor_iban,
-                    beneficiary_bic: bic,
-                  }) as any
-                );
-              }
+            if (toggledSavePayee) {
+              dispatch(
+                addNewBeneficiary({
+                  beneficiary_name: `${recipientFirstname} ${recipientLastname}`,
+                  beneficiary_iban: creditor_iban,
+                  beneficiary_bic: bic,
+                }) as any
+              );
             }
+            setDisplayOTPModal(false);
           }
         })
         .catch((error: any) => {
           console.error(error);
-        });
+          setPaymentModalContent({
+            title: "Payment Failed",
+            text: "Your payment was not successful. OTP is invalid.",
+            isError: true,
+          });
+        })
+        .finally(() => {
+        setShowPaymentStatusModal(true);
+        setIsLoading(false);
+      });
     }
   };
 
@@ -408,7 +425,7 @@ export function Payment({ navigation }: any) {
                     "You will receive an sms to your mobile device. Please enter this code below."
                   }
                   isOpen
-                  onSubmit={handleSubmitOTP}
+                  onSubmit={handleProccessPayment}
                   onCancel={() => setDisplayOTPModal(false)}
                 />
               )}

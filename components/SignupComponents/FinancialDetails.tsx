@@ -1,7 +1,8 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { StyleSheet, View, Text, Platform } from "react-native";
 import { useFormik } from "formik";
 import { useSelector, useDispatch } from "react-redux";
+import DropDownPicker from "react-native-dropdown-picker";
 
 import ButtonSubmit from "../../components/Button";
 import FixedBottomAction from "../../components/FixedBottomAction";
@@ -31,45 +32,57 @@ const FinancialDetails: FC<IFinancialDetails> = ({
   const dispatch = useDispatch();
   const registration = useSelector((state: any) => state.registration);
 
-  const { handleSubmit, handleChange, handleBlur, values, touched, errors } =
-    useFormik({
-      validationSchema: financialDetailsSchema,
-      initialValues: {
-        annualSalary: registration.data?.annual_salary || "",
-        sourceOfWealth: registration.data?.source_of_wealth || "",
-        employmentStatus: registration.data?.employment_status || "",
-        occupation: registration.data?.occupation || "",
-        employerName: registration.data?.employer_name || "",
-        positionHeld: registration.data?.position_held || "",
-        lengthWithEmployer: registration.data?.length_with_employer || "",
-        natureOfBusiness: registration.data?.nature_of_business || "",
-      },
-      onSubmit: ({
-        annualSalary,
-        sourceOfWealth,
-        employmentStatus,
-        occupation,
-        employerName,
-        positionHeld,
-        lengthWithEmployer,
-        natureOfBusiness,
-      }) => {
-        dispatch(
-          setRegistrationData({
-            annual_salary: parseInt(annualSalary, 10),
-            source_of_wealth: sourceOfWealth,
-            employment_status: employmentStatus,
-            occupation,
-            employer_name: employerName,
-            position_held: positionHeld,
-            length_with_employer: lengthWithEmployer,
-            nature_of_business: natureOfBusiness,
-          })
-        );
-        handleNextStep();
-      },
-    });
+  const [openListForSourceOfDeposits, setOpenListForSourceOfDeposits] =
+    useState<boolean>(false);
+  const [openListForEmploymentStatus, setOpenListForEmploymentStatus] =
+    useState<boolean>(false);
 
+  const {
+    handleSubmit,
+    handleChange,
+    handleBlur,
+    values,
+    touched,
+    errors,
+    setValues,
+  } = useFormik({
+    validationSchema: financialDetailsSchema,
+    initialValues: {
+      annualSalary: registration.data?.annual_salary || "",
+      sourceOfWealth: registration.data?.source_of_wealth || "",
+      employmentStatus: registration.data?.employment_status || "",
+      occupation: registration.data?.occupation || "",
+      employerName: registration.data?.employer_name || "",
+      positionHeld: registration.data?.position_held || "",
+      lengthWithEmployer: registration.data?.length_with_employer || "",
+      natureOfBusiness: registration.data?.nature_of_business || "",
+    },
+    onSubmit: ({
+      annualSalary,
+      sourceOfWealth,
+      employmentStatus,
+      occupation,
+      employerName,
+      positionHeld,
+      lengthWithEmployer,
+      natureOfBusiness,
+    }) => {
+      dispatch(
+        setRegistrationData({
+          annual_salary: parseInt(annualSalary, 10),
+          source_of_wealth: sourceOfWealth,
+          employment_status: employmentStatus,
+          occupation,
+          employer_name: employerName,
+          position_held: positionHeld,
+          length_with_employer: lengthWithEmployer,
+          nature_of_business: natureOfBusiness,
+        })
+      );
+      handleNextStep();
+    },
+  });
+  console.log("🚀 ~ file: FinancialDetails.tsx:45 ~ values:", values);
   return (
     <View style={styles.card}>
       <View style={styles.cardTitle}>
@@ -101,7 +114,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
             </FormGroup>
           </View>
           <View>
-            <FormGroup
+            {/* <FormGroup
               validationError={
                 errors.sourceOfWealth &&
                 touched.sourceOfWealth &&
@@ -134,10 +147,44 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                   );
                 })}
               </FormGroup.SelectForArrOfObject>
+            </FormGroup> */}
+            <FormGroup
+              validationError={
+                errors.sourceOfWealth &&
+                touched.sourceOfWealth &&
+                errors.sourceOfWealth
+              }
+            >
+              <View>
+                <DropDownPicker
+                  schema={{ label: "label", value: "value" }}
+                  onSelectItem={(value: any) => {
+                    const { value: sourceOfWealthValue } = value;
+
+                    setValues({
+                      ...values,
+                      sourceOfWealth: sourceOfWealthValue,
+                    });
+                  }}
+                  listMode="SCROLLVIEW"
+                  // setValue={setSelectedSalutation}
+                  items={sourceOfWealth}
+                  value={values?.sourceOfWealth}
+                  setOpen={setOpenListForSourceOfDeposits}
+                  open={openListForSourceOfDeposits}
+                  style={styles.dropdown}
+                  dropDownContainerStyle={styles.dropdownContainer}
+                  dropDownDirection="TOP"
+                  placeholder="Source of wealth"
+                  scrollViewProps={{
+                    nestedScrollEnabled: true,
+                  }}
+                />
+              </View>
             </FormGroup>
           </View>
           <View>
-            <FormGroup
+            {/* <FormGroup
               validationError={
                 errors.employmentStatus &&
                 touched.employmentStatus &&
@@ -170,6 +217,40 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                   );
                 })}
               </FormGroup.SelectForArrOfObject>
+            </FormGroup> */}
+            <FormGroup
+              validationError={
+                errors.employmentStatus &&
+                touched.employmentStatus &&
+                errors.employmentStatus
+              }
+            >
+              <View>
+                <DropDownPicker
+                  schema={{ label: "label", value: "value" }}
+                  onSelectItem={(value: any) => {
+                    const { value: employmentStatusValue } = value;
+
+                    setValues({
+                      ...values,
+                      employmentStatus: employmentStatusValue,
+                    });
+                  }}
+                  listMode="SCROLLVIEW"
+                  // setValue={setSelectedSalutation}
+                  items={employmentStatus}
+                  value={values?.employmentStatus}
+                  setOpen={setOpenListForEmploymentStatus}
+                  open={openListForEmploymentStatus}
+                  style={styles.dropdown}
+                  dropDownContainerStyle={styles.dropdownContainer}
+                  dropDownDirection="TOP"
+                  placeholder="Employment status"
+                  scrollViewProps={{
+                    nestedScrollEnabled: true,
+                  }}
+                />
+              </View>
             </FormGroup>
           </View>
           <View>

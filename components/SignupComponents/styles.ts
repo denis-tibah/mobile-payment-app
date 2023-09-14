@@ -127,4 +127,26 @@ export const styles = StyleSheet.create({
   smsResentFirstText: {
     marginBottom: 8,
   },
+  dropdown: {
+    height: 0,
+    backgroundColor: "#f9f9f9",
+    /* borderRadius: 99, */
+    display: "flex",
+    flexDirection: "row",
+    paddingLeft: 12,
+    /* width: "95%", */
+    alignSelf: "center",
+    borderColor: "transparent",
+    marginBottom: 40,
+  },
+  dropdownContainer: {
+    /* width: "95%", */
+    alignSelf: "center",
+    backgroundColor: "#f9f9f9",
+    borderColor: "transparent",
+    marginBottom: 0,
+    /* zIndex: 1000, */
+    position: "relative",
+    /*  top: 0, */
+  },
 });

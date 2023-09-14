@@ -1,11 +1,11 @@
 const ISO3116CountryList = [
-  {
+  /* {
     numeric: "",
     alpha2: "",
     alpha3: "",
     name: "Country of birth",
     nationality: "",
-  },
+  }, */
   {
     numeric: "4",
     alpha2: "AF",

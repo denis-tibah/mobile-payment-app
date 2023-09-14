@@ -1,11 +1,18 @@
 import { useState, FC, useEffect } from "react";
-import { View, Text, TouchableOpacity, Platform } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Platform,
+  ScrollView,
+} from "react-native";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 /* import { Button as Btn } from "react-native"; */
 import { useNavigation } from "@react-navigation/native";
 import * as Linking from "expo-linking";
 import Spinner from "react-native-loading-spinner-overlay/lib";
+import DropDownPicker from "react-native-dropdown-picker";
 
 import { registrationPhonePrefix } from "../../data/options";
 import Typography from "../../components/Typography";
@@ -38,6 +45,8 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
   const [isValidEmail, setIsValidEmail] = useState<boolean>(false);
   const [isChangeEmail, setIsChangeEmail] = useState<boolean>(false);
   const [expoPushToken, setExpoPushToken] = useState<string>();
+  const [openListForCountryCode, setOpenListForCountryCode] =
+    useState<boolean>(false);
 
   // console.log('has it been verified ', handleNextStep);
 
@@ -83,92 +92,99 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
     console.log("expotoken is ", expoPushToken);
   }, [expoPushToken]);
 
-  const { handleSubmit, handleChange, values, touched, errors, handleBlur } =
-    useFormik({
-      initialValues: {
-        email: registration?.data?.email || "",
-        alternateEmail: "",
-        countryCode: registration?.data?.countryCode || "",
-        phoneNumber: registration?.data?.phoneNumber || "",
-      },
-      validationSchema: loginCredentialsSchema,
-      onSubmit: ({ email, alternateEmail, phoneNumber, countryCode }) => {
-        // console.log("hit here 1 emailToken ", emailToken);
+  const {
+    handleSubmit,
+    handleChange,
+    values,
 
-        // if (emailToken) {
-        setIsLoading(true);
-        //added by Aristos
-        //generate expo token
-        // registerForPushNotificationsRegistrationAsync(
-        registerForPushNotificationsAsync(
-          0,
-          ' ',
-          alternateEmail ? alternateEmail : email,
-        ).then((token: any) => {
-          dispatch(
-            setLoginCredentials({
-              email: alternateEmail ? alternateEmail : email,
-              phone_number: `${countryCode}${phoneNumber}`,
-              mobile: true,
-              expoToken: token,
-            })
-          )
-            .unwrap()
-            .then((payload: any) => {
-              //We need to ask Santiago to chanage response message to generic one or an id value
-              if (
-                payload === "activation email sent" ||
-                payload === "new activation email sent"
-              ) {
-                setIsValidEmail(true);
-              }
-              dispatch(
-                setRegistrationData({
-                  email: alternateEmail ? alternateEmail : email,
-                  phone_number: `${countryCode}${phoneNumber}`,
-                  identifier: `${countryCode}${phoneNumber}`,
-                  /* countryCode, */
-                })
-              );
-              setIsLoading(false);
-            })
-            .catch((error: any) => {
-              if (error) {
-                console.log("🚀 ~ file: LoginDetails.tsx:108 ~ error:", error);
-                setRegisterError({
-                  ...registerError,
-                  email: "Email already exists",
-                });
-              }
-              setIsLoading(false);
-            });
-        });
+    touched,
+    errors,
+    handleBlur,
+    setValues,
+  } = useFormik({
+    initialValues: {
+      email: registration?.data?.email || "",
+      alternateEmail: "",
+      countryCode: registration?.data?.countryCode || "",
+      phoneNumber: registration?.data?.phoneNumber || "",
+    },
+    validationSchema: loginCredentialsSchema,
+    onSubmit: ({ email, alternateEmail, phoneNumber, countryCode }) => {
+      // console.log("hit here 1 emailToken ", emailToken);
 
-        if (emailToken) {
-          dispatch(
-            setRegistrationData({
-              email: alternateEmail ? alternateEmail : email,
-              phone_number: `${countryCode}${phoneNumber}`,
-              /*  phoneNumber, */
-              identifier: `${countryCode}${phoneNumber}`,
-              /* countryCode, */
-            })
-          );
-          return;
-        }
+      // if (emailToken) {
+      setIsLoading(true);
+      //added by Aristos
+      //generate expo token
+      // registerForPushNotificationsRegistrationAsync(
+      registerForPushNotificationsAsync(
+        alternateEmail ? alternateEmail : email,
+        ""
+      ).then((token: any) => {
+        dispatch(
+          setLoginCredentials({
+            email: alternateEmail ? alternateEmail : email,
+            phone_number: `${countryCode}${phoneNumber}`,
+            mobile: true,
+            expoToken: token,
+          })
+        )
+          .unwrap()
+          .then((payload: any) => {
+            //We need to ask Santiago to chanage response message to generic one or an id value
+            if (
+              payload === "activation email sent" ||
+              payload === "new activation email sent"
+            ) {
+              setIsValidEmail(true);
+            }
+            dispatch(
+              setRegistrationData({
+                email: alternateEmail ? alternateEmail : email,
+                phone_number: `${countryCode}${phoneNumber}`,
+                identifier: `${countryCode}${phoneNumber}`,
+                /* countryCode, */
+              })
+            );
+            setIsLoading(false);
+          })
+          .catch((error: any) => {
+            if (error) {
+              console.log("🚀 ~ file: LoginDetails.tsx:108 ~ error:", error);
+              setRegisterError({
+                ...registerError,
+                email: "Email already exists",
+              });
+            }
+            setIsLoading(false);
+          });
+      });
 
+      if (emailToken) {
         dispatch(
           setRegistrationData({
             email: alternateEmail ? alternateEmail : email,
             phone_number: `${countryCode}${phoneNumber}`,
+            /*  phoneNumber, */
             identifier: `${countryCode}${phoneNumber}`,
             /* countryCode, */
           })
         );
-        // handleNextStep();
-      },
-    });
+        return;
+      }
 
+      dispatch(
+        setRegistrationData({
+          email: alternateEmail ? alternateEmail : email,
+          phone_number: `${countryCode}${phoneNumber}`,
+          identifier: `${countryCode}${phoneNumber}`,
+          /* countryCode, */
+        })
+      );
+      // handleNextStep();
+    },
+  });
+  console.log("🚀 ~ file: LoginDetails.tsx:99 ~ values:", values);
   return (
     <View style={styles.card}>
       <Spinner visible={isLoading} />
@@ -197,7 +213,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
             </FormGroup>
           </View>
           <View>
-            <FormGroup
+            {/* <FormGroup
               validationError={
                 errors.countryCode && touched.countryCode && errors.countryCode
               }
@@ -228,6 +244,37 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
                   );
                 })}
               </FormGroup.SelectForArrOfObject>
+            </FormGroup> */}
+            <FormGroup
+              validationError={
+                errors.countryCode && touched.countryCode && errors.countryCode
+              }
+            >
+              <View>
+                <DropDownPicker
+                  schema={{ label: "label", value: "value" }}
+                  onSelectItem={(value: any) => {
+                    const { value: countryCodeValue } = value;
+                    setValues({
+                      ...values,
+                      countryCode: countryCodeValue,
+                    });
+                  }}
+                  listMode="SCROLLVIEW"
+                  // setValue={setSelectedSalutation}
+                  items={registrationPhonePrefix}
+                  value={values?.countryCode}
+                  setOpen={setOpenListForCountryCode}
+                  open={openListForCountryCode}
+                  style={styles.dropdown}
+                  dropDownContainerStyle={styles.dropdownContainer}
+                  dropDownDirection="TOP"
+                  placeholder="Phone country code"
+                  scrollViewProps={{
+                    nestedScrollEnabled: true,
+                  }}
+                />
+              </View>
             </FormGroup>
           </View>
           <View>

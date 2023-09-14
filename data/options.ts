@@ -1,5 +1,5 @@
 export const registrationPhonePrefix = [
-  null,
+  /* null, */
   { label: "+44", value: "+44" }, // UK
   { label: "+353", value: "+353" }, // Ireland
   { label: "+34", value: "+34" }, //  Spain
@@ -18,7 +18,7 @@ export const registrationPhonePrefix = [
 ];
 
 export const salutations = [
-  null,
+  /* null, */
   { label: "Mr", value: "Mr" },
   { label: "Ms", value: "Ms" },
   { label: "Mrs", value: "Mrs" },
@@ -39,10 +39,29 @@ export const noOfMonths = [
   "11",
   "12",
 ];
+export const noOfMonthsObj = [
+  { label: "1", value: "1" },
+  { label: "2", value: "2" },
+  { label: "3", value: "3" },
+  { label: "4", value: "4" },
+  { label: "5", value: "5" },
+  { label: "6", value: "6" },
+  { label: "7", value: "7" },
+  { label: "8", value: "8" },
+  { label: "9", value: "9" },
+  { label: "10", value: "10" },
+  { label: "11", value: "11" },
+  { label: "12", value: "12" },
+];
 export const noOfYears = [null, "1", "2", "3"];
+export const noOfYearsObj = [
+  { label: "1", value: "1" },
+  { label: "2", value: "2" },
+  { label: "3", value: "3" },
+];
 
 export const sourceOfWealth = [
-  null,
+  /* null, */
   { label: "Salary", value: "salary" },
   { label: "Dividend", value: "dividend" },
   { label: "Crypto", value: "crypto" },
@@ -54,7 +73,7 @@ export const paymentReasons = [
 ];
 
 export const employmentStatus = [
-  null,
+  /* null, */
   { label: "Employed", value: "employed" },
   { label: "Self Employed", value: "self_employed" },
   { label: "Unemployed", value: "unemployed" },

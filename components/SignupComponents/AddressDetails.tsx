@@ -1,7 +1,8 @@
-import { FC, useEffect } from "react";
+import { FC, useState, useEffect } from "react";
 import { StyleSheet, View, Text, Platform } from "react-native";
 import { useFormik } from "formik";
 import { useSelector, useDispatch } from "react-redux";
+import DropDownPicker from "react-native-dropdown-picker";
 
 import FormGroup from "../../components/FormGroup";
 import ArrowRightLong from "../../assets/icons/ArrowRightLong";
@@ -14,7 +15,13 @@ import LocationIcon from "../../assets/icons/Location";
 import CalenderIcon from "../../assets/icons/CalenderEmpty";
 import Typography from "../../components/Typography";
 import { countries, nationalities } from "../../data/ISO3166";
-import { noOfMonths, noOfYears } from "../../data/options";
+
+import {
+  noOfMonths,
+  noOfYears,
+  noOfMonthsObj,
+  noOfYearsObj,
+} from "../../data/options";
 
 import { Seperator } from "../../components/Seperator/Seperator";
 import { setRegistrationData } from "../../redux/registration/registrationSlice";
@@ -38,6 +45,18 @@ const AddressDetails: FC<IAddressDetails> = ({
 }) => {
   const dispatch = useDispatch();
   const registration = useSelector((state: any) => state.registration);
+
+  const [openListForCountry, setOpenListForCountry] = useState<boolean>(false);
+  const [openListForAdditionalCountry, setOpenListForAdditionalCountry] =
+    useState<boolean>(false);
+  const [openListForNoOfMonths, setOpenListForNoOfMonths] =
+    useState<boolean>(false);
+  const [openListForAdditionalNoOfMonths, setOpenListForAdditinalNoOfMonths] =
+    useState<boolean>(false);
+  const [openListForNoOfYears, setOpenListForNoOfYears] =
+    useState<boolean>(false);
+  const [openListForAdditionalNoOfYears, setOpenListForAdditionalNoOfYears] =
+    useState<boolean>(false);
 
   const arrayChecker = (arr: any): any => {
     return arr && Array.isArray(arr) && arr.length > 0 ? true : false;
@@ -86,6 +105,7 @@ const AddressDetails: FC<IAddressDetails> = ({
     errors,
     submitCount,
     setFieldTouched,
+    setValues,
   } = useFormik({
     validationSchema: addressDetailsSchema,
     initialValues: {
@@ -174,7 +194,7 @@ const AddressDetails: FC<IAddressDetails> = ({
       handleNextStep();
     },
   });
-
+  console.log("🚀 ~ file: AddressDetails.tsx:99 ~ values:", values);
   // to deal with individual input on touch event for the first time submit. cannot put on single useEffect since it causes other input to reset
   // #HACK needs improvement
   useEffect(() => {
@@ -320,7 +340,7 @@ const AddressDetails: FC<IAddressDetails> = ({
             </FormGroup>
           </View>
           <View>
-            <FormGroup
+            {/* <FormGroup
               validationError={
                 errors.country && touched.country && errors.country
               }
@@ -356,6 +376,38 @@ const AddressDetails: FC<IAddressDetails> = ({
                   );
                 })}
               </FormGroup.SelectForArrOfObject>
+            </FormGroup> */}
+            <FormGroup
+              validationError={
+                errors.country && touched.country && errors.country
+              }
+            >
+              <View>
+                <DropDownPicker
+                  schema={{ label: "name", value: "alpha3" }}
+                  onSelectItem={(value: any) => {
+                    const { alpha3: countryValue } = value;
+
+                    setValues({
+                      ...values,
+                      country: countryValue,
+                    });
+                  }}
+                  listMode="SCROLLVIEW"
+                  // setValue={setSelectedSalutation}
+                  items={countries}
+                  value={values?.country}
+                  setOpen={setOpenListForCountry}
+                  open={openListForCountry}
+                  style={styles.dropdown}
+                  dropDownContainerStyle={styles.dropdownContainer}
+                  dropDownDirection="TOP"
+                  placeholder="Country"
+                  scrollViewProps={{
+                    nestedScrollEnabled: true,
+                  }}
+                />
+              </View>
             </FormGroup>
           </View>
           <View style={styles.textSeparatorContainer}>
@@ -364,7 +416,7 @@ const AddressDetails: FC<IAddressDetails> = ({
             </Text>
           </View>
           <View>
-            <FormGroup
+            {/* <FormGroup
               validationError={
                 errors.noOfMonths && touched.noOfMonths && errors.noOfMonths
               }
@@ -391,10 +443,42 @@ const AddressDetails: FC<IAddressDetails> = ({
                   );
                 })}
               </FormGroup.SelectForArrOfObject>
+            </FormGroup> */}
+            <FormGroup
+              validationError={
+                errors.noOfMonths && touched.noOfMonths && errors.noOfMonths
+              }
+            >
+              <View>
+                <DropDownPicker
+                  schema={{ label: "label", value: "value" }}
+                  onSelectItem={(value: any) => {
+                    const { value: noOfMonthValue } = value;
+
+                    setValues({
+                      ...values,
+                      noOfMonths: noOfMonthValue,
+                    });
+                  }}
+                  listMode="SCROLLVIEW"
+                  // setValue={setSelectedSalutation}
+                  items={noOfMonthsObj}
+                  value={values?.noOfMonths}
+                  setOpen={setOpenListForNoOfMonths}
+                  open={openListForNoOfMonths}
+                  style={styles.dropdown}
+                  dropDownContainerStyle={styles.dropdownContainer}
+                  dropDownDirection="TOP"
+                  placeholder="Number of months"
+                  scrollViewProps={{
+                    nestedScrollEnabled: true,
+                  }}
+                />
+              </View>
             </FormGroup>
           </View>
           <View>
-            <FormGroup
+            {/* <FormGroup
               validationError={
                 errors.noOfYears && touched.noOfYears && errors.noOfYears
               }
@@ -421,6 +505,38 @@ const AddressDetails: FC<IAddressDetails> = ({
                   );
                 })}
               </FormGroup.SelectForArrOfObject>
+            </FormGroup> */}
+            <FormGroup
+              validationError={
+                errors.noOfYears && touched.noOfYears && errors.noOfYears
+              }
+            >
+              <View>
+                <DropDownPicker
+                  schema={{ label: "label", value: "value" }}
+                  onSelectItem={(value: any) => {
+                    const { value: noOfYearsValue } = value;
+
+                    setValues({
+                      ...values,
+                      noOfYears: noOfYearsValue,
+                    });
+                  }}
+                  listMode="SCROLLVIEW"
+                  // setValue={setSelectedSalutation}
+                  items={noOfYearsObj}
+                  value={values?.noOfYears}
+                  setOpen={setOpenListForNoOfYears}
+                  open={openListForNoOfYears}
+                  style={styles.dropdown}
+                  dropDownContainerStyle={styles.dropdownContainer}
+                  dropDownDirection="TOP"
+                  placeholder="Number of years"
+                  scrollViewProps={{
+                    nestedScrollEnabled: true,
+                  }}
+                />
+              </View>
             </FormGroup>
           </View>
           {isYearsRequiredForAdditionalField({
@@ -543,7 +659,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                   </FormGroup>
                 </View>
                 <View>
-                  <FormGroup
+                  {/* <FormGroup
                     validationError={
                       errors.additionalCountry &&
                       touched.additionalCountry &&
@@ -583,10 +699,44 @@ const AddressDetails: FC<IAddressDetails> = ({
                         );
                       })}
                     </FormGroup.SelectForArrOfObject>
+                  </FormGroup> */}
+                  <FormGroup
+                    validationError={
+                      errors.additionalCountry &&
+                      touched.additionalCountry &&
+                      errors.additionalCountry
+                    }
+                  >
+                    <View>
+                      <DropDownPicker
+                        schema={{ label: "name", value: "alpha3" }}
+                        onSelectItem={(value: any) => {
+                          const { alpha3: additionalCountryValue } = value;
+
+                          setValues({
+                            ...values,
+                            additionalCountry: additionalCountryValue,
+                          });
+                        }}
+                        listMode="SCROLLVIEW"
+                        // setValue={setSelectedSalutation}
+                        items={countries}
+                        value={values?.additionalCountry}
+                        setOpen={setOpenListForAdditionalCountry}
+                        open={openListForAdditionalCountry}
+                        style={styles.dropdown}
+                        dropDownContainerStyle={styles.dropdownContainer}
+                        dropDownDirection="TOP"
+                        placeholder="Country"
+                        scrollViewProps={{
+                          nestedScrollEnabled: true,
+                        }}
+                      />
+                    </View>
                   </FormGroup>
                 </View>
                 <View>
-                  <FormGroup
+                  {/* <FormGroup
                     validationError={
                       errors.additionalNoofmonths &&
                       touched.additionalNoofmonths &&
@@ -619,10 +769,46 @@ const AddressDetails: FC<IAddressDetails> = ({
                         );
                       })}
                     </FormGroup.SelectForArrOfObject>
+                  </FormGroup> */}
+                  <FormGroup
+                    validationError={
+                      errors.noOfMonths &&
+                      touched.noOfMonths &&
+                      errors.noOfMonths
+                    }
+                  >
+                    <View>
+                      <DropDownPicker
+                        schema={{ label: "label", value: "value" }}
+                        onSelectItem={(value: any) => {
+                          const { value: additionalNoOfAdditionalMonthValue } =
+                            value;
+
+                          setValues({
+                            ...values,
+                            additionalNoofmonths:
+                              additionalNoOfAdditionalMonthValue,
+                          });
+                        }}
+                        listMode="SCROLLVIEW"
+                        // setValue={setSelectedSalutation}
+                        items={noOfMonthsObj}
+                        value={values?.additionalNoofmonths}
+                        setOpen={setOpenListForAdditinalNoOfMonths}
+                        open={openListForAdditionalNoOfMonths}
+                        style={styles.dropdown}
+                        dropDownContainerStyle={styles.dropdownContainer}
+                        dropDownDirection="TOP"
+                        placeholder="Number of months"
+                        scrollViewProps={{
+                          nestedScrollEnabled: true,
+                        }}
+                      />
+                    </View>
                   </FormGroup>
                 </View>
                 <View>
-                  <FormGroup
+                  {/* <FormGroup
                     validationError={
                       errors.additionalNoofyears &&
                       touched.additionalNoofyears &&
@@ -655,6 +841,40 @@ const AddressDetails: FC<IAddressDetails> = ({
                         );
                       })}
                     </FormGroup.SelectForArrOfObject>
+                  </FormGroup> */}
+                  <FormGroup
+                    validationError={
+                      errors.additionalNoofyears &&
+                      touched.additionalNoofyears &&
+                      errors.additionalNoofyears
+                    }
+                  >
+                    <View>
+                      <DropDownPicker
+                        schema={{ label: "label", value: "value" }}
+                        onSelectItem={(value: any) => {
+                          const { value: additionalNoofyearsValue } = value;
+
+                          setValues({
+                            ...values,
+                            additionalNoofyears: additionalNoofyearsValue,
+                          });
+                        }}
+                        listMode="SCROLLVIEW"
+                        // setValue={setSelectedSalutation}
+                        items={noOfYearsObj}
+                        value={values?.additionalNoofyears}
+                        setOpen={setOpenListForAdditionalNoOfYears}
+                        open={openListForAdditionalNoOfYears}
+                        style={styles.dropdown}
+                        dropDownContainerStyle={styles.dropdownContainer}
+                        dropDownDirection="TOP"
+                        placeholder="Number of years"
+                        scrollViewProps={{
+                          nestedScrollEnabled: true,
+                        }}
+                      />
+                    </View>
                   </FormGroup>
                 </View>
               </View>

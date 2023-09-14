@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { View, Text, Button, TouchableOpacity, Platform } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import DropDownPicker from "react-native-dropdown-picker";
 
 import SalutationIcon from "../../assets/icons/Salutation";
 import ProfileIcon from "../../assets/icons/Profile";
@@ -13,6 +14,7 @@ import { salutations } from "../../data/options";
 import FormGroup from "../../components/FormGroup";
 import { profileDetailsSchema } from "../../utils/formikSchema";
 import { countries, nationalities } from "../../data/ISO3166";
+
 import { setRegistrationData } from "../../redux/registration/registrationSlice";
 import Typography from "../../components/Typography";
 import { Seperator } from "../../components/Seperator/Seperator";
@@ -44,6 +46,12 @@ const ProfileDetails: FC<IProfileDetails> = ({
 
   const [isDatePickerVisible, setDatePickerVisibility] =
     useState<boolean>(false);
+  const [openListForSalutation, setOpenListForSalutation] =
+    useState<boolean>(false);
+  const [openListForCountryOfBirth, setOpenListForCountryOfBirth] =
+    useState<boolean>(false);
+  const [openListForNationality, setOpenListForNationality] =
+    useState<boolean>(false);
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -58,7 +66,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
     hideDatePicker();
   };
 
-  const countryValueFromLocalStorage = (
+  /* const countryValueFromLocalStorage = (
     type: string,
     value: string
   ): {
@@ -80,7 +88,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
     return Object.keys(selectedDataCountryOfBirth).length > 0
       ? selectedDataCountryOfBirth
       : { label: null, value: null };
-  };
+  }; */
 
   const formatDOBToDash = (paramDOB: string): string | null => {
     const arrDOB: string[] | boolean = paramDOB ? paramDOB.split("-") : false;
@@ -93,10 +101,10 @@ const ProfileDetails: FC<IProfileDetails> = ({
     handleChange,
     handleBlur,
     values,
-
     touched,
     errors,
     setFieldValue,
+    setValues,
   } = useFormik({
     initialValues: {
       salutation: registration.data?.salutation || "",
@@ -139,7 +147,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
       handleNextStep();
     },
   });
-
+  console.log("🚀 ~ file: ProfileDetails.tsx:99 ~ values:", values);
   return (
     <View style={styles.card}>
       <View style={styles.cardTitle}>
@@ -151,7 +159,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
       <View>
         <View style={styles.cardBody}>
           <View>
-            <FormGroup
+            {/* <FormGroup
               validationError={
                 errors.salutation && touched.salutation && errors.salutation
               }
@@ -182,6 +190,37 @@ const ProfileDetails: FC<IProfileDetails> = ({
                   );
                 })}
               </FormGroup.SelectForArrOfObject>
+            </FormGroup> */}
+            <FormGroup
+              validationError={
+                errors.salutation && touched.salutation && errors.salutation
+              }
+            >
+              <View>
+                <DropDownPicker
+                  schema={{ label: "label", value: "value" }}
+                  onSelectItem={(value: any) => {
+                    const { value: salutationValue } = value;
+                    setValues({
+                      ...values,
+                      salutation: salutationValue,
+                    });
+                  }}
+                  listMode="SCROLLVIEW"
+                  // setValue={setSelectedSalutation}
+                  items={salutations}
+                  value={values?.salutation}
+                  setOpen={setOpenListForSalutation}
+                  open={openListForSalutation}
+                  style={styles.dropdown}
+                  dropDownContainerStyle={styles.dropdownContainer}
+                  dropDownDirection="TOP"
+                  placeholder="Salutation"
+                  scrollViewProps={{
+                    nestedScrollEnabled: true,
+                  }}
+                />
+              </View>
             </FormGroup>
           </View>
           <View>
@@ -261,7 +300,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
             </FormGroup>
           </View>
           <View>
-            <FormGroup
+            {/* <FormGroup
               validationError={
                 errors.countryOfBirth &&
                 touched.countryOfBirth &&
@@ -292,10 +331,46 @@ const ProfileDetails: FC<IProfileDetails> = ({
                   );
                 })}
               </FormGroup.SelectForArrOfObject>
+            </FormGroup> */}
+            <FormGroup
+              validationError={
+                errors.countryOfBirth &&
+                touched.countryOfBirth &&
+                errors.countryOfBirth
+              }
+            >
+              <View>
+                <DropDownPicker
+                  schema={{
+                    label: "name",
+                    value: "alpha3",
+                  }}
+                  onSelectItem={(value: any) => {
+                    const { alpha3: contryOfBirthValue } = value;
+                    setValues({
+                      ...values,
+                      countryOfBirth: contryOfBirthValue,
+                    });
+                  }}
+                  listMode="SCROLLVIEW"
+                  // setValue={setSelectedSalutation}
+                  items={countries}
+                  value={values?.countryOfBirth || ""}
+                  setOpen={setOpenListForCountryOfBirth}
+                  open={openListForCountryOfBirth}
+                  style={styles.dropdown}
+                  dropDownContainerStyle={styles.dropdownContainer}
+                  dropDownDirection="TOP"
+                  placeholder="Country of birth"
+                  scrollViewProps={{
+                    nestedScrollEnabled: true,
+                  }}
+                />
+              </View>
             </FormGroup>
           </View>
           <View>
-            <FormGroup
+            {/* <FormGroup
               validationError={
                 errors.nationality && touched.nationality && errors.nationality
               }
@@ -333,6 +408,40 @@ const ProfileDetails: FC<IProfileDetails> = ({
                   );
                 })}
               </FormGroup.SelectForArrOfObject>
+            </FormGroup> */}
+            <FormGroup
+              validationError={
+                errors.nationality && touched.nationality && errors.nationality
+              }
+            >
+              <View>
+                <DropDownPicker
+                  schema={{
+                    label: "name",
+                    value: "alpha3",
+                  }}
+                  onSelectItem={(value: any) => {
+                    const { alpha3: nationalityValue } = value;
+                    setValues({
+                      ...values,
+                      nationality: nationalityValue,
+                    });
+                  }}
+                  listMode="SCROLLVIEW"
+                  // setValue={setSelectedSalutation}
+                  items={nationalities}
+                  value={values?.nationality || ""}
+                  setOpen={setOpenListForNationality}
+                  open={openListForNationality}
+                  style={styles.dropdown}
+                  dropDownContainerStyle={styles.dropdownContainer}
+                  dropDownDirection="TOP"
+                  placeholder="Nationality"
+                  scrollViewProps={{
+                    nestedScrollEnabled: true,
+                  }}
+                />
+              </View>
             </FormGroup>
           </View>
           <FixedBottomAction rounded>

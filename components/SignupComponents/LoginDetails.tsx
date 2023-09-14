@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 /* import { Button as Btn } from "react-native"; */
 import { useNavigation } from "@react-navigation/native";
 import * as Linking from "expo-linking";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import Spinner from "react-native-loading-spinner-overlay/lib";
 
 import { registrationPhonePrefix } from "../../data/options";
 import Typography from "../../components/Typography";
@@ -171,6 +171,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
 
   return (
     <View style={styles.card}>
+      <Spinner visible={isLoading} />
       <View style={styles.cardTitle}>
         <Typography fontSize={18} fontFamily="Nunito-SemiBold" fontWeight="600">
           Login Credentials

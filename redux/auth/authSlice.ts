@@ -36,9 +36,12 @@ export const refreshUserData = createAsyncThunk(
   async (_, { fulfillWithValue, rejectWithValue }) => {
     try {
       const { data } = await api.get("/accountsfinxp");
+      console.log("getting the accounts data ", data);
+
       if (data.length) return fulfillWithValue(data[0]);
     } catch (error) {
-      return rejectWithValue("Something went wrong");
+      console.log("getting the accounts error obtained is ", error);
+      return rejectWithValue("Something went wrong getting accounts");
     }
   }
 );
@@ -107,7 +110,7 @@ export const signin = createAsyncThunk(
         return fulfillWithValue("Failed to load ip location");
       }
     } catch (error: any) {
-      return rejectWithValue("Something went wrong");
+      return rejectWithValue("Something went wrong login on");
     }
   }
 );

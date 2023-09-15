@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { api } from "../../api";
 import { Transaction, TransactionDetailsNew } from "../../models/Transactions";
+import { string } from "yup";
 // import { UserData, SearchFilter } from "../../models/UserData";
 
 const defaultTransactionsDetails: TransactionDetailsNew = {
@@ -14,6 +15,9 @@ const defaultTransactionsDetails: TransactionDetailsNew = {
   per_page: 0,
   transactions: [],
 };
+const defaultStatementDetails: StatementResponse = {
+  statements: []
+}
 
 export interface TransactionState {
   data: TransactionDetailsNew;
@@ -21,6 +25,7 @@ export interface TransactionState {
   loading: boolean;
   error: boolean;
   errorMessage?: string;
+  statements: StatementResponse;
 }
 
 const initialState: TransactionState = {
@@ -29,6 +34,7 @@ const initialState: TransactionState = {
   loading: true,
   error: false,
   errorMessage: undefined,
+  statements: defaultStatementDetails,
 };
 
 export interface SearchFilter {
@@ -84,6 +90,14 @@ export const transactionSlice = createSlice({
       state.loading = false;
     });
     builder.addCase(getTransactionsWithFilters.rejected, (state) => {
+      state.loading = false;
+      state.error = true;
+    });
+    builder.addCase(getStatementsfinxp.fulfilled, (state, action) => {
+      state.statements = action.payload;
+      state.loading = false;
+    });
+    builder.addCase(getStatementsfinxp.rejected, (state) => {
       state.loading = false;
       state.error = true;
     });
@@ -156,6 +170,44 @@ export const getTransactionsWithFilters = createAsyncThunk<
       rejectWithValue(error);
     }
   }
+);
+
+export interface StatementFilter {
+  account_id: number;
+  to_date: string;
+  from_date: string;
+}
+export interface StatementTransactionsResponse {
+  "transaction_ref_no": "string",
+  "transfer_currency": "string",
+  "debit": "float",
+  "credit": "integer",
+  "opening_balance": "integer",
+  "closing_balance": "float",
+  "balance": "integer",
+  "sender_receiver": "string",
+  "description": "string",
+  "transaction_date": "date"
+}
+
+export interface StatementResponse {
+  statements: StatementTransactionsResponse[];
+}
+
+export const getStatementsfinxp = createAsyncThunk<
+StatementResponse,
+StatementFilter
+>(
+  "getStatementsfinxp",
+    async (params, { rejectWithValue, fulfillWithValue }) => {
+      console.log("redux", params);
+    try {
+      const { data } = await api.post("/getStatementfinxp", params);
+      return fulfillWithValue(data);
+      } catch (error) {
+        rejectWithValue(error);
+      }
+    }
 );
 
 export default transactionSlice.reducer;

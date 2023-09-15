@@ -1,35 +1,41 @@
 import * as Print from "expo-print";
 import { formatAmountTableValue } from "./helpers";
+import { StatementTransactionsResponse } from "../redux/transaction/transactionSlice";
 
-const generateHTML = (transactions:any) => {
-  const htmlTransactions = transactions.map((transaction:any) => {
-    let iban = "";
-    let bic = "";
+const generateHTML = (transactions: StatementTransactionsResponse[]) => {
+  const htmlTransactions = transactions.map((transaction:StatementTransactionsResponse) => {
+    let transaction_ref_no = "";
+    let transfer_currency = "";
 
-    if (transaction.iban && transaction.iban.length > 0) {
-      iban = `<p>IBAN: ${transaction.iban}</p>`;
+    if (transaction.transaction_ref_no) {
+      transaction_ref_no = `<p>Transaction Ref No.: ${transaction.transaction_ref_no}</p>`;
     }
-    if (transaction.bic && transaction.bic.length > 0) {
-      bic = `<p>BIC: ${transaction.bic}</p>`;
+    if (transaction.transfer_currency) {
+      transfer_currency = `<p>BIC: ${transaction.transfer_currency}</p>`;
     }
     const transactionDate = new Date(
-      transaction.transaction_datetime
+      transaction.transaction_date
     ).toLocaleDateString();
+  
     return `
       <tr>
         <td style="border: 1px solid black; padding: 5px;">${
-          transaction.name
+          transaction.transaction_ref_no
         }</td>
         <td style="border: 1px solid black; padding: 5px;">${transactionDate}</td>
         <td style="border: 1px solid black; padding: 5px;">${formatAmountTableValue(
-          transaction.amount,
-          transaction.currency
+          transaction.balance,
+          transaction.transfer_currency
         )}</td>
         <td style="border: 1px solid black; padding: 5px;">${formatAmountTableValue(
-          transaction.running_balance,
-          transaction.currency
+          transaction.closing_balance,
+          transaction.transfer_currency
         )}</td>
-        <td style="border: 1px solid black; padding: 5px;">${iban}${bic}</td>
+        <td style="border: 1px solid black; padding: 5px;">${transaction.debit}</td>
+        <td style="border: 1px solid black; padding: 5px;">${transaction.credit}</td>
+        <td style="border: 1px solid black; padding: 5px;">${transaction.sender_receiver}</td>
+        <td style="border: 1px solid black; padding: 5px;">${transaction.description}</td>
+        <td style="border: 1px solid black; padding: 5px;">${transaction.transfer_currency}</td>
       </tr>
     `;
   });

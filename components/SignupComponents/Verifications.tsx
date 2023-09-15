@@ -166,7 +166,7 @@ const Verifications: FC<IVerifications> = ({
       setUpdatePhoneNumber(false);
     },
   });
-  console.log("🚀 ~ file: Verifications.tsx:143 ~ values:", values);
+
   const handleVerifyPhoneNumber = () => {
     setIsLoading(true);
     const regData = {

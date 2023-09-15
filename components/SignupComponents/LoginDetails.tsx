@@ -175,7 +175,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
       // handleNextStep();
     },
   });
-  console.log("🚀 ~ file: LoginDetails.tsx:99 ~ values:", values);
+
   return (
     <View style={styles.card}>
       <Spinner visible={isLoading} />

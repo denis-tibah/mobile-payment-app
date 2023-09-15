@@ -82,7 +82,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
       handleNextStep();
     },
   });
-  console.log("🚀 ~ file: FinancialDetails.tsx:45 ~ values:", values);
+
   return (
     <View style={styles.card}>
       <View style={styles.cardTitle}>

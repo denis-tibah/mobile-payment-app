@@ -15,14 +15,13 @@ export default function EmailVerifiedMessageV2({
   setShowEmailVerified,
   route,
 }: any) {
-  
- 
+
   const { navigate }: any = useNavigation();
   const dispatch = useDispatch();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const [isOpenModal, setIsOpenModal] = useState<Boolean>(false);
 
-  console.log('*****data*****', data?.emailverificationData);
+  // console.log('*****data*****', data?.emailverificationData);
 
   // useEffect(() => {
   //   // if (isOpen || route?.params?.isOpenEmailVerified) {

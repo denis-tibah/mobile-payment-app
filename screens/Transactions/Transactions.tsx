@@ -5,14 +5,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import FormGroup from "../../components/FormGroup";
 import Heading from "../../components/Heading";
-import TransactionItem from "../../components/TransactionItem";
+import Modal from '../../components/Modal'
 import MainLayout from "../../layout/Main";
 import { styles } from "./styles";
 import Button from "../../components/Button";
 import Typography from "../../components/Typography";
 import TransactionIcon from "../../assets/icons/Transaction";
 import SearchIcon from "../../assets/icons/Search";
-import { SearchFilter, getTransactions, getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
+import { SearchFilter, StatementFilter, StatementResponse, StatementTransactionsResponse, getStatementsfinxp, getTransactions, getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
 import { generatePDF } from "../../utils/files";
 import { printAsync } from "expo-print";
 import { RootState } from "../../store";
@@ -30,9 +30,20 @@ import { arrayChecker } from "../../utils/helper";
 import { Transaction, TransactionDetails,TransactionDetailsNew } from "../../models/Transactions";
 import Pagination from "../../components/Pagination/Pagination";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
+import Box from "../../components/Box";
 
 export interface GroupedByDateTransactionObject {
   [date: string]: Transaction[];
+}
+interface DateRangeType {
+  dateTo: {
+    state: boolean;
+    value: string;
+  }
+  dateFrom: {
+    state: boolean;
+    value: string;
+  }
 }
 const searchOptions = [
   // { label: "BIC", value: 'bic' },
@@ -55,6 +66,7 @@ const initialSearchFieldData: SearchFilter = {
 export function Transactions({ navigation }: any) {
   const dispatch = useDispatch();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
+  const statementsData = useSelector((state: RootState) => state?.transaction?.statements);
   const [isMobileFilterShown, setIsMobileFilterShown] = useState<boolean>(false);
   const [sortByDate, setSortByDate] = useState<boolean>(false);
   const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState<string>("");
@@ -62,6 +74,7 @@ export function Transactions({ navigation }: any) {
   const [openStatusOptions, setOpenStatusOptions] = useState<boolean>(false);
   // const [transactions] = useSelector((state: RootState) => state?.transaction?.data); disabled temporarily since finxp is not returning the correct data - Arjay
   const transactions = useSelector((state: RootState) => state?.transaction?.data);
+  const [isDateRangeModalOpen, setIsDateRangeModalOpen] = useState<boolean>(false);
 
   const [isStatusOptionSelected, setIsStatusOptionSelected] =
     useState<boolean>(false);
@@ -70,10 +83,21 @@ export function Transactions({ navigation }: any) {
   const [txData, setTxData] = useState<GroupedByDateTransactionObject>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchFieldData, setSearchFieldData] = useState<SearchFilter>(initialSearchFieldData);
-  const [showPickerDateTo, setShowPickerDateTo] = useState(false);
-  const [showPickerDateFrom, setShowPickerDateFrom] = useState(false);
   const [dateTo, setDateTo] = useState("");
   const [dateFrom, setDateFrom] = useState("");
+  const [showPickerDateTo, setShowPickerDateTo] = useState(false);
+  const [showPickerDateFrom, setShowPickerDateFrom] = useState(false);
+  const [showStatementPickerDateToAndFrom, setShowStatementPickerDateToAndFrom] = useState<DateRangeType>({
+    dateTo: {
+      state: false,
+      value: "",
+    },
+    dateFrom: {
+      state: false,
+      value: "",
+    },
+  });
+
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [unfilteredTransactions, setUnfilteredTransactions] = useState<GroupedByDateTransactionObject>();
@@ -226,7 +250,6 @@ console.log("SearchFilter ",value);
       setDateFrom(formattedFromDate);
       const fromDate = new Date(dateFrom);
       const toDate = new Date(dateTo);
-      setShowPickerDateFrom(false);
       if (fromDate > toDate) {
         alert("Date from should be before or same with Date to");
         return;
@@ -236,22 +259,64 @@ console.log("SearchFilter ",value);
     }
   };
 
-  const handleExportData = async () => {
-    // const pdfUri = await generatePDF(transactions);
-    // const { data: transactionsData } = transactions; - Arjay: disabled temporarily since finxp change the format of response
-  
-    // const pdfUri = await generatePDF(transactions);
-    //modified by Aristos: 18-4-2023 due to finXP response changing
-    const pdfUri = await generatePDF(transactions?.transactions);
-    await printAsync({ uri: pdfUri });
+  const onChangeStatementShowPickerDateFrom = (event: any) => {
+    if (event.type == "set") {
+      const { dateFrom, dateTo } = showStatementPickerDateToAndFrom;
+      const formattedToDate = new Date(event.nativeEvent.timestamp)
+        .toISOString()
+        .split("T")[0];
+      setShowStatementPickerDateToAndFrom({
+        ...showStatementPickerDateToAndFrom,
+        dateFrom: {
+          state: false,
+          value: formattedToDate,
+        },
+      });
+      const fromDate = new Date(dateFrom.value);
+      const toDate = new Date(dateTo.value);
+      if (fromDate > toDate) {
+        alert("Date from should be before or same with Date to");
+        return;
+      }
+    }
   };
+
+  const onChangeStatementShowPickerDateTo = (event: any) => {
+    if (event.type == "set") {
+      const { dateFrom, dateTo } = showStatementPickerDateToAndFrom;
+      const formattedToDate = new Date(event.nativeEvent.timestamp)
+        .toISOString()
+        .split("T")[0];
+        setShowStatementPickerDateToAndFrom({
+          ...showStatementPickerDateToAndFrom,
+          dateTo: {
+            state: false,
+            value: formattedToDate,
+          },
+        });
+      const fromDate = new Date(dateFrom.value);
+      const toDate = new Date(dateTo.value);
+      setShowPickerDateTo(false);
+      if (fromDate > toDate) {
+        alert("Date from should be before or same with Date to");
+        return;
+      }
+    }
+  };
+
+  // const handleExportData = () => {
+  //   const pdfUri = await generatePDF(transactions);
+  //   const { data: transactionsData } = transactions; - Arjay: disabled temporarily since finxp change the format of response
+  //   const pdfUri = await generatePDF(transactions);
+  //   modified by Aristos: 18-4-2023 due to finXP response changing
+  //   const pdfUri = await generatePDF(transactions?.transactions);
+  //   await printAsync({ uri: pdfUri });
+  //   setIsDateRangeModalOpen(true);
+  // };
 
   const handleOnSubmitEditing = (event: any) => {
     const isNumberOnly = containsOnlyNumbers(searchText);
     const userId = userData?.id
-
-// console.log("Serach item is ",searchText);
-
 
     if (!userId) {
       return;
@@ -276,17 +341,6 @@ console.log("SearchFilter ",value);
       ..._searchFieldData,
     });
   };
-
-  const handleSortByDate = (_sortByDate: boolean) => {
-    const sortState = _sortByDate ? 'asc' : 'desc';
-    const searchFilter: SearchFilter = {
-      ...searchFieldData,
-      account_id: `${userData?.id}`,
-      direction: sortState,
-    };
-    fetchTransactionsWithFilters(searchFilter);
-    setSearchFieldData(searchFilter);
-  }
 
   const handleShowingAdvanceFilter = () => {
     clearFilter();
@@ -322,6 +376,11 @@ console.log("SearchFilter ",value);
     }
   }
 
+  const handleGeneratePDF = async (statements: StatementTransactionsResponse[]) => {
+    const pdfUri = await generatePDF(statements);
+    return await printAsync({ uri: pdfUri });
+  }
+
   // Fetch data when currentSelectedSearchField changes
   useEffect(() => {
     if (currentSelectedSearchField === "status") {
@@ -343,6 +402,7 @@ console.log("SearchFilter ",value);
     }
   },[debounceSearchText]);
 
+
   useEffect(() => {
     fetchTransactions();
     return () => clearFilter();
@@ -353,15 +413,121 @@ console.log("SearchFilter ",value);
       {/* <Spinner 
         visible={loadingTransactions}
       /> */}
+      <Modal
+        isOpen={isDateRangeModalOpen}
+      >
+        <Box
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Export Data</Typography>
+          <Typography fontSize={14} fontFamily="Nunito-Regular" color="black">Please select the date range you want to export</Typography>
+          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around'}}>
+            <Button
+                style={{
+                  width: 110,
+                  backgroundColor: "grey",
+                  marginTop: 10,
+                  lineHeight: 25,
+                }}
+                color="black-only"
+                onPress={() => setShowStatementPickerDateToAndFrom({ 
+                  ...showStatementPickerDateToAndFrom, 
+                  dateFrom: {
+                    state: true,
+                    value: "",
+                  }
+                })}
+              >
+                {!showStatementPickerDateToAndFrom.dateFrom.value ? `From Date` : `${showStatementPickerDateToAndFrom.dateFrom.value}`}
+              </Button>
+              {showStatementPickerDateToAndFrom.dateFrom.state && (
+                <DateTimePicker
+                  mode="date"
+                  display="spinner"
+                  maximumDate={new Date()}
+                  value={!showStatementPickerDateToAndFrom.dateFrom.value ? currentDate : new Date(showStatementPickerDateToAndFrom.dateFrom.value)}
+                  onChange={onChangeStatementShowPickerDateFrom}
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                  }}
+                />
+              )}
+              <Button
+              style={{
+                width: 110,
+                backgroundColor: "grey",
+                marginTop: 10,
+                lineHeight: 25,
+              }}
+              color="black-only"
+              onPress={() => setShowStatementPickerDateToAndFrom({
+                ...showStatementPickerDateToAndFrom,
+                dateTo: {
+                  state: true,
+                  value: "",
+                }
+              })}
+            >
+              {!showStatementPickerDateToAndFrom.dateTo.value ? `To Date` : `${showStatementPickerDateToAndFrom.dateTo.value}`}
+            </Button>
+            {showStatementPickerDateToAndFrom.dateTo.state && (
+              <DateTimePicker
+                mode="date"
+                display="spinner"
+                maximumDate={new Date()}
+                value={!dateFrom ? currentDate : new Date(dateFrom)}
+                onChange={onChangeStatementShowPickerDateTo}
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              />
+            )}
+          </View>
+          <Button
+            style={{
+              width: 110,
+              marginTop: 10,
+              lineHeight: 25,
+              alignSelf: 'center',
+            }}
+            color="green"
+            onPress={async () => {
+              const { dateFrom, dateTo } = showStatementPickerDateToAndFrom;
+              if (userData?.id && dateFrom.value && dateTo.value) {
+                const searchFilter: StatementFilter = {
+                  account_id: Number(userData?.id),
+                  from_date: dateFrom.value,
+                  to_date: dateTo.value,
+                }
+                try {
+                  await dispatch<any>(getStatementsfinxp(searchFilter))
+                  .unwrap()
+                  .then((res: StatementResponse) => {
+                    const { statements } = res;
+                    if (statements.length > 0) {
+                      return handleGeneratePDF(statements);
+                    }
+                  })
+                  .then(() => {
+                    setIsDateRangeModalOpen(false);
+                  });
+                } catch (error) {
+                  console.log({ error });
+                }
+              }
+            }}
+          >
+            Export
+          </Button>
+        </Box>
+      </Modal>
       <ScrollView 
         bounces={false}
-        // onMomentumScrollEnd={({nativeEvent}) => { // posible feature for future improvements. this is draft for infinite scroll
-        //   if (isCloseToBottom(nativeEvent)) {
-        //     fetchTransactions(limitCount);
-        //     let _limitCount = limitCount;
-        //     setLimitCount(++_limitCount);
-        //   }
-        // }}
       >
         <View style={styles.container}>
           <Heading
@@ -371,7 +537,7 @@ console.log("SearchFilter ",value);
               <Button
                 style={{ height: 34, width: 120 }}
                 color={"light-pink"}
-                onPress={handleExportData}
+                onPress={() => setIsDateRangeModalOpen(true)}
               >
                 Export Data
               </Button>

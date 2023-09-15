@@ -84,7 +84,7 @@ export const setLoginCredentials = createAsyncThunk(
 
 export const sendSMSVerification = createAsyncThunk(
   "sendSMSVerification",
-  async (params) => {
+  async (params: any) => {
     const { data } = await api.post("/getregistrationotpfinxp", params);
     return data;
   }
@@ -92,7 +92,7 @@ export const sendSMSVerification = createAsyncThunk(
 
 export const getSumsubVerificationCode = createAsyncThunk(
   "getSumsubVerificationCode",
-  async (params) => {
+  async (params: any) => {
     const { data } = await api.post("/registrationfinxpv3", params);
     return data;
   }

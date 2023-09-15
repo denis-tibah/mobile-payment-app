@@ -69,6 +69,7 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
               startInLoadingState={true}
               showsHorizontalScrollIndicator={true}
               showsVerticalScrollIndicator={true}
+              allowsFullscreenVideo
               onMessage={(event) => {
                 // Handle messages received from the web SDK
                 const data = JSON.parse(event.nativeEvent.data);

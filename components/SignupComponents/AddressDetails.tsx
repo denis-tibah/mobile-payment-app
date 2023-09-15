@@ -12,16 +12,10 @@ import ButtonSubmit from "../../components/Button";
 import MapIcon from "../../assets/icons/Map";
 import KeyIcon from "../../assets/icons/Key";
 import LocationIcon from "../../assets/icons/Location";
-import CalenderIcon from "../../assets/icons/CalenderEmpty";
 import Typography from "../../components/Typography";
 import { countries, nationalities } from "../../data/ISO3166";
 
-import {
-  noOfMonths,
-  noOfYears,
-  noOfMonthsObj,
-  noOfYearsObj,
-} from "../../data/options";
+import { noOfMonthsObj, noOfYearsObj } from "../../data/options";
 
 import { Seperator } from "../../components/Seperator/Seperator";
 import { setRegistrationData } from "../../redux/registration/registrationSlice";
@@ -340,43 +334,6 @@ const AddressDetails: FC<IAddressDetails> = ({
             </FormGroup>
           </View>
           <View>
-            {/* <FormGroup
-              validationError={
-                errors.country && touched.country && errors.country
-              }
-            >
-              <FormGroup.SelectForArrOfObject
-                onValueChange={handleChange("country")}
-                onBlur={handleBlur("country")}
-                selectedValue={
-                  values?.country
-                    ? countryValueFromLocalStorage("country", values?.country)
-                        .value
-                    : null
-                }
-                icon={<MapIcon />}
-                itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
-              >
-                {countries.map((item, index) => {
-                  if (index === 0) {
-                    return (
-                      <FormGroup.Option
-                        key="default"
-                        label="Country"
-                        value=""
-                      />
-                    );
-                  }
-                  return (
-                    <FormGroup.Option
-                      key={item?.alpha3}
-                      label={item?.name}
-                      value={item?.alpha3}
-                    />
-                  );
-                })}
-              </FormGroup.SelectForArrOfObject>
-            </FormGroup> */}
             <FormGroup
               validationError={
                 errors.country && touched.country && errors.country
@@ -416,34 +373,6 @@ const AddressDetails: FC<IAddressDetails> = ({
             </Text>
           </View>
           <View>
-            {/* <FormGroup
-              validationError={
-                errors.noOfMonths && touched.noOfMonths && errors.noOfMonths
-              }
-            >
-              <FormGroup.SelectForArrOfObject
-                onValueChange={handleChange("noOfMonths")}
-                onBlur={handleBlur("noOfMonths")}
-                selectedValue={values?.noOfMonths || ""}
-                icon={<CalenderIcon />}
-                itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
-              >
-                {noOfMonths.map((item) => {
-                  if (!item) {
-                    return (
-                      <FormGroup.Option
-                        key="default"
-                        value=""
-                        label="Number of months"
-                      />
-                    );
-                  }
-                  return (
-                    <FormGroup.Option key={item} label={item} value={item} />
-                  );
-                })}
-              </FormGroup.SelectForArrOfObject>
-            </FormGroup> */}
             <FormGroup
               validationError={
                 errors.noOfMonths && touched.noOfMonths && errors.noOfMonths
@@ -478,34 +407,6 @@ const AddressDetails: FC<IAddressDetails> = ({
             </FormGroup>
           </View>
           <View>
-            {/* <FormGroup
-              validationError={
-                errors.noOfYears && touched.noOfYears && errors.noOfYears
-              }
-            >
-              <FormGroup.SelectForArrOfObject
-                onValueChange={handleChange("noOfYears")}
-                onBlur={handleBlur("noOfYears")}
-                selectedValue={values?.noOfYears}
-                icon={<CalenderIcon />}
-                itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
-              >
-                {noOfYears.map((item) => {
-                  if (!item) {
-                    return (
-                      <FormGroup.Option
-                        key="default"
-                        value=""
-                        label="Number of years"
-                      />
-                    );
-                  }
-                  return (
-                    <FormGroup.Option key={item} label={item} value={item} />
-                  );
-                })}
-              </FormGroup.SelectForArrOfObject>
-            </FormGroup> */}
             <FormGroup
               validationError={
                 errors.noOfYears && touched.noOfYears && errors.noOfYears
@@ -659,47 +560,6 @@ const AddressDetails: FC<IAddressDetails> = ({
                   </FormGroup>
                 </View>
                 <View>
-                  {/* <FormGroup
-                    validationError={
-                      errors.additionalCountry &&
-                      touched.additionalCountry &&
-                      errors.additionalCountry
-                    }
-                  >
-                    <FormGroup.SelectForArrOfObject
-                      onValueChange={handleChange("additionalCountry")}
-                      onBlur={handleBlur("additionalCountry")}
-                      selectedValue={
-                        values?.additionalCountry
-                          ? countryValueFromLocalStorage(
-                              "additionalCountry",
-                              values?.additionalCountry
-                            ).value
-                          : null
-                      }
-                      icon={<MapIcon />}
-                      itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
-                    >
-                      {countries.map((item, index) => {
-                        if (index === 0) {
-                          return (
-                            <FormGroup.Option
-                              key="default"
-                              label="Country"
-                              value=""
-                            />
-                          );
-                        }
-                        return (
-                          <FormGroup.Option
-                            key={item?.alpha3}
-                            label={item?.name}
-                            value={item?.alpha3}
-                          />
-                        );
-                      })}
-                    </FormGroup.SelectForArrOfObject>
-                  </FormGroup> */}
                   <FormGroup
                     validationError={
                       errors.additionalCountry &&
@@ -736,40 +596,6 @@ const AddressDetails: FC<IAddressDetails> = ({
                   </FormGroup>
                 </View>
                 <View>
-                  {/* <FormGroup
-                    validationError={
-                      errors.additionalNoofmonths &&
-                      touched.additionalNoofmonths &&
-                      errors.additionalNoofmonths
-                    }
-                  >
-                    <FormGroup.SelectForArrOfObject
-                      onValueChange={handleChange("additionalNoofmonths")}
-                      onBlur={handleBlur("additionalNoofmonths")}
-                      selectedValue={values?.additionalNoofmonths || ""}
-                      icon={<CalenderIcon />}
-                      itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
-                    >
-                      {noOfMonths.map((item) => {
-                        if (!item) {
-                          return (
-                            <FormGroup.Option
-                              key="default"
-                              value=""
-                              label="Number of months"
-                            />
-                          );
-                        }
-                        return (
-                          <FormGroup.Option
-                            key={item}
-                            label={item}
-                            value={item}
-                          />
-                        );
-                      })}
-                    </FormGroup.SelectForArrOfObject>
-                  </FormGroup> */}
                   <FormGroup
                     validationError={
                       errors.noOfMonths &&
@@ -808,40 +634,6 @@ const AddressDetails: FC<IAddressDetails> = ({
                   </FormGroup>
                 </View>
                 <View>
-                  {/* <FormGroup
-                    validationError={
-                      errors.additionalNoofyears &&
-                      touched.additionalNoofyears &&
-                      errors.additionalNoofyears
-                    }
-                  >
-                    <FormGroup.SelectForArrOfObject
-                      onValueChange={handleChange("additionalNoofyears")}
-                      onBlur={handleBlur("additionalNoofyears")}
-                      selectedValue={values?.additionalNoofyears}
-                      icon={<CalenderIcon />}
-                      itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
-                    >
-                      {noOfYears.map((item) => {
-                        if (!item) {
-                          return (
-                            <FormGroup.Option
-                              key="default"
-                              value=""
-                              label="Number of years"
-                            />
-                          );
-                        }
-                        return (
-                          <FormGroup.Option
-                            key={item}
-                            label={item}
-                            value={item}
-                          />
-                        );
-                      })}
-                    </FormGroup.SelectForArrOfObject>
-                  </FormGroup> */}
                   <FormGroup
                     validationError={
                       errors.additionalNoofyears &&

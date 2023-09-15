@@ -1,11 +1,10 @@
 import { FC, Fragment, useState } from "react";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { View, Text, Button, TouchableOpacity, Platform } from "react-native";
+import { View, Text, Button, TouchableOpacity } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import DropDownPicker from "react-native-dropdown-picker";
 
-import SalutationIcon from "../../assets/icons/Salutation";
 import ProfileIcon from "../../assets/icons/Profile";
 import DobIcon from "../../assets/icons/Birthday";
 import ArrowRightLong from "../../assets/icons/ArrowRightLong";
@@ -24,7 +23,6 @@ import ButtonSubmit from "../../components/Button";
 
 import vars from "../../styles/vars";
 import { styles } from "./styles";
-import { boolean } from "yup";
 
 interface IProfileDetails {
   handlePrevStep: () => void;
@@ -65,30 +63,6 @@ const ProfileDetails: FC<IProfileDetails> = ({
     setFieldValue("dob", date.toLocaleDateString());
     hideDatePicker();
   };
-
-  /* const countryValueFromLocalStorage = (
-    type: string,
-    value: string
-  ): {
-    label?: string | null;
-    value?: string | null;
-  } => {
-    const selectedDataCountryOfBirth = {};
-    if (value) {
-      const arrCountry = type === "country" ? countries : nationalities;
-      const countryObj = arrCountry.find((country) => country.alpha3 === value);
-      if (countryObj && Object.keys(countryObj).length > 0) {
-        Object.assign(selectedDataCountryOfBirth, {
-          label:
-            type === "country" ? countryObj?.name : countryObj?.nationality,
-          value: countryObj?.alpha3,
-        });
-      }
-    }
-    return Object.keys(selectedDataCountryOfBirth).length > 0
-      ? selectedDataCountryOfBirth
-      : { label: null, value: null };
-  }; */
 
   const formatDOBToDash = (paramDOB: string): string | null => {
     const arrDOB: string[] | boolean = paramDOB ? paramDOB.split("-") : false;
@@ -159,38 +133,6 @@ const ProfileDetails: FC<IProfileDetails> = ({
       <View>
         <View style={styles.cardBody}>
           <View>
-            {/* <FormGroup
-              validationError={
-                errors.salutation && touched.salutation && errors.salutation
-              }
-            >
-              <FormGroup.SelectForArrOfObject
-                onValueChange={handleChange("salutation")}
-                onBlur={handleBlur("salutation")}
-                selectedValue={values?.salutation}
-                icon={<SalutationIcon />}
-                itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
-              >
-                {salutations.map((item) => {
-                  if (!item?.label && !item?.value) {
-                    return (
-                      <FormGroup.Option
-                        key={item?.value}
-                        label="Salutation"
-                        value=""
-                      />
-                    );
-                  }
-                  return (
-                    <FormGroup.Option
-                      key={item?.value}
-                      label={item?.label}
-                      value={item?.value}
-                    />
-                  );
-                })}
-              </FormGroup.SelectForArrOfObject>
-            </FormGroup> */}
             <FormGroup
               validationError={
                 errors.salutation && touched.salutation && errors.salutation
@@ -300,38 +242,6 @@ const ProfileDetails: FC<IProfileDetails> = ({
             </FormGroup>
           </View>
           <View>
-            {/* <FormGroup
-              validationError={
-                errors.countryOfBirth &&
-                touched.countryOfBirth &&
-                errors.countryOfBirth
-              }
-            >
-              <FormGroup.SelectForArrOfObject
-                onValueChange={handleChange("countryOfBirth")}
-                onBlur={handleBlur("countryOfBirth")}
-                selectedValue={
-                  values?.countryOfBirth
-                    ? countryValueFromLocalStorage(
-                        "country",
-                        values?.countryOfBirth
-                      ).value
-                    : null
-                }
-                icon={<ProfileIcon />}
-                itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
-              >
-                {countries.map((item) => {
-                  return (
-                    <FormGroup.Option
-                      key={item?.alpha3 ? item?.alpha3 : "default"}
-                      label={item?.name}
-                      value={item?.alpha3}
-                    />
-                  );
-                })}
-              </FormGroup.SelectForArrOfObject>
-            </FormGroup> */}
             <FormGroup
               validationError={
                 errors.countryOfBirth &&
@@ -370,45 +280,6 @@ const ProfileDetails: FC<IProfileDetails> = ({
             </FormGroup>
           </View>
           <View>
-            {/* <FormGroup
-              validationError={
-                errors.nationality && touched.nationality && errors.nationality
-              }
-            >
-              <FormGroup.SelectForArrOfObject
-                onValueChange={handleChange("nationality")}
-                onBlur={handleBlur("nationality")}
-                selectedValue={
-                  values?.nationality
-                    ? countryValueFromLocalStorage(
-                        "nationality",
-                        values?.nationality
-                      ).value
-                    : null
-                }
-                icon={<ProfileIcon />}
-                itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
-              >
-                {nationalities.map((item, index) => {
-                  if (index === 0) {
-                    return (
-                      <FormGroup.Option
-                        key="default"
-                        label="Nationality"
-                        value=""
-                      />
-                    );
-                  }
-                  return (
-                    <FormGroup.Option
-                      key={item?.alpha3 ? item?.alpha3 : "default"}
-                      label={item?.name}
-                      value={item?.alpha3}
-                    />
-                  );
-                })}
-              </FormGroup.SelectForArrOfObject>
-            </FormGroup> */}
             <FormGroup
               validationError={
                 errors.nationality && touched.nationality && errors.nationality
@@ -428,7 +299,6 @@ const ProfileDetails: FC<IProfileDetails> = ({
                     });
                   }}
                   listMode="SCROLLVIEW"
-                  // setValue={setSelectedSalutation}
                   items={nationalities}
                   value={values?.nationality || ""}
                   setOpen={setOpenListForNationality}

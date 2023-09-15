@@ -1,8 +1,9 @@
 import { FC, useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, Platform } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "react-native-loading-spinner-overlay/lib";
+import DropDownPicker from "react-native-dropdown-picker";
 
 import Button from "../../components/Button";
 import Typography from "../../components/Typography";
@@ -52,13 +53,15 @@ const Verifications: FC<IVerifications> = ({
     message: string | undefined;
     status: string;
   }>({ message: "", status: "" });
+  const [openListForCountryCode, setOpenListForCountryCode] =
+    useState<boolean>(false);
 
   useEffect(() => {
-    dispatch(
+    dispatch<any>(
       sendSMSVerification({
         identifier: registration.data.phone_number,
       })
-    ).catch((error) => {
+    ).catch((error: any) => {
       setStatusMessage({
         header: "Error",
         body: "Something went wrong",
@@ -90,7 +93,7 @@ const Verifications: FC<IVerifications> = ({
     phoneNumber: string;
   }): void => {
     setIsLoading(true);
-    dispatch(
+    dispatch<any>(
       sendSMSVerification({
         identifier: wholePhoneNumber,
       })
@@ -133,30 +136,37 @@ const Verifications: FC<IVerifications> = ({
     setUpdatePhoneNumber(!isUpdatePhoneNumber);
   };
 
-  const { handleSubmit, handleChange, values, touched, errors, handleBlur } =
-    useFormik({
-      initialValues: {
-        countryCode: "",
-        phoneNumber: "",
-      },
-      validationSchema: verifyPhoneNumberSchema,
-      onSubmit: ({ phoneNumber, countryCode }) => {
-        setIsLoading(true);
-        dispatch(
-          setRegistrationData({
-            phone_number: `${countryCode}${phoneNumber}`,
-            identifier: `${countryCode}${phoneNumber}`,
-          })
-        );
-        getOtp({
-          wholePhoneNumber: `${countryCode}${phoneNumber}`,
-          countryCode,
-          phoneNumber,
-        });
-        setUpdatePhoneNumber(false);
-      },
-    });
-
+  const {
+    handleSubmit,
+    handleChange,
+    values,
+    touched,
+    errors,
+    handleBlur,
+    setValues,
+  } = useFormik({
+    initialValues: {
+      countryCode: "",
+      phoneNumber: "",
+    },
+    validationSchema: verifyPhoneNumberSchema,
+    onSubmit: ({ phoneNumber, countryCode }) => {
+      setIsLoading(true);
+      dispatch(
+        setRegistrationData({
+          phone_number: `${countryCode}${phoneNumber}`,
+          identifier: `${countryCode}${phoneNumber}`,
+        })
+      );
+      getOtp({
+        wholePhoneNumber: `${countryCode}${phoneNumber}`,
+        countryCode,
+        phoneNumber,
+      });
+      setUpdatePhoneNumber(false);
+    },
+  });
+  console.log("🚀 ~ file: Verifications.tsx:143 ~ values:", values);
   const handleVerifyPhoneNumber = () => {
     setIsLoading(true);
     const regData = {
@@ -169,7 +179,7 @@ const Verifications: FC<IVerifications> = ({
       "🚀 ~ file: Verifications.tsx:128 ~ handleVerifyPhoneNumber ~ regData:",
       regData
     );
-    dispatch(getSumsubVerificationCode(regData))
+    dispatch<any>(getSumsubVerificationCode(regData))
       .unwrap()
       .then((payload: any) => {
         if (payload) {
@@ -303,31 +313,31 @@ const Verifications: FC<IVerifications> = ({
                         errors.countryCode
                       }
                     >
-                      <FormGroup.SelectForArrOfObject
-                        onValueChange={handleChange("countryCode")}
-                        onBlur={handleBlur("countryCode")}
-                        selectedValue={values?.countryCode}
-                        itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
-                      >
-                        {registrationPhonePrefix.map((item) => {
-                          if (!item?.label && !item?.value) {
-                            return (
-                              <FormGroup.Option
-                                key="null"
-                                label="Country code"
-                                value=""
-                              />
-                            );
-                          }
-                          return (
-                            <FormGroup.Option
-                              key={item?.value}
-                              label={item?.label}
-                              value={item?.value}
-                            />
-                          );
-                        })}
-                      </FormGroup.SelectForArrOfObject>
+                      <View>
+                        <DropDownPicker
+                          schema={{ label: "label", value: "value" }}
+                          onSelectItem={(value: any) => {
+                            const { value: countryCodeValue } = value;
+                            setValues({
+                              ...values,
+                              countryCode: countryCodeValue,
+                            });
+                          }}
+                          listMode="SCROLLVIEW"
+                          // setValue={setSelectedSalutation}
+                          items={registrationPhonePrefix}
+                          value={values?.countryCode}
+                          setOpen={setOpenListForCountryCode}
+                          open={openListForCountryCode}
+                          style={styles.dropdown}
+                          dropDownContainerStyle={styles.dropdownContainer}
+                          dropDownDirection="TOP"
+                          placeholder="Phone country code"
+                          scrollViewProps={{
+                            nestedScrollEnabled: true,
+                          }}
+                        />
+                      </View>
                     </FormGroup>
                     <View>
                       <FormGroup

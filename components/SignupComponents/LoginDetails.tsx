@@ -1,14 +1,7 @@
 import { useState, FC, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Platform,
-  ScrollView,
-} from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-/* import { Button as Btn } from "react-native"; */
 import { useNavigation } from "@react-navigation/native";
 import * as Linking from "expo-linking";
 import Spinner from "react-native-loading-spinner-overlay/lib";
@@ -18,7 +11,6 @@ import { registrationPhonePrefix } from "../../data/options";
 import Typography from "../../components/Typography";
 import { Seperator } from "../../components/Seperator/Seperator";
 import EmailIcon from "../../assets/icons/Email";
-import MapIcon from "../../assets/icons/Map";
 import PhoneIcon from "../../assets/icons/Phone";
 import ArrowRightLong from "../../assets/icons/ArrowRightLong";
 import FormGroup from "../../components/FormGroup";
@@ -32,7 +24,6 @@ import { loginCredentialsSchema } from "../../utils/formikSchema";
 import { AppDispatch } from "../../store";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
-// import { registerForPushNotificationsRegistrationAsync } from "../PushNotification copy";
 import { registerForPushNotificationsAsync } from "../PushNotification";
 
 interface ILoginDetails {
@@ -213,38 +204,6 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
             </FormGroup>
           </View>
           <View>
-            {/* <FormGroup
-              validationError={
-                errors.countryCode && touched.countryCode && errors.countryCode
-              }
-            >
-              <FormGroup.SelectForArrOfObject
-                onValueChange={handleChange("countryCode")}
-                onBlur={handleBlur("countryCode")}
-                selectedValue={values?.countryCode}
-                icon={<MapIcon />}
-                itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
-              >
-                {registrationPhonePrefix.map((item) => {
-                  if (!item?.label && !item?.value) {
-                    return (
-                      <FormGroup.Option
-                        key="null"
-                        label="Phone country code"
-                        value=""
-                      />
-                    );
-                  }
-                  return (
-                    <FormGroup.Option
-                      key={item?.value}
-                      label={item?.label}
-                      value={item?.value}
-                    />
-                  );
-                })}
-              </FormGroup.SelectForArrOfObject>
-            </FormGroup> */}
             <FormGroup
               validationError={
                 errors.countryCode && touched.countryCode && errors.countryCode

@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { StyleSheet, View, Text, Platform } from "react-native";
+import { View } from "react-native";
 import { useFormik } from "formik";
 import { useSelector, useDispatch } from "react-redux";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -114,40 +114,6 @@ const FinancialDetails: FC<IFinancialDetails> = ({
             </FormGroup>
           </View>
           <View>
-            {/* <FormGroup
-              validationError={
-                errors.sourceOfWealth &&
-                touched.sourceOfWealth &&
-                errors.sourceOfWealth
-              }
-            >
-              <FormGroup.SelectForArrOfObject
-                onValueChange={handleChange("sourceOfWealth")}
-                onBlur={handleBlur("sourceOfWealth")}
-                selectedValue={values?.sourceOfWealth || ""}
-                icon={<PigIcon />}
-                itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
-              >
-                {sourceOfWealth.map((item) => {
-                  if (!item) {
-                    return (
-                      <FormGroup.Option
-                        key="default"
-                        value=""
-                        label="Source of deposits"
-                      />
-                    );
-                  }
-                  return (
-                    <FormGroup.Option
-                      key={item?.value}
-                      label={item?.label}
-                      value={item?.value}
-                    />
-                  );
-                })}
-              </FormGroup.SelectForArrOfObject>
-            </FormGroup> */}
             <FormGroup
               validationError={
                 errors.sourceOfWealth &&
@@ -184,40 +150,6 @@ const FinancialDetails: FC<IFinancialDetails> = ({
             </FormGroup>
           </View>
           <View>
-            {/* <FormGroup
-              validationError={
-                errors.employmentStatus &&
-                touched.employmentStatus &&
-                errors.employmentStatus
-              }
-            >
-              <FormGroup.SelectForArrOfObject
-                onValueChange={handleChange("employmentStatus")}
-                onBlur={handleBlur("employmentStatus")}
-                selectedValue={values?.employmentStatus || ""}
-                icon={<PigIcon />}
-                itemStyle={{ height: Platform.OS === "ios" ? 48 : "" }}
-              >
-                {employmentStatus.map((item) => {
-                  if (!item) {
-                    return (
-                      <FormGroup.Option
-                        key="default"
-                        value=""
-                        label="Employment status"
-                      />
-                    );
-                  }
-                  return (
-                    <FormGroup.Option
-                      key={item?.value}
-                      label={item?.label}
-                      value={item?.value}
-                    />
-                  );
-                })}
-              </FormGroup.SelectForArrOfObject>
-            </FormGroup> */}
             <FormGroup
               validationError={
                 errors.employmentStatus &&
@@ -237,7 +169,6 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                     });
                   }}
                   listMode="SCROLLVIEW"
-                  // setValue={setSelectedSalutation}
                   items={employmentStatus}
                   value={values?.employmentStatus}
                   setOpen={setOpenListForEmploymentStatus}

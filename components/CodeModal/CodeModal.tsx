@@ -29,26 +29,37 @@ export const CodeModal = ({
   handleResendSMSVerificationCode: () => void;
 }) => {
   const [code, setCode] = useState("");
-  const [timeRemaining, setTimeRemaining] = useState(60);
-
+  const [timeRemaining, setTimeRemaining] = useState<number>(60);
+  const [isTimeToCountDown, setIsTimeToCountDown] = useState<boolean>(false);
   const enableResend = timeRemaining === 0;
   const handlePinCodeChange = (value: string) => {
     setCode(value);
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (timeRemaining > 0) {
-        setTimeRemaining(timeRemaining - 1);
-      } else {
-        clearInterval(interval);
-      }
-    }, 1000);
+  const _handleResendSMSVerificationCode = () => {
+    setIsTimeToCountDown(true);
+    handleResendSMSVerificationCode();
+  };
 
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isTimeToCountDown) {
+      interval = setInterval(() => {
+        if (timeRemaining > 0) {
+          setTimeRemaining(timeRemaining - 1);
+        } else {
+          clearInterval(interval);
+        }
+      }, 1000);
+    }
+    if (enableResend) {
+      setIsTimeToCountDown(false);
+      setTimeRemaining(60);
+    }
     return () => {
       clearInterval(interval); // Cleanup the interval when the component unmounts
     };
-  }, [timeRemaining]);
+  }, [timeRemaining, isTimeToCountDown]);
   // const handleResendSMSVerificationCode = () =>
   //   dispatch(sendSmsPaymentVerification({}) as any);
 
@@ -82,8 +93,8 @@ export const CodeModal = ({
       <View style={styles.container}>
         <PinCodeInputBoxes fieldCount={6} onChange={handlePinCodeChange} />
         <Text style={styles.noCode}>Did not get a verification code?</Text>
-        <TouchableOpacity onPress={handleResendSMSVerificationCode} disabled={enableResend}>
-          <Text style={styles.noCodeResend}>Resend verification code. { timeRemaining && !enableResend && `${timeRemaining}` }</Text>
+        <TouchableOpacity onPress={_handleResendSMSVerificationCode} disabled={isTimeToCountDown}>
+          <Text style={styles.noCodeResend}>Resend verification code. { isTimeToCountDown && `${timeRemaining}` }</Text>
         </TouchableOpacity>
       </View>
     </Modal>

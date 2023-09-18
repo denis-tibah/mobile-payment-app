@@ -6,8 +6,6 @@ import TransactionIcon from "../../assets/icons/Transaction";
 import { Modal } from "../Modal/Modal";
 import Button from "../Button";
 import { PinCodeInputBoxes } from "../FormGroup/FormGroup";
-import { useDispatch } from "react-redux";
-import { sendSmsPaymentVerification } from "../../redux/payment/paymentSlice";
 
 export const CodeModal = ({
   isOpen,
@@ -60,8 +58,6 @@ export const CodeModal = ({
       clearInterval(interval); // Cleanup the interval when the component unmounts
     };
   }, [timeRemaining, isTimeToCountDown]);
-  // const handleResendSMSVerificationCode = () =>
-  //   dispatch(sendSmsPaymentVerification({}) as any);
 
   return (
     <Modal
@@ -94,7 +90,9 @@ export const CodeModal = ({
         <PinCodeInputBoxes fieldCount={6} onChange={handlePinCodeChange} />
         <Text style={styles.noCode}>Did not get a verification code?</Text>
         <TouchableOpacity onPress={_handleResendSMSVerificationCode} disabled={isTimeToCountDown}>
-          <Text style={styles.noCodeResend}>Resend verification code. { isTimeToCountDown && `${timeRemaining}` }</Text>
+          { isTimeToCountDown ? <Text style={styles.noCodeResend}>Wait for {timeRemaining}s to request again.</Text> :
+            <Text style={styles.noCodeResend}>Resend verification code</Text>
+          }
         </TouchableOpacity>
       </View>
     </Modal>

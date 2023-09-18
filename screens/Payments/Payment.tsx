@@ -358,7 +358,7 @@ export function Payment({ navigation }: any) {
           onSubmit={(values) => {
             setIsLoading(true);
             // console.log( '*****1  creditor_name:***********' ,getFirstAndLastName(values.recipientname) + " " + getFirstAndLastName(values.recipientname))
-            console.log('******1 beneficiaryOptions*************',values.recipientname);
+            // console.log('******1 beneficiaryOptions*************',values.recipientname);
 
             dispatch(
               initiatePayment({
@@ -380,9 +380,9 @@ export function Payment({ navigation }: any) {
             )
               .unwrap()
               .then((payload: {transaction_id: string}) => {
-                console.log("payload", payload);
+
                 // console.log( '*****2 creditor_name:***********' ,getFirstAndLastName(values.recipientname) + " " + getFirstAndLastName(values.recipientname))
-                console.log('******2 beneficiaryOptions*************',values.recipientname);
+                // console.log('******2 beneficiaryOptions*************',values.recipientname);
                 if (payload.transaction_id) {
                   dispatch(
                     setInitiatePaymentData({

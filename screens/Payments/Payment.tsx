@@ -88,6 +88,7 @@ export function Payment({ navigation }: any) {
   const loading = useSelector((state: any) => state.beneficiary.loading);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isExternalPayment, setIsExternalPayment] = useState(false);
+  const [paymentRequest, setPaymentRequest] = useState<any>({});
   const paymentContentDefault = {
     title: "Payment Failed",
     text: "Your payment was not successful",
@@ -130,6 +131,24 @@ export function Payment({ navigation }: any) {
       lastname: str.slice(firstSpace + 1),
       // lastname: data.slice(0, data?.indexOf(" ")),
     };
+  }
+
+  const handleResendSMSVerificationCode = () => {
+    setIsLoading(true);
+    dispatch(
+      sendSmsPaymentVerification(paymentRequest) as any
+    )
+    .unwrap()
+    .then((payload: { message: string, status: string }) => {
+      const { status } = payload;
+      if (status === "success") {
+        setIsLoading(false);
+      }
+    })
+    .catch((error: any) => {
+      console.error(error);
+      setIsOtpValid(false);
+    });
   }
 
   const handleSelectPayee = (item: any, values: any, setValues: any) => {
@@ -387,13 +406,15 @@ export function Payment({ navigation }: any) {
                       type: externalPayment,
                     })
                   );
+                  let _paymentRequest = {
+                    identifier: payload.transaction_id,
+                    type: "transfer",
+                    amount: values.amount,
+                    currency: values.currency,
+                  }
+                  setPaymentRequest(_paymentRequest);
                   dispatch(
-                    sendSmsPaymentVerification({
-                      identifier: payload.transaction_id,
-                      type: "transfer",
-                      amount: values.amount,
-                      currency: values.currency,
-                    }) as any
+                    sendSmsPaymentVerification(_paymentRequest) as any
                   )
                   .unwrap()
                   .then((payload: { message: string, status: string }) => {
@@ -435,6 +456,7 @@ export function Payment({ navigation }: any) {
                   }
                   isOpen
                   onSubmit={handleProccessPayment}
+                  handleResendSMSVerificationCode={handleResendSMSVerificationCode}
                   onCancel={() => setDisplayOTPModal(false)}
                 />
               )}

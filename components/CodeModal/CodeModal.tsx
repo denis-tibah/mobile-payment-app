@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import vars from "../../styles/vars";
 import TransactionIcon from "../../assets/icons/Transaction";
@@ -17,6 +17,7 @@ export const CodeModal = ({
   onCancel,
   confirmButtonText,
   loading,
+  handleResendSMSVerificationCode,
 }: {
   isOpen: boolean;
   title: string;
@@ -25,17 +26,31 @@ export const CodeModal = ({
   onSubmit: (data: { code: string }) => void;
   onCancel: () => void;
   loading?: boolean;
+  handleResendSMSVerificationCode: () => void;
 }) => {
   const [code, setCode] = useState("");
+  const [timeRemaining, setTimeRemaining] = useState(60);
 
+  const enableResend = timeRemaining === 0;
   const handlePinCodeChange = (value: string) => {
     setCode(value);
   };
 
-  const dispatch = useDispatch();
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (timeRemaining > 0) {
+        setTimeRemaining(timeRemaining - 1);
+      } else {
+        clearInterval(interval);
+      }
+    }, 1000);
 
-  const handleResendSMSVerificationCode = () =>
-    dispatch(sendSmsPaymentVerification({}) as any);
+    return () => {
+      clearInterval(interval); // Cleanup the interval when the component unmounts
+    };
+  }, [timeRemaining]);
+  // const handleResendSMSVerificationCode = () =>
+  //   dispatch(sendSmsPaymentVerification({}) as any);
 
   return (
     <Modal
@@ -67,6 +82,9 @@ export const CodeModal = ({
       <View style={styles.container}>
         <PinCodeInputBoxes fieldCount={6} onChange={handlePinCodeChange} />
         <Text style={styles.noCode}>Did not get a verification code?</Text>
+        <TouchableOpacity onPress={handleResendSMSVerificationCode} disabled={enableResend}>
+          <Text style={styles.noCodeResend}>Resend verification code. { timeRemaining && !enableResend && `${timeRemaining}` }</Text>
+        </TouchableOpacity>
       </View>
     </Modal>
   );
@@ -83,6 +101,12 @@ const styles = StyleSheet.create<any>({
   noCode: {
     color: vars["accent-pink"],
     fontSize: 14,
+    fontWeight: 400,
+    marginTop: 12,
+  },
+  noCodeResend: {
+    color: vars["accent-pink"],
+    fontSize: 12,
     fontWeight: 400,
     marginTop: 12,
   },

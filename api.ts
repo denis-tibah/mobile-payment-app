@@ -6,12 +6,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // export const exportedBaseUrl = process.env.APIURL || "https://zazoostg.com/reg/ziyl";
 
 // staging backend v2
-const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
-export const exportedBaseUrl = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
+// const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
+// export const exportedBaseUrl = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
 
 // live backend
-// const baseURL = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
-// export const exportedBaseUrl = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
+const baseURL = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
+export const exportedBaseUrl = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
 
 export const api = axios.create({ baseURL });
 let _store: any;
@@ -63,7 +63,7 @@ api.interceptors.response.use(
         console.log("Error clearing store state: ", err);
       }
       // Reload the app to force the user to log in again
-      window.location.reload();
+      // window.location.reload();
       return;
     }
     return Promise.reject(error);

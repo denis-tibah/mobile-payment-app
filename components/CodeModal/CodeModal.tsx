@@ -24,19 +24,22 @@ export const CodeModal = ({
   onSubmit: (data: { code: string }) => void;
   onCancel: () => void;
   loading?: boolean;
-  handleResendSMSVerificationCode: () => void;
+  handleResendSMSVerificationCode?: () => void;
 }) => {
   const [code, setCode] = useState("");
   const [timeRemaining, setTimeRemaining] = useState<number>(60);
   const [isTimeToCountDown, setIsTimeToCountDown] = useState<boolean>(false);
   const enableResend = timeRemaining === 0;
+
   const handlePinCodeChange = (value: string) => {
     setCode(value);
   };
 
   const _handleResendSMSVerificationCode = () => {
     setIsTimeToCountDown(true);
-    handleResendSMSVerificationCode();
+    if (handleResendSMSVerificationCode) {
+      handleResendSMSVerificationCode();
+    }
   };
 
   useEffect(() => {

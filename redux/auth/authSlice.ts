@@ -36,7 +36,7 @@ export const refreshUserData = createAsyncThunk(
   async (_, { fulfillWithValue, rejectWithValue }) => {
     try {
       const { data } = await api.get("/accountsfinxp");
-      console.log("getting the accounts data ", data);
+      // console.log("getting the accounts data ", data);
 
       if (data.length) return fulfillWithValue(data[0]);
     } catch (error) {

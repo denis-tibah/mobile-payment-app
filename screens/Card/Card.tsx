@@ -533,7 +533,7 @@ export function Card({ navigation }: any) {
                     </Button>
                   </Pressable>
                 </View>
-                <View style={styles.cardActionsButtonMargin}>
+                {/* <View style={styles.cardActionsButtonMargin}> -- https://paymentworld.atlassian.net/browse/ZAZ-532 --
                   <Pressable>
                     <Button
                       color={cardPin ? "blue" : "light-blue"}
@@ -546,7 +546,7 @@ export function Card({ navigation }: any) {
                       Show pin
                     </Button>
                   </Pressable>
-                </View>
+                </View> */}
                 <View style={styles.cardActionsButtonMargin}>
                   <Pressable>
                     <Button

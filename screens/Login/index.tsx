@@ -207,7 +207,7 @@ export function LoginScreen({ navigation }: any) {
                       // result.payload.biometricYN
                     );
                   } else {
-                    console.log("Do not use biometric");
+                    // console.log("Do not use biometric");
                     await SecureStore.deleteItemAsync("email");
                     await SecureStore.deleteItemAsync("password");
                   }

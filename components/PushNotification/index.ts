@@ -14,7 +14,7 @@ export const registerForPushNotificationsAsync = async (
   let projectId = '7454c009-85fa-4eb0-ae8c-5834ded616c2'
 
 
-  console.log("********Platform.OS*********** ", Platform.OS);
+  // console.log("********Platform.OS*********** ", Platform.OS);
 
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("default", {

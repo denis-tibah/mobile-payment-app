@@ -36,8 +36,8 @@ export const refreshUserData = createAsyncThunk(
   async (_, { fulfillWithValue, rejectWithValue }) => {
     try {
       const { data } = await api.get("/accountsfinxp");
-      // console.log("getting the accounts data ", data);
-
+      console.log("getting the accounts data ", data);
+      // console.log("getting the accounts data length is ", data.length);
       if (data.length) return fulfillWithValue(data[0]);
     } catch (error) {
       console.log("getting the accounts error obtained is ", error);
@@ -76,26 +76,32 @@ export const signin = createAsyncThunk(
       } else {
         return rejectWithValue("Failed to load ip location");
       } */
-      const ipResponse = await getIpAddress().catch((error) => {
-        console.log("error getting ip", error);
-      });
+//Aristos Christofides: we have an issue getting the ip address of mobile device
+//so will disable it
+      // const ipResponse = await getIpAddress().catch((error) => {
+      //   console.log("error getting ip", error);
+      // });
       // console.log("🚀 ~ file: authSlice.ts:68 ~ ipResponse:", ipResponse);
-      if (ipResponse && Object.keys(ipResponse).length > 0) {
-        const { data } = await api.post("/loginfinxpmobile", {
-          ...values,
-          ipAddress: ipResponse,
-          browserfingerprint: "react native app",
-        });
+      
+    // if (ipResponse && Object.keys(ipResponse).length > 0) {
 
-        const { message } = data;
 
-        if (data.code === "400" && (message === SIGNIN_SUCCESS_MESSAGES.EXPIRED || message === SIGNIN_SUCCESS_MESSAGES.CHANGE_PASSWORD)) {
-          console.log("🚀 ~ file: authSlice.ts:68 ~ message", message);
-          return rejectWithValue({
-            message,
-            resetToken: data.access_token,
-          });
-        }
+            const { data } = await api.post("/loginfinxpmobile", {
+              ...values,
+              // ipAddress: ipResponse,
+              browserfingerprint: "react native app",
+            });
+        
+
+            const { message } = data;
+
+            if (data.code === "400" && (message === SIGNIN_SUCCESS_MESSAGES.EXPIRED || message === SIGNIN_SUCCESS_MESSAGES.CHANGE_PASSWORD)) {
+              console.log("🚀 ~ file: authSlice.ts:68 ~ message", message);
+              return rejectWithValue({
+                message,
+                resetToken: data.access_token,
+              });
+            }
 
         if (data.code === 401 || !data) {
           return rejectWithValue("Invalid email or password");
@@ -106,10 +112,14 @@ export const signin = createAsyncThunk(
 
         if (data.code === "200" || data.code === "201")
           return fulfillWithValue(data);
-      } else {
-        return fulfillWithValue("Failed to load ip location");
-      }
-    } catch (error: any) {
+ 
+         // } 
+        // else {
+        //   return fulfillWithValue("Failed to load ip location");
+        // }
+    
+    } 
+    catch (error: any) {
       return rejectWithValue("Something went wrong login on");
     }
   }

@@ -196,7 +196,7 @@ console.log("SearchFilter ",value);
         });      
       }
     } catch (error) {
-      console.log("error aristos 2 ");
+      // console.log("error aristos 2 ");
       console.log({error});
     } finally {
       setIsLoading(false);

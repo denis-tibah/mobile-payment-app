@@ -12,4 +12,11 @@ export interface ICardDetails {
   card?: ICard;
   cardImage?: string;
   cardNumber?: string | undefined;
+  cardreferenceId?: string;
+  currency?: string;
+  expiration_date?: string;
+  frozenYN?: string;
+  lostYN?: string;
+  type?: string;
+  pan?: string;
 }

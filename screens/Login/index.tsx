@@ -23,7 +23,7 @@ import {
 } from "../../redux/auth/authSlice";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
-import { getIpAddress } from "../../utils/getIpAddress";
+
 import { screenNames } from "../../utils/helpers";
 
 export function LoginScreen({ navigation }: any) {
@@ -191,7 +191,10 @@ export function LoginScreen({ navigation }: any) {
                   const result = await dispatch<any>(
                     signin({ values, navigate /* , ip */ })
                   ).unwrap();
-
+                    console.log("result", {
+                      ...result,
+                      profileimage: null,
+                    });
                   if (
                     // [ -- disabled since finxp's response got changed
                     //   result?.payload?.biometricYN.toUpperCase(),
@@ -211,7 +214,7 @@ export function LoginScreen({ navigation }: any) {
                     await SecureStore.deleteItemAsync("email");
                     await SecureStore.deleteItemAsync("password");
                   }
-                  await dispatch<any>(refreshUserData()).unwrap();
+                  await dispatch<any>(refreshUserData());
                   if (result.error)
                     setApiErrorMessage({ message: result.payload });
                   else setApiErrorMessage({});

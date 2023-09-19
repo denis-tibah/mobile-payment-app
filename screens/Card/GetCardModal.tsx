@@ -25,15 +25,6 @@ interface GerCardModalProps {
   hasPhysicalCard?: boolean;
   hasVirtualCard?: boolean;
 }
-// type CardData = {
-//   cardrefrenceId: string;
-//   type: string;
-//   currency: string;
-//   expiration_date: string;
-//   frozenYN: string;
-//   lostYN: string;
-//   pan: string;
-// }
 
 export const GetCardModal = ({
   onClose,

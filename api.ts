@@ -63,7 +63,7 @@ api.interceptors.response.use(
         console.log("Error clearing store state: ", err);
       }
       // Reload the app to force the user to log in again
-      window.location.reload();
+      // window.location.reload();
       return;
     }
     return Promise.reject(error);

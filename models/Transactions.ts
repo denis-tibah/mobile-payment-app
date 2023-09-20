@@ -13,7 +13,7 @@ export interface Transaction {
   reference_no: string | null;
   service: any;
   status: string;
-  transaction_datetime: string;
+  transaction_datetime: string | number;
   transaction_id: number;
   transaction_uuid: string;
   isCardTx: boolean;

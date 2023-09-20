@@ -45,7 +45,18 @@ export const refreshUserData = createAsyncThunk(
     }
   }
 );
-
+export type IpAddress = {
+  country_code?: string;
+  country_name?: string;
+  city?: string;
+  postal?: string;
+  latitude?: number;
+  longitude?: number;
+  IPv4?: string;
+  state?: string;
+  state_code?: string;
+  ipv4?: string;
+}
 export const signin = createAsyncThunk(
   "signin",
   async ({ values /* , ip */ }: any, { rejectWithValue, fulfillWithValue }) => {
@@ -98,20 +109,20 @@ export const signin = createAsyncThunk(
 
             const { message } = data;
 
-            if (data.code === "400" && (message === SIGNIN_SUCCESS_MESSAGES.EXPIRED || message === SIGNIN_SUCCESS_MESSAGES.CHANGE_PASSWORD)) {
-              console.log("🚀 ~ file: authSlice.ts:68 ~ message", message);
-              return rejectWithValue({
-                message,
-                resetToken: data.access_token,
-              });
-            }
+      if (data.code === "400" && (message === SIGNIN_SUCCESS_MESSAGES.EXPIRED || message === SIGNIN_SUCCESS_MESSAGES.CHANGE_PASSWORD)) {
+        console.log("🚀 ~ file: authSlice.ts:68 ~ message", message);
+        return rejectWithValue({
+          message,
+          resetToken: data.access_token,
+        });
+      }
 
-        if (data.code === 401 || !data) {
-          return rejectWithValue("Invalid email or password");
-        }
+      if (data.code === 401 || !data) {
+        return rejectWithValue("Invalid email or password");
+      }
 
-        if (data.code !== "200" && data.code !== "201")
-          return rejectWithValue(message);
+      if (data.code !== "200" && data.code !== "201")
+        return rejectWithValue(message);
 
         if (data.code === "200" || data.code === "201")
           return fulfillWithValue(data);

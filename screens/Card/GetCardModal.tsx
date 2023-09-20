@@ -9,6 +9,7 @@ import { getProfile } from "../../redux/profile/profileSlice";
 import { Address } from "../../components/Address/Address";
 import DropDownPicker from "react-native-dropdown-picker";
 import {
+  CardData,
   getCards,
   orderCard,
   sendSmsOrderCardVerification,
@@ -17,6 +18,7 @@ import { CodeModal } from "../../components/CodeModal/CodeModal";
 import { delayCode } from "../../utils/delay";
 import { getAccountDetails } from "../../redux/account/accountSlice";
 import { RadioButton } from "react-native-paper";
+import { arrayChecker } from "../../utils/helpers";
 
 interface GerCardModalProps {
   onClose: () => void;
@@ -214,15 +216,15 @@ export const GetCardModal = ({
 
                 {/* only show card that has not been ordered yet--added by Aristos  19/06/2023        */}
                 {/* if we do not have any cards, show both options and enrol for a card by calling showcardregistrationfinxpV2 */}
-                {!cardData.length ? (
+                {!arrayChecker(cardData) ? (
                   <View style={styles.cardTypeCombo}>
-                    <RadioButton
+                    {/* <RadioButton
                       value="P"
                       status={cardType === "P" ? "checked" : "unchecked"}
                       onPress={() => setCardType("P")}
                       color="#E7038E"
                     />
-                    <Text style={styles.cardTypeText}>Physical Card</Text>
+                    <Text style={styles.cardTypeText}>Physical Card</Text> */}
 
                     <RadioButton
                       value="V"
@@ -232,16 +234,19 @@ export const GetCardModal = ({
                     />
                     <Text style={styles.cardTypeText}>Virtual Card</Text>
                   </View>
-                ) : cardData[0].type == VirtualCard ? (
-                  <View style={styles.cardTypeCombo}>
-                    <RadioButton
-                      value="P"
-                      status={cardType === "P" ? "checked" : "unchecked"}
-                      onPress={() => setCardType("P")}
-                      color="#E7038E"
-                    />
-                    <Text style={styles.cardTypeText}>Physical Card</Text>
-                  </View>
+                ) : cardData.some((_cardData: CardData) => _cardData.type === VirtualCard ) ? (
+                  <>
+                    { /*<View style={styles.cardTypeCombo}>
+                      <RadioButton
+                        value="P"
+                        status={cardType === "P" ? "checked" : "unchecked"}
+                        onPress={() => setCardType("P")}
+                        color="#E7038E"
+                      />
+                      <Text style={styles.cardTypeText}>Physical Card</Text>
+                    </View>
+                  */}
+                  </>
                 ) : (
                   <View style={styles.cardTypeCombo}>
                     <RadioButton
@@ -253,19 +258,20 @@ export const GetCardModal = ({
                     <Text style={styles.cardTypeText}>Virtual Card</Text>
                   </View>
                 )}
-
-                <DropDownPicker
-                  placeholder="Currency"
-                  style={styles.dropdownCurrency}
-                  open={openCurrency}
-                  value={currency || null}
-                  items={[{ label: "EUR", value: "EUR" }]}
-                  setOpen={setOpenCurrency}
-                  setValue={setCurrency}
-                  listMode="SCROLLVIEW"
-                  dropDownContainerStyle={styles.dropdownContainer}
-                  zIndex={1}
-                />
+                { !cardData.some((_cardData: CardData) => _cardData.type === VirtualCard ) && !cardData.some((_cardData: CardData) => _cardData.type === "P" ) && (
+                    <DropDownPicker
+                    placeholder="Currency"
+                    style={styles.dropdownCurrency}
+                    open={openCurrency}
+                    value={currency || null}
+                    items={[{ label: "EUR", value: "EUR" }]}
+                    setOpen={setOpenCurrency}
+                    setValue={setCurrency}
+                    listMode="SCROLLVIEW"
+                    dropDownContainerStyle={styles.dropdownContainer}
+                    zIndex={1}
+                  />
+                )}
               </View>
             )}
 

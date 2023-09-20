@@ -109,7 +109,7 @@ export function Card({ navigation }: any) {
   const [isFetchingCardTransactions, setFetchingCardTransactions] =
     useState<boolean>(true);
   const [isFetchingCardInfo, setFetchingCardInfo] = useState<boolean>(true);
-
+  const isCardHaveVirtual = cardData?.some((card) => card.type === "V");
   const dispatch = useDispatch();
 
   const fetchCardData = async () => {
@@ -449,6 +449,7 @@ export function Card({ navigation }: any) {
                     onPress={() => setShowGetCardModal(true)}
                     color={"light-pink"}
                     rightIcon={<AddIcon color="pink" size={14} />}
+                    disabled={isCardHaveVirtual}
                   >
                     Get Card
                   </Button>

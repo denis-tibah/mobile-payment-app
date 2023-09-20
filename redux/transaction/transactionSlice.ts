@@ -133,7 +133,7 @@ export const getTransactions = createAsyncThunk<
       });
       return fulfillWithValue(data);
     } catch (error) {
-      console.log("error aristos ", error);
+      // console.log("error aristos ", error);
       rejectWithValue(error);
     }
   }

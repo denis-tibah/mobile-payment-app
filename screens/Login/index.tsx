@@ -191,10 +191,10 @@ export function LoginScreen({ navigation }: any) {
                   const result = await dispatch<any>(
                     signin({ values, navigate /* , ip */ })
                   ).unwrap();
-                    console.log("result", {
-                      ...result,
-                      profileimage: null,
-                    });
+                    // console.log("result", {
+                    //   ...result,
+                    //   profileimage: null,
+                    // });
                   if (
                     // [ -- disabled since finxp's response got changed
                     //   result?.payload?.biometricYN.toUpperCase(),

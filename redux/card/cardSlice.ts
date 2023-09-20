@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { api } from "../../api";
 import { CardTransaction } from "../../models/Transactions";
 
-interface CardData {
+export type CardData = {
   cardreferenceId: string;
   currency: string;
   expiration_date: string;

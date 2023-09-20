@@ -1,4 +1,6 @@
-export function getIpAddress() {
+import { IpAddress } from "../redux/auth/authSlice"
+
+export async function getIpAddress(): Promise<IpAddress> {
   return new Promise((resolve, reject) => {
     fetch("https://geolocation-db.com/json/")
       .then((response) => response.json())

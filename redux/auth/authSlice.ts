@@ -2,7 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../api";
 import { UserData } from "../../models/UserData";
-import { getIpAddress } from "../../utils/getIpAddress";
+import { getIpAddress,getDeviceDetails } from "../../utils/getIpAddress";
 
 export const SIGNIN_SUCCESS_MESSAGES = {
   EXPIRED: 'Your password is Expired. Please update.',
@@ -85,13 +85,16 @@ export const signin = createAsyncThunk(
       
     // if (ipResponse && Object.keys(ipResponse).length > 0) {
 
+    //new logic
+
+      // getDeviceDetails().then(ip => {console.log(ip)});      
+      const ipAddress  = await getDeviceDetails();
 
             const { data } = await api.post("/loginfinxpmobile", {
               ...values,
-              // ipAddress: ipResponse,
+              ipAddress:ipAddress,
               browserfingerprint: "react native app",
             });
-        
 
             const { message } = data;
 
@@ -120,6 +123,7 @@ export const signin = createAsyncThunk(
     
     } 
     catch (error: any) {
+      console.log("error",error);
       return rejectWithValue("Something went wrong login on");
     }
   }

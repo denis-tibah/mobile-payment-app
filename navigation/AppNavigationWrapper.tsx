@@ -90,7 +90,11 @@ function DashboardStack() {
 export default function AppNavigationWrapper() {
   const auth = useSelector((state: RootState) => state.auth);
   const userData = useSelector((state: RootState) => state.auth.userData);
+<<<<<<< HEAD
 
+=======
+  const isUserInavtive = useSelector((state: RootState) => state.account.inactivityState);
+>>>>>>> 1f21acc (inactivity redux action added)
   const [lastNotification, setLastNotification] = useState("");
   const navigation: any = useNavigation();
   const dispatch = useDispatch();
@@ -103,7 +107,7 @@ export default function AppNavigationWrapper() {
     show: false,
     data: {},
   });
-
+  
   /*  const appState = useRef(AppState.currentState); */
 
   const [expoPushToken, setExpoPushToken] = useState<string>();
@@ -326,6 +330,7 @@ export default function AppNavigationWrapper() {
         data={showEmailVerified?.data}
         setShowEmailVerified={setShowEmailVerified}
       />
+
 
 
       <Root.Navigator

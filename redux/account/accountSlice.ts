@@ -8,6 +8,7 @@ export interface AccountState {
   loading: boolean;
   error: boolean;
   errorMessage?: string;
+  inactivityState?: boolean;
 }
 
 const initialState: AccountState = {
@@ -16,12 +17,17 @@ const initialState: AccountState = {
   loading: true,
   error: false,
   errorMessage: undefined,
+  inactivityState: false,
 };
 
 export const accountSlice = createSlice({
   name: "account",
   initialState,
-  reducers: {},
+  reducers: {
+    setInActivityState(state, action) {
+      state.inactivityState = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     // get accounts
     builder.addCase(getAccounts.fulfilled, (state, action) => {
@@ -62,5 +68,7 @@ export const getAccountDetails = createAsyncThunk(
     }
   }
 );
+
+export const { setInActivityState } = accountSlice.actions;
 
 export default accountSlice.reducer;

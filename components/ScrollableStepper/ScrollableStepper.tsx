@@ -36,7 +36,7 @@ const ScrollableStepper: FC<IScrollableStepper> = ({
       >
         <View style={styles.scrollableContainer}>
           {navList.map((item, index) => {
-            if (index === 6 || index == 7) return null;
+            //if (index === 6 || index == 7) return null;
 
             return (
               <TouchableOpacity
@@ -47,10 +47,10 @@ const ScrollableStepper: FC<IScrollableStepper> = ({
                   // console.log(layout.x);
                 }}
                 onPress={() => {
-                  refScrollView.current.scrollTo({
+                  /* refScrollView.current.scrollTo({
                     x: coordinate[selectedNavIndex] - 50,
                   });
-                  handleSelecNavIndex(index);
+                  handleSelecNavIndex(index); */
                 }}
               >
                 <View style={styles.scrollableItems}>

@@ -192,6 +192,7 @@ const Verifications: FC<IVerifications> = ({
               setRegistrationData({
                 registrationAuthentication: payload?.data?.token_ziyl,
                 sumsubToken: payload?.data?.token,
+                sumsubUserId: payload?.data?.userId,
               })
             );
             // localStorage.setItem("token_ziyl", payload[0].token_ziyl);

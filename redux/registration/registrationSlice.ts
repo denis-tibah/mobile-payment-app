@@ -10,6 +10,7 @@ const initialState = {
   loading: true,
   error: false,
   errorMessage: undefined,
+  sumsubTokenSuccess: false,
 };
 
 export const registrationSlice = createSlice({
@@ -66,6 +67,15 @@ export const registrationSlice = createSlice({
       state.sendToEmailSuccess = true;
     });
     builder.addCase(sendSubsubToEmail.rejected, (state) => {
+      state.error = true;
+      state.loading = false;
+    });
+    // get sumsub userId
+    builder.addCase(getSumsubToken.fulfilled, (state) => {
+      state.error = true;
+      state.sumsubTokenSuccess = true;
+    });
+    builder.addCase(getSumsubToken.rejected, (state) => {
       state.error = true;
       state.loading = false;
     });
@@ -147,6 +157,19 @@ export const registerBusiness = createAsyncThunk(
   "registerBusiness",
   async (params) => {
     const { data } = await api.post("/registrationfbusinessfinxp", params);
+    return data;
+  }
+);
+
+export const getSumsubToken = createAsyncThunk(
+  "getSumsubToken",
+  async (sumsubUserId: string) => {
+    console.log(
+      "🚀 ~ file: registrationSlice.ts:167 ~ sumsubUserId:",
+      sumsubUserId
+    );
+    const { data } = await api.get(`/sumsubToken/${sumsubUserId}`);
+    console.log("🚀 ~ file: registrationSlice.ts:173 ~ data:", data);
     return data;
   }
 );

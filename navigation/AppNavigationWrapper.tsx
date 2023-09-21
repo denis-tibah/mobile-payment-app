@@ -90,6 +90,7 @@ function DashboardStack() {
 export default function AppNavigationWrapper() {
   const auth = useSelector((state: RootState) => state.auth);
   const userData = useSelector((state: RootState) => state.auth.userData);
+
   const [lastNotification, setLastNotification] = useState("");
   const navigation: any = useNavigation();
   const dispatch = useDispatch();
@@ -156,9 +157,10 @@ export default function AppNavigationWrapper() {
 
   useEffect(() => {
     if (userData?.id && auth?.data?.uuid && !expoPushToken) {
-      // console.log("*******expo going here********");
-      registerForPushNotificationsAsync(userData.id, auth?.data?.uuid).then(
+      console.log("*******register push token userData.id, auth?.data?.uuid,auth?.data?.email*******",auth?.data?.uuid,auth?.data?.email);
+      registerForPushNotificationsAsync(userData.id, auth?.data?.uuid,auth?.data?.email).then(
         (token) => {
+          console.log("*******register push token********",token);
           setExpoPushToken(token);
         }
       );

@@ -101,8 +101,9 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
         //generate expo token
         // registerForPushNotificationsRegistrationAsync(
         registerForPushNotificationsAsync(
+          0,
+          ' ',
           alternateEmail ? alternateEmail : email,
-          ""
         ).then((token: any) => {
           dispatch(
             setLoginCredentials({

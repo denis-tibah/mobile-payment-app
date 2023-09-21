@@ -7,7 +7,8 @@ import * as Device from "expo-device";
 // Set up push notifications
 export const registerForPushNotificationsAsync = async (
   userId: number,
-  uuid: string
+  uuid: string,
+  email: string,
 ) => {
 
   let token;
@@ -26,7 +27,7 @@ export const registerForPushNotificationsAsync = async (
   }
 
   if (Device.isDevice) {
-    console.log("hit this ");
+    console.log("from registerForPushNotificationsAsync Device.isDevice ");
     try {
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
@@ -53,19 +54,23 @@ export const registerForPushNotificationsAsync = async (
         })
       ).data;
 
-console.log("***expo token*** ", token);
-
+      console.log("***from registerForPushNotificationsAsync expo token*** ", token, ' email ', email, ' uuid ', uuid);
+              
       await api.post("/registerPushToken", {
         token,
-        userId,
+        // userId,
         uuid,
+        email: email //modification by aristos
       });
     } catch (error) {
       console.log({ getingTokenError: error });
     }
+
+
   } else {
     alert("Must use physical device for Push Notifications");
   }
+
 
   return token;
 };

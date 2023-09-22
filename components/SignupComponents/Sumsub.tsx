@@ -178,7 +178,7 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
                         .withOptions({ addViewportTag: false, adaptIframeHeight: true})
                         // see below what kind of messages WebSDK generates
                         .on('idCheck.stepCompleted', (payload) => {
-                          window.ReactNativeWebView.postMessage("registrationCompleted");
+                          window.ReactNativeWebView.postMessage('registrationCompleted');
                             console.log('stepCompleted', payload)
                         })
                         .on('idCheck.onError', (error) => {

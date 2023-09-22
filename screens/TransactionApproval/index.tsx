@@ -5,11 +5,13 @@ import { screenNames } from "../../utils/helpers";
 import { api } from "../../api";
 import { Modal } from "../../components/Modal/Modal";
 import Button from "../../components/Button";
+import * as Notifications from "expo-notifications";
 
 export default function TransactionApprovalScreen({
   isOpen,
   data,
   setShowApproval,
+  notificationIdentifier,
 }: any) {
   const {
     transactionDetails = {
@@ -30,6 +32,8 @@ export default function TransactionApprovalScreen({
       console.error(error);
     } finally {
       setShowApproval({ show: false, data: {} });
+      //dismiss single notifications
+      Notifications.dismissNotificationAsync(notificationIdentifier);
     }
     navigate(screenNames.myaccount);
   };
@@ -62,7 +66,8 @@ export default function TransactionApprovalScreen({
         )}
         <Button
           color={"green"}
-          onPress={() => handleTransactionResponse(Number(transactionDetails.transactionId),transactionDetails.ref,true)}
+          onPress={() => 
+                  handleTransactionResponse(Number(transactionDetails.transactionId),transactionDetails.ref,true)}
         >
           <Text style={styles.buttonText}>Approve</Text>
         </Button>

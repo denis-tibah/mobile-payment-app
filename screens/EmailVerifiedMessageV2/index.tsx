@@ -8,11 +8,13 @@ import Button from "../../components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { getTransactions } from "../../redux/transaction/transactionSlice";
+import * as Notifications from "expo-notifications";
 
 export default function EmailVerifiedMessageV2({
   isOpen,
   data,
   setShowEmailVerified,
+  notificationIdentifier,
   route,
 }: any) {
 
@@ -35,6 +37,11 @@ export default function EmailVerifiedMessageV2({
     //Add navigation route to next step to registration process
     // setShowEmailVerified({ show: false, data: {} });
     setShowEmailVerified({ show: false, data: {} });
+
+    //dismiss all notifications
+    // Notifications.dismissAllNotificationsAsync();
+     //dismiss single notifications
+     Notifications.dismissNotificationAsync(notificationIdentifier);
 
     navigate(screenNames.signup, {
       stepIndex: 1,

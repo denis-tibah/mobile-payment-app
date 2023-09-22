@@ -203,6 +203,8 @@ export default function AppNavigationWrapper() {
 
 
     if (transactionDetails.requestType === "TransactionApproval") {
+
+      //save notification id so we can remove it from the taskbar
       setLastNotification(notification?.request?.identifier);
       setShowApproval({
         show: true,
@@ -218,10 +220,9 @@ export default function AppNavigationWrapper() {
 
 
     if (transactionDetails.requestType === "PaymentReceived") {
-      console.log("hit PaymentReceived2");
 
+      //save notification id so we can remove it from the taskbar
       setLastNotification(notification?.request?.identifier);
-
       setShowReceivedPayment({
         show: true,
         data: { transactionDetails, userId: userData?.id },
@@ -234,7 +235,7 @@ export default function AppNavigationWrapper() {
 
     //email verificationL his is triggerd by /verifyemailfinxp webservice
     if (emailverificationData.requestType === "EmailVerified") {
-
+      //save notification id so we can remove it from the taskbar
       setLastNotification(notification?.request?.identifier); 
 
       setShowEmailVerified({
@@ -315,16 +316,19 @@ export default function AppNavigationWrapper() {
         isOpen={showApproval?.show}
         data={showApproval?.data}
         setShowApproval={setShowApproval}
+        notificationIdentifier={lastNotification}
       />
       <PaymentReceivedScreen
         isOpen={showReceivedPayment?.show}
         data={showReceivedPayment?.data}
         setShowReceivedPayment={setShowReceivedPayment}
+        notificationIdentifier={lastNotification}
       />
       <EmailVerifiedMessageV2
         isOpen={showEmailVerified?.show}
         data={showEmailVerified?.data}
         setShowEmailVerified={setShowEmailVerified}
+        notificationIdentifier={lastNotification}
       />
 
 

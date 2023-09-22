@@ -9,11 +9,13 @@ import Button from "../../components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { getTransactions } from "../../redux/transaction/transactionSlice";
+import * as Notifications from "expo-notifications";
 
 export default function PaymentReceivedScreen({
   isOpen,
   data,
   setShowReceivedPayment,
+  notificationIdentifier,
 }: any) {
   const {
     transactionDetails = {
@@ -72,6 +74,13 @@ export default function PaymentReceivedScreen({
 
   const closePopup= async () => {
     setShowReceivedPayment({ show: false, data: {} });
+   
+    //dismiss all notifications
+   // Notifications.dismissAllNotificationsAsync();
+     //dismiss single notifications
+     Notifications.dismissNotificationAsync(notificationIdentifier);
+
+
     navigate(screenNames.myaccount);
   }
 

@@ -33,6 +33,7 @@ import { RootState } from "../store";
 import { AppState } from "react-native";
 import { signout } from "../redux/auth/authSlice";
 import * as SecureStore from "expo-secure-store";
+import Inactivity from "../components/Inactivity";
 
 // import * as TaskManager from 'expo-task-manager';
 
@@ -331,7 +332,10 @@ export default function AppNavigationWrapper() {
         setShowEmailVerified={setShowEmailVerified}
       />
 
-
+      <Inactivity
+        isOpen={isUserInavtive}
+        closePopup={() => dispatch(signout())}
+      />
 
       <Root.Navigator
         screenOptions={{

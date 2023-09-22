@@ -58,7 +58,7 @@ export const CodeModal = ({
       setTimeRemaining(60);
     }
     return () => {
-      clearInterval(interval); // Cleanup the interval when the component unmounts
+      clearInterval(interval);
     };
   }, [timeRemaining, isTimeToCountDown]);
 

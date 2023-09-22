@@ -116,44 +116,42 @@ export default function AppNavigationWrapper() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   //register token when app opens
+  //start of registering expo token when app open
   // useEffect(() => {
   //   if (!expoPushToken)
-  //     registerForPushNotificationsAsync(0, '0').then(
+  //     registerForPushNotificationsAsync(0, '0','',).then(
   //       (token) => setExpoPushToken(token)
   //     );
   //   }, []);
 
-  /* useEffect(() => {
-    if (!expoPushToken) {
-      registerForPushNotificationsAsync(0, "0").then((token) =>
-        setExpoPushToken(token)
-      );
-      notificationListener.current =
-        Notifications.addNotificationReceivedListener((notification) => {
-          handlePushNotification(notification);
-        });
+  //  useEffect(() => {
+  //   if (!expoPushToken) {
+  //     registerForPushNotificationsAsync(0, "0",'',).then((token) =>
+  //       setExpoPushToken(token)
+  //     );
+  //     notificationListener.current =
+  //       Notifications.addNotificationReceivedListener((notification) => {
+  //         handlePushNotification(notification);
+  //       });
 
-      responseListener.current =
-        Notifications.addNotificationResponseReceivedListener((response) => {
-          handlePushNotification(response.notification);
-        });
-    }
-  }, []); */
+  //     responseListener.current =
+  //       Notifications.addNotificationResponseReceivedListener((response) => {
+  //         handlePushNotification(response.notification);
+  //       });
+  //   }
+  // }, []); 
 
-  // console.log("*********hit transactionDetails.requestType********* ");
 
   // useEffect(() => {
   //   if (!expoPushToken) {
-  //     console.log("*******Aristos expo going here********");
-  //     registerForPushNotificationsAsync(0, auth?.data?.uuid).then(
+  //     registerForPushNotificationsAsync(0, auth?.data?.uuid,auth?.data?.email).then(
   //       (token) => {
   //         setExpoPushToken(token);
-  //         console.log("*******expo token********", token);
   //       }
   //     );
   //   }
   // }, []);
-
+//end of registering expo token when app open
 
   useEffect(() => {
     if (userData?.id && auth?.data?.uuid && !expoPushToken) {

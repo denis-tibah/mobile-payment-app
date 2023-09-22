@@ -12,7 +12,7 @@ export const registerForPushNotificationsAsync = async (
 ) => {
 
   let token;
-  let projectId = '7454c009-85fa-4eb0-ae8c-5834ded616c2'
+  let projectId = '7454c009-85fa-4eb0-ae8c-5834ded616c2';
 
 
   // console.log("********Platform.OS*********** ", Platform.OS);

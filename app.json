@@ -26,14 +26,14 @@
         "NSPhotoLibraryUsageDescription": "Let us pick a photo",
         "NSLocationWhenInUseUsageDescription": "Please provide us with your geolocation data to prove your current location"
       },
-      "bundleIdentifier": "com.zazoostg.zazoomobile"
+      "bundleIdentifier": "com.zazoo.zazoomobile"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.zazoostg.zazoomobile",
+      "package": "com.zazoo.zazoomobile",
       "permissions": [
         "INTERNET",
         "android.permission.SECURE_STORAGE",
@@ -66,6 +66,7 @@
     "extra": {
       "eas": {
         "projectId": "7454c009-85fa-4eb0-ae8c-5834ded616c2"
+        
       }
     },
     "plugins": [

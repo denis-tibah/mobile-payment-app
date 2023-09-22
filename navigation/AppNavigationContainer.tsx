@@ -13,6 +13,7 @@ import ErrorBoundary from "react-native-error-boundary";
 import AppNavigationWrapper from "./AppNavigationWrapper";
 import ErrorFallback from "../components/ErrorFallback";
 import { signout } from "../redux/auth/authSlice";
+import { setInActivityState } from "../redux/account/accountSlice";
 
 const AppNavigationContainer = () => {
   const prefix = Linking.createURL("/");
@@ -49,11 +50,13 @@ const AppNavigationContainer = () => {
   return (
     <UserInactivity
       currentScreen={currentRoute}
-      skipKeyboard={false}
+      skipKeyboard={true}
       timeForInactivity={140}
+      consoleTouchScreen={true}
+      // consoleTimer={true}
       onHandleActiveInactive={function () {
         if (authData?.access_token) {
-          dispatch(signout());
+          dispatch(setInActivityState(true));
         }
       }}
       /* consoleTimer={true}

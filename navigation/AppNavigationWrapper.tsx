@@ -33,6 +33,7 @@ import { RootState } from "../store";
 import { AppState } from "react-native";
 import { signout } from "../redux/auth/authSlice";
 import * as SecureStore from "expo-secure-store";
+import Inactivity from "../components/Inactivity";
 
 // import * as TaskManager from 'expo-task-manager';
 
@@ -90,7 +91,7 @@ function DashboardStack() {
 export default function AppNavigationWrapper() {
   const auth = useSelector((state: RootState) => state.auth);
   const userData = useSelector((state: RootState) => state.auth.userData);
-
+  const isUserInavtive = useSelector((state: RootState) => state.account.inactivityState);
   const [lastNotification, setLastNotification] = useState("");
   const navigation: any = useNavigation();
   const dispatch = useDispatch();
@@ -103,7 +104,7 @@ export default function AppNavigationWrapper() {
     show: false,
     data: {},
   });
-
+  
   /*  const appState = useRef(AppState.currentState); */
 
   const [expoPushToken, setExpoPushToken] = useState<string>();
@@ -116,49 +117,50 @@ export default function AppNavigationWrapper() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   //register token when app opens
-  //start of registering expo token when app open
   // useEffect(() => {
   //   if (!expoPushToken)
-  //     registerForPushNotificationsAsync(0, '0','',).then(
+  //     registerForPushNotificationsAsync(0, '0').then(
   //       (token) => setExpoPushToken(token)
   //     );
   //   }, []);
 
-  //  useEffect(() => {
-  //   if (!expoPushToken) {
-  //     registerForPushNotificationsAsync(0, "0",'',).then((token) =>
-  //       setExpoPushToken(token)
-  //     );
-  //     notificationListener.current =
-  //       Notifications.addNotificationReceivedListener((notification) => {
-  //         handlePushNotification(notification);
-  //       });
+  /* useEffect(() => {
+    if (!expoPushToken) {
+      registerForPushNotificationsAsync(0, "0").then((token) =>
+        setExpoPushToken(token)
+      );
+      notificationListener.current =
+        Notifications.addNotificationReceivedListener((notification) => {
+          handlePushNotification(notification);
+        });
 
-  //     responseListener.current =
-  //       Notifications.addNotificationResponseReceivedListener((response) => {
-  //         handlePushNotification(response.notification);
-  //       });
-  //   }
-  // }, []); 
+      responseListener.current =
+        Notifications.addNotificationResponseReceivedListener((response) => {
+          handlePushNotification(response.notification);
+        });
+    }
+  }, []); */
 
+  // console.log("*********hit transactionDetails.requestType********* ");
 
   // useEffect(() => {
   //   if (!expoPushToken) {
-  //     registerForPushNotificationsAsync(0, auth?.data?.uuid,auth?.data?.email).then(
+  //     console.log("*******Aristos expo going here********");
+  //     registerForPushNotificationsAsync(0, auth?.data?.uuid).then(
   //       (token) => {
   //         setExpoPushToken(token);
+  //         console.log("*******expo token********", token);
   //       }
   //     );
   //   }
   // }, []);
-//end of registering expo token when app open
+
 
   useEffect(() => {
     if (userData?.id && auth?.data?.uuid && !expoPushToken) {
-      console.log("*******register push token userData.id, auth?.data?.uuid,auth?.data?.email*******",auth?.data?.uuid,auth?.data?.email);
-      registerForPushNotificationsAsync(userData.id, auth?.data?.uuid,auth?.data?.email).then(
+      // console.log("*******expo going here********");
+      registerForPushNotificationsAsync(userData.id, auth?.data?.uuid).then(
         (token) => {
-          console.log("*******register push token********",token);
           setExpoPushToken(token);
         }
       );
@@ -327,6 +329,10 @@ export default function AppNavigationWrapper() {
         setShowEmailVerified={setShowEmailVerified}
       />
 
+      <Inactivity
+        isOpen={isUserInavtive}
+        closePopup={() => dispatch(signout())}
+      />
 
       <Root.Navigator
         screenOptions={{

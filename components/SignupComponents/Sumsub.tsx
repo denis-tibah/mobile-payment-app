@@ -7,6 +7,9 @@ import { WebView } from "react-native-webview";
 import Typography from "../Typography";
 import { getSumsubToken } from "../../redux/registration/registrationSlice";
 import { Seperator } from "../Seperator/Seperator";
+import FixedBottomAction from "../../components/FixedBottomAction";
+import ArrowLeft from "../../assets/icons/ArrowLeft";
+import Button from "../../components/Button";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
 
@@ -17,7 +20,6 @@ interface ISumsub {
 const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
   const dispatch = useDispatch();
   const registration = useSelector((state: any) => state.registration);
-  console.log("🚀 ~ file: Sumsub.tsx:20 ~ registration:", registration);
   const webviewRef = useRef(null);
 
   const [hasPermission, setHasPermission] = useState(null);
@@ -27,6 +29,8 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
   console.log("🚀 ~ file: Sumsub.tsx:24 ~ accessToken:", accessToken);
   const [isExpiredToken, setExpiredToken] = useState<boolean>(false);
   console.log("🚀 ~ file: Sumsub.tsx:26 ~ isExpiredToken:", isExpiredToken);
+  const [isRegistrationCompleted, setRegistrationCompleted] =
+    useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<{
     header: string;
     body: string;
@@ -45,10 +49,6 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
     if (isExpiredToken) {
       dispatch<any>(getSumsubToken(registration?.data?.sumsubUserId))
         .then((payload: any) => {
-          console.log(
-            "🚀 ~ file: Sumsub.tsx:47 ~ dispatch<any> ~ payload:",
-            payload?.payload?.token
-          );
           if (payload?.payload?.token) {
             setAccessToken(payload?.payload?.token);
           }
@@ -104,18 +104,21 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
               showsVerticalScrollIndicator={true}
               allowsFullscreenVideo
               onMessage={(event) => {
-                console.log("🚀 ~ file: Sumsub.tsx:72 ~ event:", event);
+                console.log(
+                  "🚀 ~ file: Sumsub.tsx:72 ~ event:",
+                  event?.nativeEvent
+                );
                 // Handle messages received from the web SDK
                 if (event?.nativeEvent) {
                   const stringifiedData = JSON.stringify(event?.nativeEvent);
                   const objData =
                     stringifiedData && JSON.parse(stringifiedData);
-                  if (
-                    objData &&
-                    objData?.data &&
-                    objData?.data === "expiredToken"
-                  ) {
-                    setExpiredToken(true);
+                  if (objData && objData?.data) {
+                    if (objData?.data === "expiredToken") {
+                      setExpiredToken(true);
+                    } else if (objData?.data === "registrationCompleted") {
+                      setRegistrationCompleted(true);
+                    }
                   }
                 }
               }}
@@ -175,6 +178,7 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
                         .withOptions({ addViewportTag: false, adaptIframeHeight: true})
                         // see below what kind of messages WebSDK generates
                         .on('idCheck.stepCompleted', (payload) => {
+                          window.ReactNativeWebView.postMessage("registrationCompleted");
                             console.log('stepCompleted', payload)
                         })
                         .on('idCheck.onError', (error) => {
@@ -187,9 +191,9 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
                     snsWebSdkInstance.launch('#sumsub-websdk-container');
                 }
                 function getNewAccessToken() {
-                  // get a new token from your backend
+                  // send message to react component that password expired
                   window.ReactNativeWebView.postMessage('expiredToken');
-                  //return Promise.resolve("${accessToken}");
+                  // return new sumsub token as promise with timer
                   return Promise((resolve, reject) => {
                     setTimeout(() => {
                       resolve("${accessToken}");
@@ -203,6 +207,33 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
           )}
         </View>
       </ScrollView>
+      {!isRegistrationCompleted ? (
+        <View>
+          <FixedBottomAction rounded>
+            <View
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                /* paddingRight: 20, */
+                flexWrap: "wrap",
+              }}
+            >
+              <View style={{ marginBottom: 6 }}>
+                <Button
+                  color="light-pink"
+                  onPress={handlePrevStep}
+                  leftIcon={<ArrowLeft size={12} />}
+                >
+                  Back
+                </Button>
+              </View>
+            </View>
+          </FixedBottomAction>
+        </View>
+      ) : null}
     </View>
   );
 };

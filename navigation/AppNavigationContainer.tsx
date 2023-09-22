@@ -53,7 +53,7 @@ const AppNavigationContainer = () => {
       skipKeyboard={true}
       timeForInactivity={140}
       consoleTouchScreen={true}
-      consoleTimer={true}
+      // consoleTimer={true}
       onHandleActiveInactive={function () {
         if (authData?.access_token) {
           dispatch(setInActivityState(true));

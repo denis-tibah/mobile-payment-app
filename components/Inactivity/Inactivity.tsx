@@ -22,8 +22,8 @@ const Inactivity: React.FC<InactivityProps> = ({
   const [countDown, setCountDown] = useState<number>(30);
 
   const handleContinueActivity = () => {
-    setCountDown(30);
     dispatch(setInActivityState(false));
+    setCountDown(30);
   };
 
   useEffect(() => {
@@ -32,9 +32,10 @@ const Inactivity: React.FC<InactivityProps> = ({
         interval = setInterval(() => {
           setCountDown((countDown) => countDown - 1);
         }, 1000);
-      } else {
+      } else if (countDown === 0) {
         closePopup();
         setCountDown(30);
+
       }
     return () => clearInterval(interval);
   }, [isOpen, countDown]);

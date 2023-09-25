@@ -25,6 +25,7 @@ import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
 
 import { screenNames } from "../../utils/helpers";
+import { validationAuthSchema } from "../../utils/validation";
 
 export function LoginScreen({ navigation }: any) {
   const [apiErrorMessage, setApiErrorMessage] = useState<any>({});
@@ -36,7 +37,7 @@ export function LoginScreen({ navigation }: any) {
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
   };
-
+  const validationSchema = validationAuthSchema();
   // const saveSecureCredetails = async (email: string, password: string, biometricYN: string) => {
   const saveSecureCredetails = async (email: string, password: string) => {
     await SecureStore.setItemAsync("email", email);
@@ -103,7 +104,7 @@ export function LoginScreen({ navigation }: any) {
   useEffect(() => {
     const handleBiometricLogin = async () => {
       const credentials = await getSavedCredetails();
-      // console.log({ credentials });
+      console.log({ credentials });
       if (credentials.email && credentials.password) {
         const compatible = await checkCompatible();
         console.log({ compatible });
@@ -178,13 +179,8 @@ export function LoginScreen({ navigation }: any) {
                 email: "",
                 password: "",
               }}
-              // validationSchema={}
-              validate={(values) => {
-                let errors: any = {};
-                if (!values.email) errors.email = "required";
-                if (!values.password) errors.password = "required";
-                return errors;
-              }}
+              validateOnChange={true}
+              validationSchema={validationSchema}
               onSubmit={async (values) => {
                 setIsLoading(true);
                 try {
@@ -257,11 +253,12 @@ export function LoginScreen({ navigation }: any) {
                 // );
               }}
             >
-              {({ handleSubmit, handleChange, handleBlur, values, errors }) => (
-                <View>
+              {({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => {
+                return (
+                  <View>
                   <View style={styles.cardBody}>
                     <View>
-                      <FormGroup validationError={errors.email}>
+                      <FormGroup validationError={touched.email ? errors.email : null}>
                         <FormGroup.Input
                           keyboardType="email-address"
                           onChangeText={handleChange("email")}
@@ -274,9 +271,7 @@ export function LoginScreen({ navigation }: any) {
                     </View>
                     <View style={styles.passwordField}>
                       <FormGroup
-                        validationError={
-                          errors.password || apiErrorMessage.message
-                        }
+                        validationError={ touched.password ? errors.password || apiErrorMessage.message : null}
                       >
                         <FormGroup.Password
                           icon={<LockIcon />}
@@ -340,7 +335,8 @@ export function LoginScreen({ navigation }: any) {
                     /> */}
                   </FixedBottomAction>
                 </View>
-              )}
+                )
+              }}
             </Formik>
           </View>
         </View>

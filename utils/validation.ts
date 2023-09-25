@@ -83,3 +83,11 @@ export const validationPaymentSchema = (maxAmount: number) => {
     creditor_iban: Yup.string().required("This is a required field *"),
   })
 };
+
+
+export const validationAuthSchema = () => {
+  return Yup.object().shape({
+    email:  Yup.string().email("Please enter a valid email address").required("This is a required field*"),
+    password: Yup.string().required('This is a required field*'),
+  })
+};

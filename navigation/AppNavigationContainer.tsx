@@ -52,17 +52,11 @@ const AppNavigationContainer = () => {
       currentScreen={currentRoute}
       skipKeyboard={true}
       timeForInactivity={140}
-      consoleTouchScreen={true}
-      // consoleTimer={true}
       onHandleActiveInactive={function () {
         if (authData?.access_token) {
           dispatch(setInActivityState(true));
         }
       }}
-      /* consoleTimer={true}
-      consoleComponentChange={true}
-      consoleTouchScreen={true}
-      consoleLongPress={true} */
     >
       <ErrorBoundary
         onError={handleJSErrorForErrorBoundary}

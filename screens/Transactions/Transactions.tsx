@@ -56,7 +56,7 @@ const searchOptions = [
 const currentDate = new Date();
 const initialSearchFieldData: SearchFilter = {
   account_id: "",
-  sort:  "id",
+  // sort:  "id",
   direction: 'desc',
   status: "",
   limit: 20,
@@ -120,6 +120,9 @@ export function Transactions({ navigation }: any) {
   const clearFilter = () => {
     setDateFrom("");
     setDateTo("");
+    setShowPickerDateTo(false);
+    setShowPickerDateFrom(false);
+    setSearchFieldData(initialSearchFieldData);
     setCurrentSelectedSearchField("");
     setSearchText("");
     setIsStatusOptionSelected(false);
@@ -155,7 +158,7 @@ export function Transactions({ navigation }: any) {
           // const transactionData = res.transactions;
           // const last_page=res.last_page;
           // const current_page=res.current_page;
-          // console.log('data ',transactionData)
+          // console.log('data ',transactionData);
 
           const {transactions: transactionData, last_page, current_page} = res;
           setTotalPages(last_page);
@@ -177,8 +180,6 @@ export function Transactions({ navigation }: any) {
   const fetchTransactionsWithFilters = async (value: SearchFilter) => {
     try {
       setIsLoading(true);
-console.log("SearchFilter ",value);
-
       if (userData && userData?.id) {
         let search: SearchFilter = {
           ...value,
@@ -215,7 +216,7 @@ console.log("SearchFilter ",value);
         ...(fromDate && { from_date: fromDate }),
         ...(toDate && { to_date: toDate }),
         account_id: `${userId}`,
-        sort: "id",
+        // sort: "id",
         direction: "desc",
       };
       setSortByDate(false);
@@ -250,6 +251,7 @@ console.log("SearchFilter ",value);
       setDateFrom(formattedFromDate);
       const fromDate = new Date(dateFrom);
       const toDate = new Date(dateTo);
+      setShowPickerDateFrom(false);
       if (fromDate > toDate) {
         alert("Date from should be before or same with Date to");
         return;
@@ -336,6 +338,7 @@ console.log("SearchFilter ",value);
       ...initialSearchFieldData,
       account_id: `${userId}`,
     }
+    // console.log({ _searchFieldData });
     setSearchFieldData(_searchFieldData);
     fetchTransactionsWithFilters({
       ..._searchFieldData,
@@ -566,7 +569,7 @@ console.log("SearchFilter ",value);
           ) : (
             <FormGroup.Input
               icon={<SearchIcon />}
-              placeholder="Enter Minimum Amount"
+              placeholder={currentSelectedSearchField === 'max_amount' ? 'Enter maximum amount' : 'Enter minimum amount'}
               color={vars["black"]}
               fontSize={14}
               fontWeight={"400"}

@@ -39,7 +39,7 @@ const initialState: TransactionState = {
 
 export interface SearchFilter {
   account_id: string | undefined;
-  sort: string;
+  sort?: string;
   name?: string;
   from_date?: string;
   to_date?: string;

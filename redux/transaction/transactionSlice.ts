@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { api } from "../../api";
 import { Transaction, TransactionDetailsNew } from "../../models/Transactions";
-import { string } from "yup";
 // import { UserData, SearchFilter } from "../../models/UserData";
 
 const defaultTransactionsDetails: TransactionDetailsNew = {
@@ -60,33 +59,16 @@ export const transactionSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     // get transactions
-    builder.addCase(getTransactions.fulfilled, (state, action) => {
+    builder.addCase(getTransactions.fulfilled, (state, action) => { // line 63 - line 70 is not needed anymore must be removed
       state.data = action.payload;
-
-      //do no need sorting anymore
-      // state.data = action.payload?.sort(
-      //   (a, b) =>
-      //     new Date(b.transaction_datetime).getTime() -
-      //     new Date(a.transaction_datetime).getTime()
-      // );
-
       state.loading = false;
     });
-
     builder.addCase(getTransactions.rejected, (state) => {
       state.loading = false;
       state.error = true;
     });
-
     builder.addCase(getTransactionsWithFilters.fulfilled, (state, action) => {
       state.data = action.payload;
-
-      //do no need sorting anymore
-      // state.search = action.payload?.sort(
-      //   (a, b) =>
-      //     new Date(b.transaction_datetime).getTime() -
-      //     new Date(a.transaction_datetime).getTime()
-      // );
       state.loading = false;
     });
     builder.addCase(getTransactionsWithFilters.rejected, (state) => {
@@ -100,6 +82,10 @@ export const transactionSlice = createSlice({
     builder.addCase(getStatementsfinxp.rejected, (state) => {
       state.loading = false;
       state.error = true;
+    });
+    builder.addCase(clearTransactions.fulfilled, (state) => {
+      state.data = defaultTransactionsDetails;
+      state.loading = false;
     });
   },
 });
@@ -209,5 +195,9 @@ StatementFilter
       }
     }
 );
+
+export const clearTransactions = createAsyncThunk("clearTransactions", async () => {
+  return initialState;
+});
 
 export default transactionSlice.reducer;

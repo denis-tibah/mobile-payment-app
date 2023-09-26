@@ -12,22 +12,20 @@ import Button from "../../components/Button";
 import Typography from "../../components/Typography";
 import TransactionIcon from "../../assets/icons/Transaction";
 import SearchIcon from "../../assets/icons/Search";
-import { SearchFilter, StatementFilter, StatementResponse, StatementTransactionsResponse, getStatementsfinxp, getTransactions, getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
+import { SearchFilter, StatementFilter, StatementResponse, StatementTransactionsResponse, clearTransactions, getStatementsfinxp, getTransactions, getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
 import { generatePDF } from "../../utils/files";
 import { printAsync } from "expo-print";
 import { RootState } from "../../store";
 import vars from "../../styles/vars";
 import { Seperator } from "../../components/Seperator/Seperator";
-import Spinner from "react-native-loading-spinner-overlay/lib";
 import { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import DropDownPicker from "react-native-dropdown-picker";
 import LoadingScreen from "../../components/Loader/LoadingScreen";
 import { dateFormatter } from "../../utils/dates";
 import { TRANSACTIONS_STATUS } from "../../utils/constants";
-import ArrowDown from "../../assets/icons/ArrowDown";
-import { arrayChecker } from "../../utils/helper";
-import { Transaction, TransactionDetails,TransactionDetailsNew } from "../../models/Transactions";
+import { capitalizeFirstLetter } from "../../utils/helper";
+import { Transaction, TransactionDetails, TransactionDetailsNew } from "../../models/Transactions";
 import Pagination from "../../components/Pagination/Pagination";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 import Box from "../../components/Box";
@@ -66,18 +64,13 @@ const initialSearchFieldData: SearchFilter = {
 export function Transactions({ navigation }: any) {
   const dispatch = useDispatch();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
-  const statementsData = useSelector((state: RootState) => state?.transaction?.statements);
   const [isMobileFilterShown, setIsMobileFilterShown] = useState<boolean>(false);
   const [sortByDate, setSortByDate] = useState<boolean>(false);
   const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState<string>("");
   const [openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
   const [openStatusOptions, setOpenStatusOptions] = useState<boolean>(false);
-  // const [transactions] = useSelector((state: RootState) => state?.transaction?.data); disabled temporarily since finxp is not returning the correct data - Arjay
-  const transactions = useSelector((state: RootState) => state?.transaction?.data);
   const [isDateRangeModalOpen, setIsDateRangeModalOpen] = useState<boolean>(false);
-
-  const [isStatusOptionSelected, setIsStatusOptionSelected] =
-    useState<boolean>(false);
+  const [isStatusOptionSelected, setIsStatusOptionSelected] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const debounceSearchText = useDebounce<string>(searchText, 300);
   const [txData, setTxData] = useState<GroupedByDateTransactionObject>();
@@ -102,14 +95,8 @@ export function Transactions({ navigation }: any) {
   const [totalPages, setTotalPages] = useState<number>(0);
   const [unfilteredTransactions, setUnfilteredTransactions] = useState<GroupedByDateTransactionObject>();
 
-  function capitalizeFirstLetter(str: string): string {
-    return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
-  }
-
   const transactionStatusOptions = Object.keys(TRANSACTIONS_STATUS).map(
     (value) => {
-      // console.log('*****status value*******',value);
-
       return {
         label: capitalizeFirstLetter(value),
         value: TRANSACTIONS_STATUS[value as keyof typeof TRANSACTIONS_STATUS],
@@ -133,7 +120,7 @@ export function Transactions({ navigation }: any) {
     const sanitizedDate: Transaction[] = txData.map((tx: Transaction) => {
       return {
         ...tx,
-        transaction_datetime: dateFormatter(tx.transaction_datetime),
+        transaction_datetime: dateFormatter(tx.transaction_datetime.toString()),
       }
     });
     const groupedByDateTransactions: GroupedByDateTransactionObject = sanitizedDate.reduce((current: any, element) => {
@@ -143,46 +130,12 @@ export function Transactions({ navigation }: any) {
     return groupedByDateTransactions;
   }
 
-  const fetchTransactions = async () => {
-    try {
-      setIsLoading(true);
-      if (userData) {
-        let search: SearchFilter = {
-          ...initialSearchFieldData,
-          account_id: `${userData?.id}`,
-        }
-        await dispatch<any>(getTransactionsWithFilters(search))
-        .unwrap()
-        .then((res: TransactionDetailsNew) => {
-          // const [transaction] = res;
-          // const transactionData = res.transactions;
-          // const last_page=res.last_page;
-          // const current_page=res.current_page;
-          // console.log('data ',transactionData);
-
-          const {transactions: transactionData, last_page, current_page} = res;
-          setTotalPages(last_page);
-          setPage(current_page);
-          const _groupedByDateTransactions = groupedByDateTransactions(transactionData);
-          setTxData(_groupedByDateTransactions);
-          setUnfilteredTransactions(_groupedByDateTransactions);
-          setIsLoading(false);
-        });
-      }
-    } catch (error) {
-      console.log({ error });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  //added by Aristos
-  const fetchTransactionsWithFilters = async (value: SearchFilter) => {
+  const fetchTransactionsWithFilters = async (value?: SearchFilter) => {
     try {
       setIsLoading(true);
       if (userData && userData?.id) {
         let search: SearchFilter = {
-          ...value,
+          ...(value ? value : initialSearchFieldData),
           account_id: `${userData?.id}`,
         }
         await dispatch<any>(getTransactionsWithFilters(search))
@@ -193,11 +146,11 @@ export function Transactions({ navigation }: any) {
           setPage(current_page);
           const _groupedByDateTransactions = groupedByDateTransactions(transactionData);
           setTxData(_groupedByDateTransactions);
+          !value && setUnfilteredTransactions(_groupedByDateTransactions);
           setIsLoading(false);
         });      
       }
     } catch (error) {
-      // console.log("error aristos 2 ");
       console.log({error});
     } finally {
       setIsLoading(false);
@@ -306,20 +259,9 @@ export function Transactions({ navigation }: any) {
     }
   };
 
-  // const handleExportData = () => {
-  //   const pdfUri = await generatePDF(transactions);
-  //   const { data: transactionsData } = transactions; - Arjay: disabled temporarily since finxp change the format of response
-  //   const pdfUri = await generatePDF(transactions);
-  //   modified by Aristos: 18-4-2023 due to finXP response changing
-  //   const pdfUri = await generatePDF(transactions?.transactions);
-  //   await printAsync({ uri: pdfUri });
-  //   setIsDateRangeModalOpen(true);
-  // };
-
   const handleOnSubmitEditing = (event: any) => {
     const isNumberOnly = containsOnlyNumbers(searchText);
     const userId = userData?.id
-
     if (!userId) {
       return;
     }
@@ -350,12 +292,6 @@ export function Transactions({ navigation }: any) {
     setIsStatusOptionSelected(false);
     setIsMobileFilterShown(!isMobileFilterShown);
   }
-
-  // const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}: any) => { //  a method for infinite scrolling feature (not used)
-  //   const paddingToBottom = 20;
-  //   return layoutMeasurement.height + contentOffset.y >=
-  //     contentSize.height - paddingToBottom;
-  // };
 
   const handlePreviousPage = () => {
     if (page > 1) {
@@ -405,10 +341,12 @@ export function Transactions({ navigation }: any) {
     }
   },[debounceSearchText]);
 
-
   useEffect(() => {
-    fetchTransactions();
-    return () => clearFilter();
+    fetchTransactionsWithFilters();
+    return () => {
+      clearFilter();
+      dispatch<any>(clearTransactions());
+    };
   }, []);
 
   return (

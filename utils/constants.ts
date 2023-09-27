@@ -14,7 +14,9 @@ export const countries = [
 // }
 
 export enum TRANSACTIONS_STATUS {
-    PENDING='PENDING',
+    // PENDING='PENDING',
+    ALL='',
+    CANCELED='CANCELED',
     COMPLETED = 'SUCCESS',
     PROCESSING='PROCESSING',
     FAILED='FAILED'

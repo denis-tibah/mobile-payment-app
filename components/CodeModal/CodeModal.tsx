@@ -92,10 +92,17 @@ export const CodeModal = ({
       <View style={styles.container}>
         <PinCodeInputBoxes fieldCount={6} onChange={handlePinCodeChange} />
         <Text style={styles.noCode}>Did not get a verification code?</Text>
-        <TouchableOpacity onPress={_handleResendSMSVerificationCode} disabled={isTimeToCountDown}>
-          { isTimeToCountDown ? <Text style={styles.noCodeResend}>Wait for {timeRemaining}s to request again.</Text> :
+        <TouchableOpacity
+          onPress={_handleResendSMSVerificationCode}
+          disabled={isTimeToCountDown}
+        >
+          {isTimeToCountDown ? (
+            <Text style={styles.noCodeResend}>
+              Wait for {timeRemaining}s to request again.
+            </Text>
+          ) : (
             <Text style={styles.noCodeResend}>Resend verification code</Text>
-          }
+          )}
         </TouchableOpacity>
       </View>
     </Modal>

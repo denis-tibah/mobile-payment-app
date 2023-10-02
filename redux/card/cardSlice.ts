@@ -10,7 +10,7 @@ export type CardData = {
   lostYN: "Y" | "N";
   pan: string;
   type: "V" | "P";
-}
+};
 
 export interface CardState {
   data: CardData[];
@@ -33,19 +33,19 @@ export const cardSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-
     //enroll for card scheme
-      builder.addCase(enrollforCardScheme.pending, (state) => {
-        state.loading = true;
-      });
-      builder.addCase(enrollforCardScheme.fulfilled, (state, action) => {
-        state.data = action.payload;
-        state.loading = false;
-      });
-      builder.addCase(enrollforCardScheme.rejected, (state, _) => {
-        state.error = true;
-        state.loading = false;
-      });
+    builder.addCase(enrollforCardScheme.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(enrollforCardScheme.fulfilled, (state, action) => {
+      state = action?.payload?.data;
+      //state.data = action.payload;
+      state.loading = false;
+    });
+    builder.addCase(enrollforCardScheme.rejected, (state) => {
+      state.error = true;
+      state.loading = false;
+    });
 
     // get cards
     builder.addCase(getCards.pending, (state) => {
@@ -55,10 +55,11 @@ export const cardSlice = createSlice({
       state.data = action.payload;
       state.loading = false;
     });
-    builder.addCase(getCards.rejected, (state, _) => {
+    builder.addCase(getCards.rejected, (state) => {
       state.error = true;
       state.loading = false;
     });
+
     // freeze card
     builder.addCase(setCardAsFrozen.fulfilled, (state: any, action) => {
       // find the card that has been frozen and replace with the response
@@ -104,10 +105,13 @@ export const cardSlice = createSlice({
   },
 });
 
-export const enrollforCardScheme = createAsyncThunk("enrollforCardScheme", async (params: any) => {
-  const { data } = await api.post("/showcardregistrationfinxpV2", params);
-  return data;
-});
+export const enrollforCardScheme = createAsyncThunk(
+  "enrollforCardScheme",
+  async (params: any) => {
+    const data = await api.post("/showcardregistrationfinxpV2", params);
+    return data;
+  }
+);
 
 export const orderCard = createAsyncThunk("orderCard", async (params: any) => {
   const { data } = await api.post("/OrdercardfinxpV2", params);

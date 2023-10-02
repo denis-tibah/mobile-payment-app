@@ -6,6 +6,7 @@ import SunIcon from "../../assets/icons/Sun";
 import Button from "../Button";
 import ZazooDebitCard from "../../assets/images/zazoo-debit-card.png";
 import ZazooVirtualCard from "../../assets/images/zazoo-virtual-card.png";
+import { arrayChecker } from "../../utils/helpers";
 
 export const PinCard = ({ card, pin, timer }: any) => {
   return (
@@ -21,11 +22,12 @@ export const PinCard = ({ card, pin, timer }: any) => {
             <View style={styles.textContainer}>
               <Text style={styles.title}>Your pin number is</Text>
               <Text style={styles.pin}>
-                {pin
-                  .split("")
-                  .map((digit: any, idx: any) =>
-                    idx < pin.length - 1 ? digit + " - " : digit
-                  )}
+                {arrayChecker(pin) &&
+                  pin
+                    .split("")
+                    .map((digit: any, idx: any) =>
+                      idx < pin.length - 1 ? digit + " - " : digit
+                    )}
               </Text>
             </View>
           </View>

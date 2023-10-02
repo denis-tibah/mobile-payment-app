@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Dimensions, Pressable, RefreshControl, View, ScrollView, TouchableOpacity, Image } from "react-native";
+import {
+  Pressable,
+  RefreshControl,
+  View,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
@@ -12,7 +18,7 @@ import Typography from "../../components/Typography";
 import CardIcon from "../../assets/icons/Card";
 import AddIcon from "../../assets/icons/Add";
 import FreezeIcon from "../../assets/icons/Freeze";
-import PinIcon from "../../assets/icons/Pin";
+/* import PinIcon from "../../assets/icons/Pin"; */
 import EyeIcon from "../../assets/icons/Eye";
 import LostCardIcon from "../../assets/icons/LostCard";
 import TransactionIcon from "../../assets/icons/Transaction";
@@ -27,12 +33,13 @@ import {
   showCardDetails,
   showCardPinNumber,
   terminateCard,
+  orderCard,
   enrollforCardScheme,
 } from "../../redux/card/cardSlice";
 import { getTodaysDate } from "../../utils/dates";
 import {
   getCurrency,
-  convertImageToBase64,
+  /* convertImageToBase64, */
   getPendingAmount,
 } from "../../utils/helpers";
 import { getAccountDetails } from "../../redux/account/accountSlice";
@@ -44,8 +51,8 @@ import { delayCode } from "../../utils/delay";
 import Carousel from "react-native-snap-carousel";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { ICardDetails } from "../../models/interface";
-import * as FileSystem from "expo-file-system";
-import { getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
+/* import * as FileSystem from "expo-file-system";
+import { getTransactionsWithFilters } from "../../redux/transaction/transactionSlice"; */
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
 import ArrowDown from "../../assets/icons/ArrowDown";
@@ -54,39 +61,50 @@ import { useDebounce } from "usehooks-ts";
 import LoadingScreen from "../../components/Loader/LoadingScreen";
 // import ArrowRight from "../../assets/icons/ArrowRight";
 import { CardTransaction } from "../../models/Transactions";
-import moment from "moment";
+/* import moment from "moment"; */
 import TransactionItem from "../../components/TransactionItem";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { arrayChecker } from "../../utils/helpers";
-import { Circle } from "react-native-svg";
-
+/* import { Circle } from "react-native-svg"; */
+const DEFAULT_CARD_ENROLLMENT_STATUS = {
+  title: "",
+  text: "",
+  isError: false,
+};
 export function Card({ navigation }: any) {
-  const infoData = useSelector((state: RootState) => state.account.details);
-  const accountData = useSelector((state: RootState) => state.auth.userData);
-  const screenHeight = Dimensions.get("window").height;
+  const infoData = useSelector((state: RootState) => state.account?.details);
+  const accountData = useSelector((state: RootState) => state.auth?.userData);
+  console.log("🚀 ~ file: Card.tsx:77 ~ Card ~ accountData:", accountData);
+  const accountDetails = useSelector((state: any) => state.account?.details);
+  console.log(
+    "🚀 ~ file: Card.tsx:78 ~ Card ~ accountDetails:",
+    accountDetails
+  );
+  const profile = useSelector((state: any) => state.profile?.profile);
+  /*   const screenHeight = Dimensions.get("window").height;
   const defaultSearchOptions = {
     sort: "id",
     // status: 'PROCESSING',
     status: "SUCCESS",
     account_id: 0,
     direction: "desc",
-  };
-  const transactions = useSelector(
+  }; */
+  /*   const transactions = useSelector(
     (state: RootState) => state?.transaction?.data
-  );
+  ); */
 
   const [cardPin, setCardPin] = useState("");
   const [remainingTime, setRemainingTime] = useState(30);
-  const loadingState = useSelector((state: RootState) => state?.card.loading);
-  const load = useSelector((state: RootState) => state?.card);
-  const cardData = useSelector((state: RootState) => state.card?.data);
-  const cardTransactions = useSelector(
+  const loadingState = useSelector((state: RootState) => state?.card?.loading);
+  /* const load = useSelector((state: RootState) => state?.card); */
+  const cardData = useSelector((state: RootState) => state?.card?.data);
+  /* const cardTransactions = useSelector(
     (state: RootState) => state?.card?.transactions
   );
 
   const cardDetailsLoading = useSelector(
     (state: RootState) => state?.card?.loading
-  );
+  ); */
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const frozen = useSelector(
     (state: RootState) => state?.card?.data[0]?.frozenYN
@@ -109,6 +127,13 @@ export function Card({ navigation }: any) {
   const [isFetchingCardTransactions, setFetchingCardTransactions] =
     useState<boolean>(true);
   const [isFetchingCardInfo, setFetchingCardInfo] = useState<boolean>(true);
+  const [isEnrollingCard, setEnrollingCard] = useState<boolean>(false);
+  const [enrollmentCardStatus, setEnrollmentCardStatus] = useState<{
+    title: string;
+    text: string;
+    isError: boolean;
+  }>(DEFAULT_CARD_ENROLLMENT_STATUS);
+
   const isCardHaveVirtual = cardData?.some((card) => card.type === "V");
   const dispatch = useDispatch();
 
@@ -184,7 +209,14 @@ export function Card({ navigation }: any) {
     setFreezeLoading(false);
   };
 
-  const showPin = async () => {
+  const resetCard = () => {
+    setCardPin("");
+    setCardDetails({});
+    setRemainingTime(30);
+    clearInterval(storedIntervalId);
+  };
+
+  /* const showPin = async () => {
     let intervalId: any;
     if (!!cardPin) {
       clearInterval(intervalId); // Clear the interval if the pin is already visible
@@ -215,7 +247,7 @@ export function Card({ navigation }: any) {
       setRemainingTime(remainingTimer);
       remainingTimer--;
     }, 1000);
-  };
+  }; */
 
   const requestShowCard = async () => {
     const payload = await dispatch(
@@ -227,55 +259,132 @@ export function Card({ navigation }: any) {
     setShowCardOtpModal(true);
   };
 
-  const handleShowCard = async ({ code }: { code: string }) => {
-    let intervalId: any;
-    // console.log("*******accountData ***********", accountData?.id);
-    setShowCardOtpLoading(true);
-    const payload = await dispatch(
-      showCardDetails({
-        // account_id: infoData?.info?.id,
-        account_id: accountData?.id,
+  const handlePinCode = async ({ code }: { code: string }) => {
+    if (isEnrollingCard) {
+      setIsloading(true);
+      const orderCardPayload = {
+        cardType: "V",
+        accountUuid: accountDetails?.info?.id,
+        currency: "EUR",
+        email: profile?.data?.email,
         otp: code,
-      }) as any
-    ).unwrap();
-    setLoading(false);
-    if (payload) {
-      setCardPin("");
-      setRemainingTime(30);
-      clearInterval(storedIntervalId);
+      };
+      console.log(
+        "🚀 ~ file: Card.tsx:267 ~ handlePinCode ~ orderCardPayload:",
+        orderCardPayload
+      );
+      const payloadOrderCard = await dispatch(
+        orderCard(orderCardPayload) as any
+      )
+        .unwrap()
+        .catch((error: any) => {
+          console.log("error in order card upon enrollment:", error);
+          setIsloading(false);
+          setEnrollingCard(false);
+          setShowCardOtpModal(false);
+        });
 
-      //  let image='';
-      //  const ImageUri = Image.resolveAssetSource(ZazooVirtualCard).uri;
-      //  console.log("images is ",ZazooVirtualCard,' ImageUri ', ImageUri);
+      setIsloading(false);
+      console.log(
+        "🚀 ~ file: Card.tsx:270 ~ handlePinCode ~ payloadOrderCard:",
+        payloadOrderCard
+      );
+      if (payloadOrderCard?.status && payloadOrderCard?.status === "success") {
+        const enrollCardPayload = await dispatch(
+          enrollforCardScheme({ account_id: accountData?.id }) as any
+        )
+          .unwrap()
+          .catch((error: any) => {
+            console.log(
+              "🚀 ~ file: Card.tsx:288 ~ handlePinCode ~ error:",
+              error
+            );
+          });
+        if (
+          enrollCardPayload?.data?.status &&
+          enrollCardPayload?.data?.status === "success"
+        ) {
+          setEnrollmentStatus(true);
+          setEnrollmentCardStatus({
+            title: "Card Enrollment",
+            text: `${enrollCardPayload?.data?.code}: ${enrollCardPayload?.data?.message}`,
+            isError: false,
+          });
+          setIsloading(false);
+          setShowCardOtpModal(false);
+        } else {
+          setIsloading(false);
+          setEnrollingCard(false);
+          setEnrollmentStatus(true);
+          setEnrollmentCardStatus({
+            title: "Card Enrollment",
+            text: `${enrollCardPayload?.data?.code}: ${enrollCardPayload?.data?.message}`,
+            isError: true,
+          });
+          setShowCardOtpModal(false);
+        }
+        //dispatch(getCards() as any);
+      } else {
+        setIsloading(false);
+        setEnrollingCard(false);
+        setShowCardOtpModal(false);
+        setEnrollmentStatus(true);
+        setEnrollmentCardStatus({
+          title: "Card Enrollment",
+          text: `${payloadOrderCard?.code}: Error while ordering card`,
+          isError: true,
+        });
+      }
+    } else {
+      let intervalId: any;
+      // console.log("*******accountData ***********", accountData?.id);
+      setShowCardOtpLoading(true);
+      const payload = await dispatch(
+        showCardDetails({
+          // account_id: infoData?.info?.id,
+          account_id: accountData?.id,
+          otp: code,
+        }) as any
+      ).unwrap();
+      setLoading(false);
+      if (payload) {
+        setCardPin("");
+        setRemainingTime(30);
+        clearInterval(storedIntervalId);
 
-      ////  convertImageToBase64(ImageUri);
-      //  const base64 = await FileSystem.readAsStringAsync(ImageUri, { encoding: 'base64' });
-      //  console.log("base64 images is ",base64 );
+        //  let image='';
+        //  const ImageUri = Image.resolveAssetSource(ZazooVirtualCard).uri;
+        //  console.log("images is ",ZazooVirtualCard,' ImageUri ', ImageUri);
 
-      ////   convertImageToBase64(ImageUri,(result:any) => {
-      ////         image=result;
-      ////         console.log("base64 images is ",image);
-      ////  });
+        ////  convertImageToBase64(ImageUri);
+        //  const base64 = await FileSystem.readAsStringAsync(ImageUri, { encoding: 'base64' });
+        //  console.log("base64 images is ",base64 );
 
-      setCardDetails({
-        cardreferenceId: cardData[0]?.cardreferenceId,
-        card: cardData[0],
-        cardImage: payload.cardImageBase64,
-        //Added by Aristos
-        // cardImage:image,
-        cardNumber: payload?.cardNumber,
-      });
-      let remainingTimer = 30;
-      intervalId = setInterval(() => {
-        setStoredIntervalId(intervalId);
-        if (remainingTimer <= 0) return resetCard();
-        setRemainingTime(remainingTimer);
-        remainingTimer--;
-      }, 1000);
+        ////   convertImageToBase64(ImageUri,(result:any) => {
+        ////         image=result;
+        ////         console.log("base64 images is ",image);
+        ////  });
+
+        setCardDetails({
+          cardreferenceId: cardData[0]?.cardreferenceId,
+          card: cardData[0],
+          cardImage: payload.cardImageBase64,
+          //Added by Aristos
+          // cardImage:image,
+          cardNumber: payload?.cardNumber,
+        });
+        let remainingTimer = 30;
+        intervalId = setInterval(() => {
+          setStoredIntervalId(intervalId);
+          if (remainingTimer <= 0) return resetCard();
+          setRemainingTime(remainingTimer);
+          remainingTimer--;
+        }, 1000);
+      }
+      setShowCardOtpLoading(false);
+      setShowCardOtpModal(false);
+      await delayCode(100);
     }
-    setShowCardOtpLoading(false);
-    setShowCardOtpModal(false);
-    await delayCode(100);
   };
 
   // const handleFetchTransactions = async (userId: number) => {
@@ -308,13 +417,30 @@ export function Card({ navigation }: any) {
     -if these two(isFetchingCardTransactions, isFetchingCardTransactions) are not done yet dont execute card enrollment as we need to know
     if the customer has card.
   */
-  useEffect(() => {
-    const enrollCard = async () => {
-      try {
+
+  /*   const enrollCard = async () => {
+    console.log("enrol!!!");
+    const enrollCardPayload = await dispatch(
+      enrollforCardScheme({ account_id: accountData?.id }) as any
+    );
+    console.log(
+      "🚀 ~ file: Card.tsx:401 ~ enrollCard ~ enrollCardPayload:",
+      enrollCardPayload
+    );
+    try {
         setIsloading(true);
-        const enrollCardPayload = await dispatch<any>(
-          enrollforCardScheme({ account_id: accountData?.id })
-        ).unwrap();
+        console.log(
+          "🚀 ~ file: Card.tsx:400 ~ enrollCard ~ accountData?.id:",
+          accountData?.id
+        );
+        const ggg = fff.toString();
+        const enrollCardPayload = await dispatch(
+          enrollforCardScheme({ account_id: ggg }) as any
+        );
+        console.log(
+          "🚀 ~ file: Card.tsx:401 ~ enrollCard ~ enrollCardPayload:",
+          enrollCardPayload
+        );
         if (enrollCardPayload) {
           setIsloading(false);
           if (enrollCardPayload?.code === "409") {
@@ -325,17 +451,44 @@ export function Card({ navigation }: any) {
         setIsloading(false);
         console.log("error in card enrollment ", error);
       }
-    };
+  }; */
 
+  useEffect(() => {
     /* only trigger card enrollment if ff conditions are met 
     -account_id(accountData?.id) is ready
     -!isFetchingCardTransactions, after fetching card transactions if theres any
     -!isFetchingCardInfo, after fetching card info if theres any
     -if cardData is empty, meaning no card information is found
     */
+
+    const enrollCard = async () => {
+      const payloadOtp = await dispatch(
+        sendSmsShowCardVerification({
+          type: "trusted",
+        }) as any
+      )
+        .unwrap()
+        .catch((error: any) => {
+          console.log("something went wrong with otp: ", error);
+        });
+      if (payloadOtp?.status === "success") {
+        setShowCardOtpModal(true);
+        setEnrollingCard(true);
+      } else {
+        setEnrollmentCardStatus({
+          title: "Card Enrollment",
+          text: `${payloadOtp?.code}: ${payloadOtp?.message}`,
+          isError: true,
+        });
+      }
+    };
+
     if (!isFetchingCardTransactions) {
+      console.log("loading 1");
       if (!isFetchingCardInfo) {
+        console.log("loading 2");
         if (!arrayChecker(cardData) && accountData?.id) {
+          console.log("enrolling card");
           enrollCard();
         }
       }
@@ -348,7 +501,9 @@ export function Card({ navigation }: any) {
   ]);
 
   useEffect(() => {
-    if (!!userData?.id) fetchCardData();
+    if (!!userData?.id) {
+      fetchCardData();
+    }
   }, [userData?.id]);
 
   const _renderItem = ({ item, index }: any) => {
@@ -370,13 +525,6 @@ export function Card({ navigation }: any) {
     if (userData?.id)
       await dispatch<any>(terminateCard({ account_id: userData?.id }) as any);
     fetchCardData();
-  };
-
-  const resetCard = () => {
-    setCardPin("");
-    setCardDetails({});
-    setRemainingTime(30);
-    clearInterval(storedIntervalId);
   };
 
   const handleCopyToClipboard = async () => {
@@ -422,12 +570,12 @@ export function Card({ navigation }: any) {
       )}
       {!!showCardOtpModal && (
         <CodeModal
-          confirmButtonText="Show Card"
-          title="Show Card"
+          confirmButtonText={isEnrollingCard ? "Submit" : "Show Card"}
+          title={isEnrollingCard ? "Card Enrollment" : "Show Card"}
           subtitle="You will receive an sms to your mobile device. Please enter this code below."
           isOpen
           loading={showCardOtpLoading}
-          onSubmit={handleShowCard}
+          onSubmit={handlePinCode}
           onCancel={() => setShowCardOtpModal(false)}
         />
       )}
@@ -582,7 +730,9 @@ export function Card({ navigation }: any) {
                   <Button
                     onPress={fetchCardData}
                     color={"light-blue"}
-                    leftIcon={<Ionicons name="refresh" size={24} color="black" />}
+                    leftIcon={
+                      <Ionicons name="refresh" size={24} color="black" />
+                    }
                   >
                     Refresh
                   </Button>
@@ -680,12 +830,28 @@ export function Card({ navigation }: any) {
                   </View>
                 )}
               </View>
-              {isEnrollmentSuccess && (
+              {/* {isEnrollmentSuccess && (
                 <SuccessModal
                   title={"Card enrollment"}
                   text={"Card Registered"}
                   isOpen
-                  onClose={() => setEnrollmentStatus(false)}
+                  onClose={() => {
+                    setIsloading(false);
+                    setEnrollmentStatus(false);
+                  }}
+                />
+              )} */}
+              {isEnrollmentSuccess && (
+                <SuccessModal
+                  isError={enrollmentCardStatus.isError}
+                  title={enrollmentCardStatus.title}
+                  text={enrollmentCardStatus.text}
+                  isOpen
+                  onClose={() => {
+                    setIsloading(false);
+                    setEnrollmentStatus(false);
+                    setEnrollmentCardStatus(DEFAULT_CARD_ENROLLMENT_STATUS);
+                  }}
                 />
               )}
               {/* end: Added by Aristos */}
@@ -770,7 +936,6 @@ export function Card({ navigation }: any) {
               {/* end:02-08-2013 disabled by Aristos */}
             </View>
           </View>
-          {/* <LoadingScreen isLoading={isLoading || loading} /> */}
           <Spinner visible={loading || isLoading} />
         </ScrollView>
       </View>

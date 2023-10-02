@@ -66,11 +66,20 @@ import TransactionItem from "../../components/TransactionItem";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { arrayChecker } from "../../utils/helpers";
 /* import { Circle } from "react-native-svg"; */
-
+const DEFAULT_CARD_ENROLLMENT_STATUS = {
+  title: "",
+  text: "",
+  isError: false,
+};
 export function Card({ navigation }: any) {
   const infoData = useSelector((state: RootState) => state.account?.details);
   const accountData = useSelector((state: RootState) => state.auth?.userData);
+  console.log("🚀 ~ file: Card.tsx:77 ~ Card ~ accountData:", accountData);
   const accountDetails = useSelector((state: any) => state.account?.details);
+  console.log(
+    "🚀 ~ file: Card.tsx:78 ~ Card ~ accountDetails:",
+    accountDetails
+  );
   const profile = useSelector((state: any) => state.profile?.profile);
   /*   const screenHeight = Dimensions.get("window").height;
   const defaultSearchOptions = {
@@ -119,6 +128,11 @@ export function Card({ navigation }: any) {
     useState<boolean>(true);
   const [isFetchingCardInfo, setFetchingCardInfo] = useState<boolean>(true);
   const [isEnrollingCard, setEnrollingCard] = useState<boolean>(false);
+  const [enrollmentCardStatus, setEnrollmentCardStatus] = useState<{
+    title: string;
+    text: string;
+    isError: boolean;
+  }>(DEFAULT_CARD_ENROLLMENT_STATUS);
 
   const isCardHaveVirtual = cardData?.some((card) => card.type === "V");
   const dispatch = useDispatch();
@@ -247,35 +261,34 @@ export function Card({ navigation }: any) {
 
   const handlePinCode = async ({ code }: { code: string }) => {
     if (isEnrollingCard) {
-      console.log("is enrolling card");
-      setShowGetCardModal(false);
       setIsloading(true);
+      const orderCardPayload = {
+        cardType: "V",
+        accountUuid: accountDetails?.info?.id,
+        currency: "EUR",
+        email: profile?.data?.email,
+        otp: code,
+      };
+      console.log(
+        "🚀 ~ file: Card.tsx:267 ~ handlePinCode ~ orderCardPayload:",
+        orderCardPayload
+      );
       const payloadOrderCard = await dispatch(
-        orderCard({
-          accountUuid: accountDetails?.info?.id,
-          firstname: profile?.data?.first_name,
-          lastname: profile?.data?.last_name,
-          email: profile?.data?.email,
-          cardType: "V",
-          currency: "EUR",
-          street: profile?.data?.address_line_1,
-          subStreet: profile?.data?.address_line_2,
-          postCode: profile?.data?.postal_code,
-          state: profile?.data?.state,
-          town: profile?.data?.town,
-          country: profile?.data?.country,
-          otp: code,
-        }) as any
+        orderCard(orderCardPayload) as any
       )
         .unwrap()
         .catch((error: any) => {
           console.log("error in order card upon enrollment:", error);
           setIsloading(false);
           setEnrollingCard(false);
+          setShowCardOtpModal(false);
         });
 
       setIsloading(false);
-
+      console.log(
+        "🚀 ~ file: Card.tsx:270 ~ handlePinCode ~ payloadOrderCard:",
+        payloadOrderCard
+      );
       if (payloadOrderCard?.status && payloadOrderCard?.status === "success") {
         const enrollCardPayload = await dispatch(
           enrollforCardScheme({ account_id: accountData?.id }) as any
@@ -287,29 +300,42 @@ export function Card({ navigation }: any) {
               error
             );
           });
-        console.log(
-          "🚀 ~ file: Card.tsx:274 ~ handlePinCode ~ enrollCardPayload:",
-          enrollCardPayload
-        );
         if (
-          enrollCardPayload?.status &&
-          enrollCardPayload?.status === "success"
+          enrollCardPayload?.data?.status &&
+          enrollCardPayload?.data?.status === "success"
         ) {
           setEnrollmentStatus(true);
-          setShowGetCardModal(false);
+          setEnrollmentCardStatus({
+            title: "Card Enrollment",
+            text: `${enrollCardPayload?.data?.code}: ${enrollCardPayload?.data?.message}`,
+            isError: false,
+          });
+          setIsloading(false);
+          setShowCardOtpModal(false);
         } else {
           setIsloading(false);
           setEnrollingCard(false);
-          setShowGetCardModal(false);
+          setEnrollmentStatus(true);
+          setEnrollmentCardStatus({
+            title: "Card Enrollment",
+            text: `${enrollCardPayload?.data?.code}: ${enrollCardPayload?.data?.message}`,
+            isError: true,
+          });
+          setShowCardOtpModal(false);
         }
         //dispatch(getCards() as any);
       } else {
         setIsloading(false);
         setEnrollingCard(false);
-        setShowGetCardModal(false);
+        setShowCardOtpModal(false);
+        setEnrollmentStatus(true);
+        setEnrollmentCardStatus({
+          title: "Card Enrollment",
+          text: `${payloadOrderCard?.code}: Error while ordering card`,
+          isError: true,
+        });
       }
     } else {
-      console.log("is not enrolling card");
       let intervalId: any;
       // console.log("*******accountData ***********", accountData?.id);
       setShowCardOtpLoading(true);
@@ -391,13 +417,30 @@ export function Card({ navigation }: any) {
     -if these two(isFetchingCardTransactions, isFetchingCardTransactions) are not done yet dont execute card enrollment as we need to know
     if the customer has card.
   */
-  useEffect(() => {
-    /* const enrollCard = async () => {
-      try {
+
+  /*   const enrollCard = async () => {
+    console.log("enrol!!!");
+    const enrollCardPayload = await dispatch(
+      enrollforCardScheme({ account_id: accountData?.id }) as any
+    );
+    console.log(
+      "🚀 ~ file: Card.tsx:401 ~ enrollCard ~ enrollCardPayload:",
+      enrollCardPayload
+    );
+    try {
         setIsloading(true);
-        const enrollCardPayload = await dispatch<any>(
-          enrollforCardScheme({ account_id: accountData?.id })
-        ).unwrap();
+        console.log(
+          "🚀 ~ file: Card.tsx:400 ~ enrollCard ~ accountData?.id:",
+          accountData?.id
+        );
+        const ggg = fff.toString();
+        const enrollCardPayload = await dispatch(
+          enrollforCardScheme({ account_id: ggg }) as any
+        );
+        console.log(
+          "🚀 ~ file: Card.tsx:401 ~ enrollCard ~ enrollCardPayload:",
+          enrollCardPayload
+        );
         if (enrollCardPayload) {
           setIsloading(false);
           if (enrollCardPayload?.code === "409") {
@@ -408,8 +451,9 @@ export function Card({ navigation }: any) {
         setIsloading(false);
         console.log("error in card enrollment ", error);
       }
-    }; */
+  }; */
 
+  useEffect(() => {
     /* only trigger card enrollment if ff conditions are met 
     -account_id(accountData?.id) is ready
     -!isFetchingCardTransactions, after fetching card transactions if theres any
@@ -430,9 +474,15 @@ export function Card({ navigation }: any) {
       if (payloadOtp?.status === "success") {
         setShowCardOtpModal(true);
         setEnrollingCard(true);
+      } else {
+        setEnrollmentCardStatus({
+          title: "Card Enrollment",
+          text: `${payloadOtp?.code}: ${payloadOtp?.message}`,
+          isError: true,
+        });
       }
     };
-    console.log("🚀 ~ file: Card.tsx:421 ~ useEffect ~ cardData:", cardData);
+
     if (!isFetchingCardTransactions) {
       console.log("loading 1");
       if (!isFetchingCardInfo) {
@@ -780,12 +830,28 @@ export function Card({ navigation }: any) {
                   </View>
                 )}
               </View>
-              {isEnrollmentSuccess && (
+              {/* {isEnrollmentSuccess && (
                 <SuccessModal
                   title={"Card enrollment"}
                   text={"Card Registered"}
                   isOpen
-                  onClose={() => setEnrollmentStatus(false)}
+                  onClose={() => {
+                    setIsloading(false);
+                    setEnrollmentStatus(false);
+                  }}
+                />
+              )} */}
+              {isEnrollmentSuccess && (
+                <SuccessModal
+                  isError={enrollmentCardStatus.isError}
+                  title={enrollmentCardStatus.title}
+                  text={enrollmentCardStatus.text}
+                  isOpen
+                  onClose={() => {
+                    setIsloading(false);
+                    setEnrollmentStatus(false);
+                    setEnrollmentCardStatus(DEFAULT_CARD_ENROLLMENT_STATUS);
+                  }}
                 />
               )}
               {/* end: Added by Aristos */}
@@ -870,7 +936,6 @@ export function Card({ navigation }: any) {
               {/* end:02-08-2013 disabled by Aristos */}
             </View>
           </View>
-          {/* <LoadingScreen isLoading={isLoading || loading} /> */}
           <Spinner visible={loading || isLoading} />
         </ScrollView>
       </View>

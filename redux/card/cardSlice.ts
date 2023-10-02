@@ -38,7 +38,8 @@ export const cardSlice = createSlice({
       state.loading = true;
     });
     builder.addCase(enrollforCardScheme.fulfilled, (state, action) => {
-      state.data = action.payload;
+      state = action?.payload?.data;
+      //state.data = action.payload;
       state.loading = false;
     });
     builder.addCase(enrollforCardScheme.rejected, (state) => {
@@ -107,14 +108,8 @@ export const cardSlice = createSlice({
 export const enrollforCardScheme = createAsyncThunk(
   "enrollforCardScheme",
   async (params: any) => {
-    try {
-      console.log("🚀 ~ file: cardSlice.ts:110 ~ params:", params);
-      const { data } = await api.post("/showcardregistrationfinxpV2", params);
-      console.log("🚀 ~ file: cardSlice.ts:112 ~ data:", data);
-      return data;
-    } catch (e) {
-      console.log("🚀 ~ file: cardSlice.ts:116 ~ e:", e);
-    }
+    const data = await api.post("/showcardregistrationfinxpV2", params);
+    return data;
   }
 );
 

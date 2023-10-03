@@ -187,24 +187,15 @@ export function LoginScreen({ navigation }: any) {
                   const result = await dispatch<any>(
                     signin({ values, navigate /* , ip */ })
                   ).unwrap();
-                    // console.log("result", {
-                    //   ...result,
-                    //   profileimage: null,
-                    // });
+
                   if (
-                    // [ -- disabled since finxp's response got changed
-                    //   result?.payload?.biometricYN.toUpperCase(),
-                    //   result?.biometricYN.toUpperCase(),
-                    // ].includes("Y")
-                    result?.payload?.biometricYN === "Y"
+                    result &&
+                    (result?.payload?.biometricYN || result?.biometricYN) &&
+                    (result?.payload?.biometricYN === "Y" ||
+                      result?.biometricYN === "Y")
                   ) {
                     console.log("Use biometic ");
-                    await saveSecureCredetails(
-                      values.email,
-                      values.password
-                      //Addd by aristos
-                      // result.payload.biometricYN
-                    );
+                    await saveSecureCredetails(values.email, values.password);
                   } else {
                     // console.log("Do not use biometric");
                     await SecureStore.deleteItemAsync("email");
@@ -253,47 +244,62 @@ export function LoginScreen({ navigation }: any) {
                 // );
               }}
             >
-              {({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => {
+              {({
+                handleSubmit,
+                handleChange,
+                handleBlur,
+                values,
+                errors,
+                touched,
+              }) => {
                 return (
                   <View>
-                  <View style={styles.cardBody}>
-                    <View>
-                      <FormGroup validationError={touched.email ? errors.email : null}>
-                        <FormGroup.Input
-                          keyboardType="email-address"
-                          onChangeText={handleChange("email")}
-                          onBlur={handleBlur("email")}
-                          value={values.email}
-                          placeholder="Email address"
-                          icon={<EmailIcon />}
-                        />
-                      </FormGroup>
-                    </View>
-                    <View style={styles.passwordField}>
-                      <FormGroup
-                        validationError={ touched.password ? errors.password || apiErrorMessage.message : null}
-                      >
-                        <FormGroup.Password
-                          icon={<LockIcon />}
-                          rightIcon
-                          onChangeText={handleChange("password")}
-                          onBlur={handleBlur("password")}
-                          value={values.password}
-                          placeholder="Password"
-                        />
-                      </FormGroup>
-                    </View>
-                    <View style={styles.cardBodyLink}>
-                      <Pressable onPress={() => navigate("forgottenPassword")}>
-                        <Typography
-                          color="accent-blue"
-                          fontFamily="Mukta-Regular"
+                    <View style={styles.cardBody}>
+                      <View>
+                        <FormGroup
+                          validationError={touched.email ? errors.email : null}
                         >
-                          Forgotten Password
-                        </Typography>
-                      </Pressable>
-                    </View>
-                    {/* <View
+                          <FormGroup.Input
+                            keyboardType="email-address"
+                            onChangeText={handleChange("email")}
+                            onBlur={handleBlur("email")}
+                            value={values.email}
+                            placeholder="Email address"
+                            icon={<EmailIcon />}
+                          />
+                        </FormGroup>
+                      </View>
+                      <View style={styles.passwordField}>
+                        <FormGroup
+                          validationError={
+                            touched.password
+                              ? errors.password || apiErrorMessage.message
+                              : null
+                          }
+                        >
+                          <FormGroup.Password
+                            icon={<LockIcon />}
+                            rightIcon
+                            onChangeText={handleChange("password")}
+                            onBlur={handleBlur("password")}
+                            value={values.password}
+                            placeholder="Password"
+                          />
+                        </FormGroup>
+                      </View>
+                      <View style={styles.cardBodyLink}>
+                        <Pressable
+                          onPress={() => navigate("forgottenPassword")}
+                        >
+                          <Typography
+                            color="accent-blue"
+                            fontFamily="Mukta-Regular"
+                          >
+                            Forgotten Password
+                          </Typography>
+                        </Pressable>
+                      </View>
+                      {/* <View
                       style={[styles.cardBodyLink, styles.cardBodyLinkMargin]}
                     >
                       <Typography
@@ -303,7 +309,7 @@ export function LoginScreen({ navigation }: any) {
                         Registration Status
                       </Typography>
                     </View> */}
-                    {/* <View
+                      {/* <View
                       style={[styles.cardBodyLink, styles.cardBodyLinkMargin]}
                     >
                       <Typography
@@ -313,19 +319,19 @@ export function LoginScreen({ navigation }: any) {
                         Register Company
                       </Typography>
                     </View> */}
-                  </View>
-                  <FixedBottomAction rounded>
-                    <Button
-                      style={styles.signinButton}
-                      loading={isLoading}
-                      disabled={isLoading}
-                      color="light-pink"
-                      onPress={handleSubmit}
-                      leftIcon={<ProfileIcon size={14} />}
-                    >
-                      Submit
-                    </Button>
-                    {/* <Btn
+                    </View>
+                    <FixedBottomAction rounded>
+                      <Button
+                        style={styles.signinButton}
+                        loading={isLoading}
+                        disabled={isLoading}
+                        color="light-pink"
+                        onPress={handleSubmit}
+                        leftIcon={<ProfileIcon size={14} />}
+                      >
+                        Submit
+                      </Button>
+                      {/* <Btn
                       onPress={() => {
                         navigate("emailVerified", {
                           isOpenEmailVerified: true,
@@ -333,9 +339,9 @@ export function LoginScreen({ navigation }: any) {
                       }}
                       title="notif"
                     /> */}
-                  </FixedBottomAction>
-                </View>
-                )
+                    </FixedBottomAction>
+                  </View>
+                );
               }}
             </Formik>
           </View>

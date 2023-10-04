@@ -29,6 +29,7 @@ import { Transaction, TransactionDetails, TransactionDetailsNew } from "../../mo
 import Pagination from "../../components/Pagination/Pagination";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 import Box from "../../components/Box";
+import { containsOnlyNumbers } from "../../utils/helpers";
 
 export interface GroupedByDateTransactionObject {
   [date: string]: Transaction[];
@@ -60,6 +61,16 @@ const initialSearchFieldData: SearchFilter = {
   limit: 20,
   page: 1,
 };
+const initialDateRange: DateRangeType = {
+  dateTo: {
+    state: false,
+    value: "",
+  },
+  dateFrom: {
+    state: false,
+    value: "",
+  },
+};
 
 export function Transactions({ navigation }: any) {
   const dispatch = useDispatch();
@@ -78,19 +89,8 @@ export function Transactions({ navigation }: any) {
   const [searchFieldData, setSearchFieldData] = useState<SearchFilter>(initialSearchFieldData);
   const [dateTo, setDateTo] = useState("");
   const [dateFrom, setDateFrom] = useState("");
-  const [showPickerDateTo, setShowPickerDateTo] = useState(false);
-  const [showPickerDateFrom, setShowPickerDateFrom] = useState(false);
-  const [showStatementPickerDateToAndFrom, setShowStatementPickerDateToAndFrom] = useState<DateRangeType>({
-    dateTo: {
-      state: false,
-      value: "",
-    },
-    dateFrom: {
-      state: false,
-      value: "",
-    },
-  });
-
+  const [showPickerDateFilter, setShowPickerDateFilter] = useState<DateRangeType>((initialDateRange));
+  const [showStatementPickerDateToAndFrom, setShowStatementPickerDateToAndFrom] = useState<DateRangeType>(initialDateRange);
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [unfilteredTransactions, setUnfilteredTransactions] = useState<GroupedByDateTransactionObject>();
@@ -107,8 +107,8 @@ export function Transactions({ navigation }: any) {
   const clearFilter = () => {
     setDateFrom("");
     setDateTo("");
-    setShowPickerDateTo(false);
-    setShowPickerDateFrom(false);
+    setShowStatementPickerDateToAndFrom(initialDateRange);
+    setShowPickerDateFilter(initialDateRange);
     setSearchFieldData(initialSearchFieldData);
     setCurrentSelectedSearchField("");
     setSearchText("");
@@ -157,10 +157,6 @@ export function Transactions({ navigation }: any) {
     }
   };
 
-  const containsOnlyNumbers = (str: any): boolean => {
-    return /^\d+$/.test(str);
-  };
-
   const filterFromToDate = async (fromDate: string, toDate: string) => {
     const userId = userData?.id;
     if (fromDate && toDate && userId) {
@@ -169,93 +165,11 @@ export function Transactions({ navigation }: any) {
         ...(fromDate && { from_date: fromDate }),
         ...(toDate && { to_date: toDate }),
         account_id: `${userId}`,
-        // sort: "id",
         direction: "desc",
       };
       setSortByDate(false);
       setSearchFieldData(search);
       await fetchTransactionsWithFilters(search);
-    }
-  };
-
-  const onChangeShowPickerDateTo = (event: any) => {
-    if (event.type == "set") {
-      const formattedToDate = new Date(event.nativeEvent.timestamp)
-        .toISOString()
-        .split("T")[0];
-      setDateTo(formattedToDate);
-      const fromDate = new Date(dateFrom);
-      const toDate = new Date(dateTo);
-      setShowPickerDateTo(false);
-      if (fromDate > toDate) {
-        alert("Date from should be before or same with Date to");
-        return;
-      } else {
-        filterFromToDate(dateFrom, formattedToDate);
-      }
-    }
-  };
-
-  const onChangeShowPickerDateFrom = (event: any) => {
-    if (event.type == "set") {
-      const formattedFromDate = new Date(event.nativeEvent.timestamp)
-        .toISOString()
-        .split("T")[0];
-      setDateFrom(formattedFromDate);
-      const fromDate = new Date(dateFrom);
-      const toDate = new Date(dateTo);
-      setShowPickerDateFrom(false);
-      if (fromDate > toDate) {
-        alert("Date from should be before or same with Date to");
-        return;
-      } else {
-        filterFromToDate(formattedFromDate, dateTo);
-      }
-    }
-  };
-
-  const onChangeStatementShowPickerDateFrom = (event: any) => {
-    if (event.type == "set") {
-      const { dateFrom, dateTo } = showStatementPickerDateToAndFrom;
-      const formattedToDate = new Date(event.nativeEvent.timestamp)
-        .toISOString()
-        .split("T")[0];
-      setShowStatementPickerDateToAndFrom({
-        ...showStatementPickerDateToAndFrom,
-        dateFrom: {
-          state: false,
-          value: formattedToDate,
-        },
-      });
-      const fromDate = new Date(dateFrom.value);
-      const toDate = new Date(dateTo.value);
-      if (fromDate > toDate) {
-        alert("Date from should be before or same with Date to");
-        return;
-      }
-    }
-  };
-
-  const onChangeStatementShowPickerDateTo = (event: any) => {
-    if (event.type == "set") {
-      const { dateFrom, dateTo } = showStatementPickerDateToAndFrom;
-      const formattedToDate = new Date(event.nativeEvent.timestamp)
-        .toISOString()
-        .split("T")[0];
-        setShowStatementPickerDateToAndFrom({
-          ...showStatementPickerDateToAndFrom,
-          dateTo: {
-            state: false,
-            value: formattedToDate,
-          },
-        });
-      const fromDate = new Date(dateFrom.value);
-      const toDate = new Date(dateTo.value);
-      setShowPickerDateTo(false);
-      if (fromDate > toDate) {
-        alert("Date from should be before or same with Date to");
-        return;
-      }
     }
   };
 
@@ -284,6 +198,47 @@ export function Transactions({ navigation }: any) {
     setSearchFieldData(_searchFieldData);
     fetchTransactionsWithFilters({
       ..._searchFieldData,
+    });
+  };
+
+  const handleOnChangeShowPickerDate = (
+    formattedDate: string,
+    setState: any,
+    values: any,
+    key: string,
+    isOnChangeForStatements?: boolean,
+    ) => {
+    console.log({ values, formattedDate, key, setState });
+    const { dateFrom, dateTo } = values;
+    if (key === 'dateFrom') {
+      if (dateTo.value) {
+        const fromDate = new Date(formattedDate);
+        const toDate = new Date(dateTo.value);
+        if (fromDate > toDate) {
+          alert("Date from should be before or same with Date to");
+          return;
+        } else {
+          isOnChangeForStatements && filterFromToDate(formattedDate, dateTo.value);
+        }
+      }
+    } else {
+      if (dateFrom.value) {
+        const fromDate = new Date(dateFrom.value);
+        const toDate = new Date(formattedDate);
+        if (fromDate > toDate) {
+          alert("Date from should be before or same with Date to");
+          return;
+        } else {
+          isOnChangeForStatements && filterFromToDate(dateFrom.value, formattedDate);
+        }
+      }
+    }
+    setState({
+      ...values,
+      [key]: {
+        state: false,
+        value: formattedDate,
+      },
     });
   };
 
@@ -390,7 +345,20 @@ export function Transactions({ navigation }: any) {
                   display="spinner"
                   maximumDate={new Date()}
                   value={!showStatementPickerDateToAndFrom.dateFrom.value ? currentDate : new Date(showStatementPickerDateToAndFrom.dateFrom.value)}
-                  onChange={onChangeStatementShowPickerDateFrom}
+                  onChange={(event: any) => {
+                    if (event.type == "set") {
+                      const formattedDate = new Date(event.nativeEvent.timestamp)
+                        .toISOString()
+                        .split("T")[0];
+                        handleOnChangeShowPickerDate(
+                          formattedDate,
+                          setShowStatementPickerDateToAndFrom,
+                          showStatementPickerDateToAndFrom,
+                          "dateFrom",
+                        )
+                      }
+                    }
+                  }
                   style={{
                     display: "flex",
                     flexDirection: "row",
@@ -420,8 +388,21 @@ export function Transactions({ navigation }: any) {
                 mode="date"
                 display="spinner"
                 maximumDate={new Date()}
-                value={!dateFrom ? currentDate : new Date(dateFrom)}
-                onChange={onChangeStatementShowPickerDateTo}
+                value={!showStatementPickerDateToAndFrom.dateTo.value ? currentDate : new Date(showStatementPickerDateToAndFrom.dateTo.value)}
+                onChange={(event: any) => {
+                  if (event.type == "set") {
+                    const formattedDate = new Date(event.nativeEvent.timestamp)
+                      .toISOString()
+                      .split("T")[0];
+                      handleOnChangeShowPickerDate(
+                        formattedDate,
+                        setShowStatementPickerDateToAndFrom,
+                        showStatementPickerDateToAndFrom,
+                        "dateTo",
+                      )
+                    }
+                  }
+                }
                 style={{
                   display: "flex",
                   flexDirection: "row",
@@ -569,17 +550,37 @@ export function Transactions({ navigation }: any) {
                   lineHeight: 25,
                 }}
                 color="black-only"
-                onPress={() => setShowPickerDateFrom(true)}
+                onPress={() => setShowPickerDateFilter({
+                  ...showPickerDateFilter,
+                  dateFrom: {
+                    state: true,
+                    value: "",
+                  }
+                  })
+                }
               >
-                {!dateFrom ? `From Date` : `${dateFrom}`}
+                {!showPickerDateFilter.dateFrom.value ? `From Date` : `${showPickerDateFilter.dateFrom.value}`}
               </Button>
-              {showPickerDateFrom && (
+              {showPickerDateFilter.dateFrom.state && (
                 <DateTimePicker
                   mode="date"
                   display="spinner"
                   maximumDate={new Date()}
-                  value={!dateFrom ? currentDate : new Date(dateFrom)}
-                  onChange={onChangeShowPickerDateFrom}
+                  value={!showPickerDateFilter.dateFrom.value ? currentDate : new Date(showPickerDateFilter.dateFrom.value)}
+                  onChange={(event: any) => {
+                    if (event.type == "set") {
+                      const formattedFromDate = new Date(event.nativeEvent.timestamp)
+                        .toISOString()
+                        .split("T")[0];
+                        handleOnChangeShowPickerDate(
+                          formattedFromDate,
+                          setShowPickerDateFilter,
+                          showPickerDateFilter,
+                          "dateFrom",
+                          true,
+                        );
+                    }}
+                  }
                   style={{
                     display: "flex",
                     flexDirection: "row",
@@ -600,16 +601,36 @@ export function Transactions({ navigation }: any) {
                   lineHeight: 25,
                 }}
                 color="black-only"
-                onPress={() => setShowPickerDateTo(true)}
+                onPress={() => setShowPickerDateFilter({
+                  ...showPickerDateFilter,
+                  dateTo: {
+                    state: true,
+                    value: "",
+                  }
+                  })
+                }
               >
-                {!dateTo ? `To Date` : `${dateTo}`}
+                {!showPickerDateFilter.dateTo.value ? `To Date` : `${showPickerDateFilter.dateTo.value}`}
               </Button>
-              {showPickerDateTo && (
+              {showPickerDateFilter.dateTo.state && (
                 <DateTimePicker
                   mode="date"
                   display="spinner"
                   value={!dateTo ? currentDate : new Date(dateTo)}
-                  onChange={onChangeShowPickerDateTo}
+                  onChange={(event: any) => {
+                    if (event.type == "set") {
+                      const formattedToDate = new Date(event.nativeEvent.timestamp)
+                        .toISOString()
+                        .split("T")[0];
+                      handleOnChangeShowPickerDate(
+                        formattedToDate,
+                        setShowPickerDateFilter,
+                        showPickerDateFilter,
+                        "dateTo",
+                        true,
+                      );
+                    }
+                  }}
                 />
               )}
             </View>

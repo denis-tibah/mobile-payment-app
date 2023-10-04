@@ -1,21 +1,15 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { RootSiblingParent } from "react-native-root-siblings";
-import { Text, View } from "react-native";
+import React, { useCallback, useState } from "react";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { Provider } from "react-redux";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { persistor, store } from "./store";
-import AppNavigationWrapper from "./navigation/AppNavigationWrapper";
 import { PersistGate } from "redux-persist/integration/react";
-import UserInactivity from "react-native-user-detector-active-inactive";
-import { useDispatch, useSelector } from "react-redux";
 import * as Linking from "expo-linking";
 import { createNavigationContainerRef } from "@react-navigation/native";
+
 import AppNavigationContainer from "./navigation/AppNavigationContainer";
 
-import { signout } from "./redux/auth/authSlice";
 
 export default function App() {
   // added by Aristos for deep linking
@@ -24,7 +18,7 @@ export default function App() {
   const appScheme = prefix;
   const urlScheme = "https://www.gozazoo.com/zazoomobilestg";
   const prefixes = [appScheme, urlScheme];
-
+  console.log('process',process);
   const [currentRoute, setCurrentRoute] = useState("");
 
   /* const authData = useSelector((state: any) => state?.auth?.data);

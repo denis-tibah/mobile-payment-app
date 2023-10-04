@@ -68,6 +68,9 @@ export function convertImageToBase64(file: any) {
     };
   });
 }
+export const containsOnlyNumbers = (value: any): boolean => {
+  return /^\d+$/.test(value);
+};
 
 export const prependBase64 = (base64: string) => {
   return `data:image/jpeg;base64,${base64}`;

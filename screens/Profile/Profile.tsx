@@ -98,6 +98,7 @@ export function Profile({ route, navigation }: any) {
   const [limitValueToUpdate, setLimitValueToUpdate] = useState<{
     [key: string]: string;
   }>({});
+  const [limitTypes, setLimitTypes] = useState<string>("");
   const [dropDownOpen, setDropDownOpen] = useState(false);
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const [helpTopicOpen, setHelpTopicOpen] = useState(false);
@@ -117,14 +118,12 @@ export function Profile({ route, navigation }: any) {
   useEffect(() => {
     dispatch<any>(getProfile());
     //set biometric checkbox setting
-    // console.log("*******biometricSetting********",biometricSetting);
     if (biometricSetting == "Y") {
       setIsBiometricEnabled(true);
     } else {
       setIsBiometricEnabled(false);
     }
     //set emailAlerts checkbox setting
-    // console.log("*******profileData********",profileData.UserProfile.EnableAlertsYN);
     if (profileData.UserProfile.EnableAlertsYN == "Y") {
       setIsEnabled(true);
     } else {
@@ -201,6 +200,9 @@ export function Profile({ route, navigation }: any) {
     if (_updateRequest.length === 0) {
       return;
     }
+    setLimitTypes(_updateRequest.map((request) => {
+      return request.type.charAt(0).toUpperCase() + request.type.slice(1);
+    }).join(', '));
     try {
       // this is temporary approach to update limits
       await Promise.all(
@@ -224,7 +226,7 @@ export function Profile({ route, navigation }: any) {
       <SuccessModal isOpen={isUpdateLimitSuccess.isModalOpen}
         isError={!isUpdateLimitSuccess.state}
         title={isUpdateLimitSuccess.state ? "Success" : "Error"}
-        text={isUpdateLimitSuccess.state ? "Request for limits update is on the process." : "Something went wrong"}
+        text={isUpdateLimitSuccess.state ? `${limitTypes} are on the process to update.` : "Something went wrong"}
         onClose={() => setIsUpdateLimitSuccess({
           state: false,
           isModalOpen: false

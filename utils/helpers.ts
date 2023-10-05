@@ -1,3 +1,10 @@
+import { dateFormatter } from "./dates";
+import { Transaction } from "../models/Transactions";
+
+export interface GroupedByDateTransactionObject {
+  [date: string]: Transaction[];
+}
+
 export function formatDateTableValue(date = "") {
   return date.split("-").reverse().join("-");
 }
@@ -79,6 +86,21 @@ export const prependBase64 = (base64: string) => {
 export const getCurrency = (currency = "") => {
   return currency === "EUR" ? "€" : "€";
 };
+
+export const groupedByDateTransactions = ( txData: Transaction[] ): GroupedByDateTransactionObject => {
+  if (!txData) return {};
+  const sanitizedDate: Transaction[] = txData.map((tx: Transaction) => {
+    return {
+      ...tx,
+      transaction_datetime: dateFormatter(tx.transaction_datetime.toString()),
+    }
+  });
+  const groupedByDateTransactions: GroupedByDateTransactionObject = sanitizedDate.reduce((current: any, element) => {
+    (current[element.transaction_datetime] ??= []).push(element);
+    return current;
+  }, {});
+  return groupedByDateTransactions;
+}
 
 export const screenNames: any = {
   login: "login",

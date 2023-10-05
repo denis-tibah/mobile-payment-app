@@ -107,10 +107,10 @@ export function LoginScreen({ navigation }: any) {
       // console.log({ credentials });
       if (credentials.email && credentials.password) {
         const compatible = await checkCompatible();
-        console.log({ compatible });
+        // console.log({ compatible });
         if (compatible) {
           const saved = await checkSavedBiometrics();
-          console.log({ saved });
+          // console.log({ saved });
           if (saved) {
             const auth = await handleBiometricAuth();
             console.log(auth, "AUTHH");
@@ -194,7 +194,7 @@ export function LoginScreen({ navigation }: any) {
                     (result?.payload?.biometricYN === "Y" ||
                       result?.biometricYN === "Y")
                   ) {
-                    console.log("Use biometic ");
+                    // console.log("Use biometic ");
                     await saveSecureCredetails(values.email, values.password);
                   } else {
                     // console.log("Do not use biometric");

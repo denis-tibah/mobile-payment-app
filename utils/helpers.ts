@@ -1,5 +1,6 @@
 import { dateFormatter } from "./dates";
 import { Transaction } from "../models/Transactions";
+import { TRANSACTIONS_STATUS } from "./constants";
 
 export interface GroupedByDateTransactionObject {
   [date: string]: Transaction[];
@@ -101,6 +102,19 @@ export const groupedByDateTransactions = ( txData: Transaction[] ): GroupedByDat
   }, {});
   return groupedByDateTransactions;
 }
+
+export function capitalizeFirstLetter(str: string): string {
+  return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+}
+
+export const transactionStatusOptions = Object.keys(TRANSACTIONS_STATUS).map(
+  (value) => {
+    return {
+      label: capitalizeFirstLetter(value),
+      value: TRANSACTIONS_STATUS[value as keyof typeof TRANSACTIONS_STATUS],
+    };
+  }
+);
 
 export const screenNames: any = {
   login: "login",

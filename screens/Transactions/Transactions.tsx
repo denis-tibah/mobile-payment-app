@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { View, ScrollView, TouchableOpacity } from "react-native";
-import { useDebounce } from "usehooks-ts";
 import { useDispatch, useSelector } from "react-redux";
-import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import FormGroup from "../../components/FormGroup";
 import Heading from "../../components/Heading";
 import Modal from '../../components/Modal'
@@ -12,7 +11,15 @@ import Button from "../../components/Button";
 import Typography from "../../components/Typography";
 import TransactionIcon from "../../assets/icons/Transaction";
 import SearchIcon from "../../assets/icons/Search";
-import { SearchFilter, StatementFilter, StatementResponse, StatementTransactionsResponse, clearTransactions, getStatementsfinxp, getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
+import { 
+  SearchFilter,
+  StatementFilter,
+  StatementResponse,
+  StatementTransactionsResponse,
+  clearTransactions,
+  getStatementsfinxp,
+  getTransactionsWithFilters,
+} from "../../redux/transaction/transactionSlice";
 import { generatePDF } from "../../utils/files";
 import { printAsync } from "expo-print";
 import { RootState } from "../../store";
@@ -22,15 +29,10 @@ import { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import DropDownPicker from "react-native-dropdown-picker";
 import LoadingScreen from "../../components/Loader/LoadingScreen";
-import { dateFormatter } from "../../utils/dates";
-import { TRANSACTIONS_STATUS } from "../../utils/constants";
-import { capitalizeFirstLetter } from "../../utils/helper";
-import { Transaction, TransactionDetails, TransactionDetailsNew, transactions } from "../../models/Transactions";
 import Pagination from "../../components/Pagination/Pagination";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 import Box from "../../components/Box";
-import { GroupedByDateTransactionObject, containsOnlyNumbers, groupedByDateTransactions } from "../../utils/helpers";
-
+import { containsOnlyNumbers, groupedByDateTransactions, transactionStatusOptions } from "../../utils/helpers";
 
 interface DateRangeType {
   dateTo: {
@@ -42,6 +44,7 @@ interface DateRangeType {
     value: string;
   }
 }
+
 const searchOptions = [
   // { label: "BIC", value: 'bic' },
   // { label: "ReferenceNo", value: 'reference_no' },
@@ -74,9 +77,9 @@ export function Transactions({ navigation }: any) {
   const dispatch = useDispatch();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const transactions = useSelector((state: RootState) => state?.transaction.data);
-  let current_page = transactions?.current_page;
-  let last_page = transactions?.last_page;
-  let transactionsList = transactions?.transactions;
+  const current_page = transactions?.current_page;
+  const last_page = transactions?.last_page;
+  const transactionsList = transactions?.transactions;
   const _groupedByDateTransactions = groupedByDateTransactions(transactionsList);
   const [isMobileFilterShown, setIsMobileFilterShown] = useState<boolean>(false);
   const [sortByDate, setSortByDate] = useState<boolean>(false);
@@ -90,15 +93,6 @@ export function Transactions({ navigation }: any) {
   const [searchFieldData, setSearchFieldData] = useState<SearchFilter>(initialSearchFieldData);
   const [showPickerDateFilter, setShowPickerDateFilter] = useState<DateRangeType>((initialDateRange));
   const [showStatementPickerDateToAndFrom, setShowStatementPickerDateToAndFrom] = useState<DateRangeType>(initialDateRange);
-
-  const transactionStatusOptions = Object.keys(TRANSACTIONS_STATUS).map(
-    (value) => {
-      return {
-        label: capitalizeFirstLetter(value),
-        value: TRANSACTIONS_STATUS[value as keyof typeof TRANSACTIONS_STATUS],
-      };
-    }
-  );
 
   const clearFilter = () => {
     setShowStatementPickerDateToAndFrom(initialDateRange);
@@ -527,6 +521,14 @@ export function Transactions({ navigation }: any) {
                 <DateTimePicker
                   mode="date"
                   display="spinner"
+                  onTouchCancel={() => setShowPickerDateFilter({
+                    ...showPickerDateFilter,
+                    dateFrom: {
+                      state: false,
+                      value: "",
+                    }
+                    })
+                  }
                   maximumDate={new Date()}
                   value={!showPickerDateFilter.dateFrom.value ? currentDate : new Date(showPickerDateFilter.dateFrom.value)}
                   onChange={(event: any) => {
@@ -578,6 +580,14 @@ export function Transactions({ navigation }: any) {
                 <DateTimePicker
                   mode="date"
                   display="spinner"
+                  onTouchCancel={() => setShowPickerDateFilter({
+                    ...showPickerDateFilter,
+                    dateTo: {
+                      state: false,
+                      value: "",
+                    }
+                    })
+                  }
                   value={!showPickerDateFilter.dateTo.value ? currentDate : new Date(showPickerDateFilter.dateTo.value)}
                   onChange={(event: any) => {
                     if (event.type == "set") {
@@ -630,7 +640,7 @@ export function Transactions({ navigation }: any) {
               date,
               totalAmount: _amount.toString(),
               //  balance: txData[date][0].running_balance,
-              ////currency: txData[date][0].currency,
+              //currency: txData[date][0].currency,
               currency: _groupedByDateTransactions[date][0].currency,
             };
             return (

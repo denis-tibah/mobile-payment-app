@@ -179,36 +179,7 @@ export function Payment({ navigation }: any) {
     // console.log('*****Value*****',values);
   };
 
-  const fetchTransactions = async () => {
-    try {
-      // const {account_id, sort, direction, status}: UserData = userData!;
-      const { id }: UserData = userData!;
-      const sort = "id";
-      const direction = "desc";
-      const status = "PROCESSING";
-      // console.log('get latest transactions account_id, sort, direction, status ',id, ' ', sort, ' ', direction, ' ', status);
-      // console.log('get latest transactions',userData);
-
-      if (id && sort && direction && status) {
-        const searchFilter: SearchFilter = {
-          // account_id: account_id,
-          // sort:       sort,
-          // direction:  direction,
-          // status:     status
-          account_id: id.toString(),
-          sort: sort,
-          direction: direction,
-          status: status,
-        };
-        await dispatch<any>(getTransactions(searchFilter));
-      }
-    } catch (error) {
-      console.log({ error });
-    }
-  };
-
   function gotoLimitsPage() {
-    // console.log('go to limist page');
     navigation.navigate("profile", {
       screen: "Limits",
     });
@@ -217,7 +188,6 @@ export function Payment({ navigation }: any) {
   //Enable or Disable if its external payment
   function toggleExternalPayment(value: boolean) {
     setIsExternalPayment(value);
-    // console.log(value,externalPayment);
   }
 
   useEffect(() => {
@@ -227,34 +197,6 @@ export function Payment({ navigation }: any) {
       setExternalPayment("");
     }
   }, [isExternalPayment]);
-
-  // const handleSubmitOTP = async ({ code }: { code: string }) => { // -- idk why this method is created. doesnt makes sense. - arjay 
-  //   setIsLoading(true);
-  //   await handleProccessPayment({ code })
-  //     .then((data: any) => {
-  //       if (data.code === 200) {
-  //         setPaymentModalContent({
-  //           title: "Payment Successful",
-  //           text: "Your payment was successful",
-  //           isError: false,
-  //         })
-  //       }
-  //     })
-  //     .catch((error: any) => {
-  //       console.error(error);
-  //       setPaymentModalContent({
-  //         title: "Payment Failed",
-  //         text: "Your payment was not successful",
-  //         isError: true,
-  //       });
-  //     })
-  //     .finally(() => {
-  //       setShowPaymentStatusModal(true);
-  //       setIsLoading(false);
-  //     });
-  //   await delayCode(1000);
-  //   await fetchTransactions();
-  // };
 
   const handleProccessPayment = async ({ code } : { code: string }) => {
     if (!isOtpValid) {

@@ -1,3 +1,11 @@
+import { dateFormatter } from "./dates";
+import { Transaction } from "../models/Transactions";
+import { TRANSACTIONS_STATUS } from "./constants";
+
+export interface GroupedByDateTransactionObject {
+  [date: string]: Transaction[];
+}
+
 export function formatDateTableValue(date = "") {
   return date.split("-").reverse().join("-");
 }
@@ -68,6 +76,9 @@ export function convertImageToBase64(file: any) {
     };
   });
 }
+export const containsOnlyNumbers = (value: any): boolean => {
+  return /^\d+$/.test(value);
+};
 
 export const prependBase64 = (base64: string) => {
   return `data:image/jpeg;base64,${base64}`;
@@ -76,6 +87,34 @@ export const prependBase64 = (base64: string) => {
 export const getCurrency = (currency = "") => {
   return currency === "EUR" ? "€" : "€";
 };
+
+export const groupedByDateTransactions = ( txData: Transaction[] ): GroupedByDateTransactionObject => {
+  if (!txData) return {};
+  const sanitizedDate: Transaction[] = txData.map((tx: Transaction) => {
+    return {
+      ...tx,
+      transaction_datetime: dateFormatter(tx.transaction_datetime.toString()),
+    }
+  });
+  const groupedByDateTransactions: GroupedByDateTransactionObject = sanitizedDate.reduce((current: any, element) => {
+    (current[element.transaction_datetime] ??= []).push(element);
+    return current;
+  }, {});
+  return groupedByDateTransactions;
+}
+
+export function capitalizeFirstLetter(str: string): string {
+  return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+}
+
+export const transactionStatusOptions = Object.keys(TRANSACTIONS_STATUS).map(
+  (value) => {
+    return {
+      label: capitalizeFirstLetter(value),
+      value: TRANSACTIONS_STATUS[value as keyof typeof TRANSACTIONS_STATUS],
+    };
+  }
+);
 
 export const screenNames: any = {
   login: "login",

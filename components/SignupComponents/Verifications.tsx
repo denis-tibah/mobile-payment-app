@@ -59,7 +59,7 @@ const Verifications: FC<IVerifications> = ({
   useEffect(() => {
     dispatch<any>(
       sendSMSVerification({
-        identifier: registration.data.phone_number,
+        identifier: registration?.data?.phone_number,
       })
     ).catch((error: any) => {
       setStatusMessage({
@@ -102,6 +102,10 @@ const Verifications: FC<IVerifications> = ({
         setIsLoading(false);
         setSMSResent(true);
         if (payload?.payload?.status === "success") {
+          console.log(
+            "🚀 ~ file: Verifications.tsx:105 ~ .then ~ payload?.payload?:",
+            payload?.payload
+          );
           setResentMessage({
             message:
               payload?.payload?.message ||
@@ -229,13 +233,13 @@ const Verifications: FC<IVerifications> = ({
       isError: false,
     });
   };
-
+  console.log("jjj: ", registration?.data?.identifier);
   const handleGetanotherVerificationcode = () => {
     getOtp({
       wholePhoneNumber:
         values?.countryCode && values?.phoneNumber
           ? `${values?.countryCode}${values?.phoneNumber}`
-          : registration.data.phone_number,
+          : registration?.data?.phone_number,
       countryCode: values?.countryCode,
       phoneNumber: values?.phoneNumber,
     });
@@ -286,7 +290,8 @@ const Verifications: FC<IVerifications> = ({
                   <View style={styles.phoneNumberInnerContainer}>
                     <PhoneIcon size={14} />
                     <Text>
-                      {registration?.data?.identifier
+                      {registration?.data?.identifier &&
+                      typeof registration?.data?.identifier === "string"
                         ? registration?.data?.identifier
                         : ""}
                     </Text>
@@ -395,7 +400,7 @@ const Verifications: FC<IVerifications> = ({
                     </Text>
                   )}
                   <Text style={styles.smsResentText}>
-                    {resetMessage?.message}
+                    {resetMessage?.message}fff
                   </Text>
                 </View>
               </View>

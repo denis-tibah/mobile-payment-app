@@ -42,9 +42,11 @@ const FinancialDetails: FC<IFinancialDetails> = ({
     handleChange,
     handleBlur,
     values,
+
     touched,
     errors,
     setValues,
+    setFieldValue,
   } = useFormik({
     validationSchema: financialDetailsSchema,
     initialValues: {
@@ -82,7 +84,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
       handleNextStep();
     },
   });
-
+  console.log("🚀 ~ file: FinancialDetails.tsx:45 ~ values:", values);
   return (
     <View style={styles.card}>
       <View style={styles.cardTitle}>
@@ -167,6 +169,19 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                       ...values,
                       employmentStatus: employmentStatusValue,
                     });
+                    if (employmentStatusValue === "unemployed") {
+                      setFieldValue("occupation", "N/A");
+                      setFieldValue("employerName", "N/A");
+                      setFieldValue("positionHeld", "N/A");
+                      setFieldValue("lengthWithEmployer", "N/A");
+                      setFieldValue("natureOfBusiness", "N/A");
+                    } else {
+                      setFieldValue("occupation", "");
+                      setFieldValue("employerName", "");
+                      setFieldValue("positionHeld", "");
+                      setFieldValue("lengthWithEmployer", "");
+                      setFieldValue("natureOfBusiness", "");
+                    }
                   }}
                   listMode="SCROLLVIEW"
                   items={employmentStatus}
@@ -198,6 +213,8 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 value={values.occupation}
                 placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Occupation"
+                editable={values.occupation === "N/A" ? false : true}
+                selectTextOnFocus={values.occupation === "N/A" ? false : true}
                 icon={<ProfileIcon />}
               />
             </FormGroup>
@@ -218,6 +235,8 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 value={values.employerName}
                 placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Employer name"
+                editable={values.employerName === "N/A" ? false : true}
+                selectTextOnFocus={values.employerName === "N/A" ? false : true}
                 icon={<SalutationIcon />}
               />
             </FormGroup>
@@ -238,6 +257,8 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 value={values.positionHeld}
                 placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Position held"
+                editable={values.positionHeld === "N/A" ? false : true}
+                selectTextOnFocus={values.positionHeld === "N/A" ? false : true}
                 icon={<ProfileIcon />}
               />
             </FormGroup>
@@ -258,6 +279,10 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 value={values.lengthWithEmployer}
                 placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Length with employer"
+                editable={values.lengthWithEmployer === "N/A" ? false : true}
+                selectTextOnFocus={
+                  values.lengthWithEmployer === "N/A" ? false : true
+                }
                 icon={<ProfileIcon />}
               />
             </FormGroup>
@@ -276,6 +301,10 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 onChangeText={handleChange("natureOfBusiness")}
                 onBlur={handleBlur("natureOfBusiness")}
                 value={values.natureOfBusiness}
+                editable={values.natureOfBusiness === "N/A" ? false : true}
+                selectTextOnFocus={
+                  values.natureOfBusiness === "N/A" ? false : true
+                }
                 placeholder="Nature of business"
               />
             </FormGroup>

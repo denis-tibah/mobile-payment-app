@@ -306,7 +306,7 @@ export function Transactions({ navigation }: any) {
               onPress={() => setShowStatementPickerDateToAndFrom({
                 ...showStatementPickerDateToAndFrom,
                 dateTo: {
-                  state: true,
+                  state: !showPickerDateFilter.dateTo.state,
                   value: "",
                 }
               })}
@@ -378,7 +378,7 @@ export function Transactions({ navigation }: any) {
           </Button>
         </Box>
       </Modal>
-      <ScrollView 
+      <ScrollView
         bounces={false}
       >
         <View style={styles.container}>
@@ -500,10 +500,13 @@ export function Transactions({ navigation }: any) {
                 }}
                 color="black-only"
                 onPress={() => setShowPickerDateFilter({
-                  ...showPickerDateFilter,
+                  dateTo: {
+                    state: false,
+                    value: showPickerDateFilter.dateTo.value,
+                  },
                   dateFrom: {
                     state: true,
-                    value: "",
+                    value: showPickerDateFilter.dateFrom.value,
                   }
                   })
                 }
@@ -524,6 +527,7 @@ export function Transactions({ navigation }: any) {
                   }
                   maximumDate={new Date()}
                   value={!showPickerDateFilter.dateFrom.value ? currentDate : new Date(showPickerDateFilter.dateFrom.value)}
+                  textColor="black"
                   onChange={(event: any) => {
                     if (event.type == "set") {
                       const formattedFromDate = new Date(event.nativeEvent.timestamp)
@@ -538,10 +542,7 @@ export function Transactions({ navigation }: any) {
                         );
                     }}
                   }
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                  }}
+                  style={styles.dropdownIOSFrom}
                 />
               )}
             </View>
@@ -559,10 +560,13 @@ export function Transactions({ navigation }: any) {
                 }}
                 color="black-only"
                 onPress={() => setShowPickerDateFilter({
-                  ...showPickerDateFilter,
+                  dateFrom: {
+                    state: false,
+                    value: showPickerDateFilter.dateFrom.value,
+                  },
                   dateTo: {
                     state: true,
-                    value: "",
+                    value: showPickerDateFilter.dateTo.value,
                   }
                   })
                 }
@@ -582,6 +586,7 @@ export function Transactions({ navigation }: any) {
                     })
                   }
                   value={!showPickerDateFilter.dateTo.value ? currentDate : new Date(showPickerDateFilter.dateTo.value)}
+                  textColor="black"
                   onChange={(event: any) => {
                     if (event.type == "set") {
                       const formattedToDate = new Date(event.nativeEvent.timestamp)
@@ -596,6 +601,7 @@ export function Transactions({ navigation }: any) {
                       );
                     }
                   }}
+                  style={styles.dropdownIOSTo}
                 />
               )}
             </View>

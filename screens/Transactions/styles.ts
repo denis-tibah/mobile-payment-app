@@ -58,5 +58,21 @@ export const styles:any = StyleSheet.create<any>({
   },
   arrow: {
     marginLeft: -60,
-  }
+  },
+  dropdownIOSFrom: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    minWidth: 330,
+    marginLeft: -150,
+  },
+  dropdownIOSTo: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    minWidth: 330,
+    marginLeft: -300,
+  },
 })

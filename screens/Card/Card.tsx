@@ -83,6 +83,7 @@ export function Card({ navigation }: any) {
   const [cardPin, setCardPin] = useState("");
   const [remainingTime, setRemainingTime] = useState(30);
   const cardData = useSelector((state: RootState) => state?.card?.data);
+  const isCardLoading = useSelector((state: RootState) => state?.card?.loading);
   const isCardHaveVirtual = cardData?.some((card) => card.type === "V");
   const frozen = useSelector(
     (state: RootState) => state?.card?.data[0]?.frozenYN
@@ -140,8 +141,6 @@ export function Card({ navigation }: any) {
       if ((getCardReq && Object.keys(getCardReq).length > 0) || !getCardReq) {
         setFetchingCardInfo(false);
       }
-      // console.log("do we have any cards", cardData);
-      if (userData) await dispatch<any>(getAccountDetails(userData.id));
     } catch (error) {
       console.log({ error });
     } finally {
@@ -396,7 +395,7 @@ export function Card({ navigation }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      {/* <Spinner visible={isLoading} /> */}
+      <Spinner visible={isCardLoading} />
       {showGetCardModal && (
         <GetCardModal
           onClose={() => setShowGetCardModal(false)}

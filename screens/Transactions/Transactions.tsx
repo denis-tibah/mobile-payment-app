@@ -307,7 +307,7 @@ export function Transactions({ navigation }: any) {
               onPress={() => setShowStatementPickerDateToAndFrom({
                 ...showStatementPickerDateToAndFrom,
                 dateTo: {
-                  state: true,
+                  state: !showPickerDateFilter.dateTo.state,
                   value: "",
                 }
               })}
@@ -501,10 +501,13 @@ export function Transactions({ navigation }: any) {
                 }}
                 color="black-only"
                 onPress={() => setShowPickerDateFilter({
-                  ...showPickerDateFilter,
+                  dateTo: {
+                    state: false,
+                    value: showPickerDateFilter.dateTo.value,
+                  },
                   dateFrom: {
                     state: true,
-                    value: "",
+                    value: showPickerDateFilter.dateFrom.value,
                   }
                   })
                 }
@@ -558,10 +561,13 @@ export function Transactions({ navigation }: any) {
                 }}
                 color="black-only"
                 onPress={() => setShowPickerDateFilter({
-                  ...showPickerDateFilter,
+                  dateFrom: {
+                    state: false,
+                    value: showPickerDateFilter.dateFrom.value,
+                  },
                   dateTo: {
                     state: true,
-                    value: "",
+                    value: showPickerDateFilter.dateTo.value,
                   }
                   })
                 }

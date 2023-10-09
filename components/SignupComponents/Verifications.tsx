@@ -179,24 +179,28 @@ const Verifications: FC<IVerifications> = ({
       provider: "ziyl",
       country: registration.data.country_of_birth,
     };
-    console.log(
+    /* console.log(
       "🚀 ~ file: Verifications.tsx:128 ~ handleVerifyPhoneNumber ~ regData:",
       regData
-    );
+    ); */
     dispatch<any>(getSumsubVerificationCode(regData))
       .unwrap()
       .then((payload: any) => {
-        if (payload) {
+        console.log(
+          "🚀 ~ file: Verifications.tsx:189 ~ .then ~ payload:",
+          payload
+        );
+        if (payload?.data) {
           if (
-            (payload?.code === 201 || payload?.code === "201") &&
-            payload?.status === "success"
+            (payload?.data?.code === 201 || payload?.data?.code === "201") &&
+            payload?.data?.status === "success"
           ) {
             setIsLoading(false);
             dispatch(
               setRegistrationData({
-                registrationAuthentication: payload?.data?.token_ziyl,
-                sumsubToken: payload?.data?.token,
-                sumsubUserId: payload?.data?.userId,
+                registrationAuthentication: payload?.data?.data?.token_ziyl,
+                sumsubToken: payload?.data?.data?.token,
+                sumsubUserId: payload?.data?.data?.userId,
               })
             );
             // localStorage.setItem("token_ziyl", payload[0].token_ziyl);
@@ -211,6 +215,14 @@ const Verifications: FC<IVerifications> = ({
             isOpen: true,
             isError: true,
           });
+        } else {
+          setStatusMessage({
+            header: "Error",
+            body: "Something went wrong with tha data",
+            isOpen: true,
+            isError: true,
+          });
+          setIsLoading(false);
         }
       })
       .catch((error: any) => {
@@ -233,7 +245,7 @@ const Verifications: FC<IVerifications> = ({
       isError: false,
     });
   };
-  console.log("jjj: ", registration?.data?.identifier);
+
   const handleGetanotherVerificationcode = () => {
     getOtp({
       wholePhoneNumber:

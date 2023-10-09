@@ -1,8 +1,27 @@
 import * as Yup from "yup";
 
+const schemaWithStringAndNumber = Yup.mixed()
+  .test(
+    "is-string-or-number",
+    "Must be a combination of letter and number",
+    (value) => {
+      if (typeof value !== "string" && typeof value !== "number") {
+        return false; // Value is not a string or number
+      }
+
+      // Check if the value contains at least one digit (number)
+      if (typeof value === "string" && !/\d/.test(value)) {
+        return false; // Value is a string without a number
+      }
+
+      return true; // Value is either a string with a number or a number
+    }
+  )
+  .required("Value is required");
+
 const addressDetailsSchema = Yup.object({
-  street: Yup.string().required("Required"),
-  subStreet: Yup.string().required("Required"),
+  street: schemaWithStringAndNumber,
+  subStreet: schemaWithStringAndNumber,
   town: Yup.string().required("Required"),
   state: Yup.string().required("Required"),
   postCode: Yup.string().required("Required"),

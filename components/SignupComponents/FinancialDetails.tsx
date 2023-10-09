@@ -77,7 +77,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
           occupation,
           employer_name: employerName,
           position_held: positionHeld,
-          length_with_employer: lengthWithEmployer,
+          length_with_employer: parseInt(lengthWithEmployer, 10),
           nature_of_business: natureOfBusiness,
         })
       );

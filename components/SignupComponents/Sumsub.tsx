@@ -118,6 +118,8 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
                       setExpiredToken(true);
                     } else if (objData?.data === "registrationCompleted") {
                       setRegistrationCompleted(true);
+                    } else if (objData?.data === "registrationError") {
+                      console.log("registrationError");
                     }
                   }
                 }
@@ -182,6 +184,7 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
                             console.log('stepCompleted', payload)
                         })
                         .on('idCheck.onError', (error) => {
+                            window.ReactNativeWebView.postMessage('registrationError');
                             console.log('onError', error)
                         })
                         .build();

@@ -6,16 +6,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // export const exportedBaseUrl = process.env.APIURL || "https://zazoostg.com/reg/ziyl";
 
 // staging backend v2
-// const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
-// export const exportedBaseUrl = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
+const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
+export const exportedBaseUrl =
+  process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
 
 // live backend
 // console.log(process.env.APIURL);
 // console.log(process);
 
-const baseURL = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
+/* const baseURL = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
 export const exportedBaseUrl =
-  process.env.APIURL || "https://zazooapi.com/prod/ziyl";
+  process.env.APIURL || "https://zazooapi.com/prod/ziyl"; */
 
 export const api = axios.create({ baseURL });
 let _store: any;
@@ -46,6 +47,7 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.log("🚀 ~ file: api.ts:50 ~ error:", error);
     return Promise.reject(error);
   }
 );
@@ -57,6 +59,7 @@ api.interceptors.response.use(
     return response;
   },
   async (error) => {
+    console.log("🚀 ~ file: api.ts:62 ~ error:", error);
     const originalRequest = error.config;
     if (error?.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;

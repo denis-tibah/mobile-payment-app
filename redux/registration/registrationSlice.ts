@@ -103,8 +103,10 @@ export const sendSMSVerification = createAsyncThunk(
 export const getSumsubVerificationCode = createAsyncThunk(
   "getSumsubVerificationCode",
   async (params: any) => {
-    const { data } = await api.post("/registrationfinxpv3", params);
-    return data;
+    console.log("🚀 ~ file: registrationSlice.ts:106 ~ params:", params);
+    const res = await api.post("/registrationfinxpv3", params);
+    console.log("🚀 ~ file: registrationSlice.ts:108 ~ res:", res);
+    return res;
   }
 );
 

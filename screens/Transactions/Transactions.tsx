@@ -274,7 +274,6 @@ export function Transactions({ navigation }: any) {
                   mode="date"
                   display="spinner"
                   maximumDate={new Date()}
-
                   value={!showStatementPickerDateToAndFrom.dateFrom.value ? currentDate : new Date(showStatementPickerDateToAndFrom.dateFrom.value)}
                   onChange={(event: any) => {
                     if (event.type == "set") {

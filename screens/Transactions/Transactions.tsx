@@ -274,6 +274,7 @@ export function Transactions({ navigation }: any) {
                   mode="date"
                   display="spinner"
                   maximumDate={new Date()}
+
                   value={!showStatementPickerDateToAndFrom.dateFrom.value ? currentDate : new Date(showStatementPickerDateToAndFrom.dateFrom.value)}
                   onChange={(event: any) => {
                     if (event.type == "set") {
@@ -378,7 +379,7 @@ export function Transactions({ navigation }: any) {
           </Button>
         </Box>
       </Modal>
-      <ScrollView 
+      <ScrollView
         bounces={false}
       >
         <View style={styles.container}>
@@ -524,6 +525,7 @@ export function Transactions({ navigation }: any) {
                   }
                   maximumDate={new Date()}
                   value={!showPickerDateFilter.dateFrom.value ? currentDate : new Date(showPickerDateFilter.dateFrom.value)}
+                  textColor="black"
                   onChange={(event: any) => {
                     if (event.type == "set") {
                       const formattedFromDate = new Date(event.nativeEvent.timestamp)
@@ -538,10 +540,7 @@ export function Transactions({ navigation }: any) {
                         );
                     }}
                   }
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                  }}
+                  style={styles.dropdownIOSFrom}
                 />
               )}
             </View>
@@ -582,6 +581,7 @@ export function Transactions({ navigation }: any) {
                     })
                   }
                   value={!showPickerDateFilter.dateTo.value ? currentDate : new Date(showPickerDateFilter.dateTo.value)}
+                  textColor="black"
                   onChange={(event: any) => {
                     if (event.type == "set") {
                       const formattedToDate = new Date(event.nativeEvent.timestamp)
@@ -596,6 +596,7 @@ export function Transactions({ navigation }: any) {
                       );
                     }
                   }}
+                  style={styles.dropdownIOSTo}
                 />
               )}
             </View>

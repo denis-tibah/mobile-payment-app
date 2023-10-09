@@ -329,7 +329,7 @@ export function LoginScreen({ navigation }: any) {
                         onPress={handleSubmit}
                         leftIcon={<ProfileIcon size={14} />}
                       >
-                        Submit
+                        Sign in
                       </Button>
                       {/* <Btn
                       onPress={() => {

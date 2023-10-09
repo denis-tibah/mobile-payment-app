@@ -71,17 +71,14 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
   text: "",
   isError: false,
 };
-let renderCount = 0;
+
 export function Card({ navigation }: any) {
-  console.log("renderCount: ", renderCount++);
   const dispatch = useDispatch();
   const accountDetails = useSelector((state: RootState) => state.account?.details);
   const accountUUID: string = accountDetails?.info?.id;
   const userData = useSelector((state: RootState) => state.auth?.userData);
-  console.log("🚀 ~ file: Card.tsx:126 ~ Card ~ userData", userData);
   const userID = userData?.id;
   const profile = useSelector((state: any) => state.profile?.profile);
-  //get profile email
   const userEmail = profile?.data?.email;
   const [cardPin, setCardPin] = useState("");
   const [remainingTime, setRemainingTime] = useState(30);

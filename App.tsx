@@ -18,7 +18,6 @@ export default function App() {
   const appScheme = prefix;
   const urlScheme = "https://www.gozazoo.com/zazoomobilestg";
   const prefixes = [appScheme, urlScheme];
-  console.log('process',process);
   const [currentRoute, setCurrentRoute] = useState("");
 
   /* const authData = useSelector((state: any) => state?.auth?.data);

@@ -71,45 +71,23 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
   text: "",
   isError: false,
 };
-export function Card({ navigation }: any) {
-  const infoData = useSelector((state: RootState) => state.account?.details);
-  const accountData = useSelector((state: RootState) => state.auth?.userData);
-  console.log("🚀 ~ file: Card.tsx:77 ~ Card ~ accountData:", accountData);
-  const accountDetails = useSelector((state: any) => state.account?.details);
-  console.log(
-    "🚀 ~ file: Card.tsx:78 ~ Card ~ accountDetails:",
-    accountDetails
-  );
-  const profile = useSelector((state: any) => state.profile?.profile);
-  /*   const screenHeight = Dimensions.get("window").height;
-  const defaultSearchOptions = {
-    sort: "id",
-    // status: 'PROCESSING',
-    status: "SUCCESS",
-    account_id: 0,
-    direction: "desc",
-  }; */
-  /*   const transactions = useSelector(
-    (state: RootState) => state?.transaction?.data
-  ); */
 
+export function Card({ navigation }: any) {
+  const dispatch = useDispatch();
+  const accountDetails = useSelector((state: RootState) => state.account?.details);
+  const accountUUID: string = accountDetails?.info?.id;
+  const userData = useSelector((state: RootState) => state.auth?.userData);
+  const userID = userData?.id;
+  const profile = useSelector((state: any) => state.profile?.profile);
+  const userEmail = profile?.data?.email;
   const [cardPin, setCardPin] = useState("");
   const [remainingTime, setRemainingTime] = useState(30);
-  const loadingState = useSelector((state: RootState) => state?.card?.loading);
-  /* const load = useSelector((state: RootState) => state?.card); */
   const cardData = useSelector((state: RootState) => state?.card?.data);
-  /* const cardTransactions = useSelector(
-    (state: RootState) => state?.card?.transactions
-  );
-
-  const cardDetailsLoading = useSelector(
-    (state: RootState) => state?.card?.loading
-  ); */
-  const userData = useSelector((state: RootState) => state.auth?.userData);
+  const isCardLoading = useSelector((state: RootState) => state?.card?.loading);
+  const isCardHaveVirtual = cardData?.some((card) => card.type === "V");
   const frozen = useSelector(
     (state: RootState) => state?.card?.data[0]?.frozenYN
   );
-  const [refreshing, setRefreshing] = useState<boolean>(false);
   const [cardDetails, setCardDetails] = useState<ICardDetails>({});
   const [freezeLoading, setFreezeLoading] = useState(false);
   const [showCardOtpModal, setShowCardOtpModal] = useState(false);
@@ -134,79 +112,59 @@ export function Card({ navigation }: any) {
     isError: boolean;
   }>(DEFAULT_CARD_ENROLLMENT_STATUS);
 
-  const isCardHaveVirtual = cardData?.some((card) => card.type === "V");
-  const dispatch = useDispatch();
-
+  // TODO: Optimization task - remove dot then and use redux state instead
   const fetchCardData = async () => {
     try {
-      if (userData) {
+      if (userID) {
         setIsloading(true);
         await dispatch<any>(
           getCardTransactions({
-            account_id: userData?.id,
+            account_id: userID,
             from_date: "2022-06-02",
             to_date: getTodaysDate(),
-            // type: "PREAUTH",
             type: "ALL",
           })
         )
-          .unwrap()
-          .then((res: any) => {
-            //added this modificaton because Response has changed
-            // setCardTransactionsData(res.data);
-            if (res && arrayChecker(res)) {
-              setCardTransactionsData(res);
-              setFetchingCardTransactions(false);
-            } else {
-              setFetchingCardTransactions(false);
-            }
-          });
-        //This should be disabled: This is incorrect we do not get transaction data only card transactions
-        // await dispatch<any>(getTransactionsWithFilters({
-        //   account_id: userData?.id,
-        //   sort: 'id',
-        //   direction: 'desc',
-        //   status: 'PROCESSING'
-        //   status: 'SUCCESS'
-        // }));
+        .unwrap()
+        .then((res: any) => {
+          //added this modificaton because Response has changed
+          // setCardTransactionsData(res.data);
+          if (res && arrayChecker(res)) {
+            setCardTransactionsData(res);
+            setFetchingCardTransactions(false);
+          } else {
+            setFetchingCardTransactions(false);
+          }
+        });
       }
       const getCardReq = await dispatch<any>(getCards()).unwrap();
       if ((getCardReq && Object.keys(getCardReq).length > 0) || !getCardReq) {
         setFetchingCardInfo(false);
       }
-      // console.log("do we have any cards", cardData);
-      if (userData) await dispatch<any>(getAccountDetails(userData.id));
     } catch (error) {
       console.log({ error });
     } finally {
       setFetchingCardTransactions(false);
       setFetchingCardInfo(false);
       setIsloading(false);
-      setRefreshing(false);
       setIsloading(false);
     }
   };
 
-  const freezeCard = async () => {
-    setFreezeLoading(true);
-    await dispatch<any>(
-      setCardAsFrozen({
-        freezeYN: "Y",
-        account_id: userData?.id,
-      })
-    );
-    setFreezeLoading(false);
-  };
-
-  const unFreezeCard = async () => {
-    setFreezeLoading(true);
-    await dispatch<any>(
-      setCardAsFrozen({
-        freezeYN: "N",
-        account_id: userData?.id,
-      })
-    );
-    setFreezeLoading(false);
+  const freezeCard = async (isCardToFree: boolean) => {
+    try {
+      await dispatch<any>(
+        setCardAsFrozen({
+          freezeYN: isCardToFree ? "Y" : "N",
+          account_id: userData?.id,
+        })
+      );
+    } catch (error) {
+      console.log({ error });
+    } finally {
+      setIsloading(false);
+      setFreezeLoading(false);
+    }
   };
 
   const resetCard = () => {
@@ -215,39 +173,6 @@ export function Card({ navigation }: any) {
     setRemainingTime(30);
     clearInterval(storedIntervalId);
   };
-
-  /* const showPin = async () => {
-    let intervalId: any;
-    if (!!cardPin) {
-      clearInterval(intervalId); // Clear the interval if the pin is already visible
-      return setCardPin("");
-    }
-
-    setLoading(true);
-    const cardPinFetched = await dispatch(
-      showCardPinNumber({
-        account_id: userData?.id,
-        show: true,
-      }) as any
-    );
-    setLoading(false);
-    setCardPin(cardPinFetched?.payload?.data?.pin || "");
-    setCardDetails({});
-    setRemainingTime(30);
-    clearInterval(storedIntervalId);
-    let remainingTimer = 30;
-    intervalId = setInterval(() => {
-      setStoredIntervalId(intervalId);
-      if (remainingTimer <= 0) {
-        setCardPin("");
-        setRemainingTime(30);
-        clearInterval(intervalId);
-        return resetCard;
-      }
-      setRemainingTime(remainingTimer);
-      remainingTimer--;
-    }, 1000);
-  }; */
 
   const requestShowCard = async () => {
     const payload = await dispatch(
@@ -264,9 +189,9 @@ export function Card({ navigation }: any) {
       setIsloading(true);
       const orderCardPayload = {
         cardType: "V",
-        accountUuid: accountDetails?.info?.id,
+        accountUuid: accountUUID,
         currency: "EUR",
-        email: profile?.data?.email,
+        email: userEmail,
         otp: code,
       };
       console.log(
@@ -291,7 +216,7 @@ export function Card({ navigation }: any) {
       );
       if (payloadOrderCard?.status && payloadOrderCard?.status === "success") {
         const enrollCardPayload = await dispatch(
-          enrollforCardScheme({ account_id: accountData?.id }) as any
+          enrollforCardScheme({ account_id: userID }) as any
         )
           .unwrap()
           .catch((error: any) => {
@@ -337,12 +262,10 @@ export function Card({ navigation }: any) {
       }
     } else {
       let intervalId: any;
-      // console.log("*******accountData ***********", accountData?.id);
       setShowCardOtpLoading(true);
       const payload = await dispatch(
         showCardDetails({
-          // account_id: infoData?.info?.id,
-          account_id: accountData?.id,
+          account_id: userID,
           otp: code,
         }) as any
       ).unwrap();
@@ -351,20 +274,6 @@ export function Card({ navigation }: any) {
         setCardPin("");
         setRemainingTime(30);
         clearInterval(storedIntervalId);
-
-        //  let image='';
-        //  const ImageUri = Image.resolveAssetSource(ZazooVirtualCard).uri;
-        //  console.log("images is ",ZazooVirtualCard,' ImageUri ', ImageUri);
-
-        ////  convertImageToBase64(ImageUri);
-        //  const base64 = await FileSystem.readAsStringAsync(ImageUri, { encoding: 'base64' });
-        //  console.log("base64 images is ",base64 );
-
-        ////   convertImageToBase64(ImageUri,(result:any) => {
-        ////         image=result;
-        ////         console.log("base64 images is ",image);
-        ////  });
-
         setCardDetails({
           cardreferenceId: cardData[0]?.cardreferenceId,
           card: cardData[0],
@@ -387,71 +296,27 @@ export function Card({ navigation }: any) {
     }
   };
 
-  // const handleFetchTransactions = async (userId: number) => {
-  //   const isAscending = sortByDate ? "asc" : "desc";
-  //   const _searchOptions = {
-  //     ...defaultSearchOptions,
-  //     account_id: userId,
-  //     direction: isAscending,
-  //   };
-
-  //   try {
-  //     await dispatch<any>(getTransactionsWithFilters(_searchOptions));
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //     setIsloading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (userData && userData.id) {
-  //     // console.log("sorting logic");
-  //     handleFetchTransactions(userData.id);
-  //   }
-  // }, [sortByDate]);
-
-  /* 
-    for card enrollment 
-    -isFetchingCardTransactions and isFetchingCardInfo are two related api calls for card. 
-    -if these two(isFetchingCardTransactions, isFetchingCardTransactions) are not done yet dont execute card enrollment as we need to know
-    if the customer has card.
-  */
-
-  /*   const enrollCard = async () => {
-    console.log("enrol!!!");
-    const enrollCardPayload = await dispatch(
-      enrollforCardScheme({ account_id: accountData?.id }) as any
-    );
-    console.log(
-      "🚀 ~ file: Card.tsx:401 ~ enrollCard ~ enrollCardPayload:",
-      enrollCardPayload
-    );
-    try {
-        setIsloading(true);
-        console.log(
-          "🚀 ~ file: Card.tsx:400 ~ enrollCard ~ accountData?.id:",
-          accountData?.id
-        );
-        const ggg = fff.toString();
-        const enrollCardPayload = await dispatch(
-          enrollforCardScheme({ account_id: ggg }) as any
-        );
-        console.log(
-          "🚀 ~ file: Card.tsx:401 ~ enrollCard ~ enrollCardPayload:",
-          enrollCardPayload
-        );
-        if (enrollCardPayload) {
-          setIsloading(false);
-          if (enrollCardPayload?.code === "409") {
-            setEnrollmentStatus(true);
-          }
-        }
-      } catch (error) {
-        setIsloading(false);
-        console.log("error in card enrollment ", error);
-      }
-  }; */
+  const enrollCard = async () => {
+    const payloadOtp = await dispatch(
+      sendSmsShowCardVerification({
+        type: "trusted",
+      }) as any
+    )
+    .unwrap()
+    .catch((error: any) => {
+      console.log("something went wrong with otp: ", error);
+    });
+    if (payloadOtp?.status === "success") {
+      setShowCardOtpModal(true);
+      setEnrollingCard(true);
+    } else {
+      setEnrollmentCardStatus({
+        title: "Card Enrollment",
+        text: `${payloadOtp?.code}: ${payloadOtp?.message}`,
+        isError: true,
+      });
+    }
+  };
 
   useEffect(() => {
     /* only trigger card enrollment if ff conditions are met 
@@ -460,42 +325,16 @@ export function Card({ navigation }: any) {
     -!isFetchingCardInfo, after fetching card info if theres any
     -if cardData is empty, meaning no card information is found
     */
-
-    const enrollCard = async () => {
-      const payloadOtp = await dispatch(
-        sendSmsShowCardVerification({
-          type: "trusted",
-        }) as any
-      )
-        .unwrap()
-        .catch((error: any) => {
-          console.log("something went wrong with otp: ", error);
-        });
-      if (payloadOtp?.status === "success") {
-        setShowCardOtpModal(true);
-        setEnrollingCard(true);
-      } else {
-        setEnrollmentCardStatus({
-          title: "Card Enrollment",
-          text: `${payloadOtp?.code}: ${payloadOtp?.message}`,
-          isError: true,
-        });
-      }
-    };
-
-    if (!isFetchingCardTransactions) {
-      console.log("loading 1");
-      if (!isFetchingCardInfo) {
-        console.log("loading 2");
-        if (!arrayChecker(cardData) && accountData?.id) {
-          console.log("enrolling card");
-          enrollCard();
-        }
+    console.log(cardData, userID, isFetchingCardInfo, isFetchingCardTransactions);
+    if (!isFetchingCardTransactions && !isFetchingCardInfo) {
+      if (!arrayChecker(cardData) && userID) {
+        console.log("enrolling card");
+        enrollCard();
       }
     }
   }, [
-    arrayChecker(cardData),
-    accountData?.id,
+    isCardHaveVirtual,
+    userID,
     isFetchingCardTransactions,
     isFetchingCardInfo,
   ]);
@@ -506,13 +345,17 @@ export function Card({ navigation }: any) {
     }
   }, [userData?.id]);
 
+  // TODO: target each card when doing action on each card, right now it only targets the first card
   const _renderItem = ({ item, index }: any) => {
     return (
       <CardView
         resetHandler={() => setCardDetails({})}
         cardDetails={cardDetails}
         freezeLoading={freezeLoading}
-        unFreezeCard={unFreezeCard}
+        unFreezeCard={() => {
+          setIsloading(true);
+          freezeCard(false);
+        }}
         key={index}
         card={item}
         pin={cardPin}
@@ -522,8 +365,9 @@ export function Card({ navigation }: any) {
   };
 
   const handleLostCard = async () => {
-    if (userData?.id)
+    if (userData?.id) {
       await dispatch<any>(terminateCard({ account_id: userData?.id }) as any);
+    }
     fetchCardData();
   };
 
@@ -532,25 +376,16 @@ export function Card({ navigation }: any) {
   };
 
   const sortCardTransactionsByDate = (sortState: boolean) => {
-    if (sortState) {
-      const sortedTransactions = [...cardTransactionsData].sort(
-        (a: any, b: any) => {
-          const dateA = new Date(a.receiptDate);
-          const dateB = new Date(b.receiptDate);
-          return dateA.getTime() - dateB.getTime();
-        }
-      );
-      setCardTransactionsData(sortedTransactions);
-    } else {
-      const sortedTransactions = [...cardTransactionsData].sort(
-        (a: any, b: any) => {
-          const dateA = new Date(a.receiptDate);
-          const dateB = new Date(b.receiptDate);
-          return dateB.getTime() - dateA.getTime();
-        }
-      );
-      setCardTransactionsData(sortedTransactions);
-    }
+    const sortedTransactions = [...cardTransactionsData].sort(
+      (a: CardTransaction, b: CardTransaction) => {
+        const dateA = new Date(a.receiptDate);
+        const dateB = new Date(b.receiptDate);
+        return sortState
+          ? dateA.getTime() - dateB.getTime()
+          : dateB.getTime() - dateA.getTime();
+      }
+    );
+    setCardTransactionsData(sortedTransactions);
     setIsloading(false);
   };
 
@@ -560,7 +395,7 @@ export function Card({ navigation }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      <Spinner visible={loadingState} />
+      <Spinner visible={isCardLoading} />
       {showGetCardModal && (
         <GetCardModal
           onClose={() => setShowGetCardModal(false)}
@@ -584,7 +419,7 @@ export function Card({ navigation }: any) {
           bounces={true}
           style={{ flex: 1 }}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={fetchCardData} />
+            <RefreshControl refreshing={isLoading} onRefresh={fetchCardData} />
           }
         >
           <Pressable>
@@ -636,8 +471,8 @@ export function Card({ navigation }: any) {
                   </Typography>
                   <Box sx={{ marginLeft: "auto", marginBottom: 16 }}>
                     <Typography fontFamily="Mukta-Regular">
-                      {getCurrency(infoData?.currency)}
-                      {infoData?.curbal || "0.00"}
+                      {getCurrency(accountDetails?.currency)}
+                      {accountDetails?.curbal || "0.00"}
                     </Typography>
                   </Box>
                 </View>
@@ -653,10 +488,10 @@ export function Card({ navigation }: any) {
                   </Typography>
                   <Box sx={{ marginLeft: "auto", marginBottom: 16 }}>
                     <Typography fontFamily="Mukta-Regular">
-                      {getCurrency(infoData?.currency)}
+                      {getCurrency(accountDetails?.currency)}
                       {getPendingAmount(
-                        infoData?.avlbal || "0.00",
-                        infoData?.curbal || "0.00"
+                        accountDetails?.avlbal || "0.00",
+                        accountDetails?.curbal || "0.00"
                       ) || "0.00"}
                     </Typography>
                   </Box>
@@ -675,7 +510,11 @@ export function Card({ navigation }: any) {
                           size={14}
                         />
                       }
-                      onPress={freezeCard}
+                      onPress={() => {
+                        setFreezeLoading(true);
+                        setIsloading(true);
+                        freezeCard(frozen === "N");
+                      }}
                       disabled={freezeLoading}
                     >
                       Freeze card
@@ -854,86 +693,6 @@ export function Card({ navigation }: any) {
                   }}
                 />
               )}
-              {/* end: Added by Aristos */}
-
-              {/* start:02-08-2013 disabled by Aristos */}
-              {/* <View style={styles.listHead}>
-                <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
-                  Name
-                </Typography>
-                <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    width: 60,
-                  }}
-                >
-                  <Typography
-                    fontFamily="Nunito-SemiBold"
-                    color="accent-blue"
-                    fontSize={16}
-                  >
-                    Date
-                  </Typography>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setIsloading(!isLoading);
-                      setSortByDate(!sortByDate);
-                    }}
-                  >
-                    {sortByDate ? (
-                      <ArrowDown color="blue" style={{ marginTop: 5 }} />
-                    ) : (
-                      <AntDesign
-                        name="up"
-                        size={16}
-                        color="blue"
-                        style={{ marginTop: 5 }}
-                      />
-                    )}
-                  </TouchableOpacity>
-                </View>
-                <Typography fontFamily="Nunito-SemiBold" fontSize={16}>Amount</Typography>
-              </View>
-              <View style={{ height: "70%" }}> */}
-
-              {/* { cardTransactionsData.length > 0 ? cardTransactionsData?.map((transaction, index) => (
-                    <>
-                      <View key={index} style={styles.listItem}>
-                        <View style={styles.listItemInnerText}>
-                          <Typography fontFamily="Nunito-Regular" fontSize={14}>
-                            {transaction?.dsName}
-                          </Typography>
-                        </View>
-                        <View style={styles.listItemInnerText}>
-                          <Typography fontFamily="Nunito-Regular" fontSize={14}>
-                            {moment(transaction?.receiptDate).format("DD MMM YYYY")}
-                          </Typography>
-                        </View>
-                        <View style={styles.listItemInnerText}>
-                          <View style={{display: 'flex', flexDirection: 'row'}}>
-                            <Typography fontFamily="Nunito-Regular" fontSize={14} color={ transaction?.transactionAmount >= 0 ? `#4bd8b7` : `#fd7a7a`}>
-                              {getCurrency(infoData?.currency)}
-                            </Typography>
-                            <Typography fontFamily="Nunito-Regular" fontSize={14}>
-                              {" "}
-                              {transaction?.transactionAmount}
-                            </Typography>
-                          </View>
-                        </View>
-                      </View>
-                    </>
-                  )) : (
-                    <View style={{backgroundColor: "#fff", padding: 24}}>
-                      <Typography fontFamily="Nunito-Regular" fontSize={16} style={{textAlign: 'center', marginTop: 20, backgroundColor: '#fff'}}>
-                        You don't have any transactions yet, why not add some money to your account to get started!
-                      </Typography>
-                    </View>
-                    )
-                  } 
-              </View> */}
-              {/* end:02-08-2013 disabled by Aristos */}
             </View>
           </View>
           <Spinner visible={loading || isLoading} />

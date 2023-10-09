@@ -33,6 +33,7 @@ import Pagination from "../../components/Pagination/Pagination";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 import Box from "../../components/Box";
 import { containsOnlyNumbers, groupedByDateTransactions, transactionStatusOptions } from "../../utils/helpers";
+import { searchOptions } from "../../utils/constants";
 
 interface DateRangeType {
   dateTo: {
@@ -44,14 +45,6 @@ interface DateRangeType {
     value: string;
   }
 }
-
-const searchOptions = [
-  // { label: "BIC", value: 'bic' },
-  // { label: "ReferenceNo", value: 'reference_no' },
-  // { label: "IBAN", value: 'iban' },
-  { label: "Maximum amount", value: "max_amount" },
-  { label: "Status", value: "status" },
-];
 
 const currentDate = new Date();
 const initialSearchFieldData: SearchFilter = {

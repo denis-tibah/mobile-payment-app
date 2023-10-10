@@ -71,20 +71,21 @@ const FinancialDetails: FC<IFinancialDetails> = ({
     }) => {
       dispatch(
         setRegistrationData({
-          annual_salary: parseInt(annualSalary, 10),
+          /* annual_salary: parseInt(annualSalary, 10), */
+          annual_salary: annualSalary,
           source_of_wealth: sourceOfWealth,
           employment_status: employmentStatus,
           occupation,
           employer_name: employerName,
           position_held: positionHeld,
-          length_with_employer: parseInt(lengthWithEmployer, 10),
+          length_with_employer: lengthWithEmployer,
           nature_of_business: natureOfBusiness,
         })
       );
       handleNextStep();
     },
   });
-  console.log("🚀 ~ file: FinancialDetails.tsx:45 ~ values:", values);
+
   return (
     <View style={styles.card}>
       <View style={styles.cardTitle}>
@@ -272,7 +273,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
               }
             >
               <FormGroup.Input
-                keyboardType="default"
+                keyboardType="numeric"
                 returnKeyType={"done"}
                 onChangeText={handleChange("lengthWithEmployer")}
                 onBlur={handleBlur("lengthWithEmployer")}

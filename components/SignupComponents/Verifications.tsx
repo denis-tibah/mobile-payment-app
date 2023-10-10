@@ -304,7 +304,7 @@ const Verifications: FC<IVerifications> = ({
                     <Text>
                       {registration?.data?.identifier &&
                       typeof registration?.data?.identifier === "string"
-                        ? registration?.data?.identifier
+                        ? registration?.data?.identifier.toString()
                         : ""}
                     </Text>
                   </View>

@@ -57,7 +57,6 @@ api.interceptors.response.use(
     return response;
   },
   async (error) => {
-    console.log("🚀 ~ file: api.ts:62 ~ error:", error);
     const originalRequest = error.config;
     if (error?.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -70,6 +69,9 @@ api.interceptors.response.use(
       // Reload the app to force the user to log in again
       // window.location.reload();
       return;
+    }
+    if (error?.response?.status === 400 || error?.response?.status === 500) {
+      return error?.response;
     }
     return Promise.reject(error);
   }

@@ -16,6 +16,7 @@ import ArrowRightLong from "../../assets/icons/ArrowRightLong";
 import FormGroup from "../../components/FormGroup";
 import FixedBottomAction from "../../components/FixedBottomAction";
 import Button from "../../components/Button";
+import { SuccessModal } from "../SuccessModal/SuccessModal";
 import {
   setLoginCredentials,
   setRegistrationData,
@@ -38,12 +39,12 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
   const [expoPushToken, setExpoPushToken] = useState<string>();
   const [openListForCountryCode, setOpenListForCountryCode] =
     useState<boolean>(false);
-
-  // console.log('has it been verified ', handleNextStep);
-
-  const [registerError, setRegisterError] = useState({
-    email: "",
-  });
+  const [statusMessage, setStatusMessage] = useState<{
+    header: string;
+    body: string;
+    isOpen: boolean;
+    isError: boolean;
+  }>({ header: "", body: "", isOpen: false, isError: false });
   const [emailToken, setEmailToken] = useState<string>("");
 
   const dispatch = useDispatch<AppDispatch>();
@@ -122,29 +123,47 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
         )
           .unwrap()
           .then((payload: any) => {
+            console.log(
+              "🚀 ~ file: LoginDetails.tsx:125 ~ .then ~ payload:",
+              payload
+            );
             //We need to ask Santiago to chanage response message to generic one or an id value
-            if (
-              payload === "activation email sent" ||
-              payload === "new activation email sent"
-            ) {
+            if (payload?.data?.code === 200) {
               setIsValidEmail(true);
+            } else if (
+              payload?.data?.code === 400 ||
+              payload?.data?.code === 500
+            ) {
+              setStatusMessage({
+                header: "Error",
+                body: payload?.data?.message,
+                isOpen: true,
+                isError: true,
+              });
+            } else {
+              setStatusMessage({
+                header: "Error",
+                body: "Something went wrong",
+                isOpen: true,
+                isError: true,
+              });
             }
             dispatch(
               setRegistrationData({
                 email: alternateEmail ? alternateEmail : email,
                 phone_number: `${countryCode}${phoneNumber}`,
                 identifier: `${countryCode}${phoneNumber}`,
-                /* countryCode, */
               })
             );
             setIsLoading(false);
           })
           .catch((error: any) => {
             if (error) {
-              console.log("🚀 ~ file: LoginDetails.tsx:108 ~ error:", error);
-              setRegisterError({
-                ...registerError,
-                email: "Email already exists",
+              setStatusMessage({
+                header: "Error",
+                body: "Something went wrong",
+                isOpen: true,
+                isError: true,
               });
             }
             setIsLoading(false);
@@ -156,9 +175,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
           setRegistrationData({
             email: alternateEmail ? alternateEmail : email,
             phone_number: `${countryCode}${phoneNumber}`,
-            /*  phoneNumber, */
             identifier: `${countryCode}${phoneNumber}`,
-            /* countryCode, */
           })
         );
         return;
@@ -169,16 +186,31 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
           email: alternateEmail ? alternateEmail : email,
           phone_number: `${countryCode}${phoneNumber}`,
           identifier: `${countryCode}${phoneNumber}`,
-          /* countryCode, */
         })
       );
       // handleNextStep();
     },
   });
 
+  const onCloseModal = (): void => {
+    setStatusMessage({
+      header: "",
+      body: "",
+      isOpen: false,
+      isError: false,
+    });
+  };
+
   return (
     <View style={styles.card}>
       <Spinner visible={isLoading} />
+      <SuccessModal
+        isOpen={statusMessage?.isOpen}
+        title={statusMessage.header}
+        text={statusMessage.body}
+        isError={statusMessage.isError}
+        onClose={onCloseModal}
+      />
       <View style={styles.cardTitle}>
         <Typography fontSize={18} fontFamily="Nunito-SemiBold" fontWeight="600">
           Login Credentials

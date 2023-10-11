@@ -85,10 +85,9 @@ export const registrationSlice = createSlice({
 export const setLoginCredentials = createAsyncThunk(
   "loginCredentials",
   async (params) => {
-    const { data } = await api.post("/sendactivationemailfinxp", params, {
-      responseType: "text",
-    });
-    return data;
+    const res = await api.post("/sendactivationemailfinxp", params);
+    console.log("🚀 ~ file: registrationSlice.ts:89 ~ res:", res);
+    return res;
   }
 );
 

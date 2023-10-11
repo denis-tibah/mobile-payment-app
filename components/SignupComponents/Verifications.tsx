@@ -226,6 +226,7 @@ const Verifications: FC<IVerifications> = ({
         }
       })
       .catch((error: any) => {
+        console.log(`*** send data to backend error: ***`, error);
         setStatusMessage({
           header: "Error",
           body: "Something went wrong",
@@ -233,7 +234,6 @@ const Verifications: FC<IVerifications> = ({
           isError: true,
         });
         setIsLoading(false);
-        console.log(`*** send data to backend error: ***`, error);
       });
   };
 

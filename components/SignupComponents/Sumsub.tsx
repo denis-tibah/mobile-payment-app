@@ -31,6 +31,7 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
   console.log("🚀 ~ file: Sumsub.tsx:26 ~ isExpiredToken:", isExpiredToken);
   const [isRegistrationCompleted, setRegistrationCompleted] =
     useState<boolean>(false);
+  const [isRegistrationError, setRegistrationError] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<{
     header: string;
     body: string;
@@ -43,6 +44,10 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === "granted");
     })();
+    return () => {
+      setRegistrationCompleted(false);
+      setRegistrationError(false);
+    };
   }, []);
 
   useEffect(() => {
@@ -76,8 +81,7 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
       <ScrollView>
         <View
           style={{
-            height: 1200,
-            overflow: "scroll",
+            height: 380,
             flex: 1,
           }}
         >
@@ -103,6 +107,7 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
               showsHorizontalScrollIndicator={true}
               showsVerticalScrollIndicator={true}
               allowsFullscreenVideo
+              nestedScrollEnabled
               onMessage={(event) => {
                 console.log(
                   "🚀 ~ file: Sumsub.tsx:72 ~ event:",
@@ -119,7 +124,7 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
                     } else if (objData?.data === "registrationCompleted") {
                       setRegistrationCompleted(true);
                     } else if (objData?.data === "registrationError") {
-                      console.log("registrationError");
+                      setRegistrationError(true);
                     }
                   }
                 }
@@ -135,12 +140,12 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
                       <style>
                         #container{
                           position: relative;
-                          overflo:scroll;
+                          overflow-y:scroll;
                           width: 100%;
-                          padding-top: 500%;
+                          height:500px;
                         }
                         #sumsub-websdk-container{
-                          position: absolute;
+                          position:absolute;
                           top: 0;
                           left: 0;
                           bottom: 0;
@@ -149,7 +154,7 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
                         }
                       </style>
                   </head>
-                  <body>
+                  <body id="sumsub-body">
                     <script src="https://static.sumsub.com/idensic/static/sns-websdk-builder.js"></script>
                     <div id="container">
                       <div id='sumsub-websdk-container'></div>
@@ -210,7 +215,7 @@ const Sumsub: FC<ISumsub> = ({ handlePrevStep }) => {
           )}
         </View>
       </ScrollView>
-      {!isRegistrationCompleted ? (
+      {!isRegistrationCompleted || isRegistrationError ? (
         <View>
           <FixedBottomAction rounded>
             <View

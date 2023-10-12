@@ -95,7 +95,9 @@ export const setLoginCredentials = createAsyncThunk(
 export const sendSMSVerification = createAsyncThunk(
   "sendSMSVerification",
   async (params: any) => {
+    console.log("🚀 ~ file: registrationSlice.ts:98 ~ params:", params);
     const { data } = await api.post("/getregistrationotpfinxp", params);
+    console.log("🚀 ~ file: registrationSlice.ts:99 ~ data:", data);
     return data;
   }
 );

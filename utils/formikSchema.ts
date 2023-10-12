@@ -233,7 +233,7 @@ const loginCredentialsSchema = Yup.object({
       is: true,
       then: Yup.string().required("Must enter email address"),
     }),
-  countryCode: Yup.string().required("Country code  is required"),
+  countryCode: Yup.string().required("Country code is required"),
   phoneNumber: Yup.string().required("Phone number is required"),
 });
 

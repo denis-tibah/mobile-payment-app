@@ -102,10 +102,6 @@ const Verifications: FC<IVerifications> = ({
         setIsLoading(false);
         setSMSResent(true);
         if (payload?.payload?.status === "success") {
-          console.log(
-            "🚀 ~ file: Verifications.tsx:105 ~ .then ~ payload?.payload?:",
-            payload?.payload
-          );
           setResentMessage({
             message:
               payload?.payload?.message ||
@@ -186,10 +182,6 @@ const Verifications: FC<IVerifications> = ({
     dispatch<any>(getSumsubVerificationCode(regData))
       .unwrap()
       .then((payload: any) => {
-        console.log(
-          "🚀 ~ file: Verifications.tsx:189 ~ .then ~ payload:",
-          payload
-        );
         if (payload?.data) {
           if (
             (payload?.data?.code === 201 || payload?.data?.code === "201") &&

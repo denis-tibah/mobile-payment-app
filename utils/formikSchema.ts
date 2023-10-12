@@ -25,23 +25,45 @@ const addressDetailsSchema = Yup.object({
   town: Yup.string().required("Required"),
   state: Yup.string().required("Required"),
   postCode: Yup.string().required("Required"),
-  /* country: Yup.object()
-    .shape({
-      label: Yup.string(),
-      value: Yup.string(),
-    })
-    .test("At least one of these fields needs to be filled", function (value) {
-      if (!value.value || !value.label) {
-        return this.createError({ message: "Required" });
-      }
-      return true;
-    })
-    .required("Required"), */
   country: Yup.string().required("Required"),
   noOfMonths: Yup.string().required("Required"),
   noOfYears: Yup.string().required("Required"),
-  additionalStreet: Yup.string().test(
+  /*  additionalStreet: Yup.string().test(
     "check additionalStreet value if empty show error based on noOfYears < 3",
+    function () {
+      const { noOfYears, noOfMonths, additionalStreet } = this.parent;
+      let years = parseInt(noOfYears, 10);
+
+      const months = parseInt(noOfMonths, 10);
+      if (months === 12) years += 1;
+
+      if (years < 3) {
+        // Value is not a string or number
+        if (
+          typeof additionalStreet !== "string" &&
+          typeof additionalStreet !== "number"
+        ) {
+          return this.createError({
+            message: "Must be a combination of letter and number",
+          });
+        }
+        // Value is a string without a number
+        if (
+          typeof additionalStreet === "string" &&
+          !/\d/.test(additionalStreet)
+        ) {
+          return this.createError({
+            message: "Must be a combination of letter and number",
+          });
+        }
+        return true;
+      } else {
+        return true;
+      }
+    }
+  ), */
+  additionalStreet: Yup.string().test(
+    "check additionalSubStreet value if empty show error based on noOfYears < 3",
     function () {
       const { noOfYears, noOfMonths, additionalStreet } = this.parent;
       let years = parseInt(noOfYears, 10);
@@ -76,6 +98,40 @@ const addressDetailsSchema = Yup.object({
       }
     }
   ),
+  /*  additionalSubStreet: Yup.string().test(
+    "check additionalStreet value if empty show error based on noOfYears < 3",
+    function () {
+      const { noOfYears, noOfMonths, additionalSubStreet } = this.parent;
+      let years = parseInt(noOfYears, 10);
+      const months = parseInt(noOfMonths, 10);
+      if (months === 12) years += 1;
+
+      if (years < 3) {
+        // Value is not a string or number
+        if (
+          typeof additionalSubStreet !== "string" &&
+          typeof additionalSubStreet !== "number"
+        ) {
+          return this.createError({
+            message: "Must be a combination of letter and number",
+          });
+        }
+
+        // Value is a string without a number
+        if (
+          typeof additionalSubStreet === "string" &&
+          !/\d/.test(additionalSubStreet)
+        ) {
+          return this.createError({
+            message: "Must be a combination of letter and number",
+          });
+        }
+        return true;
+      } else {
+        return true;
+      }
+    }
+  ), */
   additionalPostcode: Yup.string().test(
     "check additionalPostcode value if empty show error based on noOfYears < 3",
     function () {
@@ -130,30 +186,6 @@ const addressDetailsSchema = Yup.object({
       }
     }
   ),
-  /*additionalCountry: Yup.object()
-    .shape({
-      label: Yup.string(),
-      value: Yup.string(),
-    })
-    .test(
-      "check additionalCountry value if empty show error based on noOfYears < 3",
-      function () {
-        const { noOfYears, noOfMonths, additionalCountry } = this.parent;
-        let years = parseInt(noOfYears, 10);
-        const months = parseInt(noOfMonths, 10);
-        if (months === 12) years += 1;
-
-        if (additionalCountry?.label && additionalCountry?.value) {
-          return true;
-        }
-        if (years < 3) {
-          return this.createError({ message: "Required" });
-        } else {
-          return true;
-        }
-      }
-    )
-    .notRequired(),*/
   additionalCountry: Yup.string()
     .test(
       "check additionalCountry value if empty show error based on noOfYears < 3",

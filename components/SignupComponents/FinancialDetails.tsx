@@ -42,7 +42,6 @@ const FinancialDetails: FC<IFinancialDetails> = ({
     handleChange,
     handleBlur,
     values,
-
     touched,
     errors,
     setValues,
@@ -69,6 +68,9 @@ const FinancialDetails: FC<IFinancialDetails> = ({
       lengthWithEmployer,
       natureOfBusiness,
     }) => {
+      const natureOfBusinessSanitizeData =
+        natureOfBusiness.trim() && natureOfBusiness.trim();
+
       dispatch(
         setRegistrationData({
           /* annual_salary: parseInt(annualSalary, 10), */
@@ -79,7 +81,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
           employer_name: employerName,
           position_held: positionHeld,
           length_with_employer: lengthWithEmployer,
-          nature_of_business: natureOfBusiness,
+          nature_of_business: natureOfBusinessSanitizeData,
         })
       );
       handleNextStep();

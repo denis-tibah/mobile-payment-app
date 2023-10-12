@@ -86,7 +86,6 @@ export const setLoginCredentials = createAsyncThunk(
   "loginCredentials",
   async (params) => {
     const res = await api.post("/sendactivationemailfinxp", params);
-    console.log("🚀 ~ file: registrationSlice.ts:89 ~ res:", res);
     return res;
   }
 );
@@ -94,9 +93,7 @@ export const setLoginCredentials = createAsyncThunk(
 export const sendSMSVerification = createAsyncThunk(
   "sendSMSVerification",
   async (params: any) => {
-    console.log("🚀 ~ file: registrationSlice.ts:98 ~ params:", params);
     const { data } = await api.post("/getregistrationotpfinxp", params);
-    console.log("🚀 ~ file: registrationSlice.ts:99 ~ data:", data);
     return data;
   }
 );
@@ -106,7 +103,6 @@ export const getSumsubVerificationCode = createAsyncThunk(
   async (params: any) => {
     console.log("🚀 ~ file: registrationSlice.ts:106 ~ params:", params);
     const res = await api.post("/registrationfinxpv3", params);
-    console.log("🚀 ~ file: registrationSlice.ts:108 ~ res:", res);
     return res;
   }
 );

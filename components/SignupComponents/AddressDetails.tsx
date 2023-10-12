@@ -188,7 +188,6 @@ const AddressDetails: FC<IAddressDetails> = ({
       handleNextStep();
     },
   });
-
   // to deal with individual input on touch event for the first time submit. cannot put on single useEffect since it causes other input to reset
   // #HACK needs improvement
   useEffect(() => {

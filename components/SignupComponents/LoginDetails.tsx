@@ -84,6 +84,15 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
     console.log("expotoken is ", expoPushToken);
   }, [expoPushToken]);
 
+  const onCloseModal = (): void => {
+    setStatusMessage({
+      header: "",
+      body: "",
+      isOpen: false,
+      isError: false,
+    });
+  };
+
   const {
     handleSubmit,
     handleChange,
@@ -140,6 +149,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
                 isOpen: true,
                 isError: true,
               });
+              setIsValidEmail(false);
             } else {
               setStatusMessage({
                 header: "Error",
@@ -147,6 +157,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
                 isOpen: true,
                 isError: true,
               });
+              setIsValidEmail(false);
             }
             dispatch(
               setRegistrationData({
@@ -165,6 +176,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
                 isOpen: true,
                 isError: true,
               });
+              setIsValidEmail(false);
             }
             setIsLoading(false);
           });
@@ -191,15 +203,6 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
       // handleNextStep();
     },
   });
-
-  const onCloseModal = (): void => {
-    setStatusMessage({
-      header: "",
-      body: "",
-      isOpen: false,
-      isError: false,
-    });
-  };
 
   return (
     <View style={styles.card}>

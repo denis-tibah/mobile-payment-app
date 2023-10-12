@@ -384,7 +384,7 @@ export function Transactions({ navigation }: any) {
         <View style={styles.container}>
           <Heading
             icon={<TransactionIcon size={18} color="pink" />}
-            title={"Last Transactions"}
+            title={"Latest Transactions"}
             rightAction={
               <Button
                 style={{ height: 34, width: 120 }}

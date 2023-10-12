@@ -325,7 +325,7 @@ export function Card({ navigation }: any) {
     -!isFetchingCardInfo, after fetching card info if theres any
     -if cardData is empty, meaning no card information is found
     */
-    console.log(cardData, userID, isFetchingCardInfo, isFetchingCardTransactions);
+    // console.log(cardData, userID, isFetchingCardInfo, isFetchingCardTransactions);
     if (!isFetchingCardTransactions && !isFetchingCardInfo) {
       if (!arrayChecker(cardData) && userID) {
         console.log("enrolling card");

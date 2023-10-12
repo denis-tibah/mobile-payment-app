@@ -6,17 +6,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // export const exportedBaseUrl = process.env.APIURL || "https://zazoostg.com/reg/ziyl";
 
 // staging backend v2
-const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
-export const exportedBaseUrl =
-  process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
+// const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
+// export const exportedBaseUrl =
+//   process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
 
 // live backend
-// console.log(process.env.APIURL);
-// console.log(process);
-
-/* const baseURL = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
+const baseURL = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
 export const exportedBaseUrl =
-  process.env.APIURL || "https://zazooapi.com/prod/ziyl"; */
+  process.env.APIURL || "https://zazooapi.com/prod/ziyl";
+
 
 export const api = axios.create({ baseURL });
 let _store: any;

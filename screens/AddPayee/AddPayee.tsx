@@ -15,12 +15,14 @@ import { addNewBeneficiary } from "../../redux/beneficiary/beneficiarySlice";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { screenNames } from "../../utils/helpers";
+import { validationAddingPayeeSchema } from "../../utils/validation";
 
 export function AddPayee() {
   const dispatch = useDispatch();
   const { navigate }:any = useNavigation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState<any>({});
+  const validationSchema = validationAddingPayeeSchema();
 
   return (
     <MainLayout>
@@ -37,16 +39,7 @@ export function AddPayee() {
             beneficiary_iban: "",
             beneficiary_bic: "",
           }}
-          validate={(values:any) => {
-            let errors:any = {};
-            if (!values.beneficiary_name) errors.beneficiary_name = "required";
-            if (!values.beneficiary_iban) errors.beneficiary_iban = "required";
-            if (!values.beneficiary_bic) errors.beneficiary_bic = "required";
-
-            if (values.beneficiary_bic.length <= 3)
-              errors.beneficiary_bic = "field must be minimum 3 characters";
-            return errors;
-          }}
+          validationSchema={validationSchema}
           onSubmit={(values:any) => {
             setIsSubmitting(true);
             dispatch<any>(
@@ -75,11 +68,11 @@ export function AddPayee() {
               });
           }}
         >
-          {({ handleSubmit, handleChange, handleBlur, values, errors }) => (
+          {({ handleSubmit, handleChange, handleBlur, values, errors, touched }) => (
             <View style={styles.content}>
               <View>
                 <FormGroup
-                  validationError={errors.beneficiary_name || apiError.name}
+                  validationError={touched.beneficiary_name && errors.beneficiary_name}
                 >
                   <FormGroup.Input
                     onChangeText={handleChange("beneficiary_name")}
@@ -105,7 +98,7 @@ export function AddPayee() {
               </View>
               <View>
                 <FormGroup
-                  validationError={errors.beneficiary_bic || apiError.bic}
+                  validationError={touched.beneficiary_bic && errors.beneficiary_bic}
                 >
                   <FormGroup.Input
                     onChangeText={handleChange("beneficiary_bic")}

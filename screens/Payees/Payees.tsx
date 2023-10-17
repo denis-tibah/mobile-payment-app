@@ -32,7 +32,13 @@ export function Payees({ navigation }: any) {
 
   const handleDeletePayee = async (itemId: any) => {
     try {
-      await dispatch<any>(deleteBeneficiary(itemId));
+      await dispatch<any>(deleteBeneficiary(itemId))
+      .unwrap()
+      .then((res: any) => {
+          Alert.alert("Deleting payee", res.message);
+          fetchPayees();
+        }
+      );
     } catch (error) {
       console.log({ error });
     }

@@ -91,3 +91,34 @@ export const validationAuthSchema = () => {
     password: Yup.string().required('This is a required field*'),
   })
 };
+
+export const validationAddingPayeeSchema = () => {
+  return Yup.object().shape({
+    beneficiary_name: Yup.string().required("This is a required field*")
+    .test('len', 'Must include First name and Last name', (val) => {
+      if (val) {
+        const name = val.split(' ');
+      return name.length > 1;
+      } else {
+        return false;
+      }
+    }),
+    beneficiary_bic: Yup.string().required('This is a required field*')
+    .test('len', 'Must be minimum of 3 characters', (val) => {
+        if (val) {
+          return val.length >= 3;
+        } else {
+          return false;
+        }
+      }
+    ),
+    beneficiary_iban: Yup.string().required("This is a required field *")
+    .test('len', 'Must be minimum of 3 characters', (val) => {
+      if (val) {
+        return val.length >= 3;
+      } else {
+        return false;
+      }
+    }),
+  })
+};

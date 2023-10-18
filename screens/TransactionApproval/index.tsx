@@ -15,9 +15,12 @@ export default function TransactionApprovalScreen({
 }: any) {
   const {
     transactionDetails = {
-      amount: 19.99,
+      amount: 0,
+      message:"",
       title: "",
       card: "",
+      ref:"",
+      transactionId:""
     },
     userId = "",
   } = data || {};
@@ -51,7 +54,8 @@ export default function TransactionApprovalScreen({
           </Button>
         </View>
       }
-      headerTitle={"Payment Confirmation?"}
+      headerTitle={"Payment Confirmation"}
+      
     >
       <View style={styles.container}>
         {transactionDetails && (

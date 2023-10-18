@@ -195,6 +195,7 @@ export default function AppNavigationWrapper() {
     if (transactionDetails.requestType === "PaymentReceived") {
       //save notification id so we can remove it from the taskbar
       setLastNotification(notification?.request?.identifier);
+      console.log('transactionDetails',transactionDetails);
       setShowReceivedPayment({
         show: true,
         data: { transactionDetails, userId: userData?.id },

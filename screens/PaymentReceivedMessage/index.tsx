@@ -20,8 +20,12 @@ export default function PaymentReceivedScreen({
   const {
     transactionDetails = {
       amount: 0,
+      message:"",
       title: "",
       card: "",
+      currency:"",
+      ref:"",
+      transactionId:""
     },
     userId = "",
   } = data || {};
@@ -97,13 +101,16 @@ export default function PaymentReceivedScreen({
           </Button> */}
         </View>
       }
-      headerTitle={"Payment Received"}
+      // "Title" here
+      headerTitle={transactionDetails.title}
     >
+      
       <View style={styles.container}>
         {transactionDetails && (
           <View style={styles.transactionDetails}>
             <Text>
-              You have just received a Payment of{" "}
+              {/* You have just received a Payment of{" "} */}
+              {transactionDetails.message}{transactionDetails.currency}
               {transactionDetails.amount}
         
             </Text>

@@ -32,7 +32,7 @@ export default function TransactionApprovalScreen({
 
   const handleTransactionResponse = async (id: any,ref: any,status: any) => {
     try {
-      const responsePayload = { id:id, reference:ref, approved:status };
+      const responsePayload = { id:id, reference:ref, approve:status };
 
       await api.post("/authorizationNotificationFinXP", responsePayload);
     } catch (error) {

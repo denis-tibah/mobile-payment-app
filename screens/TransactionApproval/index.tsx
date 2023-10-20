@@ -15,20 +15,24 @@ export default function TransactionApprovalScreen({
 }: any) {
   const {
     transactionDetails = {
-      amount: 0,
+      requestType:"",
+      amount:0,
+      title:"",
       message:"",
-      title: "",
-      card: "",
+      card:"",
+      transactionId:"",
       ref:"",
-      transactionId:""
+      currency:"",
+      transactonDate:""
+
     },
     userId = "",
   } = data || {};
   const { navigate }: any = useNavigation();
 
-  const handleTransactionResponse = async (id:any,ref:any,status: any) => {
+  const handleTransactionResponse = async (id: any,ref: any,status: any) => {
     try {
-      const responsePayload = { id:id, ref:ref, status:status };
+      const responsePayload = { id:id, reference:ref, approved:status };
 
       await api.post("/authorizationNotificationFinXP", responsePayload);
     } catch (error) {
@@ -48,22 +52,34 @@ export default function TransactionApprovalScreen({
         <View style={styles.buttonContainer}>
           <Button
             color="light-pink"
-            onPress={() => handleTransactionResponse(Number(transactionDetails.transactionId),transactionDetails.ref,false)}
+            onPress={() => 
+              // handleTransactionResponse(Number(transactionDetails.transactionId),transactionDetails.ref,false)}
+              handleTransactionResponse(transactionDetails.transactionId,transactionDetails.ref,false)}
           >
             Decline
           </Button>
         </View>
       }
-      headerTitle={"Payment Confirmation"}
+      // headerTitle={"Payment Confirmation"}
+      headerTitle={transactionDetails.title}
       
     >
       <View style={styles.container}>
         {transactionDetails && (
           <View style={styles.transactionDetails}>
             <Text>
-              A Card Payment of{" "}
-              {transactionDetails.amount} {""} {transactionDetails.currency} {""} with reference {transactionDetails.ref}
-              {""} was executed at {""} {transactionDetails.transactonDate}
+              {transactionDetails.message} of {""}
+              {transactionDetails.amount} {""} {transactionDetails.currency} {""} with id {transactionDetails.transactionId}
+               was executed at {""} {transactionDetails.transactonDate} 
+          
+                {/* {transactionDetails.message}
+              {transactionDetails.transactionId}
+              {transactionDetails.ref}
+              {transactionDetails.amount}
+              {transactionDetails.currency}
+              {transactionDetails.merchant_name}
+              {transactionDetails.merchant_url}
+              {transactionDetails.transactionDate} */}
 
             </Text>
           </View>
@@ -71,7 +87,8 @@ export default function TransactionApprovalScreen({
         <Button
           color={"green"}
           onPress={() => 
-                  handleTransactionResponse(Number(transactionDetails.transactionId),transactionDetails.ref,true)}
+                  // handleTransactionResponse(Number(transactionDetails.transactionId),transactionDetails.ref,true)}
+                  handleTransactionResponse(transactionDetails.transactionId,transactionDetails.ref,true)}
         >
           <Text style={styles.buttonText}>Approve</Text>
         </Button>

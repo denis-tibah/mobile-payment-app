@@ -84,7 +84,7 @@ export function Card({ navigation }: any) {
   const [remainingTime, setRemainingTime] = useState(30);
   const cardData = useSelector((state: RootState) => state?.card?.data);
   const isCardLoading = useSelector((state: RootState) => state?.card?.loading);
-  const isCardHaveVirtual = cardData?.some((card) => card.type === "V");
+  const isCardHaveVirtual = arrayChecker(cardData) ? cardData?.some((card) => card.type === "V") : false;
   const frozen = useSelector(
     (state: RootState) => state?.card?.data[0]?.frozenYN
   );

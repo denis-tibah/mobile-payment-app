@@ -121,6 +121,12 @@ export const styles = StyleSheet.create({
   smsResentContainer: {
     /* backgroundColor: "#0dca9d", */
   },
+  textmonthYearAdditionalText: {
+    position: "absolute",
+    top: 14,
+    left: 12,
+    color: "black",
+  },
   smsResentInnerContainer: {
     flexDirection: "column",
     margin: 20,

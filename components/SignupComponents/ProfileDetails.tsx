@@ -208,7 +208,14 @@ const ProfileDetails: FC<IProfileDetails> = ({
               <View style={styles.dobWrapper}>
                 <DobIcon size={18} color="medium-grey" />
                 <TouchableOpacity onPress={showDatePicker}>
-                  <Text style={styles.dobText}>
+                  <Text
+                    style={[
+                      styles.dobText,
+                      values?.dob
+                        ? styles.dobTextActive
+                        : styles.dobTextDefault,
+                    ]}
+                  >
                     {values?.dob ? values?.dob : "Date of birth"}
                   </Text>
                 </TouchableOpacity>

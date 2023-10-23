@@ -49,6 +49,7 @@ export const styles = StyleSheet.create({
     width: "100%",
     height: 42,
     backgroundColor: "#f9f9f9",
+
     borderRadius: 999,
     display: "flex",
     flexDirection: "row",
@@ -58,10 +59,15 @@ export const styles = StyleSheet.create({
     paddingRight: 12,
   },
   dobText: {
-    color: vars["medium-grey"],
     fontSize: 16,
     marginLeft: 10,
     fontWeight: "400",
+  },
+  dobTextActive: {
+    color: "black",
+  },
+  dobTextDefault: {
+    color: vars["medium-grey"],
   },
   textSeparator: {
     fontSize: 12,

@@ -63,7 +63,7 @@ export const styles = StyleSheet.create({
     marginLeft: 10,
     fontWeight: "400",
   },
-  dobTextActive: {
+  dobTextSelected: {
     color: "black",
   },
   dobTextDefault: {

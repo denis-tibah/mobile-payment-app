@@ -212,7 +212,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                     style={[
                       styles.dobText,
                       values?.dob
-                        ? styles.dobTextActive
+                        ? styles.dobTextSelected
                         : styles.dobTextDefault,
                     ]}
                   >

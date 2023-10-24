@@ -264,6 +264,7 @@ export function LoginScreen({ navigation }: any) {
                             onChangeText={handleChange("email")}
                             onBlur={handleBlur("email")}
                             value={values.email}
+                            placeholderTextColor={vars["ios-default-text"]}
                             placeholder="Email address"
                             icon={<EmailIcon />}
                           />
@@ -283,6 +284,7 @@ export function LoginScreen({ navigation }: any) {
                             onChangeText={handleChange("password")}
                             onBlur={handleBlur("password")}
                             value={values.password}
+                            placeholderTextColor={vars["ios-default-text"]}
                             placeholder="Password"
                           />
                         </FormGroup>

@@ -297,25 +297,20 @@ export function Card({ navigation }: any) {
   };
 
   const enrollCard = async () => {
-    const payloadOtp = await dispatch(
-      sendSmsShowCardVerification({
+    try {
+      await dispatch(sendSmsShowCardVerification({
         type: "trusted",
-      }) as any
-    )
-    .unwrap()
-    .catch((error: any) => {
-      console.log("something went wrong with otp: ", error);
-    });
-    if (payloadOtp?.status === "success") {
-      setShowCardOtpModal(true);
-      setEnrollingCard(true);
-      setIsloading(false);
-    } else {
+      }) as any);
+    } catch (error: any) {
+      console.log("Something went wrong with otp: ", error);
       setEnrollmentCardStatus({
         title: "Card Enrollment",
-        text: `${payloadOtp?.code}: ${payloadOtp?.message}`,
+        text: `${error?.code}: ${error?.message}`,
         isError: true,
       });
+    } finally {
+      setIsloading(false);
+      setEnrollingCard(true);
     }
   };
 

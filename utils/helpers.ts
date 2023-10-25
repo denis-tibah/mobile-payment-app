@@ -134,6 +134,12 @@ export const screenNames: any = {
   resetPassword: "Reset Password",
 };
 
+export const checkIfUserHaveActiveCards = (cards: any) => {
+  if (!cards) return false;
+  const activeCards = cards.filter((card: any) => card.lostYN === "N");
+  return activeCards.length > 0;
+}
+
 // export function getPendingAmount(opnbal:any,currentBalance: any) {
 export function getPendingAmount(avlbal: any, currentBalance: any) {
   const pendingAmount = Math.abs(currentBalance - avlbal);

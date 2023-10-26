@@ -404,7 +404,7 @@ const Verifications: FC<IVerifications> = ({
                     </Text>
                   )}
                   <Text style={styles.smsResentText}>
-                    {resetMessage?.message}fff
+                    {resetMessage?.message}
                   </Text>
                 </View>
               </View>

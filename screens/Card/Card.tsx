@@ -38,6 +38,7 @@ import {
 } from "../../redux/card/cardSlice";
 import { getTodaysDate } from "../../utils/dates";
 import {
+  checkIfUserHaveActiveCards,
   getCurrency,
   /* convertImageToBase64, */
   getPendingAmount,
@@ -75,16 +76,19 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
 export function Card({ navigation }: any) {
   const dispatch = useDispatch();
   const accountDetails = useSelector((state: RootState) => state.account?.details);
-  const accountUUID: string = accountDetails?.info?.id;
+  // const accountUUID: string = accountDetails?.info?.id;
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
   const profile = useSelector((state: any) => state.profile?.profile);
-  const userEmail = profile?.data?.email;
-  const [cardPin, setCardPin] = useState("");
+  // console.log("🚀 ~ file: Card.tsx:83 ~ Card ~ userData", userData)
+  // const userEmail = profile?.data?.email;
+  const userEmail = "ian.p@mynomademail.com";
+  const [cardPin, setCardPin] = useState<string>("");
   const [remainingTime, setRemainingTime] = useState(30);
   const cardData = useSelector((state: RootState) => state?.card?.data);
   const isCardLoading = useSelector((state: RootState) => state?.card?.loading);
   const isCardHaveVirtual = arrayChecker(cardData) ? cardData?.some((card) => card.type === "V") : false;
+  const cardsActiveList = checkIfUserHaveActiveCards(cardData);
   const frozen = useSelector(
     (state: RootState) => state?.card?.data[0]?.frozenYN
   );
@@ -189,7 +193,7 @@ export function Card({ navigation }: any) {
       setIsloading(true);
       const orderCardPayload = {
         cardType: "V",
-        accountUuid: accountUUID,
+        accountUuid: userID,
         currency: "EUR",
         email: userEmail,
         otp: code,
@@ -229,6 +233,7 @@ export function Card({ navigation }: any) {
           enrollCardPayload?.data?.status &&
           enrollCardPayload?.data?.status === "success"
         ) {
+
           setEnrollmentStatus(true);
           setEnrollmentCardStatus({
             title: "Card Enrollment",
@@ -238,6 +243,7 @@ export function Card({ navigation }: any) {
           setIsloading(false);
           setShowCardOtpModal(false);
         } else {
+          console.log("enrollCardPayload", enrollCardPayload);
           setIsloading(false);
           setEnrollingCard(false);
           setEnrollmentStatus(true);
@@ -301,6 +307,9 @@ export function Card({ navigation }: any) {
       await dispatch(sendSmsShowCardVerification({
         type: "trusted",
       }) as any);
+      setIsloading(false);
+      setEnrollingCard(true);
+      setShowCardOtpModal(true);
     } catch (error: any) {
       console.log("Something went wrong with otp: ", error);
       setEnrollmentCardStatus({
@@ -310,7 +319,6 @@ export function Card({ navigation }: any) {
       });
     } finally {
       setIsloading(false);
-      setEnrollingCard(true);
     }
   };
 
@@ -361,10 +369,27 @@ export function Card({ navigation }: any) {
   };
 
   const handleLostCard = async () => {
+    console.log("lost card");
+    console.log(cardData);
     if (userData?.id) {
-      await dispatch<any>(terminateCard({ account_id: userData?.id }) as any);
+      try {
+        await dispatch<any>(
+          terminateCard({
+            account_id: Number(userData?.id),
+            card_id: Number(cardsActiveList[0]?.cardrefrenceId),
+          })
+        );
+        console.log({
+          account_id: Number(userData?.id),
+          card_id: Number(cardsActiveList[0]?.cardrefrenceId),
+        })
+      } catch (error) {
+        console.log({ error });
+      } finally {
+        setIsloading(false);
+        fetchCardData();
+      }
     }
-    fetchCardData();
   };
 
   const handleCopyToClipboard = async () => {
@@ -453,7 +478,7 @@ export function Card({ navigation }: any) {
               <Pressable>
                 <View style={styles.cardImages}>
                   <Carousel
-                    data={cardData}
+                    data={cardsActiveList}
                     renderItem={_renderItem}
                     sliderWidth={500}
                     itemWidth={303}
@@ -705,7 +730,7 @@ export function Card({ navigation }: any) {
               )}
             </View>
           </View>
-          <Spinner visible={loading || isLoading} />
+          <Spinner visible={isLoading} />
         </ScrollView>
       </View>
     </MainLayout>

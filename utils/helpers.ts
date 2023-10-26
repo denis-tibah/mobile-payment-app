@@ -1,6 +1,7 @@
 import { dateFormatter } from "./dates";
 import { Transaction } from "../models/Transactions";
 import { TRANSACTIONS_STATUS } from "./constants";
+import { err } from "react-native-svg/lib/typescript/xml";
 
 export interface GroupedByDateTransactionObject {
   [date: string]: Transaction[];
@@ -134,13 +135,19 @@ export const screenNames: any = {
   resetPassword: "Reset Password",
 };
 
+const chechIfResponseIsError = (response: any) => {
+  const errorCodes = [500, 400, 401, 403, 404, 405, 406, 409, 422, 429, 500];
+  if (response && (errorCodes.includes(response.status) || errorCodes.includes(response.code))) {
+    return true;
+  }
+  return false;
+};
+
 export const checkIfUserHaveActiveCards = (cards: any) => {
-  if (!cards) return false;
-  const activeCards = cards.filter((card: any) => card.lostYN === "N");
-  return activeCards.length > 0;
+  if (!cards || chechIfResponseIsError(cards)) return [];
+  return cards.filter((card: any) => card.lostYN === "N");
 }
 
-// export function getPendingAmount(opnbal:any,currentBalance: any) {
 export function getPendingAmount(avlbal: any, currentBalance: any) {
   const pendingAmount = Math.abs(currentBalance - avlbal);
   //use toFixed(2) to format nuber to 2 decimal places
@@ -175,3 +182,4 @@ export const formatCurrencyToLocalEn = (currency: string) => {
 export const arrayChecker = (arr: any[]): Boolean => {
   return arr && Array.isArray(arr) && arr.length > 0 ? true : false;
 };
+

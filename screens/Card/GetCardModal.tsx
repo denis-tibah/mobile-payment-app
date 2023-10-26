@@ -83,11 +83,8 @@ export const GetCardModal = ({
           type: "trusted",
         }) as any
       ).unwrap();
-      console.log(payload);
       if (payload?.status === "success") {
         setShowCardModal(false);
-        // await delayCode(100);
-        // setShowCodeModal(true);
         onGetVirtualCard && onGetVirtualCard();
       }
     } catch (error) {

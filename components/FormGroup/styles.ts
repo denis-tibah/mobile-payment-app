@@ -64,6 +64,7 @@ export const input: any = StyleSheet.create({
     lineHeight: 18,
     height: "100%",
     color: "#000",
+    flex: 1,
   },
   label: {
     color: "rgba(0,0,0,0.5)",

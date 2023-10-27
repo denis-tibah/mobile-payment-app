@@ -59,7 +59,7 @@ import vars from "../../styles/vars";
 import ArrowDown from "../../assets/icons/ArrowDown";
 import { useDebounce } from "usehooks-ts";
 // import { TRANSACTIONS_STATUS } from "../../utils/constants";
-import LoadingScreen from "../../components/Loader/LoadingScreen";
+// import LoadingScreen from "../../components/Loader/LoadingScreen";
 // import ArrowRight from "../../assets/icons/ArrowRight";
 import { CardTransaction } from "../../models/Transactions";
 /* import moment from "moment"; */
@@ -86,7 +86,7 @@ export function Card({ navigation }: any) {
   const [cardPin, setCardPin] = useState<string>("");
   const [remainingTime, setRemainingTime] = useState(30);
   const cardData = useSelector((state: RootState) => state?.card?.data);
-  const isCardLoading = useSelector((state: RootState) => state?.card?.loading);
+  // const isCardLoading = useSelector((state: RootState) => state?.card?.loading);
   const isCardHaveVirtual = arrayChecker(cardData) ? cardData?.some((card) => card.type === "V") : false;
   const cardsActiveList = checkIfUserHaveActiveCards(cardData);
   const frozen = useSelector(
@@ -120,7 +120,6 @@ export function Card({ navigation }: any) {
   const fetchCardData = async () => {
     try {
       if (userID) {
-        setIsloading(true);
         await dispatch<any>(
           getCardTransactions({
             account_id: userID,
@@ -150,7 +149,6 @@ export function Card({ navigation }: any) {
     } finally {
       setFetchingCardTransactions(false);
       setFetchingCardInfo(false);
-      setIsloading(false);
       setIsloading(false);
     }
   };
@@ -331,6 +329,8 @@ export function Card({ navigation }: any) {
     */
     // console.log(cardData, userID, isFetchingCardInfo, isFetchingCardTransactions);
     if (!isFetchingCardTransactions && !isFetchingCardInfo) {
+      setIsloading(prev => prev = true);
+      console.log("isLoading", isLoading);
       if (!arrayChecker(cardData) && userID) {
         console.log("enrolling card");
         enrollCard();
@@ -416,7 +416,6 @@ export function Card({ navigation }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      <Spinner visible={isCardLoading} />
       {showGetCardModal && (
         <GetCardModal
           onClose={() => setShowGetCardModal(false)}

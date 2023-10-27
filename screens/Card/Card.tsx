@@ -126,6 +126,7 @@ export function Card({ navigation }: any) {
             from_date: "2022-06-02",
             to_date: getTodaysDate(),
             type: "ALL",
+            card_id: cardsActiveList[0]?.cardreferenceId,
           })
         )
         .unwrap()
@@ -241,7 +242,6 @@ export function Card({ navigation }: any) {
           setIsloading(false);
           setShowCardOtpModal(false);
         } else {
-          console.log("enrollCardPayload", enrollCardPayload);
           setIsloading(false);
           setEnrollingCard(false);
           setEnrollmentStatus(true);
@@ -305,7 +305,6 @@ export function Card({ navigation }: any) {
       await dispatch(sendSmsShowCardVerification({
         type: "trusted",
       }) as any);
-      setIsloading(false);
       setEnrollingCard(true);
       setShowCardOtpModal(true);
     } catch (error: any) {

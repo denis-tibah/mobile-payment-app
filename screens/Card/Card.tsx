@@ -38,6 +38,7 @@ import {
 } from "../../redux/card/cardSlice";
 import { getTodaysDate } from "../../utils/dates";
 import {
+  getUserActiveCards,
   getCurrency,
   /* convertImageToBase64, */
   getPendingAmount,
@@ -58,7 +59,7 @@ import vars from "../../styles/vars";
 import ArrowDown from "../../assets/icons/ArrowDown";
 import { useDebounce } from "usehooks-ts";
 // import { TRANSACTIONS_STATUS } from "../../utils/constants";
-import LoadingScreen from "../../components/Loader/LoadingScreen";
+// import LoadingScreen from "../../components/Loader/LoadingScreen";
 // import ArrowRight from "../../assets/icons/ArrowRight";
 import { CardTransaction } from "../../models/Transactions";
 /* import moment from "moment"; */
@@ -75,16 +76,15 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
 export function Card({ navigation }: any) {
   const dispatch = useDispatch();
   const accountDetails = useSelector((state: RootState) => state.account?.details);
-  const accountUUID: string = accountDetails?.info?.id;
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
   const profile = useSelector((state: any) => state.profile?.profile);
-  const userEmail = profile?.data?.email;
-  const [cardPin, setCardPin] = useState("");
+  const userEmail = "ian.p@mynomademail.com";
+  const [cardPin, setCardPin] = useState<string>("");
   const [remainingTime, setRemainingTime] = useState(30);
   const cardData = useSelector((state: RootState) => state?.card?.data);
-  const isCardLoading = useSelector((state: RootState) => state?.card?.loading);
   const isCardHaveVirtual = arrayChecker(cardData) ? cardData?.some((card) => card.type === "V") : false;
+  const cardsActiveList = getUserActiveCards(cardData);
   const frozen = useSelector(
     (state: RootState) => state?.card?.data[0]?.frozenYN
   );
@@ -116,13 +116,13 @@ export function Card({ navigation }: any) {
   const fetchCardData = async () => {
     try {
       if (userID) {
-        setIsloading(true);
         await dispatch<any>(
           getCardTransactions({
             account_id: userID,
             from_date: "2022-06-02",
             to_date: getTodaysDate(),
             type: "ALL",
+            card_id: cardsActiveList[0]?.cardreferenceId,
           })
         )
         .unwrap()
@@ -146,7 +146,6 @@ export function Card({ navigation }: any) {
     } finally {
       setFetchingCardTransactions(false);
       setFetchingCardInfo(false);
-      setIsloading(false);
       setIsloading(false);
     }
   };
@@ -189,7 +188,7 @@ export function Card({ navigation }: any) {
       setIsloading(true);
       const orderCardPayload = {
         cardType: "V",
-        accountUuid: accountUUID,
+        accountUuid: userID,
         currency: "EUR",
         email: userEmail,
         otp: code,
@@ -229,6 +228,7 @@ export function Card({ navigation }: any) {
           enrollCardPayload?.data?.status &&
           enrollCardPayload?.data?.status === "success"
         ) {
+
           setEnrollmentStatus(true);
           setEnrollmentCardStatus({
             title: "Card Enrollment",
@@ -297,24 +297,21 @@ export function Card({ navigation }: any) {
   };
 
   const enrollCard = async () => {
-    const payloadOtp = await dispatch(
-      sendSmsShowCardVerification({
+    try {
+      await dispatch(sendSmsShowCardVerification({
         type: "trusted",
-      }) as any
-    )
-    .unwrap()
-    .catch((error: any) => {
-      console.log("something went wrong with otp: ", error);
-    });
-    if (payloadOtp?.status === "success") {
-      setShowCardOtpModal(true);
+      }) as any);
       setEnrollingCard(true);
-    } else {
+      setShowCardOtpModal(true);
+    } catch (error: any) {
+      console.log("Something went wrong with otp: ", error);
       setEnrollmentCardStatus({
         title: "Card Enrollment",
-        text: `${payloadOtp?.code}: ${payloadOtp?.message}`,
+        text: `${error?.code}: ${error?.message}`,
         isError: true,
       });
+    } finally {
+      setIsloading(false);
     }
   };
 
@@ -327,6 +324,8 @@ export function Card({ navigation }: any) {
     */
     // console.log(cardData, userID, isFetchingCardInfo, isFetchingCardTransactions);
     if (!isFetchingCardTransactions && !isFetchingCardInfo) {
+      setIsloading(prev => prev = true);
+      console.log("isLoading", isLoading);
       if (!arrayChecker(cardData) && userID) {
         console.log("enrolling card");
         enrollCard();
@@ -365,10 +364,27 @@ export function Card({ navigation }: any) {
   };
 
   const handleLostCard = async () => {
+    console.log("lost card");
+    console.log(cardData);
     if (userData?.id) {
-      await dispatch<any>(terminateCard({ account_id: userData?.id }) as any);
+      try {
+        await dispatch<any>(
+          terminateCard({
+            account_id: Number(userData?.id),
+            card_id: Number(cardsActiveList[0]?.cardrefrenceId),
+          })
+        );
+        console.log({
+          account_id: Number(userData?.id),
+          card_id: Number(cardsActiveList[0]?.cardrefrenceId),
+        })
+      } catch (error) {
+        console.log({ error });
+      } finally {
+        setIsloading(false);
+        fetchCardData();
+      }
     }
-    fetchCardData();
   };
 
   const handleCopyToClipboard = async () => {
@@ -395,23 +411,31 @@ export function Card({ navigation }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      <Spinner visible={isCardLoading} />
       {showGetCardModal && (
         <GetCardModal
           onClose={() => setShowGetCardModal(false)}
           hasPhysicalCard={false}
           hasVirtualCard={false}
+          onGetVirtualCard={() => {
+            setShowGetCardModal(false);
+            setIsloading(true);
+            enrollCard();
+            }
+          }
         />
       )}
       {!!showCardOtpModal && (
         <CodeModal
           confirmButtonText={isEnrollingCard ? "Submit" : "Show Card"}
           title={isEnrollingCard ? "Card Enrollment" : "Show Card"}
-          subtitle="You will receive an sms to your mobile device. Please enter this code below."
+          subtitle="Since your account doesnt have any card. You will receive an sms to your mobile device. Please enter this code below."
           isOpen
           loading={showCardOtpLoading}
           onSubmit={handlePinCode}
-          onCancel={() => setShowCardOtpModal(false)}
+          onCancel={() => {
+            setShowCardOtpModal(false);
+            setIsloading(false);
+          }}
         />
       )}
       <View style={{ flex: 1 }}>
@@ -429,7 +453,10 @@ export function Card({ navigation }: any) {
                 title={"Card"}
                 rightAction={
                   <Button
-                    onPress={() => setShowGetCardModal(true)}
+                    onPress={() => {
+                      console.log("get card");
+                      setShowGetCardModal(true);
+                    }}
                     color={"light-pink"}
                     rightIcon={<AddIcon color="pink" size={14} />}
                     disabled={isCardHaveVirtual}
@@ -440,126 +467,128 @@ export function Card({ navigation }: any) {
               />
             </View>
           </Pressable>
-          <View style={styles.cardSection}>
-            <Pressable>
-              <View style={styles.cardImages}>
-                <Carousel
-                  data={cardData}
-                  renderItem={_renderItem}
-                  sliderWidth={500}
-                  itemWidth={303}
-                  layout="default"
-                />
-                {cardDetails?.cardNumber ? (
-                  <TouchableOpacity onPress={handleCopyToClipboard}>
-                    <View style={styles.clipboardContainer}>
-                      <CopyClipboard color="light-pink" size={18} />
-                    </View>
-                  </TouchableOpacity>
-                ) : null}
+          { !!isCardHaveVirtual && 
+            <View style={styles.cardSection}>
+              <Pressable>
+                <View style={styles.cardImages}>
+                  <Carousel
+                    data={cardsActiveList}
+                    renderItem={_renderItem}
+                    sliderWidth={500}
+                    itemWidth={303}
+                    layout="default"
+                  />
+                  {cardDetails?.cardNumber ? (
+                    <TouchableOpacity onPress={handleCopyToClipboard}>
+                      <View style={styles.clipboardContainer}>
+                        <CopyClipboard color="light-pink" size={18} />
+                      </View>
+                    </TouchableOpacity>
+                  ) : null}
+                </View>
+              </Pressable>
+              <View style={styles.incomeBox}>
+                <Pressable>
+                  <View style={styles.incomeBox__group}>
+                    <Typography
+                      fontFamily="Nunito-SemiBold"
+                      color="accent-blue"
+                      style={styles.imcome__groupTypography}
+                    >
+                      Total Balance:
+                    </Typography>
+                    <Box sx={{ marginLeft: "auto", marginBottom: 16 }}>
+                      <Typography fontFamily="Mukta-Regular">
+                        {getCurrency(accountDetails?.currency)}
+                        {accountDetails?.curbal || "0.00"}
+                      </Typography>
+                    </Box>
+                  </View>
+                </Pressable>
+                <Pressable>
+                  <View style={styles.incomeBox__group}>
+                    <Typography
+                      fontFamily="Nunito-SemiBold"
+                      color="accent-blue"
+                      style={styles.imcome__groupTypography}
+                    >
+                      Pending:
+                    </Typography>
+                    <Box sx={{ marginLeft: "auto", marginBottom: 16 }}>
+                      <Typography fontFamily="Mukta-Regular">
+                        {getCurrency(accountDetails?.currency)}
+                        {getPendingAmount(
+                          accountDetails?.avlbal || "0.00",
+                          accountDetails?.curbal || "0.00"
+                        ) || "0.00"}
+                      </Typography>
+                    </Box>
+                  </View>
+                </Pressable>
               </View>
-            </Pressable>
-            <View style={styles.incomeBox}>
-              <Pressable>
-                <View style={styles.incomeBox__group}>
-                  <Typography
-                    fontFamily="Nunito-SemiBold"
-                    color="accent-blue"
-                    style={styles.imcome__groupTypography}
-                  >
-                    Total Balance:
-                  </Typography>
-                  <Box sx={{ marginLeft: "auto", marginBottom: 16 }}>
-                    <Typography fontFamily="Mukta-Regular">
-                      {getCurrency(accountDetails?.currency)}
-                      {accountDetails?.curbal || "0.00"}
-                    </Typography>
-                  </Box>
-                </View>
-              </Pressable>
-              <Pressable>
-                <View style={styles.incomeBox__group}>
-                  <Typography
-                    fontFamily="Nunito-SemiBold"
-                    color="accent-blue"
-                    style={styles.imcome__groupTypography}
-                  >
-                    Pending:
-                  </Typography>
-                  <Box sx={{ marginLeft: "auto", marginBottom: 16 }}>
-                    <Typography fontFamily="Mukta-Regular">
-                      {getCurrency(accountDetails?.currency)}
-                      {getPendingAmount(
-                        accountDetails?.avlbal || "0.00",
-                        accountDetails?.curbal || "0.00"
-                      ) || "0.00"}
-                    </Typography>
-                  </Box>
-                </View>
-              </Pressable>
+              <View style={styles.cardActions}>
+                <ScrollView horizontal>
+                  <View style={styles.cardActionsButtonMargin}>
+                    <Pressable>
+                      <Button
+                        color={frozen === "Y" ? "blue" : "light-blue"}
+                        leftIcon={
+                          <FreezeIcon
+                            color={frozen === "Y" ? "white" : "blue"}
+                            size={14}
+                          />
+                        }
+                        onPress={() => {
+                          setFreezeLoading(true);
+                          setIsloading(true);
+                          freezeCard(frozen === "N");
+                        }}
+                        disabled={freezeLoading}
+                      >
+                        Freeze card
+                      </Button>
+                    </Pressable>
+                  </View>
+                  {/* <View style={styles.cardActionsButtonMargin}> -- https://paymentworld.atlassian.net/browse/ZAZ-532 --
+                    <Pressable>
+                      <Button
+                        color={cardPin ? "blue" : "light-blue"}
+                        leftIcon={
+                          <PinIcon color={cardPin ? "white" : "blue"} size={14} />
+                        }
+                        onPress={!cardPin ? showPin : resetCard}
+                        disabled={loading}
+                      >
+                        Show pin
+                      </Button>
+                    </Pressable>
+                  </View> */}
+                  <View style={styles.cardActionsButtonMargin}>
+                    <Pressable>
+                      <Button
+                        color="light-blue"
+                        onPress={requestShowCard}
+                        leftIcon={<EyeIcon color="blue" size={14} />}
+                      >
+                        Show card
+                      </Button>
+                    </Pressable>
+                  </View>
+                  <View style={styles.cardActionsButtonMargin}>
+                    <Pressable>
+                      <Button
+                        color="light-pink"
+                        rightIcon={<LostCardIcon color="pink" size={14} />}
+                        onPress={handleLostCard}
+                      >
+                        Lost card
+                      </Button>
+                    </Pressable>
+                  </View>
+                </ScrollView>
+              </View>
             </View>
-            <View style={styles.cardActions}>
-              <ScrollView horizontal>
-                <View style={styles.cardActionsButtonMargin}>
-                  <Pressable>
-                    <Button
-                      color={frozen === "Y" ? "blue" : "light-blue"}
-                      leftIcon={
-                        <FreezeIcon
-                          color={frozen === "Y" ? "white" : "blue"}
-                          size={14}
-                        />
-                      }
-                      onPress={() => {
-                        setFreezeLoading(true);
-                        setIsloading(true);
-                        freezeCard(frozen === "N");
-                      }}
-                      disabled={freezeLoading}
-                    >
-                      Freeze card
-                    </Button>
-                  </Pressable>
-                </View>
-                {/* <View style={styles.cardActionsButtonMargin}> -- https://paymentworld.atlassian.net/browse/ZAZ-532 --
-                  <Pressable>
-                    <Button
-                      color={cardPin ? "blue" : "light-blue"}
-                      leftIcon={
-                        <PinIcon color={cardPin ? "white" : "blue"} size={14} />
-                      }
-                      onPress={!cardPin ? showPin : resetCard}
-                      disabled={loading}
-                    >
-                      Show pin
-                    </Button>
-                  </Pressable>
-                </View> */}
-                <View style={styles.cardActionsButtonMargin}>
-                  <Pressable>
-                    <Button
-                      color="light-blue"
-                      onPress={requestShowCard}
-                      leftIcon={<EyeIcon color="blue" size={14} />}
-                    >
-                      Show card
-                    </Button>
-                  </Pressable>
-                </View>
-                <View style={styles.cardActionsButtonMargin}>
-                  <Pressable>
-                    <Button
-                      color="light-pink"
-                      rightIcon={<LostCardIcon color="pink" size={14} />}
-                      onPress={handleLostCard}
-                    >
-                      Lost card
-                    </Button>
-                  </Pressable>
-                </View>
-              </ScrollView>
-            </View>
-          </View>
+          }
           <View style={styles.cardTransactions}>
             <View>
               <Heading
@@ -695,7 +724,7 @@ export function Card({ navigation }: any) {
               )}
             </View>
           </View>
-          <Spinner visible={loading || isLoading} />
+          <Spinner visible={isLoading} />
         </ScrollView>
       </View>
     </MainLayout>

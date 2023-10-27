@@ -24,12 +24,14 @@ interface GerCardModalProps {
   onClose: () => void;
   hasPhysicalCard?: boolean;
   hasVirtualCard?: boolean;
+  onGetVirtualCard?: () => void;
 }
 
 export const GetCardModal = ({
   onClose,
   hasPhysicalCard,
   hasVirtualCard,
+  onGetVirtualCard
 }: GerCardModalProps) => {
   const dispatch = useDispatch();
   const [getCardSuccessResponse, setGetCardSuccessResponse] = useState(false);
@@ -81,11 +83,9 @@ export const GetCardModal = ({
           type: "trusted",
         }) as any
       ).unwrap();
-
       if (payload?.status === "success") {
         setShowCardModal(false);
-        await delayCode(100);
-        setShowCodeModal(true);
+        onGetVirtualCard && onGetVirtualCard();
       }
     } catch (error) {
       console.log({ error });
@@ -151,6 +151,97 @@ export const GetCardModal = ({
 
     return [];
   };
+
+  return (
+    <>
+      <View>
+        {!!showCardModal && (
+          <Modal
+            isOpen
+            footer={
+              <View style={styles.buttonContainer}>
+                {!getCardSuccessResponse && !getCardErrorResponse && (
+                  <Button
+                    leftIcon={
+                      <PinIcon style={styles.icon} color="pink" size={18} />
+                    }
+                    disabled={loading}
+                    loading={loading}
+                    color="light-pink"
+                    onPress={initiateOrderCard}
+                  >
+                    Order Card
+                  </Button>
+                )}
+                <Button color="grey" onPress={handleCloseGetCardModal}>
+                  Close
+                </Button>
+              </View>
+            }
+            renderHeader={() => (
+              <View style={styles.headerTitleBox}>
+                <Text style={styles.headerTitle}>Order Card</Text>
+              </View>
+            )}
+          >
+            <View style={styles.container}>
+              {!getCardSuccessResponse && !getCardErrorResponse && (
+                <View
+                  style={{
+                    zIndex: 1,
+                  }}
+                >
+                  <View style={styles.cardTypeCombo}>
+                    <RadioButton
+                      value="V"
+                      status={cardType === "V" ? "checked" : "unchecked"}
+                      onPress={() => setCardType("V")}
+                      color="#E7038E"
+                    />
+                    <Text style={styles.cardTypeText}>Virtual Card</Text>
+                  </View>
+                  <DropDownPicker
+                    placeholder="Currency"
+                    style={styles.dropdownCurrency}
+                    open={openCurrency}
+                    value={currency || null}
+                    items={[{ label: "EUR", value: "EUR" }]}
+                    setOpen={setOpenCurrency}
+                    setValue={setCurrency}
+                    listMode="SCROLLVIEW"
+                    dropDownContainerStyle={styles.dropdownContainer}
+                    zIndex={1}
+                  />
+                </View>
+              )}
+
+              {!getCardSuccessResponse &&
+                !getCardErrorResponse &&
+                cardType === "P" && (
+                  <View style={styles.physicalCardAddress}>
+                    <Address
+                      compact
+                      profileData={profile?.data}
+                      showChangeRequest={showChangeRequest}
+                    />
+                  </View>
+                )}
+
+              {!getCardSuccessResponse &&
+                getCardErrorResponse &&
+                getCardSuccessResponse && <Text>Your card has been ordered</Text>}
+              {!getCardSuccessResponse && getCardErrorResponse && (
+                <Text>Something went wrong please try again</Text>
+              )}
+            </View>
+          </Modal>
+        )}
+      </View>
+    </>
+  );
+
+  // This component is not used anymore, so I commented it out. 10/24/2023 - arjay
+  // This component may be used in the future, so I commented it out. 10/24/2023 - arjay
 
   return (
     <View>

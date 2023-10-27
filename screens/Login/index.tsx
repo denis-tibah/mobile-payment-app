@@ -297,7 +297,7 @@ export function LoginScreen({ navigation }: any) {
                             color="accent-blue"
                             fontFamily="Mukta-Regular"
                           >
-                            Forgotten Password
+                            Forgot Password?
                           </Typography>
                         </Pressable>
                       </View>

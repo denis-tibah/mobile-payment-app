@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4b04fb15-24d0-4619-b7a8-864f736a93a0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/Card/Card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/screens/Card/Card.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/Card/GetCardModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/screens/Card/GetCardModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/helpers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/utils/helpers.ts" afterDir="false" />
-    </list>
+    <list default="true" id="4b04fb15-24d0-4619-b7a8-864f736a93a0" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

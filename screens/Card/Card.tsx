@@ -76,17 +76,13 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
 export function Card({ navigation }: any) {
   const dispatch = useDispatch();
   const accountDetails = useSelector((state: RootState) => state.account?.details);
-  // const accountUUID: string = accountDetails?.info?.id;
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
   const profile = useSelector((state: any) => state.profile?.profile);
-  // console.log("🚀 ~ file: Card.tsx:83 ~ Card ~ userData", userData)
-  // const userEmail = profile?.data?.email;
   const userEmail = "ian.p@mynomademail.com";
   const [cardPin, setCardPin] = useState<string>("");
   const [remainingTime, setRemainingTime] = useState(30);
   const cardData = useSelector((state: RootState) => state?.card?.data);
-  // const isCardLoading = useSelector((state: RootState) => state?.card?.loading);
   const isCardHaveVirtual = arrayChecker(cardData) ? cardData?.some((card) => card.type === "V") : false;
   const cardsActiveList = getUserActiveCards(cardData);
   const frozen = useSelector(

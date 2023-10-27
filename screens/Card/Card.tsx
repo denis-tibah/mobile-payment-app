@@ -38,7 +38,7 @@ import {
 } from "../../redux/card/cardSlice";
 import { getTodaysDate } from "../../utils/dates";
 import {
-  checkIfUserHaveActiveCards,
+  getUserActiveCards,
   getCurrency,
   /* convertImageToBase64, */
   getPendingAmount,
@@ -88,7 +88,7 @@ export function Card({ navigation }: any) {
   const cardData = useSelector((state: RootState) => state?.card?.data);
   // const isCardLoading = useSelector((state: RootState) => state?.card?.loading);
   const isCardHaveVirtual = arrayChecker(cardData) ? cardData?.some((card) => card.type === "V") : false;
-  const cardsActiveList = checkIfUserHaveActiveCards(cardData);
+  const cardsActiveList = getUserActiveCards(cardData);
   const frozen = useSelector(
     (state: RootState) => state?.card?.data[0]?.frozenYN
   );

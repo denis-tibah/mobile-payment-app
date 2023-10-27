@@ -143,7 +143,7 @@ const chechIfResponseIsError = (response: any) => {
   return false;
 };
 
-export const checkIfUserHaveActiveCards = (cards: any) => {
+export const getUserActiveCards = (cards: any) => {
   if (!cards || chechIfResponseIsError(cards)) return [];
   return cards.filter((card: any) => card.lostYN === "N");
 }

@@ -62,8 +62,9 @@ export function MyAccount({ navigation }: any) {
         let search: SearchFilter = {
           account_id: userData?.id.toString(),
           sort: "id",
-          direction: "asc",
-          // status: "SUCCESS", // commented out since the webservice breaks if status is added in the filter - arjajy: august 22, 2023
+          // direction: "asc",
+          direction: "desc",
+          status: "SUCCESS", // commented out since the webservice breaks if status is added in the filter - arjajy: august 22, 2023
           limit: 20,
           page,
         };

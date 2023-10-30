@@ -66,7 +66,7 @@ export function MyAccount({ navigation }: any) {
           account_id: userData?.id.toString(),
           sort: "id",
           direction: "desc",
-          // status: "SUCCESS", // commented out since the webservice breaks if status is added in the filter - arjajy: august 22, 2023
+          status: "SUCCESS", // commented out since the webservice breaks if status is added in the filter - arjajy: august 22, 2023
           limit: 20,
           page,
         };

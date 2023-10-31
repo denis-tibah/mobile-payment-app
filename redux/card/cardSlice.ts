@@ -217,7 +217,7 @@ export const getCardTransactions = createAsyncThunk(
 
 export const terminateCard = createAsyncThunk(
   "terminateCard",
-  async (params: { account_id: number }) => {
+  async (params: { account_id: number, card_id: number }) => {
     try {
       const { data } = await api.post("/terminatecardfinxpV2", params);
       return data;

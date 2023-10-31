@@ -91,6 +91,7 @@ export const GetCardModal = ({
       console.log({ error });
     } finally {
       setLoading(false);
+      handleCloseGetCardModal();
     }
   };
 

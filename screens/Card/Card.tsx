@@ -5,6 +5,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
@@ -66,6 +67,8 @@ import { CardTransaction } from "../../models/Transactions";
 import TransactionItem from "../../components/TransactionItem";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { arrayChecker } from "../../utils/helpers";
+import TerminatingCardModal from "./TerminatingCardModal";
+import { Snackbar } from "react-native-paper";
 /* import { Circle } from "react-native-svg"; */
 const DEFAULT_CARD_ENROLLMENT_STATUS = {
   title: "",
@@ -79,7 +82,7 @@ export function Card({ navigation }: any) {
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
   const profile = useSelector((state: any) => state.profile?.profile);
-  const userEmail = "ian.p@mynomademail.com";
+  const userEmail = profile?.data.email;
   const [cardPin, setCardPin] = useState<string>("");
   const [remainingTime, setRemainingTime] = useState(30);
   const cardData = useSelector((state: RootState) => state?.card?.data);
@@ -88,6 +91,9 @@ export function Card({ navigation }: any) {
   const frozen = useSelector(
     (state: RootState) => state?.card?.data[0]?.frozenYN
   );
+
+  const [isTerminatedCardShown, setIsTerminatedCardShown] = useState<boolean>(false);
+  const [terminatedCardModal, setTerminatedCardModal] = useState<boolean>(false);
   const [cardDetails, setCardDetails] = useState<ICardDetails>({});
   const [freezeLoading, setFreezeLoading] = useState(false);
   const [showCardOtpModal, setShowCardOtpModal] = useState(false);
@@ -100,6 +106,7 @@ export function Card({ navigation }: any) {
   const [cardTransactionsData, setCardTransactionsData] = useState<
     CardTransaction[]
   >([]);
+  const [selectedCard, setSelectedCard] = useState<any>(null);
   const [isLoading, setIsloading] = useState<boolean>(false);
   const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
   const [isFetchingCardTransactions, setFetchingCardTransactions] =
@@ -111,18 +118,23 @@ export function Card({ navigation }: any) {
     text: string;
     isError: boolean;
   }>(DEFAULT_CARD_ENROLLMENT_STATUS);
+  const shownCardsOnCarousel = isTerminatedCardShown ? cardData : cardsActiveList;
 
   // TODO: Optimization task - remove dot then and use redux state instead
   const fetchCardData = async () => {
     try {
-      if (userID) {
+      const getCardReq = await dispatch<any>(getCards()).unwrap();
+      if ((getCardReq && Object.keys(getCardReq).length > 0) || !getCardReq) {
+        setFetchingCardInfo(false);
+      }
+      if (userID && selectedCard?.cardreferenceId) {
         await dispatch<any>(
           getCardTransactions({
             account_id: userID,
             from_date: "2022-06-02",
             to_date: getTodaysDate(),
             type: "ALL",
-            card_id: cardsActiveList[0]?.cardreferenceId,
+            card_id: selectedCard?.cardreferenceId,
           })
         )
         .unwrap()
@@ -136,10 +148,6 @@ export function Card({ navigation }: any) {
             setFetchingCardTransactions(false);
           }
         });
-      }
-      const getCardReq = await dispatch<any>(getCards()).unwrap();
-      if ((getCardReq && Object.keys(getCardReq).length > 0) || !getCardReq) {
-        setFetchingCardInfo(false);
       }
     } catch (error) {
       console.log({ error });
@@ -228,7 +236,6 @@ export function Card({ navigation }: any) {
           enrollCardPayload?.data?.status &&
           enrollCardPayload?.data?.status === "success"
         ) {
-
           setEnrollmentStatus(true);
           setEnrollmentCardStatus({
             title: "Card Enrollment",
@@ -324,8 +331,6 @@ export function Card({ navigation }: any) {
     */
     // console.log(cardData, userID, isFetchingCardInfo, isFetchingCardTransactions);
     if (!isFetchingCardTransactions && !isFetchingCardInfo) {
-      setIsloading(prev => prev = true);
-      console.log("isLoading", isLoading);
       if (!arrayChecker(cardData) && userID) {
         console.log("enrolling card");
         enrollCard();
@@ -340,6 +345,7 @@ export function Card({ navigation }: any) {
 
   useEffect(() => {
     if (!!userData?.id) {
+      setIsloading(true);
       fetchCardData();
     }
   }, [userData?.id]);
@@ -347,42 +353,47 @@ export function Card({ navigation }: any) {
   // TODO: target each card when doing action on each card, right now it only targets the first card
   const _renderItem = ({ item, index }: any) => {
     return (
-      <CardView
-        resetHandler={() => setCardDetails({})}
-        cardDetails={cardDetails}
-        freezeLoading={freezeLoading}
-        unFreezeCard={() => {
-          setIsloading(true);
-          freezeCard(false);
-        }}
-        key={index}
-        card={item}
-        pin={cardPin}
-        timer={remainingTime}
-      />
+      <Pressable>
+        <CardView
+          resetHandler={() => setCardDetails({})}
+          cardDetails={cardDetails}
+          freezeLoading={freezeLoading}
+          unFreezeCard={() => {
+            setIsloading(true);
+            freezeCard(false);
+          }}
+          key={index}
+          card={item}
+          pin={cardPin}
+          timer={remainingTime}
+        />
+      </Pressable>
     );
   };
 
   const handleLostCard = async () => {
-    console.log("lost card");
-    console.log(cardData);
-    if (userData?.id) {
+    console.log("terminating card");
+    console.log({
+      account_id: Number(userData?.id),
+      card_id: Number(selectedCard?.cardreferenceId),
+    })
+    if (userID && selectedCard?.cardreferenceId) {
       try {
         await dispatch<any>(
           terminateCard({
             account_id: Number(userData?.id),
-            card_id: Number(cardsActiveList[0]?.cardrefrenceId),
+            card_id: Number(selectedCard?.cardreferenceId),
           })
         );
-        console.log({
-          account_id: Number(userData?.id),
-          card_id: Number(cardsActiveList[0]?.cardrefrenceId),
-        })
+        console.log("card terminated");
       } catch (error) {
         console.log({ error });
+        Alert.alert("Error", "Something went wrong");
+        console.log("card terminated error");
       } finally {
         setIsloading(false);
         fetchCardData();
+        setTerminatedCardModal(false);
       }
     }
   };
@@ -404,6 +415,14 @@ export function Card({ navigation }: any) {
     setCardTransactionsData(sortedTransactions);
     setIsloading(false);
   };
+
+  useEffect(() => {
+    (() => {
+      if (!selectedCard) {
+        setSelectedCard(shownCardsOnCarousel[0]);
+      }
+    })();
+  }, [cardsActiveList]);
 
   useEffect(() => {
     sortCardTransactionsByDate(debounceSortByDate);
@@ -438,6 +457,19 @@ export function Card({ navigation }: any) {
           }}
         />
       )}
+      { terminatedCardModal && (
+        <TerminatingCardModal
+          isOpen={terminatedCardModal}
+          title={"Card Terminated"}
+          actionMethod={() => {
+            setIsloading(true);
+            handleLostCard();
+          }}
+          onClose={() => {
+            setTerminatedCardModal(false);
+          }}
+        />
+      )}
       <View style={{ flex: 1 }}>
         <ScrollView
           bounces={true}
@@ -469,14 +501,20 @@ export function Card({ navigation }: any) {
           </Pressable>
           { !!isCardHaveVirtual && 
             <View style={styles.cardSection}>
-              <Pressable>
                 <View style={styles.cardImages}>
                   <Carousel
-                    data={cardsActiveList}
+                    data={shownCardsOnCarousel}
                     renderItem={_renderItem}
+                    refreshing={isLoading}
                     sliderWidth={500}
                     itemWidth={303}
                     layout="default"
+                    loop={true}
+                    onSnapToItem={(index) => {
+                      setSelectedCard(shownCardsOnCarousel[index]);
+                      setIsloading(true);
+                      fetchCardData();
+                    }}
                   />
                   {cardDetails?.cardNumber ? (
                     <TouchableOpacity onPress={handleCopyToClipboard}>
@@ -486,7 +524,6 @@ export function Card({ navigation }: any) {
                     </TouchableOpacity>
                   ) : null}
                 </View>
-              </Pressable>
               <View style={styles.incomeBox}>
                 <Pressable>
                   <View style={styles.incomeBox__group}>
@@ -545,7 +582,7 @@ export function Card({ navigation }: any) {
                         }}
                         disabled={freezeLoading}
                       >
-                        Freeze card
+                        Freeze Card
                       </Button>
                     </Pressable>
                   </View>
@@ -570,7 +607,7 @@ export function Card({ navigation }: any) {
                         onPress={requestShowCard}
                         leftIcon={<EyeIcon color="blue" size={14} />}
                       >
-                        Show card
+                        Show Card
                       </Button>
                     </Pressable>
                   </View>
@@ -579,9 +616,25 @@ export function Card({ navigation }: any) {
                       <Button
                         color="light-pink"
                         rightIcon={<LostCardIcon color="pink" size={14} />}
-                        onPress={handleLostCard}
+                        onPress={() => {
+                          setTerminatedCardModal(!terminatedCardModal);
+                        }}
+                        disabled={selectedCard?.lostYN === "Y"}
                       >
-                        Lost card
+                        Lost Card
+                      </Button>
+                    </Pressable>
+                  </View>
+                  <View style={styles.cardActionsButtonMargin}>
+                    <Pressable>
+                      <Button
+                        color="light-pink"
+                        rightIcon={<LostCardIcon color="pink" size={14} />}
+                        onPress={() => {
+                          setIsTerminatedCardShown(!isTerminatedCardShown);
+                        }}
+                      >
+                        {!isTerminatedCardShown ? "Show All Cards" : "Hide Lost Cards"}
                       </Button>
                     </Pressable>
                   </View>

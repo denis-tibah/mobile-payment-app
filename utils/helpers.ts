@@ -136,7 +136,7 @@ export const screenNames: any = {
 };
 
 const chechIfResponseIsError = (response: any) => {
-  const errorCodes = [500, 400, 401, 403, 404, 405, 406, 409, 422, 429, 500];
+  const errorCodes = [500, 400, 401, 403, 404, 405, 406, 409, 422, 429, "500", "400", "401", "403", "404", "405", "406", "409", "422", "429"];
   if (response && (errorCodes.includes(response.status) || errorCodes.includes(response.code))) {
     return true;
   }
@@ -144,7 +144,7 @@ const chechIfResponseIsError = (response: any) => {
 };
 
 export const getUserActiveCards = (cards: any) => {
-  if (!cards || chechIfResponseIsError(cards)) return [];
+  if (!cards || chechIfResponseIsError(cards) || typeof cards === undefined) return [];
   return cards.filter((card: any) => card.lostYN === "N");
 }
 

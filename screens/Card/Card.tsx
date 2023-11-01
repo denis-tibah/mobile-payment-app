@@ -107,6 +107,7 @@ export function Card({ navigation }: any) {
     CardTransaction[]
   >([]);
   const [selectedCard, setSelectedCard] = useState<any>(null);
+  const debounceSnapCards = useDebounce<boolean>(selectedCard, 1000);
   const [isLoading, setIsloading] = useState<boolean>(false);
   const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
   const [isFetchingCardTransactions, setFetchingCardTransactions] =
@@ -353,7 +354,7 @@ export function Card({ navigation }: any) {
   // TODO: target each card when doing action on each card, right now it only targets the first card
   const _renderItem = ({ item, index }: any) => {
     return (
-      <Pressable>
+      <Pressable key={index}>
         <CardView
           resetHandler={() => setCardDetails({})}
           cardDetails={cardDetails}
@@ -509,10 +510,10 @@ export function Card({ navigation }: any) {
                     sliderWidth={500}
                     itemWidth={303}
                     layout="default"
-                    loop={true}
+                    // loop={true}
                     onSnapToItem={(index) => {
                       setSelectedCard(shownCardsOnCarousel[index]);
-                      setIsloading(true);
+                      // setIsloading(true);
                       fetchCardData();
                     }}
                   />

@@ -456,8 +456,10 @@ const AddressDetails: FC<IAddressDetails> = ({
                 </View>
                 {values?.noOfYears ? (
                   <Text style={styles.textmonthYearAdditionalText}>
-                    {values?.noOfYears}{" "}
-                    {values?.noOfYears > 1 ? "Years" : "Year"}
+                    {values?.noOfYears}
+                    {parseInt(values?.noOfYears, 10) <= 1 && " year"}
+                    {parseInt(values?.noOfYears, 10) === 2 && " years"}
+                    {parseInt(values?.noOfYears, 10) === 3 && "+ years"}
                   </Text>
                 ) : null}
               </View>
@@ -707,10 +709,13 @@ const AddressDetails: FC<IAddressDetails> = ({
                       </View>
                       {values?.additionalNoofyears ? (
                         <Text style={styles.textmonthYearAdditionalText}>
-                          {values?.additionalNoofyears}{" "}
-                          {parseInt(values?.additionalNoofyears, 10) > 1
-                            ? "Years"
-                            : "Year"}
+                          {values?.additionalNoofyears}
+                          {parseInt(values?.additionalNoofyears, 10) <= 1 &&
+                            " year"}
+                          {parseInt(values?.additionalNoofyears, 10) === 2 &&
+                            " years"}
+                          {parseInt(values?.additionalNoofyears, 10) === 3 &&
+                            "+ years"}
                         </Text>
                       ) : null}
                     </View>

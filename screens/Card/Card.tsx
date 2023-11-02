@@ -129,6 +129,7 @@ export function Card({ navigation }: any) {
         setFetchingCardInfo(false);
       }
       if (userID && selectedCard?.cardreferenceId) {
+        console.log('selectedCard?.cardreferenceId',selectedCard?.cardreferenceId)
         await dispatch<any>(
           getCardTransactions({
             account_id: userID,
@@ -146,6 +147,8 @@ export function Card({ navigation }: any) {
             setCardTransactionsData(res);
             setFetchingCardTransactions(false);
           } else {
+            //clear old data
+            setCardTransactionsData([]);
             setFetchingCardTransactions(false);
           }
         });

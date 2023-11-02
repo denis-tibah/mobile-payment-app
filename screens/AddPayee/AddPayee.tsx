@@ -12,10 +12,12 @@ import ProfileIcon from "../../assets/icons/Profile";
 import CodeIcon from "../../assets/icons/Code";
 import { useDispatch } from "react-redux";
 import { addNewBeneficiary } from "../../redux/beneficiary/beneficiarySlice";
-import { useState } from "react";
+import { ibanCheck } from "../../redux/payment/paymentSlice";
+import { useEffect,useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { screenNames } from "../../utils/helpers";
 import { validationAddingPayeeSchema } from "../../utils/validation";
+
 
 export function AddPayee() {
   const dispatch = useDispatch();
@@ -23,6 +25,54 @@ export function AddPayee() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState<any>({});
   const validationSchema = validationAddingPayeeSchema();
+  const [beneficiary_name, setBeneficiary_name] = useState("");
+  const [beneficiary_iban, setBeneficiary_iban] = useState("");
+  const [beneficiary_bic, setBeneficiary_bic] = useState("");
+
+
+
+  const [nameFocused, setNameFocused] = useState(false)
+  const [ibanFocused, setIbanFocused] = useState(false)
+  const [bicFocused, setBicFocused] = useState(false)
+  
+ 
+  useEffect(() => {
+    if (beneficiary_iban?.length) {
+      console.log('beneficiary_iban ',beneficiary_iban);
+      fetchBicDetails(beneficiary_iban);
+
+    }
+}, [beneficiary_iban?.length && ibanFocused==true]);
+
+useEffect(() => {
+
+    console.log('beneficiary_bic ',beneficiary_bic);
+
+}, [beneficiary_bic]);
+
+
+  const fetchBicDetails = async (iban?: string) => {
+    try {
+      let search: any = {
+        creditor_iban: `${iban}`,
+      }
+      console.log("iban search req", search);
+      const payload = await dispatch<any>(ibanCheck(search));
+      if (payload) {
+        if (payload.result === 200 || payload.result === "200") {
+          //add Bic to bic textfield box
+          setBeneficiary_bic(payload.data.bic);
+        } else {
+          console.log("failed", payload);
+        }
+      }
+    } catch (error) {
+      console.log({ error });
+    }
+    // finally {
+    // }
+  };
+
 
   return (
     <MainLayout>
@@ -30,7 +80,7 @@ export function AddPayee() {
         <View style={styles.container}>
           <Heading
             icon={<PayeeIcon color="pink" size={18} />}
-            title="Beneficiary"
+            title="Payee"
           />
         </View>
         <Formik
@@ -38,16 +88,23 @@ export function AddPayee() {
             beneficiary_name: "",
             beneficiary_iban: "",
             beneficiary_bic: "",
+         
           }}
           validationSchema={validationSchema}
           onSubmit={(values:any) => {
             setIsSubmitting(true);
             dispatch<any>(
-              addNewBeneficiary({
-                ...values,
-                beneficiary_Country: values.beneficiary_Country?.value,
-              })
-            )
+            //   addNewBeneficiary({
+            //     ...values,
+            //     beneficiary_Country: values.beneficiary_Country?.value,
+            //   })
+            // )
+            addNewBeneficiary({
+              beneficiary_name: beneficiary_name,
+              beneficiary_iban:beneficiary_iban,
+              beneficiary_bic:beneficiary_bic
+            })
+          )
               .unwrap()
               .then((payload:any) => {
                 if (payload) {
@@ -75,9 +132,13 @@ export function AddPayee() {
                   validationError={touched.beneficiary_name && errors.beneficiary_name}
                 >
                   <FormGroup.Input
-                    onChangeText={handleChange("beneficiary_name")}
-                    onBlur={handleBlur("beneficiary_name")}
-                    values={values.beneficiary_name}
+                    // onChangeText={handleChange("beneficiary_name")}
+                    onChangeText={value => setBeneficiary_name(value)}
+                    // onBlur={handleBlur("beneficiary_name")}
+                    onFocus={e => setNameFocused(true)}
+                    onBlur={e => setNameFocused(false)}
+                    // values={values.beneficiary_name}
+                    values={beneficiary_name}
                     placeholder="Name"
                     icon={<ProfileIcon />}
                   />
@@ -88,9 +149,14 @@ export function AddPayee() {
                   validationError={errors.beneficiary_iban || apiError.iban}
                 >
                   <FormGroup.Input
-                    onChangeText={handleChange("beneficiary_iban")}
-                    onBlur={handleBlur("beneficiary_iban")}
-                    values={values.beneficiary_iban}
+                    // onChangeText={handleChange("beneficiary_iban")}
+                    onChangeText={value => setBeneficiary_iban(value)}
+                    // onBlur={handleBlur("beneficiary_iban")}
+                    onFocus={e => setIbanFocused(true)}
+                    onBlur={e => setIbanFocused(false)}
+
+                    // values={values.beneficiary_iban}
+                    values={beneficiary_iban}
                     placeholder="IBAN"
                     icon={<CodeIcon />}
                   />
@@ -101,9 +167,13 @@ export function AddPayee() {
                   validationError={touched.beneficiary_bic && errors.beneficiary_bic}
                 >
                   <FormGroup.Input
-                    onChangeText={handleChange("beneficiary_bic")}
-                    onBlur={handleBlur("beneficiary_bic")}
-                    values={values.beneficiary_bic}
+                    // onChangeText={handleChange("beneficiary_bic")}
+                    onChangeText={value => setBeneficiary_bic(value)}
+                    // onBlur={handleBlur("beneficiary_bic")}
+                    onFocus={e => setBicFocused(true)}
+                    onBlur={e => setBicFocused(false)}
+                    // values={values.beneficiary_bic}
+                    values={beneficiary_bic}
                     placeholder="BIC"
                     icon={<CodeIcon />}
                   />

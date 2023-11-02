@@ -20,6 +20,15 @@ export const paymentSlice = createSlice({
   extraReducers: (builder) => {},
 });
 
+export const ibanCheck= createAsyncThunk(
+  "ibanCheck",
+  async (params: any) => {
+    // console.log("*************iban check params", params);
+    const { data } = await api.post("/ibancheck", params);
+    return data;
+  }
+);
+
 export const initiatePayment = createAsyncThunk(
   "initiatePayment",
   async (params: any) => {

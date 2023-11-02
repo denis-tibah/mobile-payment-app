@@ -59,11 +59,12 @@ useEffect(() => {
       console.log("iban search req", search);
       const payload = await dispatch<any>(ibanCheck(search));
       if (payload) {
-        if (payload.result === 200 || payload.result === "200") {
+        if (payload.payload.result === 200 || payload.payload.result === "200") {
           //add Bic to bic textfield box
-          setBeneficiary_bic(payload.data.bic);
+          setBeneficiary_bic(payload.payload.data.bank.bic);
+          console.log("bic is ", payload.payload.data.bank.bic);
         } else {
-          console.log("failed", payload);
+          console.log("failed");
         }
       }
     } catch (error) {

@@ -120,7 +120,7 @@ export function Card({ navigation }: any) {
     isError: boolean;
   }>(DEFAULT_CARD_ENROLLMENT_STATUS);
   const shownCardsOnCarousel = isTerminatedCardShown ? cardData : cardsActiveList;
-
+  console.log("shownCardsOnCarousel", shownCardsOnCarousel);
   // TODO: Optimization task - remove dot then and use redux state instead
   const fetchCardData = async () => {
     try {
@@ -426,7 +426,7 @@ export function Card({ navigation }: any) {
         setSelectedCard(shownCardsOnCarousel[0]);
       }
     })();
-  }, [cardsActiveList]);
+  }, [cardsActiveList, shownCardsOnCarousel]);
 
   useEffect(() => {
     sortCardTransactionsByDate(debounceSortByDate);
@@ -513,7 +513,13 @@ export function Card({ navigation }: any) {
                     sliderWidth={500}
                     itemWidth={303}
                     layout="default"
+                    // swipeThreshold={100}
                     // loop={true}
+                    onBeforeSnapToItem={(index) => {
+                      setSelectedCard(shownCardsOnCarousel[index]);
+                      // setIsloading(true);
+                      fetchCardData();
+                    }}
                     onSnapToItem={(index) => {
                       setSelectedCard(shownCardsOnCarousel[index]);
                       // setIsloading(true);
@@ -623,7 +629,7 @@ export function Card({ navigation }: any) {
                         onPress={() => {
                           setTerminatedCardModal(!terminatedCardModal);
                         }}
-                        disabled={selectedCard?.lostYN === "Y"}
+                        disabled={selectedCard?.lostYN === "Y" || !selectedCard?.lostYN}
                       >
                         Lost Card
                       </Button>
@@ -635,7 +641,9 @@ export function Card({ navigation }: any) {
                         color="light-pink"
                         rightIcon={<LostCardIcon color="pink" size={14} />}
                         onPress={() => {
+                          setIsloading(prev => !prev);
                           setIsTerminatedCardShown(!isTerminatedCardShown);
+                          setIsloading(prev => !prev);
                         }}
                       >
                         {!isTerminatedCardShown ? "Show All Cards" : "Hide Lost Cards"}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
 import { View, ScrollView } from "react-native";
 import { useFormik } from "formik";
 import Spinner from "react-native-loading-spinner-overlay/lib";
@@ -11,12 +12,10 @@ import FormGroup from "../../components/FormGroup";
 import FixedBottomAction from "../../components/FixedBottomAction";
 import Button from "../../components/Button";
 import vars from "../../styles/vars";
-import PayeeIcon from "../../assets/icons/Beneficiary";
 import BeneficiaryIcon from "../../assets/icons/Beneficiary";
 import ProfileIcon from "../../assets/icons/Profile";
 import CodeIcon from "../../assets/icons/Code";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
-import { useDispatch } from "react-redux";
 import { addNewBeneficiary } from "../../redux/beneficiary/beneficiarySlice";
 import { ibanCheck } from "../../redux/payment/paymentSlice";
 import { screenNames, arrayChecker } from "../../utils/helpers";
@@ -128,7 +127,7 @@ export function AddPayee() {
           setIsLoading(false);
           setFieldValue("beneficiaryBic", payload?.payload?.data?.bank?.bic);
         } else {
-          console.log("failed");
+          setFieldValue("beneficiaryBic", "");
           setIsLoading(false);
         }
       }
@@ -159,7 +158,10 @@ export function AddPayee() {
       />
       <ScrollView bounces={false}>
         <View style={styles.container}>
-          <Heading icon={<PayeeIcon color="pink" size={18} />} title="Payee" />
+          <Heading
+            icon={<BeneficiaryIcon color="pink" size={18} />}
+            title="Payee"
+          />
         </View>
         <View style={styles.content}>
           <View>

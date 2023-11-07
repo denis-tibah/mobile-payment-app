@@ -36,6 +36,7 @@ import {
   terminateCard,
   orderCard,
   enrollforCardScheme,
+  setPrimaryCardID,
 } from "../../redux/card/cardSlice";
 import { getTodaysDate } from "../../utils/dates";
 import {
@@ -69,14 +70,16 @@ import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { arrayChecker } from "../../utils/helpers";
 import TerminatingCardModal from "./TerminatingCardModal";
 import { Snackbar } from "react-native-paper";
+import { is } from "immer/dist/internal";
 /* import { Circle } from "react-native-svg"; */
 const DEFAULT_CARD_ENROLLMENT_STATUS = {
   title: "",
   text: "",
   isError: false,
 };
-
+let renderCount = 0;
 export function Card({ navigation }: any) {
+  // console.log("renderCount", renderCount++);
   const dispatch = useDispatch();
   const accountDetails = useSelector((state: RootState) => state.account?.details);
   const userData = useSelector((state: RootState) => state.auth?.userData);
@@ -86,6 +89,7 @@ export function Card({ navigation }: any) {
   const [cardPin, setCardPin] = useState<string>("");
   const [remainingTime, setRemainingTime] = useState(30);
   const cardData = useSelector((state: RootState) => state?.card?.data);
+  // console.log("cardData", cardData);
   const isCardHaveVirtual = arrayChecker(cardData) ? cardData?.some((card) => card.type === "V") : false;
   const cardsActiveList = getUserActiveCards(cardData);
   const frozen = useSelector(
@@ -97,7 +101,6 @@ export function Card({ navigation }: any) {
   const [cardDetails, setCardDetails] = useState<ICardDetails>({});
   const [freezeLoading, setFreezeLoading] = useState(false);
   const [showCardOtpModal, setShowCardOtpModal] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [showGetCardModal, setShowGetCardModal] = useState(false);
   const [showCardOtpLoading, setShowCardOtpLoading] = useState(false);
   const [storedIntervalId, setStoredIntervalId] = useState<any>(null);
@@ -119,24 +122,35 @@ export function Card({ navigation }: any) {
     text: string;
     isError: boolean;
   }>(DEFAULT_CARD_ENROLLMENT_STATUS);
-  const shownCardsOnCarousel = isTerminatedCardShown ? cardData : cardsActiveList;
-  console.log("shownCardsOnCarousel", shownCardsOnCarousel);
+  const shownCardsOnCarousel = isTerminatedCardShown ? cardsActiveList ? [...cardsActiveList, ...cardData] : [] : cardsActiveList ? cardsActiveList : [];
+
+  const handleSetSelectedCard = (card: any) => {
+    setSelectedCard(card);
+  };
+
   // TODO: Optimization task - remove dot then and use redux state instead
-  const fetchCardData = async () => {
+  const fetchCardData = async (_cardDetails?: any) => {
     try {
       const getCardReq = await dispatch<any>(getCards()).unwrap();
       if ((getCardReq && Object.keys(getCardReq).length > 0) || !getCardReq) {
         setFetchingCardInfo(false);
       }
-      if (userID && selectedCard?.cardreferenceId) {
-        console.log('selectedCard?.cardreferenceId',selectedCard?.cardreferenceId)
+      if (userID && (_cardDetails || selectedCard)) {
+        console.log("fetching card transactions", {
+          account_id: userID,
+          from_date: "2022-06-02",
+          to_date: getTodaysDate(),
+          type: "ALL",
+          card_id: _cardDetails ? _cardDetails.cardreferenceId : selectedCard?.cardreferenceId,
+        },
+        _cardDetails);
         await dispatch<any>(
           getCardTransactions({
             account_id: userID,
             from_date: "2022-06-02",
             to_date: getTodaysDate(),
             type: "ALL",
-            card_id: selectedCard?.cardreferenceId,
+            card_id: _cardDetails ? _cardDetails.cardreferenceId : selectedCard?.cardreferenceId,
           })
         )
         .unwrap()
@@ -158,7 +172,7 @@ export function Card({ navigation }: any) {
     } finally {
       setFetchingCardTransactions(false);
       setFetchingCardInfo(false);
-      setIsloading(false);
+      setIsloading(prev => prev = false);
     }
   };
 
@@ -280,7 +294,7 @@ export function Card({ navigation }: any) {
           otp: code,
         }) as any
       ).unwrap();
-      setLoading(false);
+      setIsloading(false);
       if (payload) {
         setCardPin("");
         setRemainingTime(30);
@@ -333,7 +347,6 @@ export function Card({ navigation }: any) {
     -!isFetchingCardInfo, after fetching card info if theres any
     -if cardData is empty, meaning no card information is found
     */
-    // console.log(cardData, userID, isFetchingCardInfo, isFetchingCardTransactions);
     if (!isFetchingCardTransactions && !isFetchingCardInfo) {
       if (!arrayChecker(cardData) && userID) {
         console.log("enrolling card");
@@ -346,13 +359,6 @@ export function Card({ navigation }: any) {
     isFetchingCardTransactions,
     isFetchingCardInfo,
   ]);
-
-  useEffect(() => {
-    if (!!userData?.id) {
-      setIsloading(true);
-      fetchCardData();
-    }
-  }, [userData?.id]);
 
   // TODO: target each card when doing action on each card, right now it only targets the first card
   const _renderItem = ({ item, index }: any) => {
@@ -422,11 +428,13 @@ export function Card({ navigation }: any) {
 
   useEffect(() => {
     (() => {
-      if (!selectedCard) {
+      if (!selectedCard && cardsActiveList.length > 0) {
+        setPrimaryCardID(cardsActiveList[0]?.cardreferenceId);
         setSelectedCard(shownCardsOnCarousel[0]);
+        fetchCardData(shownCardsOnCarousel[0]);
       }
     })();
-  }, [cardsActiveList, shownCardsOnCarousel]);
+  }, [cardData]);
 
   useEffect(() => {
     sortCardTransactionsByDate(debounceSortByDate);
@@ -512,18 +520,21 @@ export function Card({ navigation }: any) {
                     refreshing={isLoading}
                     sliderWidth={500}
                     itemWidth={303}
-                    layout="default"
-                    // swipeThreshold={100}
+                    layout="stack"
+                    lockScrollWhileSnapping={false}
+                    // swipeThreshold={10}
                     // loop={true}
-                    onBeforeSnapToItem={(index) => {
-                      setSelectedCard(shownCardsOnCarousel[index]);
-                      // setIsloading(true);
-                      fetchCardData();
-                    }}
+                    // onBeforeSnapToItem={(index) => {
+                    //   setSelectedCard(shownCardsOnCarousel[index]);
+                    //   setIsloading(true);
+                    //   fetchCardData();
+                    // }}
                     onSnapToItem={(index) => {
+                      console.log("index", index);
+                      console.log("shownCardsOnCarousel[index]", shownCardsOnCarousel[index]);
+                      fetchCardData(shownCardsOnCarousel[index]);
                       setSelectedCard(shownCardsOnCarousel[index]);
                       // setIsloading(true);
-                      fetchCardData();
                     }}
                   />
                   {cardDetails?.cardNumber ? (
@@ -540,7 +551,7 @@ export function Card({ navigation }: any) {
                     <Typography
                       fontFamily="Nunito-SemiBold"
                       color="accent-blue"
-                      style={styles.imcome__groupTypography}
+                      style={styles.imcome__groupTypography} 
                     >
                       Total Balance:
                     </Typography>
@@ -641,9 +652,8 @@ export function Card({ navigation }: any) {
                         color="light-pink"
                         rightIcon={<LostCardIcon color="pink" size={14} />}
                         onPress={() => {
-                          setIsloading(prev => !prev);
                           setIsTerminatedCardShown(!isTerminatedCardShown);
-                          setIsloading(prev => !prev);
+                          handleSetSelectedCard(!isTerminatedCardShown ? cardData[0] : cardsActiveList[0]);
                         }}
                       >
                         {!isTerminatedCardShown ? "Show All Cards" : "Hide Lost Cards"}

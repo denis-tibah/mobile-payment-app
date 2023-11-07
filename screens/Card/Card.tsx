@@ -71,6 +71,7 @@ import { arrayChecker } from "../../utils/helpers";
 import TerminatingCardModal from "./TerminatingCardModal";
 import { Snackbar } from "react-native-paper";
 import { is } from "immer/dist/internal";
+
 /* import { Circle } from "react-native-svg"; */
 const DEFAULT_CARD_ENROLLMENT_STATUS = {
   title: "",
@@ -123,27 +124,29 @@ export function Card({ navigation }: any) {
     isError: boolean;
   }>(DEFAULT_CARD_ENROLLMENT_STATUS);
   const shownCardsOnCarousel = isTerminatedCardShown ? cardsActiveList ? [...cardsActiveList, ...cardData] : [] : cardsActiveList ? cardsActiveList : [];
-
+  console.log("cardData", cardData)
+  console.log("shownCardsOnCarousel", shownCardsOnCarousel)
   const handleSetSelectedCard = (card: any) => {
     setSelectedCard(card);
   };
 
-  // TODO: Optimization task - remove dot then and use redux state instead
-  const fetchCardData = async (_cardDetails?: any) => {
+  const handleGetCards = async () => {
     try {
+      await dispatch(getCards() as any);
       const getCardReq = await dispatch<any>(getCards()).unwrap();
       if ((getCardReq && Object.keys(getCardReq).length > 0) || !getCardReq) {
         setFetchingCardInfo(false);
       }
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
+  // TODO: Optimization task - remove dot then and use redux state instead
+  const handleGetCardsTransactions = async (_cardDetails?: any) => {
+    try {
+      console.log("fetchCardData", _cardDetails);
       if (userID && (_cardDetails || selectedCard)) {
-        console.log("fetching card transactions", {
-          account_id: userID,
-          from_date: "2022-06-02",
-          to_date: getTodaysDate(),
-          type: "ALL",
-          card_id: _cardDetails ? _cardDetails.cardreferenceId : selectedCard?.cardreferenceId,
-        },
-        _cardDetails);
         await dispatch<any>(
           getCardTransactions({
             account_id: userID,
@@ -402,7 +405,7 @@ export function Card({ navigation }: any) {
         console.log("card terminated error");
       } finally {
         setIsloading(false);
-        fetchCardData();
+        handleGetCardsTransactions();
         setTerminatedCardModal(false);
       }
     }
@@ -427,11 +430,15 @@ export function Card({ navigation }: any) {
   };
 
   useEffect(() => {
+    handleGetCards();
+  }, []);
+
+  useEffect(() => {
     (() => {
       if (!selectedCard && cardsActiveList.length > 0) {
         setPrimaryCardID(cardsActiveList[0]?.cardreferenceId);
         setSelectedCard(shownCardsOnCarousel[0]);
-        fetchCardData(shownCardsOnCarousel[0]);
+        handleGetCardsTransactions(shownCardsOnCarousel[0]);
       }
     })();
   }, [cardData]);
@@ -487,7 +494,7 @@ export function Card({ navigation }: any) {
           bounces={true}
           style={{ flex: 1 }}
           refreshControl={
-            <RefreshControl refreshing={isLoading} onRefresh={fetchCardData} />
+            <RefreshControl refreshing={isLoading} onRefresh={handleGetCardsTransactions} />
           }
         >
           <Pressable>
@@ -520,21 +527,12 @@ export function Card({ navigation }: any) {
                     refreshing={isLoading}
                     sliderWidth={500}
                     itemWidth={303}
-                    layout="stack"
+                    layout="default"
                     lockScrollWhileSnapping={false}
                     // swipeThreshold={10}
-                    // loop={true}
-                    // onBeforeSnapToItem={(index) => {
-                    //   setSelectedCard(shownCardsOnCarousel[index]);
-                    //   setIsloading(true);
-                    //   fetchCardData();
-                    // }}
                     onSnapToItem={(index) => {
-                      console.log("index", index);
-                      console.log("shownCardsOnCarousel[index]", shownCardsOnCarousel[index]);
-                      fetchCardData(shownCardsOnCarousel[index]);
+                      handleGetCardsTransactions(shownCardsOnCarousel[index]);
                       setSelectedCard(shownCardsOnCarousel[index]);
-                      // setIsloading(true);
                     }}
                   />
                   {cardDetails?.cardNumber ? (
@@ -671,7 +669,7 @@ export function Card({ navigation }: any) {
                 title={"Latest Transactions"}
                 rightAction={
                   <Button
-                    onPress={fetchCardData}
+                    onPress={handleGetCardsTransactions}
                     color={"light-blue"}
                     leftIcon={
                       <Ionicons name="refresh" size={24} color="black" />

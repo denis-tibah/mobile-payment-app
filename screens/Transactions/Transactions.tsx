@@ -626,7 +626,7 @@ export function Transactions({ navigation }: any) {
           <View>
           { _groupedByDateTransactions ? Object.keys(_groupedByDateTransactions)
           .sort((a, b) => {
-            return !sortByDate ? new Date(a).getTime() - new Date(b).getTime() : new Date(b).getTime() - new Date(a).getTime();
+            return sortByDate ? new Date(a).getTime() - new Date(b).getTime() : new Date(b).getTime() - new Date(a).getTime();
           })
           .map((date: string) => {
             let _amount: number = 0;

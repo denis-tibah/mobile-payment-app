@@ -21,3 +21,8 @@ export const searchOptions = [
     { label: "Maximum amount", value: "max_amount" },
     { label: "Status", value: "status" },
 ];
+
+export const CardStatus = {
+    ACTIVE: 'active',
+    INACTIVE: 'inactive'
+};

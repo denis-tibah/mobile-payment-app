@@ -6,7 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // export const exportedBaseUrl = process.env.APIURL || "https://zazoostg.com/reg/ziyl";
 
 // staging backend v2
-//  const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
+// const baseURL = process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
 // export const exportedBaseUrl =
 //   process.env.APIURL || "https://zazoostg.com/v2/reg/ziyl";
 

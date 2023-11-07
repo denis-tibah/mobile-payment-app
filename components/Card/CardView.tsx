@@ -6,11 +6,13 @@ import { ImageBackground, StyleSheet, Text, View } from "react-native";
 import ZazooPhysicalCard from '../../assets/images/card_background_images/physical_card.png';
 import ZazooVirtualCard from '../../assets/images/card_background_images/virtual_card.png';
 import ZazooTerminated from '../../assets/images/card_background_images/terminated_card.png';
+import ZazooPendingCard from '../../assets/images/card_background_images/pending_card.png';
 // import ZazooVirtualCard from "../../assets/images/zazocard.png";
 import { FreezeCard } from "./FreezeCard";
 import { PinCard } from "./PinCard";
 import { TimerCard } from "./TimerCard";
 import { getProfile } from "../../redux/profile/profileSlice";
+import { CardStatus } from "../../utils/constants";
 
 
 interface CardViewProps {
@@ -44,7 +46,8 @@ export const CardView = ({
   if (cardDetails.cardImage)
     return <TimerCard timer={timer} card={cardDetails.cardImage} />;
 
-  const cardImage = card?.lostYN === "N" ? card?.type === "P" ? ZazooPhysicalCard : ZazooVirtualCard : ZazooTerminated;
+  const cardImage = card?.cardStatus === CardStatus.INACTIVE ? ZazooPendingCard :
+  card?.lostYN === "N" ? card?.type === "P" ? ZazooPhysicalCard : ZazooVirtualCard : ZazooTerminated;
   const pan = card?.pan || "";
 
   const expiryMonth = (card?.expiration_date).split("-")[1] || "";

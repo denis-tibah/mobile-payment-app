@@ -121,8 +121,7 @@ export function Card({ navigation }: any) {
     isError: boolean;
   }>(DEFAULT_CARD_ENROLLMENT_STATUS);
   const shownCardsOnCarousel = isTerminatedCardShown ? cardsActiveList ? [...cardsActiveList, ...cardData] : [] : cardsActiveList ? cardsActiveList : [];
-  console.log("cardData", cardData)
-  console.log("shownCardsOnCarousel", shownCardsOnCarousel)
+
   const handleSetSelectedCard = (card: any) => {
     setSelectedCard(card);
   };

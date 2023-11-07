@@ -69,8 +69,6 @@ import TransactionItem from "../../components/TransactionItem";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { arrayChecker } from "../../utils/helpers";
 import TerminatingCardModal from "./TerminatingCardModal";
-import { Snackbar } from "react-native-paper";
-import { is } from "immer/dist/internal";
 
 /* import { Circle } from "react-native-svg"; */
 const DEFAULT_CARD_ENROLLMENT_STATUS = {
@@ -78,9 +76,8 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
   text: "",
   isError: false,
 };
-let renderCount = 0;
+
 export function Card({ navigation }: any) {
-  // console.log("renderCount", renderCount++);
   const dispatch = useDispatch();
   const accountDetails = useSelector((state: RootState) => state.account?.details);
   const userData = useSelector((state: RootState) => state.auth?.userData);

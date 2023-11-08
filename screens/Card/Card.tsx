@@ -181,6 +181,7 @@ export function Card({ navigation }: any) {
         setCardAsFrozen({
           freezeYN: isCardToFree ? "Y" : "N",
           account_id: userData?.id,
+          card_id: selectedCard?.cardreferenceId,
         })
       );
     } catch (error) {
@@ -291,6 +292,7 @@ export function Card({ navigation }: any) {
         showCardDetails({
           account_id: userID,
           otp: code,
+          card_id: selectedCard?.cardreferenceId,
         }) as any
       ).unwrap();
       setIsloading(false);

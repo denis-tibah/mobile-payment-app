@@ -1,41 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, ImageBackground } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { styles } from "./styles";
 import SunIcon from "../../assets/icons/Sun";
 
 import Button from "../Button";
-import ZazooDebitCard from "../../assets/images/zazoo-debit-card.png";
-import ZazooVirtualCard from "../../assets/images/zazoo-virtual-card.png";
+import ZazooFrozenPhysicalCard from "../../assets/images/card_background_images/frozen_card_physical.png";
+import ZazooFrozenVirtualCard from "../../assets/images/card_background_images/frozen_card_virtual.png";
+import { getCards, setCardAsFrozen } from "../../redux/card/cardSlice";
+import Spinner from "react-native-loading-spinner-overlay";
+import { RootState } from "../../store";
 
-export const FreezeCard = ({ card, unFreezeCard, loading }:any) => {
+export const FreezeCard = ({ card, loading }:any) => {
   return (
     <View style={styles.cardContainer}>
       <View style={styles.creditCardImg}>
         <ImageBackground
           style={styles.card}
-          source={card?.type === "P" ? ZazooDebitCard : ZazooVirtualCard}
-          blurRadius={90}
+          source={card?.type === "P" ? ZazooFrozenPhysicalCard : ZazooFrozenVirtualCard}
         >
-          <View style={styles.overlay}>
-            <View style={styles.textContainer}>
-              <Text style={styles.title}>Your card is frozen</Text>
-              <View
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              >
-                <Button
-                  onPress={unFreezeCard}
-                  color="light-blue"
-                  disabled={loading}
-                  leftIcon={<SunIcon color="blue" />}
-                >
-                  Unfreeze now
-                </Button>
-              </View>
-            </View>
-          </View>
         </ImageBackground>
       </View>
     </View>

@@ -17,7 +17,7 @@ import { CardStatus } from "../../utils/constants";
 
 interface CardViewProps {
   freezeLoading: boolean;
-  unFreezeCard: () => void;
+  // unFreezeCard: () => void;
   card: any;
   pin: any;
   timer: any;
@@ -27,7 +27,6 @@ interface CardViewProps {
 
 export const CardView = ({
   freezeLoading,
-  unFreezeCard,
   card,
   pin,
   timer,
@@ -38,7 +37,6 @@ export const CardView = ({
     return (
       <FreezeCard
         card={card}
-        unFreezeCard={unFreezeCard}
         loading={freezeLoading}
       />
     );

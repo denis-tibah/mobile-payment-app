@@ -90,9 +90,6 @@ export function Card({ navigation }: any) {
   // console.log("cardData", cardData);
   const isCardHaveVirtual = arrayChecker(cardData) ? cardData?.some((card) => card.type === "V") : false;
   const cardsActiveList = getUserActiveCards(cardData);
-  const frozen = useSelector(
-    (state: RootState) => state?.card?.data[0]?.frozenYN
-  );
 
   const [isTerminatedCardShown, setIsTerminatedCardShown] = useState<boolean>(false);
   const [terminatedCardModal, setTerminatedCardModal] = useState<boolean>(false);
@@ -175,11 +172,11 @@ export function Card({ navigation }: any) {
     }
   };
 
-  const freezeCard = async (isCardToFree: boolean) => {
+  const freezeCard = async (isCardToFreeze: boolean) => {
     try {
       await dispatch<any>(
         setCardAsFrozen({
-          freezeYN: isCardToFree ? "Y" : "N",
+          freezeYN: isCardToFreeze ? "Y" : "N",
           account_id: userData?.id,
           card_id: selectedCard?.cardreferenceId,
         })
@@ -189,6 +186,7 @@ export function Card({ navigation }: any) {
     } finally {
       setIsloading(false);
       setFreezeLoading(false);
+      await dispatch<any>(getCards());
     }
   };
 
@@ -369,10 +367,6 @@ export function Card({ navigation }: any) {
           resetHandler={() => setCardDetails({})}
           cardDetails={cardDetails}
           freezeLoading={freezeLoading}
-          unFreezeCard={() => {
-            setIsloading(true);
-            freezeCard(false);
-          }}
           key={index}
           card={item}
           pin={cardPin}
@@ -438,6 +432,7 @@ export function Card({ navigation }: any) {
         setSelectedCard(shownCardsOnCarousel[0]);
         handleGetCardsTransactions(shownCardsOnCarousel[0]);
       }
+      setSelectedCard(shownCardsOnCarousel[0]);
     })();
   }, [cardData]);
 
@@ -585,21 +580,21 @@ export function Card({ navigation }: any) {
                   <View style={styles.cardActionsButtonMargin}>
                     <Pressable>
                       <Button
-                        color={frozen === "Y" ? "blue" : "light-blue"}
+                        color={selectedCard?.frozenYN === "Y" ? "blue" : "light-blue"}
                         leftIcon={
                           <FreezeIcon
-                            color={frozen === "Y" ? "white" : "blue"}
+                            color={selectedCard?.frozenYN === "Y" ? "white" : "blue"}
                             size={14}
                           />
                         }
                         onPress={() => {
                           setFreezeLoading(true);
                           setIsloading(true);
-                          freezeCard(frozen === "N");
+                          freezeCard(selectedCard?.frozenYN === "Y" ? false : true);
                         }}
                         disabled={freezeLoading}
                       >
-                        Freeze Card
+                        {selectedCard?.frozenYN === "Y" ? "Unfreeze Card" : "Freeze Card"}
                       </Button>
                     </Pressable>
                   </View>

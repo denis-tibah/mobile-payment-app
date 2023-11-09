@@ -123,6 +123,7 @@ export const screenNames: any = {
   transactions: "Transactions",
   card: "Card",
   payments: "Payments",
+  statements: "statements",
   payees: "Payees",
   payeesList: "Payees List",
   addPayee: "Add Payee",

@@ -8,8 +8,8 @@ export const styles = StyleSheet.create<any>({
   },
   creditCardImg: {
     position: "relative",
-    width: 303,
-    height: 195,
+    width: 340,
+    height: 225,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 12,

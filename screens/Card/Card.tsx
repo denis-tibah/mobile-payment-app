@@ -173,6 +173,10 @@ export function Card({ navigation }: any) {
   };
 
   const freezeCard = async (isCardToFreeze: boolean) => {
+    if(!selectedCard) {
+      console.log("no card selected");
+      return;
+    }
     try {
       await dispatch<any>(
         setCardAsFrozen({
@@ -487,7 +491,7 @@ export function Card({ navigation }: any) {
           bounces={true}
           style={{ flex: 1 }}
           refreshControl={
-            <RefreshControl refreshing={isLoading} onRefresh={handleGetCardsTransactions} />
+            <RefreshControl refreshing={isLoading} onRefresh={handleGetCards} />
           }
         >
           <Pressable>
@@ -644,7 +648,13 @@ export function Card({ navigation }: any) {
                         rightIcon={<LostCardIcon color="pink" size={14} />}
                         onPress={() => {
                           setIsTerminatedCardShown(!isTerminatedCardShown);
-                          handleSetSelectedCard(!isTerminatedCardShown ? cardData[0] : cardsActiveList[0]);
+                          setIsloading(prev => prev = true);
+                          // handleSetSelectedCard(!isTerminatedCardShown ? cardData[0] : cardsActiveList[0]);
+                          // const getActiveCardOnly 
+                          setSelectedCard(cardsActiveList[0]);
+                          setTimeout(() => {
+                            setIsloading(prev => prev = false);
+                          }, 100);
                         }}
                       >
                         {!isTerminatedCardShown ? "Show All Cards" : "Hide Lost Cards"}

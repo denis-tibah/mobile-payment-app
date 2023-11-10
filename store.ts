@@ -72,9 +72,7 @@ export const store = configureStore({
   devTools: process.env.NODE_ENV !== "production",
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: ["persist/PERSIST", 'payload.headers'],
-      },
+      serializableCheck: false,
     }).concat(thunk),
 });
 

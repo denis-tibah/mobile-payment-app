@@ -41,8 +41,9 @@ export const CardView = ({
       />
     );
 
-  if (cardDetails.cardImage)
+  if (cardDetails.cardImage) {
     return <TimerCard timer={timer} card={cardDetails.cardImage} />;
+  }
 
   const cardImage = card?.cardStatus === CardStatus.INACTIVE ? ZazooPendingCard :
   card?.lostYN === "N" ? card?.type === "P" ? ZazooPhysicalCard : ZazooVirtualCard : ZazooTerminated;

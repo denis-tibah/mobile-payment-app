@@ -38,6 +38,10 @@ export const cardSlice = createSlice({
       state.primaryCardID = action.payload;
     },
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
   extraReducers: (builder) => {
     //enroll for card scheme
     builder.addCase(enrollforCardScheme.pending, (state) => {

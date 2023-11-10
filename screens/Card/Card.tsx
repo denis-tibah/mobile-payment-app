@@ -120,6 +120,8 @@ export function Card({ navigation }: any) {
       await dispatch(getCards() as any);
     } catch (error) {
       console.log({ error });
+    } finally {
+      setIsloading(false);
     }
   };
 
@@ -152,7 +154,7 @@ export function Card({ navigation }: any) {
     } catch (error) {
       console.log({ error });
     } finally {
-      setIsloading(prev => prev = false);
+      setIsloading(prev => false);
     }
   };
 
@@ -162,6 +164,7 @@ export function Card({ navigation }: any) {
       return;
     }
     try {
+      setIsloading(prev => true);
       await dispatch<any>(
         setCardAsFrozen({
           freezeYN: isCardToFreeze ? "Y" : "N",
@@ -172,9 +175,9 @@ export function Card({ navigation }: any) {
     } catch (error) {
       console.log({ error });
     } finally {
-      setIsloading(false);
-      setFreezeLoading(false);
       await dispatch<any>(getCards());
+      setIsloading(prev => false);
+      setFreezeLoading(false);
     }
   };
 
@@ -187,14 +190,14 @@ export function Card({ navigation }: any) {
 
   const requestShowCard = async () => {
     setIsEnrollingCard(false);
-    setIsloading(prev => prev = true);
+    setIsloading(prev => true);
     const payload = await dispatch(
       sendSmsShowCardVerification({
         type: "trusted",
       }) as any
     ).unwrap()
     .finally(() => {
-      setIsloading(prev => prev = false);
+      setIsloading(prev => false);
     });
     if (payload?.status !== "success") return;
     setShowCardOtpModal(true);
@@ -302,6 +305,7 @@ export function Card({ navigation }: any) {
           setRemainingTime(remainingTimer);
           remainingTimer--;
         }, 1000);
+        clearInterval(intervalId);
       }
       setShowCardOtpLoading(false);
       setShowCardOtpModal(false);
@@ -346,7 +350,6 @@ export function Card({ navigation }: any) {
   };
 
   const handleLostCard = async () => {
-    console.log("terminating card");
     console.log({
       account_id: Number(userData?.id),
       card_id: Number(selectedCard?.cardreferenceId),
@@ -362,7 +365,6 @@ export function Card({ navigation }: any) {
       } catch (error) {
         console.log({ error });
         Alert.alert("Error", "Something went wrong");
-        console.log("card terminated error");
       } finally {
         setIsloading(false);
         handleGetCardsTransactions();
@@ -391,18 +393,13 @@ export function Card({ navigation }: any) {
   };
 
   useEffect(() => {
-    handleGetCards();
-  }, []);
-
-  useEffect(() => {
     (() => {
       if (!selectedCard && cardsActiveList.length > 0) {
         setPrimaryCardID(cardsActiveList[0]?.cardreferenceId);
         setSelectedCard(shownCardsOnCarousel[0]);
         handleGetCardsTransactions(shownCardsOnCarousel[0]);
       }
-      if (cardsActiveList.length === 0 && cardData.length > 0) {
-        setPrimaryCardID(null);
+      if (cardsActiveList.length === 0 && cardData.length > 0 || cardData?.code === "500") {
         enrollCard();
       }
       setSelectedCard(shownCardsOnCarousel[0]);
@@ -412,6 +409,10 @@ export function Card({ navigation }: any) {
   useEffect(() => {
     sortCardTransactionsByDate(debounceSortByDate);
   }, [debounceSortByDate]);
+
+  useEffect(() => {
+    handleGetCards();
+  }, []);
 
   return (
     <MainLayout navigation={navigation}>
@@ -562,7 +563,7 @@ export function Card({ navigation }: any) {
                         }
                         onPress={() => {
                           setFreezeLoading(true);
-                          setIsloading(true);
+                          setIsloading(prev => true);
                           freezeCard(selectedCard?.frozenYN === "Y" ? false : true);
                         }}
                         disabled={freezeLoading}
@@ -617,13 +618,11 @@ export function Card({ navigation }: any) {
                         rightIcon={<LostCardIcon color="pink" size={14} />}
                         onPress={() => {
                           setIsTerminatedCardShown(!isTerminatedCardShown);
-                          setIsloading(prev => prev = true);
+                          setIsloading(prev => true);
                           // handleSetSelectedCard(!isTerminatedCardShown ? cardData[0] : cardsActiveList[0]);
                           // const getActiveCardOnly 
                           setSelectedCard(cardsActiveList[0]);
-                          setTimeout(() => {
-                            setIsloading(prev => prev = false);
-                          }, 100);
+                          setIsloading(prev => false);
                         }}
                         disabled={cardDetails?.cardImage ? true : false}
                       >

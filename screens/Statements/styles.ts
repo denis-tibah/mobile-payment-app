@@ -1,40 +1,60 @@
 import { StyleSheet } from "react-native";
 
-export const styles:any = StyleSheet.create<any>({
+export const styles: any = StyleSheet.create<any>({
   heading: {
     marginTop: 26,
-    zIndex:1
+    zIndex: 1,
   },
-  input: {
-    backgroundColor: "white",
-    paddingLeft: 12,
-    paddingRight: 12,
-    paddingTop: 18,
-    paddingBottom: 12,
-    borderBottomColor: "rgb(221, 221, 221)",
-    borderBottomWidth: 1,
-  },
-  listHead: {
+  content: {
     backgroundColor: "white",
     display: "flex",
     flexDirection: "row",
-    paddingTop: 24,
+    justifyContent: "flex-start",
+    paddingTop: 12,
+  },
+  footerContent: {
+    backgroundColor: "white",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    shadowOpacity: 0.1,
+    shadowRadius: 15,
+    shadowColor: "black",
+    elevation: 8,
+    padding: 8,
+  },
+  downloadBtnMain: {
+    width: "100%",
     paddingBottom: 12,
-    paddingLeft: 12,
-    justifyContent: "space-between",
+    paddingTop: 12,
+    paddingLeft: 8,
+    paddingRight: 8,
   },
-  rowBack: {
-    alignItems: "center",
-    backgroundColor: "red",
-    flex: 1,
-    flexDirection: "row-reverse",
-    justifyContent: "space-between",
-    paddingLeft: 15,
+  downloadBtn: {
+    width: 200,
+    padding: 14,
   },
-  deleteText: {
-    color: "#FFF",
-    fontWeight: "bold",
-    textAlign: "center",
-    fontSize: 16,
+  dateContainer: {
+    backgroundColor: "#ffffff",
+    paddingLeft: 20,
+    paddingBottom: 20,
+    paddingTop: 20,
+    display: "flex",
+    flexDirection: "column",
+  },
+  buttonDate: {
+    width: 110,
+    backgroundColor: "grey",
+    marginTop: 10,
+    lineHeight: 25,
+  },
+  buttonContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  datePicker: {
+    display: "flex",
+    flexDirection: "row",
   },
 });

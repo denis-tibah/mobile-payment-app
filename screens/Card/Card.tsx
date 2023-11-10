@@ -76,7 +76,7 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
   text: "",
   isError: false,
 };
-let renderCount = 0;
+
 export function Card({ navigation }: any) {
 
   const dispatch = useDispatch();
@@ -427,7 +427,7 @@ export function Card({ navigation }: any) {
   useEffect(() => {
     handleGetCards();
   }, []);
-  console.log("renderCount", renderCount++);
+
   return (
     <MainLayout navigation={navigation}>
       {showGetCardModal && (

@@ -78,6 +78,7 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
 };
 
 export function Card({ navigation }: any) {
+
   const dispatch = useDispatch();
   const accountDetails = useSelector((state: RootState) => state.account?.details);
   const userData = useSelector((state: RootState) => state.auth?.userData);
@@ -298,14 +299,13 @@ export function Card({ navigation }: any) {
           // cardImage:image,
           cardNumber: payload?.cardNumber,
         });
-        let remainingTimer = 30;
-        intervalId = setInterval(() => {
-          setStoredIntervalId(intervalId);
-          if (remainingTimer <= 0) return resetCard();
-          setRemainingTime(remainingTimer);
-          remainingTimer--;
-        }, 1000);
-        clearInterval(intervalId);
+        // let remainingTimer = 30;  --- this causes rerendering the app for every second and causes the app to freeze. should be removed
+        // intervalId = setInterval(() => {
+        //   setStoredIntervalId(intervalId);
+        //   if (remainingTimer <= 0) return resetCard();
+        //   setRemainingTime(remainingTimer);
+        //   remainingTimer--;
+        // }, 1000);
       }
       setShowCardOtpLoading(false);
       setShowCardOtpModal(false);
@@ -409,6 +409,20 @@ export function Card({ navigation }: any) {
   useEffect(() => {
     sortCardTransactionsByDate(debounceSortByDate);
   }, [debounceSortByDate]);
+
+  useEffect(() => {
+    let interval: any;
+    if (cardDetails?.cardImage) {
+      interval = setInterval(() => {
+        setRemainingTime((remainingTime) => remainingTime - 1);
+        if (remainingTime === 0) {
+          clearInterval(interval);
+          resetCard();
+        }
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [cardDetails, remainingTime]);
 
   useEffect(() => {
     handleGetCards();

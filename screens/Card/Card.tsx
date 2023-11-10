@@ -87,7 +87,6 @@ export function Card({ navigation }: any) {
   const [cardPin, setCardPin] = useState<string>("");
   const [remainingTime, setRemainingTime] = useState(30);
   const cardData = useSelector((state: RootState) => state?.card?.data);
-  // console.log("cardData", cardData);
   const isCardHaveVirtual = arrayChecker(cardData) ? cardData?.some((card) => card.type === "V") : false;
   const cardsActiveList = getUserActiveCards(cardData);
 
@@ -105,40 +104,31 @@ export function Card({ navigation }: any) {
     CardTransaction[]
   >([]);
   const [selectedCard, setSelectedCard] = useState<any>(null);
-  const debounceSnapCards = useDebounce<boolean>(selectedCard, 1000);
   const [isLoading, setIsloading] = useState<boolean>(false);
   const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
-  const [isFetchingCardTransactions, setFetchingCardTransactions] =
-    useState<boolean>(true);
-  const [isFetchingCardInfo, setFetchingCardInfo] = useState<boolean>(true);
-  const [isEnrollingCard, setEnrollingCard] = useState<boolean>(false);
+  const [isEnrollingCard, setIsEnrollingCard] = useState<boolean>(false);
   const [enrollmentCardStatus, setEnrollmentCardStatus] = useState<{
     title: string;
     text: string;
     isError: boolean;
   }>(DEFAULT_CARD_ENROLLMENT_STATUS);
   const shownCardsOnCarousel = isTerminatedCardShown ? cardsActiveList ? [...cardsActiveList, ...cardData] : [] : cardsActiveList ? cardsActiveList : [];
-
-  const handleSetSelectedCard = (card: any) => {
-    setSelectedCard(card);
-  };
+  const isShowingCardDetails = !!cardDetails?.cardImage;
 
   const handleGetCards = async () => {
     try {
       await dispatch(getCards() as any);
-      const getCardReq = await dispatch<any>(getCards()).unwrap();
-      if ((getCardReq && Object.keys(getCardReq).length > 0) || !getCardReq) {
-        setFetchingCardInfo(false);
-      }
     } catch (error) {
       console.log({ error });
+    } finally {
+      setIsloading(false);
     }
   };
 
   // TODO: Optimization task - remove dot then and use redux state instead
   const handleGetCardsTransactions = async (_cardDetails?: any) => {
     try {
-      console.log("fetchCardData", _cardDetails);
+      // console.log("fetchCardData", _cardDetails);
       if (userID && (_cardDetails || selectedCard)) {
         await dispatch<any>(
           getCardTransactions({
@@ -155,20 +145,16 @@ export function Card({ navigation }: any) {
           // setCardTransactionsData(res.data);
           if (res && arrayChecker(res)) {
             setCardTransactionsData(res);
-            setFetchingCardTransactions(false);
           } else {
             //clear old data
             setCardTransactionsData([]);
-            setFetchingCardTransactions(false);
           }
         });
       }
     } catch (error) {
       console.log({ error });
     } finally {
-      setFetchingCardTransactions(false);
-      setFetchingCardInfo(false);
-      setIsloading(prev => prev = false);
+      setIsloading(prev => false);
     }
   };
 
@@ -178,6 +164,7 @@ export function Card({ navigation }: any) {
       return;
     }
     try {
+      setIsloading(prev => true);
       await dispatch<any>(
         setCardAsFrozen({
           freezeYN: isCardToFreeze ? "Y" : "N",
@@ -188,9 +175,9 @@ export function Card({ navigation }: any) {
     } catch (error) {
       console.log({ error });
     } finally {
-      setIsloading(false);
-      setFreezeLoading(false);
       await dispatch<any>(getCards());
+      setIsloading(prev => false);
+      setFreezeLoading(false);
     }
   };
 
@@ -202,18 +189,22 @@ export function Card({ navigation }: any) {
   };
 
   const requestShowCard = async () => {
+    setIsEnrollingCard(false);
+    setIsloading(prev => true);
     const payload = await dispatch(
       sendSmsShowCardVerification({
         type: "trusted",
       }) as any
-    ).unwrap();
+    ).unwrap()
+    .finally(() => {
+      setIsloading(prev => false);
+    });
     if (payload?.status !== "success") return;
     setShowCardOtpModal(true);
   };
 
   const handlePinCode = async ({ code }: { code: string }) => {
     if (isEnrollingCard) {
-      setIsloading(true);
       const orderCardPayload = {
         cardType: "V",
         accountUuid: userID,
@@ -228,57 +219,52 @@ export function Card({ navigation }: any) {
       const payloadOrderCard = await dispatch(
         orderCard(orderCardPayload) as any
       )
-        .unwrap()
-        .catch((error: any) => {
-          console.log("error in order card upon enrollment:", error);
-          setIsloading(false);
-          setEnrollingCard(false);
-          setShowCardOtpModal(false);
-        });
-
-      setIsloading(false);
+      .unwrap()
+      .catch((error: any) => {
+        console.log("error in order card upon enrollment:", error);
+        
+      })
+      .finally(() => {
+        setIsEnrollingCard(false);
+        setIsloading(false);
+        setShowCardOtpModal(false);
+      });
       console.log(
         "🚀 ~ file: Card.tsx:270 ~ handlePinCode ~ payloadOrderCard:",
         payloadOrderCard
       );
       if (payloadOrderCard?.status && payloadOrderCard?.status === "success") {
-        const enrollCardPayload = await dispatch(
+        await dispatch(
           enrollforCardScheme({ account_id: userID }) as any
         )
           .unwrap()
+          .then((res: any) => {
+            setEnrollmentStatus(true);
+            setEnrollmentCardStatus({
+              title: "Card Enrollment",
+              text: `Card Status: Success`,
+              isError: false,
+            });
+            setIsloading(false);
+            setShowCardOtpModal(false);
+          })
           .catch((error: any) => {
-            console.log(
-              "🚀 ~ file: Card.tsx:288 ~ handlePinCode ~ error:",
-              error
-            );
+            setIsloading(false);
+            setEnrollmentStatus(true);
+            setEnrollmentCardStatus({
+              title: "Card Enrollment",
+              text: `Card Status: Pending. Check back later.`,
+              isError: true,
+            });
+            setShowCardOtpModal(false);
+          })
+          .finally(() => {
+            dispatch<any>(getCards());
+            setIsEnrollingCard(false);
           });
-        if (
-          enrollCardPayload?.data?.status &&
-          enrollCardPayload?.data?.status === "success"
-        ) {
-          setEnrollmentStatus(true);
-          setEnrollmentCardStatus({
-            title: "Card Enrollment",
-            text: `${enrollCardPayload?.data?.code}: ${enrollCardPayload?.data?.message}`,
-            isError: false,
-          });
-          setIsloading(false);
-          setShowCardOtpModal(false);
-        } else {
-          setIsloading(false);
-          setEnrollingCard(false);
-          setEnrollmentStatus(true);
-          setEnrollmentCardStatus({
-            title: "Card Enrollment",
-            text: `${enrollCardPayload?.data?.code}: ${enrollCardPayload?.data?.message}`,
-            isError: true,
-          });
-          setShowCardOtpModal(false);
-        }
-        //dispatch(getCards() as any);
       } else {
         setIsloading(false);
-        setEnrollingCard(false);
+        setIsEnrollingCard(false);
         setShowCardOtpModal(false);
         setEnrollmentStatus(true);
         setEnrollmentCardStatus({
@@ -290,6 +276,8 @@ export function Card({ navigation }: any) {
     } else {
       let intervalId: any;
       setShowCardOtpLoading(true);
+      setIsTerminatedCardShown(false);
+
       const payload = await dispatch(
         showCardDetails({
           account_id: userID,
@@ -303,8 +291,8 @@ export function Card({ navigation }: any) {
         setRemainingTime(30);
         clearInterval(storedIntervalId);
         setCardDetails({
-          cardreferenceId: cardData[0]?.cardreferenceId,
-          card: cardData[0],
+          cardreferenceId: cardsActiveList[0]?.cardreferenceId,
+          card: cardsActiveList[0],
           cardImage: payload.cardImageBase64,
           //Added by Aristos
           // cardImage:image,
@@ -317,6 +305,7 @@ export function Card({ navigation }: any) {
           setRemainingTime(remainingTimer);
           remainingTimer--;
         }, 1000);
+        clearInterval(intervalId);
       }
       setShowCardOtpLoading(false);
       setShowCardOtpModal(false);
@@ -329,7 +318,7 @@ export function Card({ navigation }: any) {
       await dispatch(sendSmsShowCardVerification({
         type: "trusted",
       }) as any);
-      setEnrollingCard(true);
+      setIsEnrollingCard(true);
       setShowCardOtpModal(true);
     } catch (error: any) {
       console.log("Something went wrong with otp: ", error);
@@ -342,26 +331,6 @@ export function Card({ navigation }: any) {
       setIsloading(false);
     }
   };
-
-  useEffect(() => {
-    /* only trigger card enrollment if ff conditions are met 
-    -account_id(accountData?.id) is ready
-    -!isFetchingCardTransactions, after fetching card transactions if theres any
-    -!isFetchingCardInfo, after fetching card info if theres any
-    -if cardData is empty, meaning no card information is found
-    */
-    if (!isFetchingCardTransactions && !isFetchingCardInfo) {
-      if (!arrayChecker(cardData) && userID) {
-        console.log("enrolling card");
-        enrollCard();
-      }
-    }
-  }, [
-    isCardHaveVirtual,
-    userID,
-    isFetchingCardTransactions,
-    isFetchingCardInfo,
-  ]);
 
   // TODO: target each card when doing action on each card, right now it only targets the first card
   const _renderItem = ({ item, index }: any) => {
@@ -381,7 +350,6 @@ export function Card({ navigation }: any) {
   };
 
   const handleLostCard = async () => {
-    console.log("terminating card");
     console.log({
       account_id: Number(userData?.id),
       card_id: Number(selectedCard?.cardreferenceId),
@@ -394,15 +362,14 @@ export function Card({ navigation }: any) {
             card_id: Number(selectedCard?.cardreferenceId),
           })
         );
-        console.log("card terminated");
       } catch (error) {
         console.log({ error });
         Alert.alert("Error", "Something went wrong");
-        console.log("card terminated error");
       } finally {
         setIsloading(false);
         handleGetCardsTransactions();
         setTerminatedCardModal(false);
+        await dispatch<any>(getCards());
       }
     }
   };
@@ -426,15 +393,14 @@ export function Card({ navigation }: any) {
   };
 
   useEffect(() => {
-    handleGetCards();
-  }, []);
-
-  useEffect(() => {
     (() => {
       if (!selectedCard && cardsActiveList.length > 0) {
         setPrimaryCardID(cardsActiveList[0]?.cardreferenceId);
         setSelectedCard(shownCardsOnCarousel[0]);
         handleGetCardsTransactions(shownCardsOnCarousel[0]);
+      }
+      if (cardsActiveList.length === 0 && cardData.length > 0 || cardData?.code === "500") {
+        enrollCard();
       }
       setSelectedCard(shownCardsOnCarousel[0]);
     })();
@@ -443,6 +409,10 @@ export function Card({ navigation }: any) {
   useEffect(() => {
     sortCardTransactionsByDate(debounceSortByDate);
   }, [debounceSortByDate]);
+
+  useEffect(() => {
+    handleGetCards();
+  }, []);
 
   return (
     <MainLayout navigation={navigation}>
@@ -519,7 +489,7 @@ export function Card({ navigation }: any) {
             <View style={styles.cardSection}>
                 <View style={styles.cardImages}>
                   <Carousel
-                    data={shownCardsOnCarousel}
+                    data={cardDetails?.cardImage ? [cardDetails] : shownCardsOnCarousel}
                     renderItem={_renderItem}
                     refreshing={isLoading}
                     sliderWidth={500}
@@ -579,7 +549,7 @@ export function Card({ navigation }: any) {
                   </View>
                 </Pressable>
               </View>
-              <View style={styles.cardActions}>
+              { !isShowingCardDetails && <View style={styles.cardActions}>
                 <ScrollView horizontal>
                   <View style={styles.cardActionsButtonMargin}>
                     <Pressable>
@@ -593,7 +563,7 @@ export function Card({ navigation }: any) {
                         }
                         onPress={() => {
                           setFreezeLoading(true);
-                          setIsloading(true);
+                          setIsloading(prev => true);
                           freezeCard(selectedCard?.frozenYN === "Y" ? false : true);
                         }}
                         disabled={freezeLoading}
@@ -648,14 +618,13 @@ export function Card({ navigation }: any) {
                         rightIcon={<LostCardIcon color="pink" size={14} />}
                         onPress={() => {
                           setIsTerminatedCardShown(!isTerminatedCardShown);
-                          setIsloading(prev => prev = true);
+                          setIsloading(prev => true);
                           // handleSetSelectedCard(!isTerminatedCardShown ? cardData[0] : cardsActiveList[0]);
                           // const getActiveCardOnly 
                           setSelectedCard(cardsActiveList[0]);
-                          setTimeout(() => {
-                            setIsloading(prev => prev = false);
-                          }, 100);
+                          setIsloading(prev => false);
                         }}
+                        disabled={cardDetails?.cardImage ? true : false}
                       >
                         {!isTerminatedCardShown ? "Show All Cards" : "Hide Lost Cards"}
                       </Button>
@@ -663,6 +632,7 @@ export function Card({ navigation }: any) {
                   </View>
                 </ScrollView>
               </View>
+              }
             </View>
           }
           <View style={styles.cardTransactions}>

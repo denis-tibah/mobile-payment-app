@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import { View, ScrollView } from "react-native";
@@ -15,12 +15,16 @@ import vars from "../../styles/vars";
 import BeneficiaryIcon from "../../assets/icons/Beneficiary";
 import ProfileIcon from "../../assets/icons/Profile";
 import CodeIcon from "../../assets/icons/Code";
+import AddIcon from "../../assets/icons/Add";
+
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { addNewBeneficiary } from "../../redux/beneficiary/beneficiarySlice";
 import { ibanCheck } from "../../redux/payment/paymentSlice";
 import { screenNames, arrayChecker } from "../../utils/helpers";
 import { validationAddingPayeeSchema } from "../../utils/validation";
 import { styles } from "./styles";
+import Typography from "../../components/Typography";
+import { ArrowLeft } from "../../assets/icons/ArrowLeft/ArrowLeft";
 
 export function AddPayee() {
   const dispatch = useDispatch();
@@ -161,6 +165,13 @@ export function AddPayee() {
           <Heading
             icon={<BeneficiaryIcon color="pink" size={18} />}
             title="Payee"
+            leftAction={
+              <Button onPress={() => navigate(screenNames.payeesList)} color={"light-pink"} leftIcon={<ArrowLeft size={14} />}>
+                <Typography>
+                  Back
+                </Typography>
+              </Button>
+            }
           />
         </View>
         <View style={styles.content}>

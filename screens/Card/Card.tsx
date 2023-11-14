@@ -506,7 +506,7 @@ export function Card({ navigation }: any) {
                     data={cardDetails?.cardImage ? [cardDetails] : shownCardsOnCarousel}
                     renderItem={_renderItem}
                     refreshing={isLoading}
-                    sliderWidth={500}
+                    sliderWidth={400}
                     itemWidth={303}
                     layout="default"
                     lockScrollWhileSnapping={false}

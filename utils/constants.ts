@@ -18,6 +18,7 @@ export const searchOptions = [
     // { label: "BIC", value: 'bic' },
     // { label: "ReferenceNo", value: 'reference_no' },
     // { label: "IBAN", value: 'iban' },
+    { label: "Minimum amount", value: "min_amount" },
     { label: "Maximum amount", value: "max_amount" },
     { label: "Status", value: "status" },
 ];

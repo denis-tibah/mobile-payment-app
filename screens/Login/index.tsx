@@ -26,6 +26,7 @@ import vars from "../../styles/vars";
 
 import { screenNames } from "../../utils/helpers";
 import { validationAuthSchema } from "../../utils/validation";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function LoginScreen({ navigation }: any) {
   const [apiErrorMessage, setApiErrorMessage] = useState<any>({});
@@ -102,7 +103,7 @@ export function LoginScreen({ navigation }: any) {
   };
 
   useEffect(() => {
-    const handleBiometricLogin = async () => {
+    (async () => {
       const credentials = await getSavedCredetails();
       // console.log({ credentials });
       if (credentials.email && credentials.password) {
@@ -120,6 +121,8 @@ export function LoginScreen({ navigation }: any) {
                 signin({ values: credentials, navigate })
               );
               // console.log({ result });
+              await AsyncStorage.setItem("tokenZiyl", result?.token_ziyl);
+              await AsyncStorage.setItem("accessToken", result?.access_token);
               await dispatch<any>(refreshUserData());
               if (result.error) {
                 setApiErrorMessage({ message: result.payload });
@@ -131,19 +134,7 @@ export function LoginScreen({ navigation }: any) {
           }
         }
       }
-    };
-    handleBiometricLogin();
-
-    // get geolocation to send in mobile login finxp
-    /* const handleAsyncGetIp = async () => {
-      const ipResponse = await getIpAddress().catch((error) => {
-        console.log("error getting ip", error);
-      });
-      if (ipResponse && Object.keys(ipResponse).length > 0) {
-        setIp(ipResponse);
-      }
-    };
-    handleAsyncGetIp(); */
+    })();
   }, []);
 
   return (
@@ -187,7 +178,6 @@ export function LoginScreen({ navigation }: any) {
                   const result = await dispatch<any>(
                     signin({ values, navigate /* , ip */ })
                   ).unwrap();
-
                   if (
                     result &&
                     (result?.payload?.biometricYN || result?.biometricYN) &&
@@ -196,6 +186,9 @@ export function LoginScreen({ navigation }: any) {
                   ) {
                     // console.log("Use biometic ");
                     await saveSecureCredetails(values.email, values.password);
+                    console.log("result.payload", result);
+                    await AsyncStorage.setItem("tokenZiyl", result?.token_ziyl);
+                    await AsyncStorage.setItem("accessToken", result?.access_token);
                   } else {
                     // console.log("Do not use biometric");
                     await SecureStore.deleteItemAsync("email");

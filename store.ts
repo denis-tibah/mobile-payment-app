@@ -14,6 +14,7 @@ import cardSlice, { CardState } from "./redux/card/cardSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import thunk from "redux-thunk";
+import { accountV2 } from "./redux/account/accountSliceV2";
 
 export const reducers = combineReducers({
   auth: authSlice,
@@ -26,6 +27,7 @@ export const reducers = combineReducers({
   search: searchSlice,
   payment: paymentSlice,
   card: cardSlice,
+  [accountV2.reducerPath]: accountV2.reducer,
 });
 
 export interface RootState {
@@ -39,6 +41,7 @@ export interface RootState {
   search: any;
   payment: any;
   card: CardState;
+  accountV2: any;
 }
 
 const rootReducer = (state: RootState | undefined, action: any) => {
@@ -53,7 +56,7 @@ const rootReducer = (state: RootState | undefined, action: any) => {
   }
   return reducers(state, action);
 };
-
+//1110928971
 const persistConfig: any = {
   key: "root",
   storage: AsyncStorage,
@@ -72,8 +75,13 @@ export const store = configureStore({
   devTools: process.env.NODE_ENV !== "production",
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false,
-    }).concat(thunk),
+      serializableCheck: {
+        ignoredActions: ["persist/PERSIST", "persist/REHYDRATE", "persist/PURGE", "persist/REGISTER", "persist/FLUSH"],
+      },
+    }).concat(
+      thunk,
+      accountV2.middleware,
+    ),
 });
 
 export const persistor = persistStore(store);

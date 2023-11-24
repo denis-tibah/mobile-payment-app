@@ -69,7 +69,6 @@ import TransactionItem from "../../components/TransactionItem";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { arrayChecker } from "../../utils/helpers";
 import TerminatingCardModal from "./TerminatingCardModal";
-import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
 
 /* import { Circle } from "react-native-svg"; */
 const DEFAULT_CARD_ENROLLMENT_STATUS = {

@@ -56,7 +56,7 @@ const rootReducer = (state: RootState | undefined, action: any) => {
   }
   return reducers(state, action);
 };
-//1110928971
+
 const persistConfig: any = {
   key: "root",
   storage: AsyncStorage,

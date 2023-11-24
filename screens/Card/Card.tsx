@@ -78,7 +78,6 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
 };
 
 export function Card({ navigation }: any) {
-
   const dispatch = useDispatch();
   const accountDetails = useSelector((state: RootState) => state.account?.details);
   const userData = useSelector((state: RootState) => state.auth?.userData);

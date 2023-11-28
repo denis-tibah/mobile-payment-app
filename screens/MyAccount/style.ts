@@ -30,13 +30,17 @@ export const styles: any = StyleSheet.create<any>({
     paddingRight: 25,
   },
   totalBalance: {
-    padding: 12,
+    padding: 7,
+    // width: '100%',
+    flex: 1,
     backgroundColor: "white",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
     textAlign: "left",
-    margin: 10,
+    marginTop: 10,
+    marginBottom: 10,
+    marginHorizontal: 3,
     borderRadius: 18,
   },
   balanceContainer: {
@@ -44,6 +48,7 @@ export const styles: any = StyleSheet.create<any>({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingHorizontal: 5,
   },
   balancesTitleA: {
     // padding: 12,

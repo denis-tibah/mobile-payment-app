@@ -10,6 +10,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
 import { styles } from "./style";
+import TransactionIcon from "../../assets/icons/Transaction";
+
 import TransactionItem from "../../components/TransactionItem";
 import Typography from "../../components/Typography";
 import AccountIcon from "../../assets/icons/Account";
@@ -27,12 +29,14 @@ import { getPendingAmount, arrayChecker } from "../../utils/helpers";
 import { Transaction } from "../../utils/types";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
+import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
+import Button from "../../components/Button";
 
 interface ITransactions {
   data: Transaction[];
   totalPage: number;
 }
-
+const defaultStatus = "SUCCESS";
 export function MyAccount({ navigation }: any) {
   const transactions: any = useSelector(
     (state: RootState) => state?.transaction?.data
@@ -44,14 +48,16 @@ export function MyAccount({ navigation }: any) {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
-  const [sortByDate, setSortByDate] = useState<boolean>(false);
+  const [sortByStatus, setSortByStatus] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [paginateRefresh, setPaginateRefresh] = useState<boolean>(false);
   const _groupedByDateTransactions = groupedByDateTransactions(transactions?.transactions);
-  const route = useRoute();
-  const screenName = route.name;
+  const { data: userAccountInformation } = useGetAccountDetailsQuery({
+    accountId: userData?.id || 0,
+  })
 
-  const fetchTransactions = async (pageNumber?: number) => {
+  const fetchTransactions = async (filterParams?: {pageNumber?: number, status?: string}) => {
+    const { pageNumber, status } = filterParams;
     try {
       setPaginateRefresh(true);
       if (userData && userData?.id) {
@@ -59,7 +65,7 @@ export function MyAccount({ navigation }: any) {
           account_id: userData?.id.toString(),
           sort: "id",
           direction: "desc",
-          status: "SUCCESS", // commented out since the webservice breaks if status is added in the filter - arjajy: august 22, 2023
+          status: status ? status : defaultStatus, // commented out since the webservice breaks if status is added in the filter - arjajy: august 22, 2023
           limit: 20,
           page: pageNumber || 1,
         };
@@ -80,14 +86,14 @@ export function MyAccount({ navigation }: any) {
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       const _currentPage = currentPage - 1;
-      fetchTransactions(_currentPage);
+      fetchTransactions({pageNumber: _currentPage});
     }
   };
 
   const handleNextPage = () => {
     if (currentPage < lastPage) {
       const _currentPage = currentPage + 1;
-      fetchTransactions(_currentPage);
+      fetchTransactions({pageNumber: _currentPage});
     }
   };
 
@@ -97,7 +103,7 @@ export function MyAccount({ navigation }: any) {
   // reset page to 1 when the component unmounts
   useFocusEffect(
     useCallback(() => {
-      fetchTransactions();
+      fetchTransactions({pageNumber: 1});
       return () => {
         setPage(1);
       };
@@ -161,7 +167,6 @@ export function MyAccount({ navigation }: any) {
 
   useEffect(() => {
     if (!!userData?.id) fetchTransactions();
-    // console.log("hit this");
   }, [userData?.id, page]);
 
   //get transactionns every 15 mins
@@ -193,7 +198,7 @@ export function MyAccount({ navigation }: any) {
             Current Balance
           </Typography>
           <Typography color={"accent-pink"} fontWeight={600} fontSize={16}>
-            € 13,000.83
+            {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${userAccountInformation?.data?.curbal || 0}`}
           </Typography>
         </Box>
         <Box style={{...styles.totalBalance, ...styles.pendingBalanceShadow}}>
@@ -201,7 +206,7 @@ export function MyAccount({ navigation }: any) {
             Pending
           </Typography>
           <Typography color={"accent-orange"} fontWeight={600} fontSize={16}>
-            € 12.33
+            {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${userAccountInformation?.data?.blocked_amount || 0}`}
           </Typography>
         </Box>
         <Box style={{...styles.totalBalance, ...styles.availableBalanceShadow}}>
@@ -209,7 +214,7 @@ export function MyAccount({ navigation }: any) {
             Available Balance
           </Typography>
           <Typography color={"accent-green"} fontWeight={600} fontSize={16}>
-            € 13,000.83
+            {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${userAccountInformation?.data?.avlbal || 0}`}
           </Typography>
         </Box>
       </View>
@@ -217,7 +222,28 @@ export function MyAccount({ navigation }: any) {
           <View style={styles.base}>
             <Heading
               icon={<AccountIcon color="pink" size={18} />}
-              title="Latest transactions"
+              title="Latest Transactions"
+              rightAction={
+                <TouchableOpacity
+                  onPress={() => {
+                    
+                  }}
+                >
+                  <Button
+                    color="light-pink"
+                    style={styles.sortButton}
+                    onPress={() =>{
+                      setSortByStatus(!sortByStatus);
+                      fetchTransactions({status: sortByStatus ? "SUCCESS" : "PROCESSING"});
+                    }}
+                    leftIcon={
+                      <TransactionIcon size={18} color="pink" />
+                    }
+                  >
+                    { sortByStatus ? "Pending" : "Completed"}
+                  </Button>
+                </TouchableOpacity>
+              }
             />
           </View>
           <View>
@@ -227,25 +253,34 @@ export function MyAccount({ navigation }: any) {
                 <>
                   <View>
                   {_groupedByDateTransactions ? Object.keys(_groupedByDateTransactions)
-                    .sort((a, b) => {
-                      return sortByDate
-                        ? new Date(a).getTime() - new Date(b).getTime()
-                        : new Date(b).getTime() - new Date(a).getTime();
-                    })
+                    // .sort((a, b) => {
+                    //   return sortByDate
+                    //     ? new Date(a).getTime() - new Date(b).getTime()
+                    //     : new Date(b).getTime() - new Date(a).getTime();
+                    // })
                     .map((date: string) => {
                       let _amount: number = 0;
                       const transactionsByDate = _groupedByDateTransactions[
                         date
-                      ].map((tx, index) => {
+                      ]
+                      // .filter((tx) => {
+                      //   return sortByStatus ? tx.status !== "SUCCESS"  : tx.status === "SUCCESS";
+                      // })
+                      .map((tx) => {
                         const { amount } = tx;
                         _amount = Number(_amount) + Number(amount);
+                        
                         return tx;
                       });
+                      
                       const shownData = {
                         date,
                         totalAmount: _amount.toString(),
                         currency: _groupedByDateTransactions[date][0].currency,
                       };
+                      // if (transactionsByDate.length === 0) {
+                      //   return null;
+                      // }
                       return (
                         <TransactionsByDate
                           key={

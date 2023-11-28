@@ -18,6 +18,7 @@ import ForgottenPassword from "../screens/ForgottenPassword";
 import TransactionsScreen from "../screens/Transactions";
 import CardScreen from "../screens/Card";
 import PaymentScreen from "../screens/Payments";
+import StatementScreen from "../screens/Statements"
 import PayeeScreen from "../screens/Payees";
 import AddPayeeScreen from "../screens/AddPayee";
 import ProfileScreen from "../screens/Profile";
@@ -69,6 +70,7 @@ function PayeeStack() {
   );
 }
 
+
 function DashboardStack() {
   return (
     <TabNavigation>
@@ -80,6 +82,7 @@ function DashboardStack() {
       />
       <Tab.Screen name={screenNames.card} component={CardScreen} />
       <Tab.Screen name={screenNames.payments} component={PaymentScreen} />
+      <Tab.Screen name={screenNames.statements} component={StatementScreen} />
       <Tab.Screen name={screenNames.payees} component={PayeeStack} />
       <Tab.Screen name="profile" component={ProfileScreen} />
     </TabNavigation>

@@ -14,7 +14,10 @@ import TransactionItem from "../../components/TransactionItem";
 import Typography from "../../components/Typography";
 import AccountIcon from "../../assets/icons/Account";
 import Pagination from "../../components/Pagination/Pagination";
-import { SearchFilter, getTransactionsWithFilters } from "../../redux/transaction/transactionSlice";
+import {
+  SearchFilter,
+  getTransactionsWithFilters,
+} from "../../redux/transaction/transactionSlice";
 import { RootState } from "../../store";
 import Box from "../../components/Box";
 import { getAccountDetails } from "../../redux/account/accountSlice";
@@ -62,7 +65,6 @@ export function MyAccount({ navigation }: any) {
         let search: SearchFilter = {
           account_id: userData?.id.toString(),
           sort: "id",
-          // direction: "asc",
           direction: "desc",
           status: "SUCCESS", // commented out since the webservice breaks if status is added in the filter - arjajy: august 22, 2023
           limit: 20,
@@ -307,7 +309,7 @@ export function MyAccount({ navigation }: any) {
                 <View>
                   {[...transactionsData?.data]
                     .sort((a, b) => {
-                      return !sortByDate
+                      return sortByDate
                         ? new Date(a.transaction_datetime).getTime() -
                             new Date(b.transaction_datetime).getTime()
                         : new Date(b.transaction_datetime).getTime() -

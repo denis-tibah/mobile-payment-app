@@ -3,24 +3,28 @@ import { formatAmountTableValue } from "./helpers";
 import { StatementTransactionsResponse } from "../redux/transaction/transactionSlice";
 
 const generateHTML = (transactions: StatementTransactionsResponse[]) => {
-  const htmlTransactions = transactions.map((transaction:StatementTransactionsResponse) => {
-    let transaction_ref_no = "";
-    let transfer_currency = "";
+  const htmlTransactions = transactions.map(
+    (transaction: StatementTransactionsResponse) => {
+      let transaction_ref_no = "";
+      let transfer_currency = "";
 
-    if (transaction.transaction_ref_no) {
-      transaction_ref_no = `<p>Transaction Ref No.: ${transaction.transaction_ref_no}</p>`;
-    }
-    if (transaction.transfer_currency) {
-      transfer_currency = `<p>BIC: ${transaction.transfer_currency}</p>`;
-    }
-    const transactionDate = new Date(
-      transaction.transaction_date
-    ).toLocaleDateString();
-  
-    return `
+      if (transaction.transaction_ref_no) {
+        transaction_ref_no = `<p>Transaction Ref No.: ${transaction.transaction_ref_no}</p>`;
+      }
+      if (transaction.transfer_currency) {
+        transfer_currency = `<p>BIC: ${transaction.transfer_currency}</p>`;
+      }
+      const transactionDate = new Date(
+        transaction.transaction_date
+      ).toLocaleDateString();
+
+      return `
       <tr>
         <td style="border: 1px solid black; padding: 5px;">${
-          transaction.transaction_ref_no
+          transaction?.transaction_ref_no || ""
+        }</td>
+        <td style="border: 1px solid black; padding: 5px;">${
+          transaction?.sender_receiver || ""
         }</td>
         <td style="border: 1px solid black; padding: 5px;">${transactionDate}</td>
         <td style="border: 1px solid black; padding: 5px;">${formatAmountTableValue(
@@ -31,14 +35,13 @@ const generateHTML = (transactions: StatementTransactionsResponse[]) => {
           transaction.closing_balance,
           transaction.transfer_currency
         )}</td>
-        <td style="border: 1px solid black; padding: 5px;">${transaction.debit}</td>
-        <td style="border: 1px solid black; padding: 5px;">${transaction.credit}</td>
-        <td style="border: 1px solid black; padding: 5px;">${transaction.sender_receiver}</td>
-        <td style="border: 1px solid black; padding: 5px;">${transaction.description}</td>
-        <td style="border: 1px solid black; padding: 5px;">${transaction.transfer_currency}</td>
+        <td style="border: 1px solid black; padding: 5px;">${
+          transaction?.description || ""
+        }</td>
       </tr>
     `;
-  });
+    }
+  );
 
   return `
     <html>
@@ -71,6 +74,7 @@ const generateHTML = (transactions: StatementTransactionsResponse[]) => {
         <div class="title">Transaction Report</div>
         <table>
           <tr>
+            <th>Ref no:</th>
             <th>Name</th>
             <th>Date</th>
             <th>Amount</th>
@@ -84,7 +88,7 @@ const generateHTML = (transactions: StatementTransactionsResponse[]) => {
   `;
 };
 
-export const generatePDF = async (transactions:any) => {
+export const generatePDF = async (transactions: any) => {
   try {
     const html = generateHTML(transactions);
     const pdf = await Print.printToFileAsync({ html });
@@ -94,8 +98,8 @@ export const generatePDF = async (transactions:any) => {
   }
 };
 
-const generateTransactionHTML = (transactions:any) => {
-  const htmlTransactions = transactions.map((transaction:any) => {
+const generateTransactionHTML = (transactions: any) => {
+  const htmlTransactions = transactions.map((transaction: any) => {
     let iban = "";
     let bic = "";
     let opening_balance = "";
@@ -185,7 +189,7 @@ const generateTransactionHTML = (transactions:any) => {
   `;
 };
 
-export const generateTransactionPDF = async (transactions:any) => {
+export const generateTransactionPDF = async (transactions: any) => {
   try {
     const html = generateTransactionHTML(transactions);
     const pdf = await Print.printToFileAsync({ html });

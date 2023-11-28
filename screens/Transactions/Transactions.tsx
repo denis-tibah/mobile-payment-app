@@ -4,14 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
 import FormGroup from "../../components/FormGroup";
 import Heading from "../../components/Heading";
-import Modal from '../../components/Modal'
+import Modal from "../../components/Modal";
 import MainLayout from "../../layout/Main";
 import { styles } from "./styles";
 import Button from "../../components/Button";
 import Typography from "../../components/Typography";
 import TransactionIcon from "../../assets/icons/Transaction";
 import SearchIcon from "../../assets/icons/Search";
-import { 
+import {
   SearchFilter,
   StatementFilter,
   StatementResponse,
@@ -32,25 +32,29 @@ import LoadingScreen from "../../components/Loader/LoadingScreen";
 import Pagination from "../../components/Pagination/Pagination";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 import Box from "../../components/Box";
-import { containsOnlyNumbers, groupedByDateTransactions, transactionStatusOptions } from "../../utils/helpers";
+import {
+  containsOnlyNumbers,
+  groupedByDateTransactions,
+  transactionStatusOptions,
+} from "../../utils/helpers";
 import { searchOptions } from "../../utils/constants";
 
 interface DateRangeType {
   dateTo: {
     state: boolean;
     value: string;
-  }
+  };
   dateFrom: {
     state: boolean;
     value: string;
-  }
+  };
 }
 
 const currentDate = new Date();
 const initialSearchFieldData: SearchFilter = {
   account_id: "",
   // sort:  "id",
-  direction: 'desc',
+  direction: "desc",
   status: "",
   limit: 20,
   page: 1,
@@ -69,23 +73,36 @@ const initialDateRange: DateRangeType = {
 export function Transactions({ navigation }: any) {
   const dispatch = useDispatch();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
-  const transactions = useSelector((state: RootState) => state?.transaction.data);
+  const transactions = useSelector(
+    (state: RootState) => state?.transaction.data
+  );
   const current_page = transactions?.current_page;
   const last_page = transactions?.last_page;
   const transactionsList = transactions?.transactions;
-  const _groupedByDateTransactions = groupedByDateTransactions(transactionsList);
-  const [isMobileFilterShown, setIsMobileFilterShown] = useState<boolean>(false);
+  const _groupedByDateTransactions =
+    groupedByDateTransactions(transactionsList);
+  const [isMobileFilterShown, setIsMobileFilterShown] =
+    useState<boolean>(false);
   const [sortByDate, setSortByDate] = useState<boolean>(false);
-  const [currentSelectedSearchField, setCurrentSelectedSearchField] = useState<string>("");
+  const [currentSelectedSearchField, setCurrentSelectedSearchField] =
+    useState<string>("");
   const [openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
   const [openStatusOptions, setOpenStatusOptions] = useState<boolean>(false);
-  const [isDateRangeModalOpen, setIsDateRangeModalOpen] = useState<boolean>(false);
-  const [isStatusOptionSelected, setIsStatusOptionSelected] = useState<boolean>(false);
+  const [isDateRangeModalOpen, setIsDateRangeModalOpen] =
+    useState<boolean>(false);
+  const [isStatusOptionSelected, setIsStatusOptionSelected] =
+    useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [searchFieldData, setSearchFieldData] = useState<SearchFilter>(initialSearchFieldData);
-  const [showPickerDateFilter, setShowPickerDateFilter] = useState<DateRangeType>((initialDateRange));
-  const [showStatementPickerDateToAndFrom, setShowStatementPickerDateToAndFrom] = useState<DateRangeType>(initialDateRange);
+  const [searchFieldData, setSearchFieldData] = useState<SearchFilter>(
+    initialSearchFieldData
+  );
+  const [showPickerDateFilter, setShowPickerDateFilter] =
+    useState<DateRangeType>(initialDateRange);
+  const [
+    showStatementPickerDateToAndFrom,
+    setShowStatementPickerDateToAndFrom,
+  ] = useState<DateRangeType>(initialDateRange);
 
   const clearFilter = () => {
     setShowStatementPickerDateToAndFrom(initialDateRange);
@@ -95,7 +112,7 @@ export function Transactions({ navigation }: any) {
     setSearchText("");
     setIsStatusOptionSelected(false);
     isMobileFilterShown && fetchTransactionsWithFilters();
-  }
+  };
 
   const fetchTransactionsWithFilters = async (value?: SearchFilter) => {
     try {
@@ -104,12 +121,12 @@ export function Transactions({ navigation }: any) {
         let search: SearchFilter = {
           ...(value ? value : initialSearchFieldData),
           account_id: `${userData?.id}`,
-        }
+        };
         await dispatch<any>(getTransactionsWithFilters(search));
         setSearchFieldData(search);
       }
     } catch (error) {
-      console.log({error});
+      console.log({ error });
     } finally {
       setIsLoading(false);
     }
@@ -133,25 +150,32 @@ export function Transactions({ navigation }: any) {
 
   const handleOnSubmitEditing = (event: any) => {
     const isNumberOnly = containsOnlyNumbers(searchText);
-    const userId = userData?.id
+    const userId = userData?.id;
     if (!userId) {
       return;
     }
     const { from_date, to_date } = searchFieldData;
     const _searchFieldData: SearchFilter = {
-      ...(!currentSelectedSearchField && !isNumberOnly && {name: searchText}),
-      ...(!currentSelectedSearchField && isNumberOnly && {min_amount: Number(searchText)}),
-      ...(currentSelectedSearchField === 'bic' && {bic: searchText}),
-      ...(currentSelectedSearchField === 'status' && {status: searchText}),
-      ...(currentSelectedSearchField === 'reference_no' && {reference_no : Number(searchText)}),
-      ...(currentSelectedSearchField === 'min_amount'&& {min_amount: Number(searchText)}),
-      ...(currentSelectedSearchField === 'iban' && {iban: searchText}),
-      ...(currentSelectedSearchField === 'max_amount' && {max_amount: Number(searchText)}),
-      ...(from_date && {from_date}),
-      ...(to_date && {to_date}),
+      ...(!currentSelectedSearchField && !isNumberOnly && { name: searchText }),
+      ...(!currentSelectedSearchField &&
+        isNumberOnly && { min_amount: Number(searchText) }),
+      ...(currentSelectedSearchField === "bic" && { bic: searchText }),
+      ...(currentSelectedSearchField === "status" && { status: searchText }),
+      ...(currentSelectedSearchField === "reference_no" && {
+        reference_no: Number(searchText),
+      }),
+      ...(currentSelectedSearchField === "min_amount" && {
+        min_amount: Number(searchText),
+      }),
+      ...(currentSelectedSearchField === "iban" && { iban: searchText }),
+      ...(currentSelectedSearchField === "max_amount" && {
+        max_amount: Number(searchText),
+      }),
+      ...(from_date && { from_date }),
+      ...(to_date && { to_date }),
       ...initialSearchFieldData,
       account_id: `${userId}`,
-    }
+    };
     setSearchFieldData(_searchFieldData);
     fetchTransactionsWithFilters({
       ..._searchFieldData,
@@ -163,10 +187,10 @@ export function Transactions({ navigation }: any) {
     setState: any,
     values: any,
     key: string,
-    isOnChangeForStatements?: boolean,
-    ) => {
+    isOnChangeForStatements?: boolean
+  ) => {
     const { dateFrom, dateTo } = values;
-    if (key === 'dateFrom') {
+    if (key === "dateFrom") {
       if (dateTo.value) {
         const fromDate = new Date(formattedDate);
         const toDate = new Date(dateTo.value);
@@ -174,7 +198,8 @@ export function Transactions({ navigation }: any) {
           alert("Date from should be before or same with Date to");
           return;
         } else {
-          isOnChangeForStatements && filterFromToDate(formattedDate, dateTo.value);
+          isOnChangeForStatements &&
+            filterFromToDate(formattedDate, dateTo.value);
         }
       }
     } else {
@@ -185,7 +210,8 @@ export function Transactions({ navigation }: any) {
           alert("Date from should be before or same with Date to");
           return;
         } else {
-          isOnChangeForStatements && filterFromToDate(dateFrom.value, formattedDate);
+          isOnChangeForStatements &&
+            filterFromToDate(dateFrom.value, formattedDate);
         }
       }
     }
@@ -202,7 +228,7 @@ export function Transactions({ navigation }: any) {
     clearFilter();
     setIsStatusOptionSelected(false);
     setIsMobileFilterShown(!isMobileFilterShown);
-  }
+  };
 
   const handlePreviousPage = () => {
     if (current_page > 1) {
@@ -212,7 +238,7 @@ export function Transactions({ navigation }: any) {
         page: _currentPage,
       });
     }
-  }
+  };
 
   const handleNextPage = () => {
     if (current_page < last_page) {
@@ -222,12 +248,14 @@ export function Transactions({ navigation }: any) {
         page: _currentPage,
       });
     }
-  }
+  };
 
-  const handleGeneratePDF = async (statements: StatementTransactionsResponse[]) => {
+  const handleGeneratePDF = async (
+    statements: StatementTransactionsResponse[]
+  ) => {
     const pdfUri = await generatePDF(statements);
     return await printAsync({ uri: pdfUri });
-  }
+  };
 
   useEffect(() => {
     fetchTransactionsWithFilters();
@@ -239,63 +267,31 @@ export function Transactions({ navigation }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      <Modal
-        isOpen={isDateRangeModalOpen}
-      >
+      <Modal isOpen={isDateRangeModalOpen}>
         <Box
           style={{
-            display: 'flex',
-            flexDirection: 'column',
+            display: "flex",
+            flexDirection: "column",
           }}
         >
-          <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Export Data</Typography>
-          <Typography fontSize={14} fontFamily="Nunito-Regular" color="black">Please select the date range you want to export</Typography>
-          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around'}}>
+          <Typography
+            fontSize={16}
+            fontFamily="Nunito-SemiBold"
+            color="accent-blue"
+          >
+            Export Data
+          </Typography>
+          <Typography fontSize={14} fontFamily="Nunito-Regular" color="black">
+            Please select the date range you want to export
+          </Typography>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-around",
+            }}
+          >
             <Button
-                style={{
-                  width: 110,
-                  backgroundColor: "grey",
-                  marginTop: 10,
-                  lineHeight: 25,
-                }}
-                color="black-only"
-                onPress={() => setShowStatementPickerDateToAndFrom({ 
-                  ...showStatementPickerDateToAndFrom, 
-                  dateFrom: {
-                    state: true,
-                    value: "",
-                  }
-                })}
-              >
-                {!showStatementPickerDateToAndFrom.dateFrom.value ? `From Date` : `${showStatementPickerDateToAndFrom.dateFrom.value}`}
-              </Button>
-              {showStatementPickerDateToAndFrom.dateFrom.state && (
-                <DateTimePicker
-                  mode="date"
-                  display="spinner"
-                  maximumDate={new Date()}
-                  value={!showStatementPickerDateToAndFrom.dateFrom.value ? currentDate : new Date(showStatementPickerDateToAndFrom.dateFrom.value)}
-                  onChange={(event: any) => {
-                    if (event.type == "set") {
-                      const formattedDate = new Date(event.nativeEvent.timestamp)
-                        .toISOString()
-                        .split("T")[0];
-                        handleOnChangeShowPickerDate(
-                          formattedDate,
-                          setShowStatementPickerDateToAndFrom,
-                          showStatementPickerDateToAndFrom,
-                          "dateFrom",
-                        )
-                      }
-                    }
-                  }
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                  }}
-                />
-              )}
-              <Button
               style={{
                 width: 110,
                 backgroundColor: "grey",
@@ -303,36 +299,94 @@ export function Transactions({ navigation }: any) {
                 lineHeight: 25,
               }}
               color="black-only"
-              onPress={() => setShowStatementPickerDateToAndFrom({
-                ...showStatementPickerDateToAndFrom,
-                dateTo: {
-                  state: !showPickerDateFilter.dateTo.state,
-                  value: "",
-                }
-              })}
+              onPress={() =>
+                setShowStatementPickerDateToAndFrom({
+                  ...showStatementPickerDateToAndFrom,
+                  dateFrom: {
+                    state: true,
+                    value: "",
+                  },
+                })
+              }
             >
-              {!showStatementPickerDateToAndFrom.dateTo.value ? `To Date` : `${showStatementPickerDateToAndFrom.dateTo.value}`}
+              {!showStatementPickerDateToAndFrom.dateFrom.value
+                ? `From Date`
+                : `${showStatementPickerDateToAndFrom.dateFrom.value}`}
+            </Button>
+            {showStatementPickerDateToAndFrom.dateFrom.state && (
+              <DateTimePicker
+                mode="date"
+                display="spinner"
+                maximumDate={new Date()}
+                value={
+                  !showStatementPickerDateToAndFrom.dateFrom.value
+                    ? currentDate
+                    : new Date(showStatementPickerDateToAndFrom.dateFrom.value)
+                }
+                onChange={(event: any) => {
+                  if (event.type == "set") {
+                    const formattedDate = new Date(event.nativeEvent.timestamp)
+                      .toISOString()
+                      .split("T")[0];
+                    handleOnChangeShowPickerDate(
+                      formattedDate,
+                      setShowStatementPickerDateToAndFrom,
+                      showStatementPickerDateToAndFrom,
+                      "dateFrom"
+                    );
+                  }
+                }}
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              />
+            )}
+            <Button
+              style={{
+                width: 110,
+                backgroundColor: "grey",
+                marginTop: 10,
+                lineHeight: 25,
+              }}
+              color="black-only"
+              onPress={() =>
+                setShowStatementPickerDateToAndFrom({
+                  ...showStatementPickerDateToAndFrom,
+                  dateTo: {
+                    state: !showPickerDateFilter.dateTo.state,
+                    value: "",
+                  },
+                })
+              }
+            >
+              {!showStatementPickerDateToAndFrom.dateTo.value
+                ? `To Date`
+                : `${showStatementPickerDateToAndFrom.dateTo.value}`}
             </Button>
             {showStatementPickerDateToAndFrom.dateTo.state && (
               <DateTimePicker
                 mode="date"
                 display="spinner"
                 maximumDate={new Date()}
-                value={!showStatementPickerDateToAndFrom.dateTo.value ? currentDate : new Date(showStatementPickerDateToAndFrom.dateTo.value)}
+                value={
+                  !showStatementPickerDateToAndFrom.dateTo.value
+                    ? currentDate
+                    : new Date(showStatementPickerDateToAndFrom.dateTo.value)
+                }
                 onChange={(event: any) => {
                   if (event.type == "set") {
                     const formattedDate = new Date(event.nativeEvent.timestamp)
                       .toISOString()
                       .split("T")[0];
-                      handleOnChangeShowPickerDate(
-                        formattedDate,
-                        setShowStatementPickerDateToAndFrom,
-                        showStatementPickerDateToAndFrom,
-                        "dateTo",
-                      )
-                    }
+                    handleOnChangeShowPickerDate(
+                      formattedDate,
+                      setShowStatementPickerDateToAndFrom,
+                      showStatementPickerDateToAndFrom,
+                      "dateTo"
+                    );
                   }
-                }
+                }}
                 style={{
                   display: "flex",
                   flexDirection: "row",
@@ -345,7 +399,7 @@ export function Transactions({ navigation }: any) {
               width: 110,
               marginTop: 10,
               lineHeight: 25,
-              alignSelf: 'center',
+              alignSelf: "center",
             }}
             color="green"
             onPress={async () => {
@@ -355,19 +409,19 @@ export function Transactions({ navigation }: any) {
                   account_id: Number(userData?.id),
                   from_date: dateFrom.value,
                   to_date: dateTo.value,
-                }
+                };
                 try {
                   await dispatch<any>(getStatementsfinxp(searchFilter))
-                  .unwrap()
-                  .then((res: StatementResponse) => {
-                    const { statements } = res;
-                    if (statements.length > 0) {
-                      return handleGeneratePDF(statements);
-                    }
-                  })
-                  .then(() => {
-                    setIsDateRangeModalOpen(false);
-                  });
+                    .unwrap()
+                    .then((res: StatementResponse) => {
+                      const { statements } = res;
+                      if (statements.length > 0) {
+                        return handleGeneratePDF(statements);
+                      }
+                    })
+                    .then(() => {
+                      setIsDateRangeModalOpen(false);
+                    });
                 } catch (error) {
                   console.log({ error });
                 }
@@ -378,14 +432,12 @@ export function Transactions({ navigation }: any) {
           </Button>
         </Box>
       </Modal>
-      <ScrollView
-        bounces={false}
-      >
+      <ScrollView bounces={false}>
         <View style={styles.container}>
           <Heading
             icon={<TransactionIcon size={18} color="pink" />}
             title={"Latest Transactions"}
-            rightAction={
+            /* rightAction={
               <Button
                 style={{ height: 34, width: 120 }}
                 color={"light-pink"}
@@ -393,7 +445,7 @@ export function Transactions({ navigation }: any) {
               >
                 Export Data
               </Button>
-            }
+            } */
           />
         </View>
         <View style={styles.searchBar}>
@@ -418,14 +470,24 @@ export function Transactions({ navigation }: any) {
                 open={openStatusOptions}
                 zIndex={101}
                 dropDownDirection="BOTTOM"
-                style={[styles.dropdown, {width: '80%', alignSelf: 'flex-start'}]}
-                dropDownContainerStyle={[styles.dropdownContainerStatus, { zIndex: 20 }]}
+                style={[
+                  styles.dropdown,
+                  { width: "80%", alignSelf: "flex-start" },
+                ]}
+                dropDownContainerStyle={[
+                  styles.dropdownContainerStatus,
+                  { zIndex: 20 },
+                ]}
               />
             </View>
           ) : (
             <FormGroup.Input
               icon={<SearchIcon />}
-              placeholder={currentSelectedSearchField === 'max_amount' ? 'Enter maximum amount' : 'Enter minimum amount'}
+              placeholder={
+                currentSelectedSearchField === "max_amount"
+                  ? "Enter maximum amount"
+                  : "Enter minimum amount"
+              }
               color={vars["black"]}
               fontSize={14}
               fontWeight={"400"}
@@ -438,7 +500,7 @@ export function Transactions({ navigation }: any) {
           <View>
             <TouchableOpacity
               onPress={handleShowingAdvanceFilter}
-              style={{paddingRight: 10}}
+              style={{ paddingRight: 10 }}
             >
               <Ionicons
                 name="filter-sharp"
@@ -449,14 +511,17 @@ export function Transactions({ navigation }: any) {
             </TouchableOpacity>
           </View>
         </View>
-        { isMobileFilterShown && (
-          <View style={{
-            backgroundColor: 'white',
-            display: 'flex',
-            flexDirection: 'row',
-            zIndex: 10
-          }}>
-            <View style={{
+        {isMobileFilterShown && (
+          <View
+            style={{
+              backgroundColor: "white",
+              display: "flex",
+              flexDirection: "row",
+              zIndex: 10,
+            }}
+          >
+            <View
+              style={{
                 flex: 1,
                 minWidth: 72,
               }}
@@ -499,49 +564,59 @@ export function Transactions({ navigation }: any) {
                   lineHeight: 25,
                 }}
                 color="black-only"
-                onPress={() => setShowPickerDateFilter({
-                  dateTo: {
-                    state: false,
-                    value: showPickerDateFilter.dateTo.value,
-                  },
-                  dateFrom: {
-                    state: true,
-                    value: showPickerDateFilter.dateFrom.value,
-                  }
+                onPress={() =>
+                  setShowPickerDateFilter({
+                    dateTo: {
+                      state: false,
+                      value: showPickerDateFilter.dateTo.value,
+                    },
+                    dateFrom: {
+                      state: true,
+                      value: showPickerDateFilter.dateFrom.value,
+                    },
                   })
                 }
               >
-                {!showPickerDateFilter.dateFrom.value ? `From Date` : `${showPickerDateFilter.dateFrom.value}`}
+                {!showPickerDateFilter.dateFrom.value
+                  ? `From Date`
+                  : `${showPickerDateFilter.dateFrom.value}`}
               </Button>
               {showPickerDateFilter.dateFrom.state && (
                 <DateTimePicker
                   mode="date"
                   display="spinner"
-                  onTouchCancel={() => setShowPickerDateFilter({
-                    ...showPickerDateFilter,
-                    dateFrom: {
-                      state: false,
-                      value: "",
-                    }
+                  onTouchCancel={() =>
+                    setShowPickerDateFilter({
+                      ...showPickerDateFilter,
+                      dateFrom: {
+                        state: false,
+                        value: "",
+                      },
                     })
                   }
                   maximumDate={new Date()}
-                  value={!showPickerDateFilter.dateFrom.value ? currentDate : new Date(showPickerDateFilter.dateFrom.value)}
+                  value={
+                    !showPickerDateFilter.dateFrom.value
+                      ? currentDate
+                      : new Date(showPickerDateFilter.dateFrom.value)
+                  }
                   textColor="black"
                   onChange={(event: any) => {
                     if (event.type == "set") {
-                      const formattedFromDate = new Date(event.nativeEvent.timestamp)
+                      const formattedFromDate = new Date(
+                        event.nativeEvent.timestamp
+                      )
                         .toISOString()
                         .split("T")[0];
-                        handleOnChangeShowPickerDate(
-                          formattedFromDate,
-                          setShowPickerDateFilter,
-                          showPickerDateFilter,
-                          "dateFrom",
-                          true,
-                        );
-                    }}
-                  }
+                      handleOnChangeShowPickerDate(
+                        formattedFromDate,
+                        setShowPickerDateFilter,
+                        showPickerDateFilter,
+                        "dateFrom",
+                        true
+                      );
+                    }
+                  }}
                   style={styles.dropdownIOSFrom}
                 />
               )}
@@ -559,37 +634,47 @@ export function Transactions({ navigation }: any) {
                   lineHeight: 25,
                 }}
                 color="black-only"
-                onPress={() => setShowPickerDateFilter({
-                  dateFrom: {
-                    state: false,
-                    value: showPickerDateFilter.dateFrom.value,
-                  },
-                  dateTo: {
-                    state: true,
-                    value: showPickerDateFilter.dateTo.value,
-                  }
+                onPress={() =>
+                  setShowPickerDateFilter({
+                    dateFrom: {
+                      state: false,
+                      value: showPickerDateFilter.dateFrom.value,
+                    },
+                    dateTo: {
+                      state: true,
+                      value: showPickerDateFilter.dateTo.value,
+                    },
                   })
                 }
               >
-                {!showPickerDateFilter.dateTo.value ? `To Date` : `${showPickerDateFilter.dateTo.value}`}
+                {!showPickerDateFilter.dateTo.value
+                  ? `To Date`
+                  : `${showPickerDateFilter.dateTo.value}`}
               </Button>
               {showPickerDateFilter.dateTo.state && (
                 <DateTimePicker
                   mode="date"
                   display="spinner"
-                  onTouchCancel={() => setShowPickerDateFilter({
-                    ...showPickerDateFilter,
-                    dateTo: {
-                      state: false,
-                      value: "",
-                    }
+                  onTouchCancel={() =>
+                    setShowPickerDateFilter({
+                      ...showPickerDateFilter,
+                      dateTo: {
+                        state: false,
+                        value: "",
+                      },
                     })
                   }
-                  value={!showPickerDateFilter.dateTo.value ? currentDate : new Date(showPickerDateFilter.dateTo.value)}
+                  value={
+                    !showPickerDateFilter.dateTo.value
+                      ? currentDate
+                      : new Date(showPickerDateFilter.dateTo.value)
+                  }
                   textColor="black"
                   onChange={(event: any) => {
                     if (event.type == "set") {
-                      const formattedToDate = new Date(event.nativeEvent.timestamp)
+                      const formattedToDate = new Date(
+                        event.nativeEvent.timestamp
+                      )
                         .toISOString()
                         .split("T")[0];
                       handleOnChangeShowPickerDate(
@@ -597,7 +682,7 @@ export function Transactions({ navigation }: any) {
                         setShowPickerDateFilter,
                         showPickerDateFilter,
                         "dateTo",
-                        true,
+                        true
                       );
                     }
                   }}
@@ -610,51 +695,78 @@ export function Transactions({ navigation }: any) {
         <View>
           <Seperator backgroundColor={vars["grey"]} />
           <View style={styles.listHead}>
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography>
+            <Typography
+              fontSize={16}
+              fontFamily="Nunito-SemiBold"
+              color="accent-blue"
+            >
+              Date
+            </Typography>
             <TouchableOpacity onPress={() => setSortByDate(!sortByDate)}>
-            { sortByDate ? 
-                <Ionicons name="arrow-up" style={styles.arrow} size={16} color="#4472C4" /> :
-                <Ionicons name="arrow-down" style={styles.arrow}  size={16} color="#4472C4" />
-            }
+              {sortByDate ? (
+                <Ionicons
+                  name="arrow-up"
+                  style={styles.arrow}
+                  size={16}
+                  color="#4472C4"
+                />
+              ) : (
+                <Ionicons
+                  name="arrow-down"
+                  style={styles.arrow}
+                  size={16}
+                  color="#4472C4"
+                />
+              )}
             </TouchableOpacity>
             {/* <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography> */}
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold">Total Amount</Typography>
+            <Typography fontSize={16} fontFamily="Nunito-SemiBold">
+              Total Amount
+            </Typography>
             {/* <Typography fontSize={16} fontFamily="Nunito-SemiBold">Balance</Typography> */}
             <Typography></Typography>
           </View>
-          <Seperator backgroundColor={vars['grey']} />
+          <Seperator backgroundColor={vars["grey"]} />
           <View>
-          { _groupedByDateTransactions ? Object.keys(_groupedByDateTransactions)
-          .sort((a, b) => {
-            return !sortByDate ? new Date(a).getTime() - new Date(b).getTime() : new Date(b).getTime() - new Date(a).getTime();
-          })
-          .map((date: string) => {
-            let _amount: number = 0;
-            const transactionsByDate = _groupedByDateTransactions[date].map((tx, index) => {
-              const { amount } = tx;
-              _amount = Number(_amount) + Number(amount);
-              return tx;
-            });
-            const shownData = {
-              date,
-              totalAmount: _amount.toString(),
-              //  balance: txData[date][0].running_balance,
-              //currency: txData[date][0].currency,
-              currency: _groupedByDateTransactions[date][0].currency,
-            };
-            return (
-              <TransactionsByDate
-                key={_groupedByDateTransactions[date][0].transaction_uuid}
-                shownData={shownData}
-                transactionsByDate={transactionsByDate}
-                totalAmount={_amount.toString()}
-              />
-            )
-            }) : null }
+            {_groupedByDateTransactions
+              ? Object.keys(_groupedByDateTransactions)
+                  .sort((a, b) => {
+                    return sortByDate
+                      ? new Date(a).getTime() - new Date(b).getTime()
+                      : new Date(b).getTime() - new Date(a).getTime();
+                  })
+                  .map((date: string) => {
+                    let _amount: number = 0;
+                    const transactionsByDate = _groupedByDateTransactions[
+                      date
+                    ].map((tx, index) => {
+                      const { amount } = tx;
+                      _amount = Number(_amount) + Number(amount);
+                      return tx;
+                    });
+                    const shownData = {
+                      date,
+                      totalAmount: _amount.toString(),
+                      //  balance: txData[date][0].running_balance,
+                      //currency: txData[date][0].currency,
+                      currency: _groupedByDateTransactions[date][0].currency,
+                    };
+                    return (
+                      <TransactionsByDate
+                        key={
+                          _groupedByDateTransactions[date][0].transaction_uuid
+                        }
+                        shownData={shownData}
+                        transactionsByDate={transactionsByDate}
+                        totalAmount={_amount.toString()}
+                      />
+                    );
+                  })
+              : null}
           </View>
-          <Seperator backgroundColor={vars['grey']} />
-          <View> 
-            <Pagination 
+          <Seperator backgroundColor={vars["grey"]} />
+          <View>
+            <Pagination
               handlePreviousPage={handlePreviousPage}
               handleNextPage={handleNextPage}
               page={current_page || 0}

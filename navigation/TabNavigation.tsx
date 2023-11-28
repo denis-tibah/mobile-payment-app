@@ -8,6 +8,7 @@ import CardIcon from "../assets/icons/Card"
 import PaymentIcon from "../assets/icons/Euro"
 import PayeeIcon from "../assets/icons/Beneficiary"
 import KeyboardDismiss from "../components/KeyboardDismiss";
+import StatementsIcon from "../assets/icons/StatementsIcon";
 
 const Tab = createBottomTabNavigator()
 export default function TabNavigation({ children }: any) {
@@ -27,6 +28,9 @@ export default function TabNavigation({ children }: any) {
             }
             if (route.name === screenNames.payments) {
               return <PaymentIcon size={35} color={focused ? "pink" : "soft-pink"} />
+            }
+            if (route.name === screenNames.statements) {
+              return <StatementsIcon size={35} color={focused ? "pink" : "soft-pink"} />
             }
             if (
               route.name === screenNames.payees ||

@@ -56,6 +56,7 @@ export const getAllBeneficiary = createAsyncThunk(
 export const addNewBeneficiary = createAsyncThunk(
   "addNewBeneficiary",
   async (params: any) => {
+    console.log("/createbeneficiaryfinxp", params);
     const { data } = await api.post("/createbeneficiaryfinxp", params);
     return data;
   }

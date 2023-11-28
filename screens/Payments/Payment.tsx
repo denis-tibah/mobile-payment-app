@@ -1,88 +1,75 @@
-import { View, ScrollView, Switch, PanResponder } from "react-native";
-import {
-  useNavigation,
-  useIsFocused,
-  useRoute,
-} from "@react-navigation/native";
+import { useEffect, useState } from "react";
+import { View, ScrollView } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import Spinner from "react-native-loading-spinner-overlay/lib";
+import { useDebounce } from "usehooks-ts";
 import DropDownPicker from "react-native-dropdown-picker";
+import { Text } from "react-native-paper";
 import CheckBox from "expo-checkbox";
+
 import Heading from "../../components/Heading";
 import { MainLayout } from "../../layout/Main/Main";
 import FormGroup from "../../components/FormGroup";
 import FixedBottomAction from "../../components/FixedBottomAction";
 import Button from "../../components/Button";
 import { styles } from "./styles";
-import { Formik } from "formik";
+import { useFormik } from "formik";
 import EuroIcon from "../../assets/icons/Euro";
 import TransactionIcon from "../../assets/icons/Transaction";
 import CodeIcon from "../../assets/icons/Code";
-import DocumentIcon from "../../assets/icons/Document";
 import ProfileIcon from "../../assets/icons/Profile";
-import { useDispatch, useSelector } from "react-redux";
 import { getCurrency } from "../../utils/helpers";
-import { useEffect, useState, useRef, useCallback } from "react";
 import { CodeModal } from "../../components/CodeModal/CodeModal";
 import {
   initiatePayment,
   processPayment,
   sendSmsPaymentVerification,
   setInitiatePaymentData,
+  ibanCheck,
 } from "../../redux/payment/paymentSlice";
-import LoadingScreen from "../../components/Loader/LoadingScreen";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
-import { delayCode } from "../../utils/delay";
 import {
   addNewBeneficiary,
   getAllBeneficiary,
 } from "../../redux/beneficiary/beneficiarySlice";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
-import { RootState } from "../../store";
-import { SearchFilter, getTransactions } from "../../redux/transaction/transactionSlice";
-import Spinner from "react-native-loading-spinner-overlay/lib";
-import { UserData } from "../../models/UserData";
-import { Text } from "react-native-paper";
 import { validationPaymentSchema } from "../../utils/validation";
 import { formatCurrencyToLocalEn } from "../../utils/helpers";
-import PaymentsIcon from "../../assets/icons/PaymentsIcon";
 
 export function Payment({ navigation }: any) {
+  const dispatch = useDispatch();
+
   const infoData = useSelector((state: any) => state.account.details);
   const validationSchema = validationPaymentSchema(infoData?.avlbal || 0);
-  const userData = useSelector((state: RootState) => state.auth.userData);
-  const dispatch = useDispatch();
   const beneficiaryList = useSelector((state: any) => state?.beneficiary?.data);
   const accountData = useSelector(
     (state: any) => state?.account?.details?.info
   );
-  const [isOtpValid, setIsOtpValid] = useState(false);
 
-  // const [displayModal, setDisplayModal] = useState(false);
+  const [isOtpValid, setIsOtpValid] = useState(false);
   const [showPaymentStatusModal, setShowPaymentStatusModal] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedPayee, setSelectedPayee] = useState(null);
   const [beneficiaryOptions, setBeneficiaryOptions] = useState<any>([]);
   const [toggledSavePayee, setToggledSavePayee] = useState<boolean>(false);
   const [isAddNewPayee, setIsAddNewPayee] = useState<boolean>(false);
+  const [beneficiaryIban, setBeneficiaryIban] = useState("");
 
-  const route = useRoute();
-  const screenName = route.name;
+  const debouncedBeneficiaryIban = useDebounce<string>(beneficiaryIban, 2000);
 
   const {
     transactionId,
     debtor_iban,
     creditor_iban,
-    creditor_name,
     amount,
     currency,
     reason,
-    remarks,
     account,
     recipientFirstname,
     recipientLastname,
     bic,
     savePayee,
-    type,
   } = useSelector((state: any) => state.payment.initiatePaymentData);
 
   const loading = useSelector((state: any) => state.beneficiary.loading);
@@ -94,25 +81,158 @@ export function Payment({ navigation }: any) {
     text: "Your payment was not successful",
     isError: true,
   };
-  const [paymentModalContent, setPaymentModalContent] = useState<{ title: string, text: string, isError: boolean}>(paymentContentDefault);
+  const [paymentModalContent, setPaymentModalContent] = useState<{
+    title: string;
+    text: string;
+    isError: boolean;
+  }>(paymentContentDefault);
   const [externalPayment, setExternalPayment] = useState("");
   const [displayOTPModal, setDisplayOTPModal] = useState<boolean>(false);
-  const { navigate }: any = useNavigation();
+
+  const {
+    handleSubmit,
+    handleChange,
+    handleBlur,
+    values,
+
+    touched,
+    errors,
+    setFieldValue,
+    setValues,
+  } = useFormik({
+    validationSchema: validationSchema,
+    validateOnChange: true,
+    initialValues: {
+      recipientname: "",
+      recipientFirstname: "",
+      recipientLastname: "",
+      creditor_iban: "",
+      bic: "",
+      balance: infoData?.avlbal || 0,
+      amount: 0,
+      currency: "EUR",
+      reason: "",
+    },
+    onSubmit: (values) => {
+      setIsLoading(true);
+
+      dispatch(
+        initiatePayment({
+          recipientFirstname: getFirstAndLastName(values.recipientname)
+            .firstname,
+          recipientLastname: getFirstAndLastName(values.recipientname).lastname,
+          debtor_iban: accountData?.iban,
+          creditor_iban: values.creditor_iban,
+          creditor_name: values.recipientname,
+          bic: values.bic,
+          account: accountData?.account_number,
+          amount: values.amount,
+          currency: "EUR",
+          reason: values.reason,
+          type: externalPayment,
+        }) as any
+      )
+        .unwrap()
+        .then((payload: { transaction_id: string }) => {
+          if (payload.transaction_id) {
+            dispatch(
+              setInitiatePaymentData({
+                recipientFirstname: getFirstAndLastName(values.recipientname)
+                  .firstname,
+                recipientLastname: getFirstAndLastName(values.recipientname)
+                  .lastname,
+                debtor_iban: accountData?.iban,
+                creditor_iban: values.creditor_iban,
+                creditor_name: values.recipientname,
+                bic: values.bic,
+                account: accountData?.account_number,
+                amount: values.amount,
+                currency: "EUR",
+                reason: values.reason,
+                transactionId: payload.transaction_id,
+                savePayee,
+                type: externalPayment,
+              })
+            );
+            let _paymentRequest = {
+              identifier: payload.transaction_id,
+              type: "transfer",
+              amount: values.amount,
+              currency: values.currency,
+            };
+            setPaymentRequest(_paymentRequest);
+            dispatch(sendSmsPaymentVerification(_paymentRequest) as any)
+              .unwrap()
+              .then((payload: { message: string; status: string }) => {
+                const { status } = payload;
+                if (status === "success") {
+                  setIsOtpValid(true);
+                  setDisplayOTPModal(true);
+                }
+              })
+              .catch((error: any) => {
+                console.error(error);
+                setIsOtpValid(false);
+              });
+          }
+        })
+        .catch((error: any) => {
+          console.error(error);
+          setIsLoading(false);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    },
+  });
+  const fetchBicDetails = async (iban?: string) => {
+    setIsLoading(true);
+    try {
+      let search: any = {
+        creditor_iban: `${iban}`,
+      };
+      const payload = await dispatch<any>(ibanCheck(search));
+      console.log(
+        "🚀 ~ file: Payment.tsx:201 ~ fetchBicDetails ~ payload:",
+        payload
+      );
+      if (payload) {
+        if (
+          (payload?.payload?.result === 200 ||
+            payload?.payload?.result === "200") &&
+          payload?.payload?.data?.bank?.bic
+        ) {
+          setIsLoading(false);
+          setFieldValue("bic", payload?.payload?.data?.bank?.bic);
+        } else {
+          setFieldValue("bic", "");
+          setIsLoading(false);
+        }
+      }
+    } catch (error) {
+      console.log({ error });
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
+    if (debouncedBeneficiaryIban && debouncedBeneficiaryIban.length) {
+      fetchBicDetails(debouncedBeneficiaryIban);
+    }
+  }, [debouncedBeneficiaryIban]);
 
+  useEffect(() => {
     if (!beneficiaryList.length) {
       fetchAllPayees();
     }
-        setBeneficiaryOptions([
-          ...beneficiaryList.map((beneficiary: any) => ({
-            label: beneficiary.name,
-            value: beneficiary.uuid,
-          })),
-          { label: "Add New", value: "none" },
-        ]);
-  // }, [beneficiaryList]);
-}, [beneficiaryList?.length]);
+    setBeneficiaryOptions([
+      ...beneficiaryList.map((beneficiary: any) => ({
+        label: beneficiary.name,
+        value: beneficiary.uuid,
+      })),
+      { label: "Add New", value: "none" },
+    ]);
+  }, [beneficiaryList?.length]);
 
   const fetchAllPayees = async () => {
     try {
@@ -129,27 +249,24 @@ export function Payment({ navigation }: any) {
     return {
       firstname: str.slice(0, firstSpace),
       lastname: str.slice(firstSpace + 1),
-      // lastname: data.slice(0, data?.indexOf(" ")),
     };
   }
 
   const handleResendSMSVerificationCode = () => {
     setIsLoading(true);
-    dispatch(
-      sendSmsPaymentVerification(paymentRequest) as any
-    )
-    .unwrap()
-    .then((payload: { message: string, status: string }) => {
-      const { status } = payload;
-      if (status === "success") {
-        setIsLoading(false);
-      }
-    })
-    .catch((error: any) => {
-      console.error(error);
-      setIsOtpValid(false);
-    });
-  }
+    dispatch(sendSmsPaymentVerification(paymentRequest) as any)
+      .unwrap()
+      .then((payload: { message: string; status: string }) => {
+        const { status } = payload;
+        if (status === "success") {
+          setIsLoading(false);
+        }
+      })
+      .catch((error: any) => {
+        console.error(error);
+        setIsOtpValid(false);
+      });
+  };
 
   const handleSelectPayee = (item: any, values: any, setValues: any) => {
     if (item === "none") {
@@ -175,8 +292,6 @@ export function Payment({ navigation }: any) {
       bic: beneficiarySelected.bic,
       creditor_iban: beneficiarySelected?.iban,
     });
-
-    // console.log('*****Value*****',values);
   };
 
   function gotoLimitsPage() {
@@ -198,14 +313,17 @@ export function Payment({ navigation }: any) {
     }
   }, [isExternalPayment]);
 
-  const handleProccessPayment = async ({ code } : { code: string }) => {
+  const handleProccessPayment = async ({ code }: { code: string }) => {
     if (!isOtpValid) {
       return;
     }
     if (isOtpValid) {
-    setIsLoading(true);
-    console.log( '*****creditor_name:***********' ,recipientFirstname+ " " + recipientLastname)
-    await dispatch(
+      setIsLoading(true);
+      console.log(
+        "*****creditor_name:***********",
+        recipientFirstname + " " + recipientLastname
+      );
+      await dispatch(
         processPayment({
           identifier: transactionId,
           code: code,
@@ -227,8 +345,8 @@ export function Payment({ navigation }: any) {
               title: "Payment Successful",
               text: "Your payment was successful",
               isError: false,
-            })
-              // if the user chose to save as a beneficiary
+            });
+            // if the user chose to save as a beneficiary
             if (toggledSavePayee) {
               dispatch(
                 addNewBeneficiary({
@@ -250,16 +368,15 @@ export function Payment({ navigation }: any) {
           });
         })
         .finally(() => {
-        setShowPaymentStatusModal(true);
-        setIsLoading(false);
-      });
+          setShowPaymentStatusModal(true);
+          setIsLoading(false);
+        });
     }
   };
 
   return (
     <MainLayout navigation={navigation}>
-      <Spinner visible={loading} />
-      <LoadingScreen isLoading={isLoading} />
+      <Spinner visible={loading || isLoading} />
       <ScrollView bounces={false}>
         <View style={styles.container}>
           <Heading
@@ -282,264 +399,154 @@ export function Payment({ navigation }: any) {
             }
           />
         </View>
-        <Formik
-          validationSchema={validationSchema}
-          validateOnChange={true}
-          initialValues={{
-            recipientname: "",
-            recipientFirstname: "",
-            recipientLastname: "",
-            creditor_iban: "",
-            bic: "",
-            balance: infoData?.avlbal || 0,
-            // balance: infoData?.curbal || 0,
-            amount: 0,
-            currency: "EUR",
-            reason: "",
-          }}
-          onSubmit={(values) => {
-            setIsLoading(true);
-            // console.log( '*****1  creditor_name:***********' ,getFirstAndLastName(values.recipientname) + " " + getFirstAndLastName(values.recipientname))
-            // console.log('******1 beneficiaryOptions*************',values.recipientname);
-
-            dispatch(
-              initiatePayment({
-                recipientFirstname: getFirstAndLastName(values.recipientname)
-                  .firstname,
-                recipientLastname: getFirstAndLastName(values.recipientname)
-                  .lastname,
-                debtor_iban: accountData?.iban,
-                creditor_iban: values.creditor_iban,
-                // creditor_name: recipientFirstname + " " + recipientLastname,
-                creditor_name: values.recipientname,
-                bic: values.bic,
-                account: accountData?.account_number,
-                amount: values.amount,
-                currency: "EUR",
-                reason: values.reason,
-                type: externalPayment,
-              }) as any
-            )
-              .unwrap()
-              .then((payload: {transaction_id: string}) => {
-
-                // console.log( '*****2 creditor_name:***********' ,getFirstAndLastName(values.recipientname) + " " + getFirstAndLastName(values.recipientname))
-                // console.log('******2 beneficiaryOptions*************',values.recipientname);
-                if (payload.transaction_id) {
-                  dispatch(
-                    setInitiatePaymentData({
-                      recipientFirstname: getFirstAndLastName(
-                        values.recipientname
-                      ).firstname,
-                      recipientLastname: getFirstAndLastName(
-                        values.recipientname
-                      ).lastname,
-                      debtor_iban: accountData?.iban,
-                      creditor_iban: values.creditor_iban,
-                      // creditor_name:recipientFirstname + " " + recipientLastname,
-                      creditor_name: values.recipientname,
-                      bic: values.bic,
-                      account: accountData?.account_number,
-                      amount: values.amount,
-                      currency: "EUR",
-                      reason: values.reason,
-                      transactionId: payload.transaction_id,
-                      savePayee,
-                      type: externalPayment,
-                    })
-                  );
-                  let _paymentRequest = {
-                    identifier: payload.transaction_id,
-                    type: "transfer",
-                    amount: values.amount,
-                    currency: values.currency,
-                  }
-                  setPaymentRequest(_paymentRequest);
-                  dispatch(
-                    sendSmsPaymentVerification(_paymentRequest) as any
-                  )
-                  .unwrap()
-                  .then((payload: { message: string, status: string }) => {
-                    const { status } = payload;
-                    if (status === "success") {
-                      setIsOtpValid(true);
-                      setDisplayOTPModal(true);
-                    }
-                  })
-                  .catch((error: any) => {
-                    console.error(error);
-                    setIsOtpValid(false);
-                  });
+        <View style={styles.content}>
+          {displayOTPModal && (
+            <CodeModal
+              title={"Verify your payment"}
+              subtitle={
+                "You will receive an sms to your mobile device. Please enter this code below."
+              }
+              isOpen
+              onSubmit={handleProccessPayment}
+              handleResendSMSVerificationCode={handleResendSMSVerificationCode}
+              onCancel={() => setDisplayOTPModal(false)}
+            />
+          )}
+          {showPaymentStatusModal && (
+            <SuccessModal
+              isError={paymentModalContent.isError}
+              title={paymentModalContent.title}
+              text={paymentModalContent.text}
+              isOpen
+              onClose={() => setShowPaymentStatusModal(false)}
+            />
+          )}
+          <View style={{ zIndex: 1 }}>
+            <DropDownPicker
+              placeholder="Payee name"
+              style={styles.dropdown}
+              open={open}
+              value={selectedPayee}
+              items={beneficiaryOptions}
+              setOpen={setOpen}
+              setValue={setSelectedPayee}
+              onChangeValue={(v) => handleSelectPayee(v, values, setValues)}
+              listMode="SCROLLVIEW"
+              dropDownContainerStyle={styles.dropdownContainer}
+              zIndex={100}
+            />
+            <Seperator
+              backgroundColor={vars["light-grey"]}
+              marginBottom={18}
+              zIndex={-1}
+            />
+          </View>
+          {isAddNewPayee && (
+            <View>
+              <FormGroup
+                validationError={
+                  touched.recipientname ? errors.recipientname : null
                 }
-              })
-              .catch((error: any) => {
-                console.error(error);
-              })
-              .finally(() => {
-                setIsLoading(false);
-              });
-          }}
-        >
-          {({
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            values,
-            errors,
-            setValues,
-            touched,
-          }) => (
-            <View style={styles.content}>
-              {displayOTPModal && (
-                <CodeModal
-                  title={"Verify your payment"}
-                  subtitle={
-                    "You will receive an sms to your mobile device. Please enter this code below."
-                  }
-                  isOpen
-                  onSubmit={handleProccessPayment}
-                  handleResendSMSVerificationCode={handleResendSMSVerificationCode}
-                  onCancel={() => setDisplayOTPModal(false)}
-                />
-              )}
-              {showPaymentStatusModal && (
-                <SuccessModal
-                  isError={paymentModalContent.isError}
-                  title={paymentModalContent.title}
-                  text={paymentModalContent.text}
-                  isOpen
-                  onClose={() => setShowPaymentStatusModal(false)}
-                />
-              )}
-              <View style={{ zIndex: 1 }}>
-                <DropDownPicker
+              >
+                <FormGroup.Input
+                  name="recipientname"
+                  onChangeText={handleChange("recipientname")}
+                  onBlur={handleBlur("recipientname")}
+                  value={values.recipientname}
+                  icon={<ProfileIcon />}
                   placeholder="Payee name"
-                  style={styles.dropdown}
-                  open={open}
-                  value={selectedPayee}
-                  items={beneficiaryOptions}
-                  setOpen={setOpen}
-                  setValue={setSelectedPayee}
-                  onChangeValue={(v) => handleSelectPayee(v, values, setValues)}
-                  listMode="SCROLLVIEW"
-                  dropDownContainerStyle={styles.dropdownContainer}
-                  zIndex={100}
                 />
-                <Seperator
-                  backgroundColor={vars["light-grey"]}
-                  marginBottom={18}
-                  zIndex={-1}
-                />
-              </View>
-              {isAddNewPayee && (
-                <View>
-                  <FormGroup
-                    validationError={
-                      touched.recipientname ? errors.recipientname : null
-                    }
-                  >
-                    <FormGroup.Input
-                      name="recipientname"
-                      onChangeText={handleChange("recipientname")}
-                      onBlur={handleBlur("recipientname")}
-                      value={values.recipientname}
-                      icon={<ProfileIcon />}
-                      placeholder="Payee name"
-                    />
-                  </FormGroup>
-                </View>
-              )}
-              <View>
-                <FormGroup
-                  validationError={touched.amount ? errors.amount : null}
-                >
-                  <FormGroup.Input
-                    onChangeText={handleChange("amount")}
-                    name="amount"
-                    onBlur={handleBlur("amount")}
-                    value={values.amount}
-                    type="number"
-                    keyboardType="numeric"
-                    placeholder="Amount to send"
-                    icon={<EuroIcon />}
-                  />
-                </FormGroup>
-              </View>
-              <View>
-                <FormGroup>
-                  <View style={{ display: "flex", flexDirection: "row" }}>
-                    <Text style={{ color: "#808080", lineHeight: 36 }}>
-                      {" "}
-                      Available balance:{" "}
-                    </Text>
-                    <FormGroup.Input
-                      editable={false}
-                      value={`${getCurrency(infoData?.currency)} ${
-                        (formatCurrencyToLocalEn(infoData?.avlbal) || 0)
-                          // (Number(infoData?.curbal) || 0)
-                          .toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          }) || 0
-                      }`}
-                      def
-                      icon={<EuroIcon />}
-                    />
-                  </View>
-                </FormGroup>
-              </View>
-              <View>
-                <FormGroup
-                  validationError={
-                    touched.creditor_iban ? errors.creditor_iban : null
-                  }
-                >
-                  <FormGroup.Input
-                    name="creditor_iban"
-                    editable={!selectedPayee || isAddNewPayee}
-                    onChangeText={handleChange("creditor_iban")}
-                    onBlur={handleBlur("creditor_iban")}
-                    value={values.creditor_iban}
-                    placeholder="IBAN"
-                    icon={<CodeIcon />}
-                  />
-                </FormGroup>
-              </View>
-              <View>
-                <FormGroup validationError={touched.bic ? errors.bic : null}>
-                  <FormGroup.Input
-                    name="bic"
-                    editable={!selectedPayee || isAddNewPayee}
-                    onChangeText={handleChange("bic")}
-                    onBlur={handleBlur("bic")}
-                    value={values.bic}
-                    placeholder="BIC"
-                    icon={<CodeIcon />}
-                  />
-                </FormGroup>
-                <Seperator
-                  marginBottom={18}
-                  backgroundColor={vars["light-grey"]}
+              </FormGroup>
+            </View>
+          )}
+          <View>
+            <FormGroup validationError={touched.amount ? errors.amount : null}>
+              <FormGroup.Input
+                onChangeText={handleChange("amount")}
+                name="amount"
+                onBlur={handleBlur("amount")}
+                value={values.amount}
+                type="number"
+                keyboardType="numeric"
+                placeholder="Amount to send"
+                icon={<EuroIcon />}
+              />
+            </FormGroup>
+          </View>
+          <View>
+            <FormGroup>
+              <View style={{ display: "flex", flexDirection: "row" }}>
+                <Text style={{ color: "#808080", lineHeight: 36 }}>
+                  {" "}
+                  Available balance:{" "}
+                </Text>
+                <FormGroup.Input
+                  editable={false}
+                  value={`${getCurrency(infoData?.currency)} ${
+                    (formatCurrencyToLocalEn(infoData?.avlbal) || 0)
+                      // (Number(infoData?.curbal) || 0)
+                      .toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }) || 0
+                  }`}
+                  def
+                  icon={<EuroIcon />}
                 />
               </View>
-              <View>
-                <FormGroup
-                  validationError={touched.reason ? errors.reason : null}
-                >
-                  <FormGroup.Input
-                    name="reason"
-                    onChangeText={handleChange("reason")}
-                    onBlur={handleBlur("reason")}
-                    value={values.reason}
-                    placeholder="Reference"
-                    icon={<CodeIcon />}
-                  />
-                </FormGroup>
-              </View>
+            </FormGroup>
+          </View>
+          <View>
+            <FormGroup
+              validationError={
+                touched.creditor_iban ? errors.creditor_iban : null
+              }
+            >
+              <FormGroup.Input
+                name="creditor_iban"
+                editable={!selectedPayee || isAddNewPayee}
+                /* onChangeText={handleChange("creditor_iban")} */
+                onChangeText={(value: string) => {
+                  setBeneficiaryIban(value);
+                  setFieldValue("creditor_iban", value);
+                }}
+                onBlur={handleBlur("creditor_iban")}
+                value={values.creditor_iban}
+                placeholder="IBAN"
+                icon={<CodeIcon />}
+              />
+            </FormGroup>
+          </View>
+          <View>
+            <FormGroup validationError={touched.bic ? errors.bic : null}>
+              <FormGroup.Input
+                name="bic"
+                editable={!selectedPayee || isAddNewPayee}
+                onChangeText={handleChange("bic")}
+                onBlur={handleBlur("bic")}
+                value={values.bic}
+                placeholder="BIC"
+                icon={<CodeIcon />}
+              />
+            </FormGroup>
+            <Seperator marginBottom={18} backgroundColor={vars["light-grey"]} />
+          </View>
+          <View>
+            <FormGroup validationError={touched.reason ? errors.reason : null}>
+              <FormGroup.Input
+                name="reason"
+                onChangeText={handleChange("reason")}
+                onBlur={handleBlur("reason")}
+                value={values.reason}
+                placeholder="Reference"
+                icon={<CodeIcon />}
+              />
+            </FormGroup>
+          </View>
 
-              {/* start: date:03-08-23: temp disabled by Aristos */}
+          {/* start: date:03-08-23: temp disabled by Aristos */}
 
-              {/* <View style={styles.externalPayment__switch}>
+          {/* <View style={styles.externalPayment__switch}>
                 <View style={styles.externalPayment__switch__text}>
                   <PaymentsIcon color="blue" size={18} />
                   <Text>External Payment Y/N</Text>
@@ -556,29 +563,23 @@ export function Payment({ navigation }: any) {
                   />
                 </View>
               </View> */}
-              {/* end: date:03-08-23: temp disabled by Aristos */}
+          {/* end: date:03-08-23: temp disabled by Aristos */}
 
-              <View style={{ display: "flex", flexDirection: "row" }}>
-                <Button
-                  color="blue-only"
-                  withLine={true}
-                  onPress={gotoLimitsPage}
-                >
-                  VIEW CURRENT LIMIT
-                </Button>
-              </View>
-              <FixedBottomAction>
-                <Button
-                  onPress={handleSubmit}
-                  color="light-pink"
-                  leftIcon={<TransactionIcon color="pink" size={16} />}
-                >
-                  Submit payment
-                </Button>
-              </FixedBottomAction>
-            </View>
-          )}
-        </Formik>
+          <View style={{ display: "flex", flexDirection: "row" }}>
+            <Button color="blue-only" withLine={true} onPress={gotoLimitsPage}>
+              VIEW CURRENT LIMIT
+            </Button>
+          </View>
+          <FixedBottomAction>
+            <Button
+              onPress={handleSubmit}
+              color="light-pink"
+              leftIcon={<TransactionIcon color="pink" size={16} />}
+            >
+              Submit payment
+            </Button>
+          </FixedBottomAction>
+        </View>
       </ScrollView>
     </MainLayout>
   );

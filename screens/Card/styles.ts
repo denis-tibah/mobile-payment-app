@@ -42,6 +42,7 @@ export const styles: any = StyleSheet.create<any>({
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
+    zIndex: 99,
   },
   incomeBox: {
     paddingTop: 24,
@@ -98,6 +99,23 @@ export const styles: any = StyleSheet.create<any>({
     justifyContent: "space-between",
     borderBottomColor: vars.grey,
     borderBottomWidth: 1,
-
+  },
+  headerTitleBoxTerminateModal: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 24,
+  },
+  headerTitleTerminateModal: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: vars.black,
+  },
+  buttonContainerTerminateModal: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 });

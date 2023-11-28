@@ -17,6 +17,7 @@ export interface CardState {
   transactions: CardTransaction[];
   loading: boolean;
   error: boolean;
+  primaryCardID?: string;
   errorMessage?: string;
 }
 
@@ -25,13 +26,22 @@ const initialState: CardState = {
   transactions: [],
   loading: true,
   error: false,
+  primaryCardID: undefined,
   errorMessage: undefined,
 };
 
 export const cardSlice = createSlice({
   name: "card",
   initialState,
-  reducers: {},
+  reducers: {
+    setPrimaryCardID: (state, action) => {
+      state.primaryCardID = action.payload;
+    },
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
   extraReducers: (builder) => {
     //enroll for card scheme
     builder.addCase(enrollforCardScheme.pending, (state) => {
@@ -217,7 +227,7 @@ export const getCardTransactions = createAsyncThunk(
 
 export const terminateCard = createAsyncThunk(
   "terminateCard",
-  async (params: { account_id: number }) => {
+  async (params: { account_id: number, card_id: number }) => {
     try {
       const { data } = await api.post("/terminatecardfinxpV2", params);
       return data;
@@ -227,4 +237,5 @@ export const terminateCard = createAsyncThunk(
   }
 );
 
+export const { setPrimaryCardID } = cardSlice.actions;
 export default cardSlice.reducer;

@@ -8,8 +8,8 @@ export const styles = StyleSheet.create<any>({
   },
   creditCardImg: {
     position: "relative",
-    width: 303,
-    height: 191,
+    width: 340,
+    height: 225,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 12,
@@ -28,7 +28,6 @@ export const styles = StyleSheet.create<any>({
     alignItems: "center",
     width: "100%",
     height: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
   },
   timer: {
     color: "#000",

@@ -56,9 +56,12 @@ export const styles:any = StyleSheet.create<any>({
   detailMobile: {
     marginBottom: 12,
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     flexWrap: 'wrap',
     maxWidth: 230,
+  },
+  detailMobileInnerDetail: {
+    flex: 1,
   },
   detailMobileForEachTransactionContainer: {
     backgroundColor: '#fff',
@@ -74,6 +77,8 @@ export const styles:any = StyleSheet.create<any>({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    // borderBottomWidth: 1,
+    // borderBottomColor: vars["light-grey"],
     // paddingRight: 35,
     width: '100%',
   },
@@ -82,6 +87,23 @@ export const styles:any = StyleSheet.create<any>({
     fontFamily: "Nunito-Regular",
     fontSize: 14,
     paddingRight: 10,
+    fontWeight: 600,
+  },
+  valueDetailMobileStatusSuccess: {
+    color: "#0DCA9D",
+    fontSize: 14,
+    fontWeight: 600,
+    paddingLeft: 10,
+    backgroundColor: "#E7FAF5",
+    width: 130,
+  },
+  valueDetailMobileStatusFailed: {
+    color: "#FF7171",
+    fontSize: 14,
+    fontWeight: 600,
+    paddingLeft: 10,
+    backgroundColor: "#FFEDED",
+    width: 130,
   },
   nameContainer: {
     display: "flex",

@@ -5,7 +5,8 @@ import {
   RefreshControl,
   TouchableOpacity,
 } from "react-native";
-import { useFocusEffect, useRoute } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
+import * as Clipboard from "expo-clipboard";
 import { useDispatch, useSelector } from "react-redux";
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
@@ -57,7 +58,6 @@ export function MyAccount({ navigation }: any) {
   })
 
   const fetchTransactions = async (filterParams?: {pageNumber?: number, status?: string}) => {
-    const { pageNumber, status } = filterParams;
     try {
       setPaginateRefresh(true);
       if (userData && userData?.id) {
@@ -65,9 +65,9 @@ export function MyAccount({ navigation }: any) {
           account_id: userData?.id.toString(),
           sort: "id",
           direction: "desc",
-          status: status ? status : defaultStatus, // commented out since the webservice breaks if status is added in the filter - arjajy: august 22, 2023
+          status: filterParams?.status ? filterParams?.status : defaultStatus, // commented out since the webservice breaks if status is added in the filter - arjajy: august 22, 2023
           limit: 20,
-          page: pageNumber || 1,
+          page: filterParams?.pageNumber || 1,
         };
         await dispatch<any>(getTransactionsWithFilters(search));
         await dispatch<any>(getAccountDetails(userData.id));

@@ -116,7 +116,8 @@ export const styles:any = StyleSheet.create<any>({
   valueDetailMobile: {
     color: "#000000",
     fontSize: 14,
-    paddingLeft: 6,
+    paddingLeft: 2,
+    marginTop: 3
   },
   amountDetailMobile: {
     fontSize: 14,

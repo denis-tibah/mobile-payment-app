@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import * as Clipboard from "expo-clipboard";
+
 import { useDispatch, useSelector } from "react-redux";
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
@@ -26,7 +26,6 @@ import Box from "../../components/Box";
 import { getAccountDetails } from "../../redux/account/accountSlice";
 import { getCurrency, groupedByDateTransactions } from "../../utils/helpers";
 import Spinner from "react-native-loading-spinner-overlay/lib";
-import { getPendingAmount, arrayChecker } from "../../utils/helpers";
 import { Transaction } from "../../utils/types";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
@@ -103,7 +102,7 @@ export function MyAccount({ navigation }: any) {
   // reset page to 1 when the component unmounts
   useFocusEffect(
     useCallback(() => {
-      fetchTransactions({pageNumber: 1});
+      fetchTransactions();
       return () => {
         setPage(1);
       };

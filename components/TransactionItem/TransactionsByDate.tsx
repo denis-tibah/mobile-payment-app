@@ -136,10 +136,11 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                       </Box>
                       <Box style={styles.detailMobile}>
                         <Text style={styles.nameDetailMobile}>Transaction Status</Text>
-                        <View style={{overflow: 'hidden', width: '36%', borderRadius: 8}}>
+                        <View style={{overflow: 'hidden', width: '36%', borderRadius: 8, marginTop: 4}}>
                           <Text style={ transaction?.status === defaultStatus ? styles.valueDetailMobileStatusSuccess : styles.valueDetailMobileStatusFailed}>
                             {transaction?.status}
-                          </Text> { /* add UI here to show the reason for a unsuccessfull transaction */}
+                            { /* add UI here to show the reason for a unsuccessfull transaction */}
+                          </Text>
                         </View>
                       </Box>
                       <Divider style={{marginVertical: 5}} />

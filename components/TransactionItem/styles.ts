@@ -11,7 +11,6 @@ export const styles:any = StyleSheet.create<any>({
     flexDirection: "row",
     alignItems: "center",
     paddingLeft: 10,
-    // paddingRight: 12,
     paddingRight: 68,
     justifyContent: "space-between",
     borderTopColor: vars["light-grey"],
@@ -30,9 +29,8 @@ export const styles:any = StyleSheet.create<any>({
   
   },
   arrowCell: {
-
     paddingLeft: 15,
-  
+    justifyContent: "flex-end",
   },
   separator: {
     width: "100%",
@@ -86,6 +84,9 @@ export const styles:any = StyleSheet.create<any>({
     paddingRight: 10,
   },
   nameContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
     maxWidth: 250,
     flex: 1,
     marginRight: 50
@@ -93,6 +94,7 @@ export const styles:any = StyleSheet.create<any>({
   valueDetailMobile: {
     color: "#000000",
     fontSize: 14,
+    paddingLeft: 6,
   },
   amountDetailMobile: {
     fontSize: 14,

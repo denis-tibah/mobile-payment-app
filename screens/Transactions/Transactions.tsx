@@ -76,8 +76,8 @@ export function Transactions({ navigation }: any) {
   const transactions = useSelector(
     (state: RootState) => state?.transaction.data
   );
-  const current_page = transactions?.current_page;
-  const last_page = transactions?.last_page;
+  const currentPage = transactions?.current_page;
+  const lastPage = transactions?.last_page;
   const transactionsList = transactions?.transactions;
   const _groupedByDateTransactions =
     groupedByDateTransactions(transactionsList);
@@ -231,8 +231,8 @@ export function Transactions({ navigation }: any) {
   };
 
   const handlePreviousPage = () => {
-    if (current_page > 1) {
-      const _currentPage = current_page - 1;
+    if (currentPage > 1) {
+      const _currentPage = currentPage - 1;
       fetchTransactionsWithFilters({
         ...searchFieldData,
         page: _currentPage,
@@ -241,8 +241,8 @@ export function Transactions({ navigation }: any) {
   };
 
   const handleNextPage = () => {
-    if (current_page < last_page) {
-      const _currentPage = current_page + 1;
+    if (currentPage < lastPage) {
+      const _currentPage = currentPage + 1;
       fetchTransactionsWithFilters({
         ...searchFieldData,
         page: _currentPage,
@@ -747,8 +747,6 @@ export function Transactions({ navigation }: any) {
                     const shownData = {
                       date,
                       totalAmount: _amount.toString(),
-                      //  balance: txData[date][0].running_balance,
-                      //currency: txData[date][0].currency,
                       currency: _groupedByDateTransactions[date][0].currency,
                     };
                     return (
@@ -769,8 +767,8 @@ export function Transactions({ navigation }: any) {
             <Pagination
               handlePreviousPage={handlePreviousPage}
               handleNextPage={handleNextPage}
-              page={current_page || 0}
-              lastPage={last_page || 0}
+              page={currentPage || 0}
+              lastPage={lastPage || 0}
             />
           </View>
         </View>

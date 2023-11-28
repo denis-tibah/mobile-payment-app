@@ -18,6 +18,7 @@ import { generateTransactionPDF } from "../../utils/files";
 import { printAsync } from "expo-print";
 import { Transaction } from "../../models/Transactions";
 import ArrowRight from "../../assets/icons/ArrowRight";
+import CardIcon from "../../assets/icons/Card";
 
 interface TransactionItemProps {
   transactionsByDate: Transaction[];
@@ -62,7 +63,8 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
           >
             <Box style={styles.detailMobileForEachTransactionWrapper}>
               <View style={styles.nameContainer}>
-                <Text style={styles.nameDetailMobile}>Name:</Text>
+                {/* <Text style={styles.nameDetailMobile}>Name:</Text> */}
+                <CardIcon size={14} color={"heavy-grey"} />
                 <Text numberOfLines={1} style={styles.valueDetailMobile}>{transaction.name}</Text>
               </View>
               <View style={{ flex: 1, display: 'flex', flexDirection: 'row', alignSelf: 'auto', justifyContent: 'flex-end' }}>
@@ -81,36 +83,38 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                     />
                   )}
                 </Box>
-                <Text
-                  style={[
-                    styles.amountDetailMobile,
-                    Number(transaction.amount) > 0
-                      ? styles.amountAddedDetail
-                      : styles.amountDeductedDetail,
-                  ]}
-                >
-                  {/* {`${isBalanceAdded ? `+ ` : `- `} ${transaction.amount}`} */}
-                  {/* {transaction.amount} */}
-                  {formatAmountTableValue(
-                    transaction.amount,
-                    shownData.currency
-                  )}
-
-                  <TouchableOpacity
-                    onPress={() => handleToggleDetails(index)}
-                    style={{ paddingTop: 10, paddingLeft: 10 }}
+                <Box>
+                  <Text
+                    style={[
+                      styles.amountDetailMobile,
+                      Number(transaction.amount) > 0
+                        ? styles.amountAddedDetail
+                        : styles.amountDeductedDetail,
+                    ]}
                   >
-                    {openTransactionIndex === index ? (
-                      <ArrowDown
-                        color="pink"
-                        size={10}
-                        style={{ paddingRight: 15 }}
-                      />
-                    ) : (
-                      <ArrowRight color="pink" size={10} />
+                    {/* {`${isBalanceAdded ? `+ ` : `- `} ${transaction.amount}`} */}
+                    {/* {transaction.amount} */}
+                    {formatAmountTableValue(
+                      transaction.amount,
+                      shownData.currency
                     )}
-                  </TouchableOpacity>
-                </Text>
+
+                    <TouchableOpacity
+                      onPress={() => handleToggleDetails(index)}
+                      style={{ paddingTop: 10, paddingLeft: 10 }}
+                    >
+                      {openTransactionIndex === index ? (
+                        <ArrowDown
+                          color="pink"
+                          size={10}
+                          style={{ paddingRight: 15 }}
+                        />
+                      ) : (
+                        <ArrowRight color="pink" size={10} />
+                      )}
+                    </TouchableOpacity>
+                  </Text>
+                </Box>
               </View>
             </Box>
             <View>
@@ -176,24 +180,35 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
       <Pressable onPress={handleOnOpen}>
         <View style={[styles.base, isOpen && styles.isOpen]}>
           <Box
-            display="flex"
-            paddingLeft={12}
-            flexDirection="row"
-            alignItems="center"
-            width="40%"
+            style={{ 
+              textAlign:'left', 
+              // alignItems: 'start', 
+              color: 'white', 
+              borderRadius: 5,
+              padding: 5, 
+              display: 'flex', 
+              flexDirection: 'row',
+              width:"45%"
+            }}
           >
             <CalenderEmptyIcon size={14} color="blue" />
-            <Typography fontSize={14}>
+            <Typography fontSize={14} textAlign="left">
               {" "}
               {getFormattedDate(shownData.date)}
             </Typography>
           </Box>
           <Box
-            width="45%"
-            paddingLeft={80}
-            display="flex"
-            flexDirection="row"
-            alignItems="center"
+            style={{ 
+              textAlign:'center', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              color: 'white', 
+              borderRadius: 5,
+              padding: 5, 
+              display: 'flex', 
+              flexDirection: 'row',
+              width:"45%"
+            }}
           >
             {shownData.currency === "EUR" ? (
               <EuroIcon size={18} color={+totalAmount > 0 ? "green" : "red"} />
@@ -205,16 +220,19 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
             </Typography>
           </Box>
           <Box
-            width="40%"
-            display="flex"
-            flexDirection="row"
-            alignItems="center"
+            style={{ 
+              textAlign:'center', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              color: 'white', 
+              borderRadius: 5,
+              padding: 5, 
+              display: 'flex', 
+              flexDirection: 'row',
+              width:"45%"
+            }}
           >
-            {/* <EuroIcon size={18} color= "green" />
-          <Typography fontSize={14}>
-              {formatAmountTableValue(shownData.balance, shownData.currency)}
-            </Typography> */}
-            <Box style={styles.cell}>
+            <Box style={styles.arrowCell}>
               {isOpen ? (
                 <ArrowDown color="blue" />
               ) : (

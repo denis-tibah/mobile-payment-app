@@ -8,7 +8,8 @@ const PINK = "#E7038E";
 const MEDIUMGREY = "#B4B7BC";
 const ACCENTBLUE = "#086AFB";
 const SOFTPINK = "#FFC9E9";
-const WHITE = "#FFFFFF"
+const WHITE = "#FFFFFF";
+const HEAVY_GREY = "#5A5A5A";
 
 const colors = new Map();
 colors.set("light-blue", LIGHTBLUE);
@@ -21,7 +22,8 @@ colors.set("pink", PINK);
 colors.set("medium-grey", MEDIUMGREY);
 colors.set("blue", ACCENTBLUE);
 colors.set("soft-pink", SOFTPINK);
-colors.set("white", WHITE)
+colors.set("white", WHITE);
+colors.set("heavy-grey", HEAVY_GREY);
 
 export function getColor(colorName: any) {
   if (colors.has(colorName)) {

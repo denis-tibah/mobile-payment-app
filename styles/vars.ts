@@ -15,6 +15,8 @@ const vars: any = {
   grey: "#DDDDDD",
   "accent-blue": "#086afb",
   "accent-pink": "#e7038e",
+  "accent-orange": "#fbb445",
+  "accent-green": "#0dca9d",
   "soft-pink": "#ffc9e9",
   "lg-breakpoint": "1440px",
   "ios-default-text": "#a2a2a2",

@@ -186,7 +186,7 @@ export function LoginScreen({ navigation }: any) {
                   ) {
                     // console.log("Use biometic ");
                     await saveSecureCredetails(values.email, values.password);
-                    console.log("result.payload", result);
+                    // console.log("result.payload", result);
                     await AsyncStorage.setItem("tokenZiyl", result?.token_ziyl);
                     await AsyncStorage.setItem("accessToken", result?.access_token);
                   } else {

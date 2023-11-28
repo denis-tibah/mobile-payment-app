@@ -33,6 +33,8 @@ export const input: any = StyleSheet.create({
     justifyContent: "space-between",
     paddingLeft: 12,
     paddingRight: 12,
+    borderWidth: 1,
+    borderColor: vars["accent-blue"],
   },
   wrapperSelectForObjectData: {
     width: "100%",

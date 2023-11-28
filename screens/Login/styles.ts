@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import vars from "../../styles/vars";
 
 export const styles: any = StyleSheet.create<any>({
   container: {
@@ -49,5 +50,24 @@ export const styles: any = StyleSheet.create<any>({
   },
   signinButton: {
     height: 36,
+    width: 340,
+  },
+  faceIdContainer: {
+    borderTopWidth: 1,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+    paddingTop: 20,
+    paddingBottom: 16,
+    paddingLeft: 14,
+    paddingRight: 14,
+    borderColor: vars["light-grey"],
+  },
+  faceIdIconContainer: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 6,
   },
 });

@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, ScrollView, Switch, Pressable } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Switch,
+  Pressable,
+} from "react-native";
 import { Tabs } from "../../components/Tabs/Tabs";
 import MainLayout from "../../layout/Main";
 import FormGroup from "../../components/FormGroup";
@@ -36,7 +43,13 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { signout } from "../../redux/auth/authSlice";
 import { Seperator } from "../../components/Seperator/Seperator";
 import TransactionIcon from "../../assets/icons/Transaction";
-import { DefaultResponse, LimitsData, UpdateLimitsRequest, getLimits, updateLimits } from "../../redux/setting/settingSlice";
+import {
+  DefaultResponse,
+  LimitsData,
+  UpdateLimitsRequest,
+  getLimits,
+  updateLimits,
+} from "../../redux/setting/settingSlice";
 import { RootState } from "../../store";
 import * as SecureStore from "expo-secure-store";
 import Camera from "../../assets/icons/Camera";
@@ -58,7 +71,6 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { getPendingAmount } from "../../utils/helpers";
 import { ToggleButton } from "react-native-paper";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
-
 
 export interface SelectOption {
   label: string;
@@ -85,7 +97,7 @@ export function Profile({ route, navigation }: any) {
   const [isUpdateLimitSuccess, setIsUpdateLimitSuccess] = useState<{
     state: boolean;
     isModalOpen: boolean;
-  }>({ state: false, isModalOpen: false});
+  }>({ state: false, isModalOpen: false });
   const biometricSetting = useSelector(
     (state: any) => state.auth.data.biometricYN
   );
@@ -200,9 +212,13 @@ export function Profile({ route, navigation }: any) {
     if (_updateRequest.length === 0) {
       return;
     }
-    setLimitTypes(_updateRequest.map((request) => {
-      return request.type.charAt(0).toUpperCase() + request.type.slice(1);
-    }).join(', '));
+    setLimitTypes(
+      _updateRequest
+        .map((request) => {
+          return request.type.charAt(0).toUpperCase() + request.type.slice(1);
+        })
+        .join(", ")
+    );
     try {
       // this is temporary approach to update limits
       await Promise.all(
@@ -210,27 +226,34 @@ export function Profile({ route, navigation }: any) {
       );
       setIsUpdateLimitSuccess({ state: true, isModalOpen: true });
     } catch (error) {
-      console.log('error:', error);
+      console.log("error:", error);
       setIsUpdateLimitSuccess({ state: false, isModalOpen: true });
     } finally {
       setUpdateLimitToggles({});
       setLimitValueToUpdate({});
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <MainLayout navigation={navigation}>
       <Spinner visible={loadingUserProfileData} />
       <Spinner visible={isLoading} />
-      <SuccessModal isOpen={isUpdateLimitSuccess.isModalOpen}
+      <SuccessModal
+        isOpen={isUpdateLimitSuccess.isModalOpen}
         isError={!isUpdateLimitSuccess.state}
         title={isUpdateLimitSuccess.state ? "Success" : "Error"}
-        text={isUpdateLimitSuccess.state ? `${limitTypes} are on the process to update.` : "Something went wrong"}
-        onClose={() => setIsUpdateLimitSuccess({
-          state: false,
-          isModalOpen: false
-        })}
+        text={
+          isUpdateLimitSuccess.state
+            ? `${limitTypes} are on the process to update.`
+            : "Something went wrong"
+        }
+        onClose={() =>
+          setIsUpdateLimitSuccess({
+            state: false,
+            isModalOpen: false,
+          })
+        }
       />
       <ScrollView bounces={false}>
         <IncomeBox />
@@ -301,7 +324,7 @@ export function Profile({ route, navigation }: any) {
                     </View>
                     <View style={{ flex: 0.7 }}>
                       <FormGroup validationError={errors.first_name}>
-                      <Text style={styles.titleTag}>{`First name`}</Text>
+                        <Text style={styles.titleTag}>{`First name`}</Text>
                         <FormGroup.Input
                           icon={<ProfileIcon />}
                           onChangeText={handleChange("first_name")}
@@ -312,7 +335,7 @@ export function Profile({ route, navigation }: any) {
                       </FormGroup>
                     </View>
                     <FormGroup validationError={errors.last_name}>
-                    <Text style={styles.titleTag}>{`Last name`}</Text>
+                      <Text style={styles.titleTag}>{`Last name`}</Text>
                       <FormGroup.Input
                         icon={<ProfileIcon />}
                         onChangeText={handleChange("last_name")}
@@ -326,7 +349,7 @@ export function Profile({ route, navigation }: any) {
                       />
                     </FormGroup>
                     <FormGroup validationError={errors.annual_salary}>
-                    <Text style={styles.titleTag}>{`Annual Salary`}</Text>
+                      <Text style={styles.titleTag}>{`Annual Salary`}</Text>
 
                       <FormGroup.Input
                         icon={<PigIcon />}
@@ -337,7 +360,7 @@ export function Profile({ route, navigation }: any) {
                       />
                     </FormGroup>
                     <FormGroup validationError={errors.source_of_wealth}>
-                    <Text style={styles.titleTag}>{`Source of income`}</Text>
+                      <Text style={styles.titleTag}>{`Source of income`}</Text>
 
                       <DropDownPicker
                         schema={{ label: "label", value: "value" }}
@@ -573,61 +596,79 @@ export function Profile({ route, navigation }: any) {
               >
                 {({}) => (
                   <Pressable>
-                  <View style={styles.tabContent}>
-                    {settings.map((setting: LimitsData, index: number) => {
-                      const { type } = setting;
-                      const limitType =type.charAt(0).toUpperCase() + type.slice(1);
-                      return (
-                        <FormGroup key={index}>
-                          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                            <FormGroup.Label> {`${limitType}`} limit</FormGroup.Label>
-                            <Switch
-                              trackColor={{ false: "#767577", true: "#81b0ff" }}
-                              thumbColor={
-                                updateLimitToggles[type] ? "white" : vars["light-blue"]
+                    <View style={styles.tabContent}>
+                      {settings.map((setting: LimitsData, index: number) => {
+                        const { type } = setting;
+                        const limitType =
+                          type.charAt(0).toUpperCase() + type.slice(1);
+                        return (
+                          <FormGroup key={index}>
+                            <View
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <FormGroup.Label>
+                                {" "}
+                                {`${limitType}`} limit
+                              </FormGroup.Label>
+                              <Switch
+                                trackColor={{
+                                  false: "#767577",
+                                  true: "#81b0ff",
+                                }}
+                                thumbColor={
+                                  updateLimitToggles[type]
+                                    ? "white"
+                                    : vars["light-blue"]
+                                }
+                                style={{ marginTop: -17 }}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={(e) =>
+                                  setUpdateLimitToggles({
+                                    ...updateLimitToggles,
+                                    [type]: e,
+                                  })
+                                }
+                                value={updateLimitToggles[type]}
+                              />
+                            </View>
+                            <FormGroup.Input
+                              editable={
+                                updateLimitToggles[type]
+                                  ? updateLimitToggles[type]
+                                  : false
                               }
-                              style={{marginTop: -17}}
-                              ios_backgroundColor="#3e3e3e"
-                              onValueChange={(e) => setUpdateLimitToggles({
-                                ...updateLimitToggles,
-                                [type]: e
-                              })}
-                              value={updateLimitToggles[type]}
+                              placeholder={`€${setting.limit_reached} / €${setting.limit}`}
+                              onChangeText={(value: string) => {
+                                setLimitValueToUpdate({
+                                  ...limitValueToUpdate,
+                                  [type]: value,
+                                });
+                              }}
                             />
-                          </View>
-                          <FormGroup.Input
-                            editable={updateLimitToggles[type] ? updateLimitToggles[type] : false}
-                            placeholder={`€${setting.limit_reached} / €${setting.limit}`}
-                            onChangeText={(value: string) => {
-                              setLimitValueToUpdate({
-                                ...limitValueToUpdate,
-                                [type]: value
-                              })
-                              }
-                            }
-                          />
-                        </FormGroup>
-                      )}
-                    )}
-                    <View style={{ flexDirection: "row", paddingLeft: 12 }}>
-                      <Button
-                        leftIcon={<TransactionIcon color="blue" />}
-                        color="light-blue"
-                        onPress={() => {
-                          setIsLoading(true);
-                          updateLimitRequest();
-                        }}
-                        // disabled
-                      >
-                        Change request
-                      </Button>
+                          </FormGroup>
+                        );
+                      })}
+                      <View style={{ flexDirection: "row", paddingLeft: 12 }}>
+                        <Button
+                          leftIcon={<TransactionIcon color="blue" />}
+                          color="light-blue"
+                          onPress={() => {
+                            setIsLoading(true);
+                            updateLimitRequest();
+                          }}
+                          // disabled
+                        >
+                          Change request
+                        </Button>
+                      </View>
                     </View>
-                  </View>
                   </Pressable>
                 )}
-                
               </Formik>
-
             </Tabs.Panel>
 
             <Tabs.Panel text="Help" icon={<HelpIcon />}>

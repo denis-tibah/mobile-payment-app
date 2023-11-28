@@ -14,6 +14,11 @@ export const styles: any = StyleSheet.create({
     paddingLeft: 24,
     marginTop: 40,
   },
+  fullWidth: {
+    paddingLeft: 0,
+    justifyContent: "center",
+    width: "100%",
+  },
   rounded: {
     borderBottomLeftRadius: 18,
     borderBottomRightRadius: 18,
@@ -22,5 +27,8 @@ export const styles: any = StyleSheet.create({
     marginTop: 0,
     paddingTop: 10,
     paddingBottom: 10,
+  },
+  noTopMargin: {
+    marginTop: 0,
   },
 });

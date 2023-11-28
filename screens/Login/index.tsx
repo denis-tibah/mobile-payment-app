@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Pressable, View } from "react-native";
+import { Alert, Pressable, View, Switch } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import * as LocalAuthentication from "expo-local-authentication";
@@ -13,9 +13,10 @@ import MainLayout from "../../layout/Main";
 import FixedBottomAction from "../../components/FixedBottomAction";
 import { styles } from "./styles";
 import Typography from "../../components/Typography";
-import ProfileIcon from "../../assets/icons/Profile";
+import ProfileIcon from "../../assets/icons/TransactionLogoSelect";
 import EmailIcon from "../../assets/icons/Email";
 import LockIcon from "../../assets/icons/Lock";
+import FaceIdIcon from "../../assets/icons/FaceId";
 import {
   SIGNIN_SUCCESS_MESSAGES,
   refreshUserData,
@@ -33,6 +34,9 @@ export function LoginScreen({ navigation }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [ip, setIp] = useState<any>(null);
+  const [isFaceId, setFaceId] = useState<boolean>(false);
+  console.log("🚀 ~ file: index.tsx:37 ~ isFaceId:", isFaceId);
+
   const { navigate }: any = useNavigation();
   const dispatch = useDispatch();
   const handleTogglePassword = () => {
@@ -73,7 +77,6 @@ export function LoginScreen({ navigation }: any) {
   const getSavedCredetails = async () => {
     const email = await SecureStore.getItemAsync("email");
     const password = await SecureStore.getItemAsync("password");
-
     if (email && password) {
       return { email, password };
     }
@@ -259,6 +262,7 @@ export function LoginScreen({ navigation }: any) {
                             value={values.email}
                             placeholderTextColor={vars["ios-default-text"]}
                             placeholder="Email address"
+                            iconColor="blue"
                             icon={<EmailIcon />}
                           />
                         </FormGroup>
@@ -272,6 +276,7 @@ export function LoginScreen({ navigation }: any) {
                           }
                         >
                           <FormGroup.Password
+                            iconColor="blue"
                             icon={<LockIcon />}
                             rightIcon
                             onChangeText={handleChange("password")}
@@ -314,8 +319,33 @@ export function LoginScreen({ navigation }: any) {
                         Register Company
                       </Typography>
                     </View> */}
+                      <View style={styles.faceIdContainer}>
+                        <View style={styles.faceIdIconContainer}>
+                          <FaceIdIcon size={20} color="blue" />
+                          <Typography fontSize={16}>
+                            Use FaceID next time
+                          </Typography>
+                        </View>
+                        <View
+                          style={{
+                            marginTop: 18,
+                          }}
+                        >
+                          <Switch
+                            trackColor={{
+                              false: "#767577",
+                              true: "#81b0ff",
+                            }}
+                            thumbColor={isFaceId ? "white" : vars["light-blue"]}
+                            style={{ marginTop: -24 }}
+                            ios_backgroundColor="#3e3e3e"
+                            onValueChange={(e) => setFaceId(!isFaceId)}
+                            value={isFaceId}
+                          />
+                        </View>
+                      </View>
                     </View>
-                    <FixedBottomAction rounded>
+                    <FixedBottomAction rounded isFullWidth isNoTopMargin>
                       <Button
                         style={styles.signinButton}
                         loading={isLoading}
@@ -324,7 +354,7 @@ export function LoginScreen({ navigation }: any) {
                         onPress={handleSubmit}
                         leftIcon={<ProfileIcon size={14} />}
                       >
-                        Sign in
+                        Submit
                       </Button>
                       {/* <Btn
                       onPress={() => {

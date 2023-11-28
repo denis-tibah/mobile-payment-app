@@ -53,7 +53,7 @@ export function Input({
   actionHandler,
   error,
   style,
-  iconColor = "medium-grey",
+  iconColor,
   iconSize = 16,
   type = "text",
   value,
@@ -136,13 +136,18 @@ export function Option({ label, value, enabled, ...props }: any) {
   return <Picker.Item {...props} />;
 }
 
-export function Password({ icon, rightIcon = false, ...props }: any) {
+export function Password({
+  icon,
+  iconColor = "medium-gray",
+  rightIcon = false,
+  ...props
+}: any) {
   const [showPassword, setShowPassword] = useState(false);
   return (
     <View style={input.wrapper}>
       {icon && (
         <View style={input.icon}>
-          {cloneElement(icon, { color: "medium-grey", size: 16 })}
+          {cloneElement(icon, { color: iconColor, size: 16 })}
         </View>
       )}
 

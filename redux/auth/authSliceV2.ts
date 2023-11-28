@@ -1,44 +1,31 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { exportedBaseUrl } from "../../api";
 
 export const authV2 = createApi({
   reducerPath: "authV2",
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_APIURL,
-    prepareHeaders: (headers) => {
-        headers.set("Content-Type", "application/json");
-        return headers;
-      },
+    baseUrl: exportedBaseUrl,
   }),
+  prepareHeaders: (headers: any) => {
+    headers.set("Content-Type", "application/json");
+    return headers;
+  },
   tagTypes: ["AuthV2"],
   endpoints: (builder) => ({
-    requestForgotPassword: builder.mutation({
-      query: ({ requestingEmail }) => ({
-        url: `/ziyl/RequestForgotPasswordfinxp`,
+    updateBiometric: builder.mutation({
+      query: ({ email, enableYN }) => ({
+        url: `/ziyl/updateBiometric`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: {
-          email: requestingEmail
-        }
-      }),
-    }),
-    resetPassword:  builder.mutation({
-      query: ({ requestingEmail, password, resetToken }) => ({
-        url: `/ziyl/resetPasswordfinxp`,
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+          email,
+          enableYN,
         },
-        body: {
-          email: requestingEmail,
-          password,
-          password_confirmation: password,
-          token: resetToken
-        }
       }),
     }),
   }),
 });
 
-export const { useRequestForgotPasswordMutation, useResetPasswordMutation } = authV2;
+export const { useUpdateBiometricMutation } = authV2;

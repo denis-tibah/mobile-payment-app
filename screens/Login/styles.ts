@@ -50,7 +50,7 @@ export const styles: any = StyleSheet.create<any>({
   },
   signinButton: {
     height: 36,
-    width: 340,
+    width: "100%",
   },
   faceIdContainer: {
     borderTopWidth: 1,

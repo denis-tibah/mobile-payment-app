@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Alert, Pressable, View, Switch } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import * as LocalAuthentication from "expo-local-authentication";
 import * as SecureStore from "expo-secure-store";
 import { Formik } from "formik";
-// import { Button as Btn } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Button from "../../components/Button";
 import FormGroup from "../../components/FormGroup";
@@ -23,35 +23,24 @@ import {
   signin,
 } from "../../redux/auth/authSlice";
 import { Seperator } from "../../components/Seperator/Seperator";
-import { useUpdateBiometricMutation } from "../../redux/auth/authSliceV2";
 import vars from "../../styles/vars";
-
 import { screenNames } from "../../utils/helpers";
 import { validationAuthSchema } from "../../utils/validation";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import FaceId from "../../assets/icons/FaceId";
 
 export function LoginScreen({ navigation }: any) {
   const [apiErrorMessage, setApiErrorMessage] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [ip, setIp] = useState<any>(null);
   const [isFaceId, setFaceId] = useState<boolean>(true);
   const [storageData, setStorageData] = useState<any>({});
   const [biometricFlag, setBiometricFlag] = useState<string>("null");
 
   const { navigate }: any = useNavigation();
   const dispatch = useDispatch();
-  const handleTogglePassword = () => {
-    setShowPassword(!showPassword);
-  };
   const validationSchema = validationAuthSchema();
-  // const saveSecureCredetails = async (email: string, password: string, biometricYN: string) => {
+
   const saveSecureCredetails = async (email: string, password: string) => {
     await SecureStore.setItemAsync("user_email", email);
     await SecureStore.setItemAsync("user_password", password);
-    // await SecureStore.setItemAsync("biometricYN", biometricYN );
-    // console.log("amd i added the dat to storage");
   };
 
   const checkCompatible = async () => {
@@ -108,10 +97,10 @@ export function LoginScreen({ navigation }: any) {
     return biometricAuth.success;
   };
 
+  // original logic of biometrics login
   /*   useEffect(() => {
     (async () => {
       const credentials = await getSavedCredetails();
-      console.log("🚀 ~ file: index.tsx:126 ~ credentials:", credentials);
       // console.log({ credentials });
       if (credentials.email && credentials.password) {
         const compatible = await checkCompatible();
@@ -148,25 +137,26 @@ export function LoginScreen({ navigation }: any) {
     setFaceId(!isFaceId);
   };
 
+  // set storage data for biometric to be used on users next session
+  const handleSetBiometricFlag = async (param: string) => {
+    await AsyncStorage.setItem("IsBiometricOn", param);
+  };
+  // get storage data for biometric
   const handleGetBiometricFlag = async () => {
     const isBiometric = await AsyncStorage.getItem("IsBiometricOn");
     return isBiometric;
   };
-
-  const handleSetBiometricFlag = async (param: string) => {
-    await AsyncStorage.setItem("IsBiometricOn", param);
+  // set storage data for faceId switch. this will be remembered when user go to login page
+  const handleSetFaceIdFlag = async (param: string) => {
+    await AsyncStorage.setItem("faceId", param);
   };
-
+  // get storage data for faceId
   const handleGetFaceIdFlag = async () => {
     const faceIdFlag = await AsyncStorage.getItem("faceId");
     return faceIdFlag;
   };
-
-  const handleSetFaceIdFlag = async (param: string) => {
-    await AsyncStorage.setItem("faceId", param);
-  };
-
-  const handleStoreEmailPass = async () => {
+  // get email and password from storage
+  const handleGetStoredEmailPassword = async () => {
     const credentials = await getSavedCredetails();
     if (credentials?.email && credentials?.password) {
       setStorageData({
@@ -177,6 +167,7 @@ export function LoginScreen({ navigation }: any) {
   };
 
   useEffect(() => {
+    // set biometricFlag true/false to show or hide biometrics switch
     handleGetBiometricFlag()
       .then((res: any) => {
         if (res === "null") {
@@ -184,8 +175,9 @@ export function LoginScreen({ navigation }: any) {
         }
       })
       .catch((err: any) => console.log(err));
-    handleStoreEmailPass();
-
+    // initially fetch email and password from storage
+    handleGetStoredEmailPassword();
+    // mirror storage data to state isFaceId
     handleGetFaceIdFlag()
       .then((res: any) => {
         setFaceId(res === "T" ? true : false);
@@ -194,6 +186,7 @@ export function LoginScreen({ navigation }: any) {
   }, []);
 
   useEffect(() => {
+    // set biometric flag if theres email and password from storage
     if (storageData?.email && storageData?.password) {
       handleSetBiometricFlag("Y");
       setBiometricFlag("Y");
@@ -204,6 +197,7 @@ export function LoginScreen({ navigation }: any) {
     const faceIdStorageData = isFaceId ? "T" : "F";
     handleSetFaceIdFlag(faceIdStorageData);
 
+    // login user using biometric
     const triggerBiometric = async () => {
       const compatible = await checkCompatible();
       if (compatible) {
@@ -212,6 +206,7 @@ export function LoginScreen({ navigation }: any) {
           const auth = await handleBiometricAuth();
           console.log(auth, "AUTHH");
           if (auth) {
+            console.log("eee");
             setIsLoading(true);
             const result = await dispatch<any>(
               signin({
@@ -232,10 +227,13 @@ export function LoginScreen({ navigation }: any) {
               setApiErrorMessage({});
             }
             setIsLoading(false);
+          } else {
+            setFaceId(false);
           }
         }
       }
     };
+
     if (isFaceId && storageData?.email && storageData?.password) {
       triggerBiometric();
     }
@@ -290,8 +288,14 @@ export function LoginScreen({ navigation }: any) {
                       result?.biometricYN === "Y")
                   ) {
                     console.log("Use biometic ");
-                    await saveSecureCredetails(values.email, values.password);
-                    await AsyncStorage.setItem("tokenZiyl", result?.token_ziyl);
+                    let tokenZiyl;
+                    if (result?.token_ziyl) {
+                      tokenZiyl = result?.token_ziyl;
+                    } else if (result?.payload?.token_ziyl) {
+                      tokenZiyl = result?.payload?.token_ziyl;
+                    }
+                    await saveSecureCredetails(values?.email, values?.password);
+                    await AsyncStorage.setItem("tokenZiyl", tokenZiyl);
                     await AsyncStorage.setItem(
                       "accessToken",
                       result?.access_token
@@ -319,29 +323,6 @@ export function LoginScreen({ navigation }: any) {
                 } finally {
                   setIsLoading(false);
                 }
-
-                //disabled by Aristos do not need this popup
-                // Alert.alert(
-                //   "",
-                //   "Do you want to login using biometric authentication?",
-                //   [
-                //     {
-                //       text: "Yes!",
-                //       onPress: async () =>
-                //         await saveSecureCredetails(
-                //           values.email,
-                //           values.password
-                //         ),
-                //     },
-                //     {
-                //       text: "No",
-                //       onPress: async () => {
-                //         await SecureStore.deleteItemAsync("email");
-                //         await SecureStore.deleteItemAsync("password");
-                //       },
-                //     },
-                //   ]
-                // );
               }}
             >
               {({
@@ -403,26 +384,6 @@ export function LoginScreen({ navigation }: any) {
                           </Typography>
                         </Pressable>
                       </View>
-                      {/* <View
-                      style={[styles.cardBodyLink, styles.cardBodyLinkMargin]}
-                    >
-                      <Typography
-                        color="accent-blue"
-                        fontFamily="Mukta-Regular"
-                      >
-                        Registration Status
-                      </Typography>
-                    </View> */}
-                      {/* <View
-                      style={[styles.cardBodyLink, styles.cardBodyLinkMargin]}
-                    >
-                      <Typography
-                        color="accent-blue"
-                        fontFamily="Mukta-Regular"
-                      >
-                        Register Company
-                      </Typography>
-                    </View> */}
                       {biometricFlag !== "null" ? (
                         <View style={styles.faceIdContainer}>
                           <View style={styles.faceIdIconContainer}>
@@ -454,24 +415,24 @@ export function LoginScreen({ navigation }: any) {
                       ) : null}
                     </View>
                     <FixedBottomAction rounded isFullWidth isNoTopMargin>
-                      <Button
-                        style={styles.signinButton}
-                        loading={isLoading}
-                        disabled={isLoading}
-                        color="light-pink"
-                        onPress={handleSubmit}
-                        leftIcon={<ProfileIcon size={14} />}
+                      <View
+                        style={{
+                          width: "100%",
+                          paddingLeft: 12,
+                          paddingRight: 12,
+                        }}
                       >
-                        Submit
-                      </Button>
-                      {/* <Btn
-                      onPress={() => {
-                        navigate("emailVerified", {
-                          isOpenEmailVerified: true,
-                        });
-                      }}
-                      title="notif"
-                    /> */}
+                        <Button
+                          style={styles.signinButton}
+                          loading={isLoading}
+                          disabled={isLoading}
+                          color="light-pink"
+                          onPress={handleSubmit}
+                          leftIcon={<ProfileIcon size={14} />}
+                        >
+                          Submit
+                        </Button>
+                      </View>
                     </FixedBottomAction>
                   </View>
                 );

@@ -2,13 +2,14 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../api";
 import { UserData } from "../../models/UserData";
-import { getIpAddress,getDeviceDetails } from "../../utils/getIpAddress";
+import { getIpAddress, getDeviceDetails } from "../../utils/getIpAddress";
 
 export const SIGNIN_SUCCESS_MESSAGES = {
-  EXPIRED: 'Your password is Expired. Please update.',
-  SUCCESS: 'Logged in successfully',
-  CHANGE_PASSWORD: 'Change Password',
-}
+  EXPIRED: "Your password is Expired. Please update.",
+  SUCCESS: "Logged in successfully",
+  CHANGE_PASSWORD: "Change Password",
+};
+
 export interface AuthState {
   data?: any;
   isAuthenticated: boolean;
@@ -56,7 +57,7 @@ export type IpAddress = {
   state?: string;
   state_code?: string;
   ipv4?: string;
-}
+};
 export const signin = createAsyncThunk(
   "signin",
   async ({ values /* , ip */ }: any, { rejectWithValue, fulfillWithValue }) => {
@@ -87,29 +88,33 @@ export const signin = createAsyncThunk(
       } else {
         return rejectWithValue("Failed to load ip location");
       } */
-//Aristos Christofides: we have an issue getting the ip address of mobile device
-//so will disable it
+      //Aristos Christofides: we have an issue getting the ip address of mobile device
+      //so will disable it
       // const ipResponse = await getIpAddress().catch((error) => {
       //   console.log("error getting ip", error);
       // });
       // console.log("🚀 ~ file: authSlice.ts:68 ~ ipResponse:", ipResponse);
-      
-    // if (ipResponse && Object.keys(ipResponse).length > 0) {
 
-    //new logic
+      // if (ipResponse && Object.keys(ipResponse).length > 0) {
 
-      // getDeviceDetails().then(ip => {console.log(ip)});      
-      const ipAddress  = await getDeviceDetails();
+      //new logic
 
-            const { data } = await api.post("/loginfinxpmobile", {
-              ...values,
-              ipAddress:ipAddress,
-              browserfingerprint: "react native app",
-            });
+      // getDeviceDetails().then(ip => {console.log(ip)});
+      const ipAddress = await getDeviceDetails();
 
-            const { message } = data;
+      const { data } = await api.post("/loginfinxpmobile", {
+        ...values,
+        ipAddress: ipAddress,
+        browserfingerprint: "react native app",
+      });
 
-      if (data.code === "400" && (message === SIGNIN_SUCCESS_MESSAGES.EXPIRED || message === SIGNIN_SUCCESS_MESSAGES.CHANGE_PASSWORD)) {
+      const { message } = data;
+
+      if (
+        data.code === "400" &&
+        (message === SIGNIN_SUCCESS_MESSAGES.EXPIRED ||
+          message === SIGNIN_SUCCESS_MESSAGES.CHANGE_PASSWORD)
+      ) {
         console.log("🚀 ~ file: authSlice.ts:68 ~ message", message);
         return rejectWithValue({
           message,
@@ -124,17 +129,15 @@ export const signin = createAsyncThunk(
       if (data.code !== "200" && data.code !== "201")
         return rejectWithValue(message);
 
-        if (data.code === "200" || data.code === "201")
-          return fulfillWithValue(data);
- 
-         // } 
-        // else {
-        //   return fulfillWithValue("Failed to load ip location");
-        // }
-    
-    } 
-    catch (error: any) {
-      console.log("error",error);
+      if (data.code === "200" || data.code === "201")
+        return fulfillWithValue(data);
+
+      // }
+      // else {
+      //   return fulfillWithValue("Failed to load ip location");
+      // }
+    } catch (error: any) {
+      console.log("error", error);
       return rejectWithValue("Something went wrong login on");
     }
   }
@@ -163,7 +166,7 @@ export const resetPassword = createAsyncThunk(
       password,
       password_confirmation,
       token,
-    } 
+    };
     const { data } = await api.post("/resetPasswordfinxp", payloadRequest);
     return data;
   }

@@ -38,6 +38,10 @@ import {
   transactionStatusOptions,
 } from "../../utils/helpers";
 import { searchOptions } from "../../utils/constants";
+import { Text } from "react-native";
+import BottomSheet from "../../components/BottomSheet";
+import Filter from "../../assets/icons/Filter";
+import { Divider } from "react-native-paper";
 
 interface DateRangeType {
   dateTo: {
@@ -87,7 +91,8 @@ export function Transactions({ navigation }: any) {
   const [currentSelectedSearchField, setCurrentSelectedSearchField] =
     useState<string>("");
   const [openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
-  const [openStatusOptions, setOpenStatusOptions] = useState<boolean>(false);
+  const [isSearchTextOpen, setIsSearchTextOpen] = useState<boolean>(false);
+  const [isSheetFilterOpen, setIsSheetFilterOpen] = useState<boolean>(false);
   const [isDateRangeModalOpen, setIsDateRangeModalOpen] =
     useState<boolean>(false);
   const [isStatusOptionSelected, setIsStatusOptionSelected] =
@@ -227,7 +232,8 @@ export function Transactions({ navigation }: any) {
   const handleShowingAdvanceFilter = () => {
     clearFilter();
     setIsStatusOptionSelected(false);
-    setIsMobileFilterShown(!isMobileFilterShown);
+    // setIsMobileFilterShown(!isMobileFilterShown);
+    setIsSheetFilterOpen(!isSheetFilterOpen);
   };
 
   const handlePreviousPage = () => {
@@ -437,18 +443,46 @@ export function Transactions({ navigation }: any) {
           <Heading
             icon={<TransactionIcon size={18} color="pink" />}
             title={"Latest Transactions"}
-            /* rightAction={
-              <Button
-                style={{ height: 34, width: 120 }}
-                color={"light-pink"}
-                onPress={() => setIsDateRangeModalOpen(true)}
-              >
-                Export Data
-              </Button>
-            } */
+            rightAction={
+              <View style={{display: 'flex', flexDirection: 'row'}}>
+                <TouchableOpacity 
+                  style={styles.iconFilter}
+                  onPress={() => {
+                    // setIsMobileFilterShown(!isMobileFilterShown);
+                    setIsSheetFilterOpen(!isSheetFilterOpen);
+                    }
+                  }
+                >
+                  <Filter size={14} color="blue"/>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={styles.iconFilter}
+                  onPress={() => setIsSearchTextOpen(!isSearchTextOpen)}
+                  >
+                  <SearchIcon size={14} color="blue"/>
+                </TouchableOpacity>
+              </View>
+            }
           />
         </View>
-        <View style={styles.searchBar}>
+        {
+          isSearchTextOpen && (
+            <View style={styles.searchBar}>
+              <FormGroup.Input
+                icon={<SearchIcon />}
+                placeholder={"Search text ..."}
+                color={vars["black"]}
+                fontSize={14}
+                fontWeight={"400"}
+                style={{ width: "100%" }}
+                value={searchText}
+                onChangeText={(event: string) => setSearchText(event)}
+                onSubmitEditing={handleOnSubmitEditing}
+              />
+            </View>
+          )
+        }
+        {/* <View style={styles.searchBar}>
           {isStatusOptionSelected ? (
             <View
               style={{ width: "75%", display: "flex", flexDirection: "row" }}
@@ -510,7 +544,7 @@ export function Transactions({ navigation }: any) {
               ></Ionicons>
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
         {isMobileFilterShown && (
           <View
             style={{
@@ -774,6 +808,23 @@ export function Transactions({ navigation }: any) {
         </View>
         <LoadingScreen isLoading={isLoading} />
       </ScrollView>
+      <BottomSheet isVisible={isSheetFilterOpen} onClose={() => setIsSheetFilterOpen(!isSheetFilterOpen)}>
+        <View style={styles.container}>
+          <Typography fontSize={18}>
+            Filters
+          </Typography>
+        </View>
+        <Divider style={{marginVertical: 5}} />
+        {/* filter for date range */}
+        <View style={styles.container}>
+          <Typography fontSize={16}>
+            State date
+          </Typography>
+          <Typography fontSize={16}>
+            State date
+          </Typography>
+        </View>
+      </BottomSheet>
     </MainLayout>
   );
 }

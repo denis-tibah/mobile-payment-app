@@ -124,81 +124,79 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                 </View>
               </Box>
             </Box>
-           
-                {openTransactionIndex === index ? (
-                  <Pressable>
-                   <View style={{backgroundColor: '#fff', paddingHorizontal: 18, borderTopColor: '#DDD', borderTopWidth: 1, paddingVertical: 15}}>
-                      <Box style={styles.detailMobile}>
-                        <Text style={styles.nameDetailMobile}>Transaction Reference</Text>
-                        <Text style={styles.valueDetailMobile}>
-                          {transaction?.reference_no}
+              {openTransactionIndex === index ? (
+                <Pressable>
+                  <View style={{backgroundColor: '#fff', paddingHorizontal: 18, borderTopColor: '#DDD', borderTopWidth: 1, paddingVertical: 15}}>
+                    <Box style={styles.detailMobile}>
+                      <Text style={styles.nameDetailMobile}>Transaction Reference</Text>
+                      <Text style={styles.valueDetailMobile}>
+                        {transaction?.reference_no}
+                      </Text>
+                    </Box>
+                    <Box style={styles.detailMobile}>
+                      <Text style={styles.nameDetailMobile}>Transaction Status</Text>
+                      <View style={{overflow: 'hidden', width: '36%', borderRadius: 8, marginTop: 4}}>
+                        <Text style={ transaction?.status === defaultStatus ? styles.valueDetailMobileStatusSuccess : styles.valueDetailMobileStatusFailed}>
+                          {transaction?.status}
+                          { /* add UI here to show the reason for a unsuccessfull transaction */}
                         </Text>
-                      </Box>
-                      <Box style={styles.detailMobile}>
-                        <Text style={styles.nameDetailMobile}>Transaction Status</Text>
-                        <View style={{overflow: 'hidden', width: '36%', borderRadius: 8, marginTop: 4}}>
-                          <Text style={ transaction?.status === defaultStatus ? styles.valueDetailMobileStatusSuccess : styles.valueDetailMobileStatusFailed}>
-                            {transaction?.status}
-                            { /* add UI here to show the reason for a unsuccessfull transaction */}
-                          </Text>
-                        </View>
-                      </Box>
-                      <Divider style={{marginVertical: 5}} />
-                      <Box style={styles.detailMobile}>
-                        <Text style={styles.nameDetailMobile}>Description</Text>
-                        <Text style={styles.valueDetailMobile}>
-                          {transaction?.description}
-                        </Text>
-                      </Box>
-                      <View style={{display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between'}}>
-                        <View style={styles.detailMobileInnerDetail}>
-                          <Box style={styles.detailMobile}>
-                            <Text style={styles.nameDetailMobile}>IBAN</Text>
-                            <View style={{display: 'flex', flexDirection: 'row', backgroundColor: 'none'}}>
-                              <Text style={styles.valueDetailMobile}>
-                                {transaction?.iban && `${transaction?.iban.substring(0, 14)}...`}
-                              </Text>
-                              <TouchableOpacity 
-                                onPress={async () => await Clipboard.setStringAsync(transaction?.iban || "")}
-                                style={{paddingLeft: 10, paddingTop: 3}}
-                                >
-                                <CopyClipboard color="heavy-blue" size={14} />
-                              </TouchableOpacity>
-                            </View>
-                          </Box>
-                        </View>
-                        <View style={styles.detailMobileInnerDetail}>
-                          <Box style={styles.detailMobile}>
-                            <Text style={styles.nameDetailMobile}>BIC</Text>
-                            <Text style={styles.valueDetailMobile}>
-                              {transaction?.bic}
-                            </Text>
-                          </Box>
-                        </View>
                       </View>
-                      <Divider style={{marginVertical: 5}} />
-                      <View style={{display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between'}}>
-                        <View style={styles.detailMobileInnerDetail}>
-                          <Box style={styles.detailMobile}>
-                            <Text style={styles.nameDetailMobile}>Type</Text>
+                    </Box>
+                    <Divider style={{marginVertical: 5}} />
+                    <Box style={styles.detailMobile}>
+                      <Text style={styles.nameDetailMobile}>Description</Text>
+                      <Text style={styles.valueDetailMobile}>
+                        {transaction?.description}
+                      </Text>
+                    </Box>
+                    <View style={{display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between'}}>
+                      <View style={styles.detailMobileInnerDetail}>
+                        <Box style={styles.detailMobile}>
+                          <Text style={styles.nameDetailMobile}>IBAN</Text>
+                          <View style={{display: 'flex', flexDirection: 'row', backgroundColor: 'none'}}>
                             <Text style={styles.valueDetailMobile}>
-                              {transaction?.trn_type}
+                              {transaction?.iban && `${transaction?.iban.substring(0, 14)}...`}
                             </Text>
-                          </Box>
-                        </View>
-                        <View style={styles.detailMobileInnerDetail}>
-                          <Box style={styles.detailMobile}>
-                            <Text style={styles.nameDetailMobile}>Date & Time</Text>
-                            <Text style={styles.valueDetailMobile}>
-                              {getFormattedDate(transaction?.transaction_datetime)}
-                            </Text>
-                          </Box>
-                        </View>
+                            <TouchableOpacity 
+                              onPress={async () => await Clipboard.setStringAsync(transaction?.iban || "")}
+                              style={{paddingLeft: 10, paddingTop: 3}}
+                              >
+                              <CopyClipboard color="heavy-blue" size={14} />
+                            </TouchableOpacity>
+                          </View>
+                        </Box>
+                      </View>
+                      <View style={styles.detailMobileInnerDetail}>
+                        <Box style={styles.detailMobile}>
+                          <Text style={styles.nameDetailMobile}>BIC</Text>
+                          <Text style={styles.valueDetailMobile}>
+                            {transaction?.bic}
+                          </Text>
+                        </Box>
                       </View>
                     </View>
-                  </Pressable>
-                ) : null}
-
+                    <Divider style={{marginVertical: 5}} />
+                    <View style={{display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between'}}>
+                      <View style={styles.detailMobileInnerDetail}>
+                        <Box style={styles.detailMobile}>
+                          <Text style={styles.nameDetailMobile}>Type</Text>
+                          <Text style={styles.valueDetailMobile}>
+                            {transaction?.trn_type}
+                          </Text>
+                        </Box>
+                      </View>
+                      <View style={styles.detailMobileInnerDetail}>
+                        <Box style={styles.detailMobile}>
+                          <Text style={styles.nameDetailMobile}>Date & Time</Text>
+                          <Text style={styles.valueDetailMobile}>
+                            {getFormattedDate(transaction?.transaction_datetime)}
+                          </Text>
+                        </Box>
+                      </View>
+                    </View>
+                  </View>
+                </Pressable>
+              ) : null}
           </>
         ))}
       </>

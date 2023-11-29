@@ -3,7 +3,7 @@ import vars from "../../styles/vars";
 
 export const styles:any = StyleSheet.create<any>({
   base: {
-    backgroundColor: "white",
+    backgroundColor: "#F5F9FF",
     height: 60,
     borderBottomWidth: 1,
     borderBottomColor: vars["light-grey"],
@@ -12,6 +12,7 @@ export const styles:any = StyleSheet.create<any>({
     alignItems: "center",
     paddingLeft: 10,
     paddingRight: 68,
+    marginVertical: 2,
     justifyContent: "space-between",
     borderTopColor: vars["light-grey"],
     borderTopWidth: 1,
@@ -68,7 +69,7 @@ export const styles:any = StyleSheet.create<any>({
     display: 'flex',
     flexDirection: 'column',
     flexWrap: 'wrap',
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
     paddingVertical: 12,
     border: '1px solid #E5E5E5',
   },
@@ -77,10 +78,8 @@ export const styles:any = StyleSheet.create<any>({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    // borderBottomWidth: 1,
-    // borderBottomColor: vars["light-grey"],
-    // paddingRight: 35,
-    width: '100%',
+    backgroundColor: '#fff',
+    // width: '100%',
   },
   nameDetailMobile: {
     color: "#086AFB",

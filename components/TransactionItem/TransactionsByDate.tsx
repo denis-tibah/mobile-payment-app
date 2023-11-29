@@ -111,12 +111,12 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                       >
                         {openTransactionIndex === index ? (
                           <ArrowDown
-                            color="pink"
-                            size={10}
-                            style={{ paddingRight: 15 }}
+                            color="heavy-grey"
+                            size={12}
+                            style={{ paddingRight: 14 }}
                           />
                         ) : (
-                          <ArrowRight color="pink" size={10} />
+                          <ArrowRight color="heavy-grey" size={12}  style={{ paddingRight: 14 }}/>
                         )}
                       </TouchableOpacity>
                     </Text>
@@ -206,7 +206,7 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
   };
 
   return (
-    <View>
+    <View style={{backgroundColor: '#fff'}}>
       <Pressable onPress={handleOnOpen}>
         <View style={[styles.base, isOpen && styles.isOpen]}>
           <Box

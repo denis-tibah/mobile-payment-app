@@ -79,13 +79,15 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ["persist/PERSIST", "persist/REHYDRATE", "persist/PURGE", "persist/REGISTER", "persist/FLUSH"],
+        ignoredActions: [
+          "persist/PERSIST",
+          "persist/REHYDRATE",
+          "persist/PURGE",
+          "persist/REGISTER",
+          "persist/FLUSH",
+        ],
       },
-    }).concat(
-      thunk,
-      accountV2.middleware,
-      authV2.middleware,
-    ),
+    }).concat(thunk, accountV2.middleware, authV2.middleware),
 });
 
 export const persistor = persistStore(store);

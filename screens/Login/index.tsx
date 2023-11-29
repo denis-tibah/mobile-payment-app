@@ -23,19 +23,22 @@ import {
   signin,
 } from "../../redux/auth/authSlice";
 import { Seperator } from "../../components/Seperator/Seperator";
+import { useUpdateBiometricMutation } from "../../redux/auth/authSliceV2";
 import vars from "../../styles/vars";
 
 import { screenNames } from "../../utils/helpers";
 import { validationAuthSchema } from "../../utils/validation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import FaceId from "../../assets/icons/FaceId";
 
 export function LoginScreen({ navigation }: any) {
   const [apiErrorMessage, setApiErrorMessage] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [ip, setIp] = useState<any>(null);
-  const [isFaceId, setFaceId] = useState<boolean>(false);
-  console.log("🚀 ~ file: index.tsx:37 ~ isFaceId:", isFaceId);
+  const [isFaceId, setFaceId] = useState<boolean>(true);
+  const [storageData, setStorageData] = useState<any>({});
+  const [biometricFlag, setBiometricFlag] = useState<string>("null");
 
   const { navigate }: any = useNavigation();
   const dispatch = useDispatch();
@@ -45,8 +48,8 @@ export function LoginScreen({ navigation }: any) {
   const validationSchema = validationAuthSchema();
   // const saveSecureCredetails = async (email: string, password: string, biometricYN: string) => {
   const saveSecureCredetails = async (email: string, password: string) => {
-    await SecureStore.setItemAsync("email", email);
-    await SecureStore.setItemAsync("password", password);
+    await SecureStore.setItemAsync("user_email", email);
+    await SecureStore.setItemAsync("user_password", password);
     // await SecureStore.setItemAsync("biometricYN", biometricYN );
     // console.log("amd i added the dat to storage");
   };
@@ -75,8 +78,8 @@ export function LoginScreen({ navigation }: any) {
   };
 
   const getSavedCredetails = async () => {
-    const email = await SecureStore.getItemAsync("email");
-    const password = await SecureStore.getItemAsync("password");
+    const email = await SecureStore.getItemAsync("user_email");
+    const password = await SecureStore.getItemAsync("user_password");
     if (email && password) {
       return { email, password };
     }
@@ -105,9 +108,10 @@ export function LoginScreen({ navigation }: any) {
     return biometricAuth.success;
   };
 
-  useEffect(() => {
+  /*   useEffect(() => {
     (async () => {
       const credentials = await getSavedCredetails();
+      console.log("🚀 ~ file: index.tsx:126 ~ credentials:", credentials);
       // console.log({ credentials });
       if (credentials.email && credentials.password) {
         const compatible = await checkCompatible();
@@ -138,7 +142,104 @@ export function LoginScreen({ navigation }: any) {
         }
       }
     })();
+  }, []); */
+
+  const handleChangeFaceId = () => {
+    setFaceId(!isFaceId);
+  };
+
+  const handleGetBiometricFlag = async () => {
+    const isBiometric = await AsyncStorage.getItem("IsBiometricOn");
+    return isBiometric;
+  };
+
+  const handleSetBiometricFlag = async (param: string) => {
+    await AsyncStorage.setItem("IsBiometricOn", param);
+  };
+
+  const handleGetFaceIdFlag = async () => {
+    const faceIdFlag = await AsyncStorage.getItem("faceId");
+    return faceIdFlag;
+  };
+
+  const handleSetFaceIdFlag = async (param: string) => {
+    await AsyncStorage.setItem("faceId", param);
+  };
+
+  const handleStoreEmailPass = async () => {
+    const credentials = await getSavedCredetails();
+    if (credentials?.email && credentials?.password) {
+      setStorageData({
+        email: credentials?.email,
+        password: credentials?.password,
+      });
+    }
+  };
+
+  useEffect(() => {
+    handleGetBiometricFlag()
+      .then((res: any) => {
+        if (res === "null") {
+          setBiometricFlag("null");
+        }
+      })
+      .catch((err: any) => console.log(err));
+    handleStoreEmailPass();
+
+    handleGetFaceIdFlag()
+      .then((res: any) => {
+        setFaceId(res === "T" ? true : false);
+      })
+      .catch((err: any) => console.log(err));
   }, []);
+
+  useEffect(() => {
+    if (storageData?.email && storageData?.password) {
+      handleSetBiometricFlag("Y");
+      setBiometricFlag("Y");
+    }
+  }, [storageData]);
+
+  useEffect(() => {
+    const faceIdStorageData = isFaceId ? "T" : "F";
+    handleSetFaceIdFlag(faceIdStorageData);
+
+    const triggerBiometric = async () => {
+      const compatible = await checkCompatible();
+      if (compatible) {
+        const saved = await checkSavedBiometrics();
+        if (saved) {
+          const auth = await handleBiometricAuth();
+          console.log(auth, "AUTHH");
+          if (auth) {
+            setIsLoading(true);
+            const result = await dispatch<any>(
+              signin({
+                values: {
+                  email: storageData?.email,
+                  password: storageData?.password,
+                },
+                navigate,
+              })
+            );
+            // console.log({ result });
+            await AsyncStorage.setItem("tokenZiyl", result?.token_ziyl);
+            await AsyncStorage.setItem("accessToken", result?.access_token);
+            await dispatch<any>(refreshUserData());
+            if (result.error) {
+              setApiErrorMessage({ message: result.payload });
+            } else {
+              setApiErrorMessage({});
+            }
+            setIsLoading(false);
+          }
+        }
+      }
+    };
+    if (isFaceId && storageData?.email && storageData?.password) {
+      triggerBiometric();
+    }
+  }, [isFaceId, storageData]);
 
   return (
     <MainLayout navigation={navigation}>
@@ -181,17 +282,20 @@ export function LoginScreen({ navigation }: any) {
                   const result = await dispatch<any>(
                     signin({ values, navigate /* , ip */ })
                   ).unwrap();
+
                   if (
                     result &&
                     (result?.payload?.biometricYN || result?.biometricYN) &&
                     (result?.payload?.biometricYN === "Y" ||
                       result?.biometricYN === "Y")
                   ) {
-                    // console.log("Use biometic ");
+                    console.log("Use biometic ");
                     await saveSecureCredetails(values.email, values.password);
-                    // console.log("result.payload", result);
                     await AsyncStorage.setItem("tokenZiyl", result?.token_ziyl);
-                    await AsyncStorage.setItem("accessToken", result?.access_token);
+                    await AsyncStorage.setItem(
+                      "accessToken",
+                      result?.access_token
+                    );
                   } else {
                     // console.log("Do not use biometric");
                     await SecureStore.deleteItemAsync("email");
@@ -319,31 +423,35 @@ export function LoginScreen({ navigation }: any) {
                         Register Company
                       </Typography>
                     </View> */}
-                      <View style={styles.faceIdContainer}>
-                        <View style={styles.faceIdIconContainer}>
-                          <FaceIdIcon size={20} color="blue" />
-                          <Typography fontSize={16}>
-                            Use FaceID next time
-                          </Typography>
-                        </View>
-                        <View
-                          style={{
-                            marginTop: 18,
-                          }}
-                        >
-                          <Switch
-                            trackColor={{
-                              false: "#767577",
-                              true: "#81b0ff",
+                      {biometricFlag !== "null" ? (
+                        <View style={styles.faceIdContainer}>
+                          <View style={styles.faceIdIconContainer}>
+                            <FaceIdIcon size={20} color="blue" />
+                            <Typography fontSize={16}>
+                              Use FaceID next time
+                            </Typography>
+                          </View>
+                          <View
+                            style={{
+                              marginTop: 18,
                             }}
-                            thumbColor={isFaceId ? "white" : vars["light-blue"]}
-                            style={{ marginTop: -24 }}
-                            ios_backgroundColor="#3e3e3e"
-                            onValueChange={(e) => setFaceId(!isFaceId)}
-                            value={isFaceId}
-                          />
+                          >
+                            <Switch
+                              value={isFaceId}
+                              trackColor={{
+                                false: "#767577",
+                                true: "#81b0ff",
+                              }}
+                              thumbColor={
+                                isFaceId ? "white" : vars["light-blue"]
+                              }
+                              style={{ marginTop: -24 }}
+                              ios_backgroundColor="#3e3e3e"
+                              onValueChange={handleChangeFaceId}
+                            />
+                          </View>
                         </View>
-                      </View>
+                      ) : null}
                     </View>
                     <FixedBottomAction rounded isFullWidth isNoTopMargin>
                       <Button

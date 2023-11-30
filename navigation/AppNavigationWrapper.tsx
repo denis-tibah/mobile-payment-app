@@ -18,7 +18,7 @@ import ForgottenPassword from "../screens/ForgottenPassword";
 import TransactionsScreen from "../screens/Transactions";
 import CardScreen from "../screens/Card";
 import PaymentScreen from "../screens/Payments";
-import StatementScreen from "../screens/Statements"
+import StatementScreen from "../screens/Statements";
 import PayeeScreen from "../screens/Payees";
 import AddPayeeScreen from "../screens/AddPayee";
 import ProfileScreen from "../screens/Profile";
@@ -70,13 +70,12 @@ function PayeeStack() {
   );
 }
 
-
 function DashboardStack() {
   return (
     <TabNavigation>
       <Tab.Screen name={screenNames.myaccount} component={MyAccountScreen} />
       <Tab.Screen
-        name={screenNames.transactions}
+        name="transactions"
         component={TransactionsScreen}
         // children={() => <TransactionsScreen initial={true} />}
       />
@@ -198,7 +197,7 @@ export default function AppNavigationWrapper() {
     if (transactionDetails.requestType === "PaymentReceived") {
       //save notification id so we can remove it from the taskbar
       setLastNotification(notification?.request?.identifier);
-      console.log('transactionDetails',transactionDetails);
+      console.log("transactionDetails", transactionDetails);
       setShowReceivedPayment({
         show: true,
         data: { transactionDetails, userId: userData?.id },

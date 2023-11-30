@@ -13,13 +13,20 @@ export const authV2 = createApi({
   tagTypes: ["AuthV2"],
   endpoints: (builder) => ({
     updateBiometric: builder.mutation({
-      query: (bodyParams) => {
+      query: (body) => {
         return {
-          url: `/ziyl/updateBiometric`,
+          url: `/updateBiometric`,
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          body,
+        };
+      },
+    }),
+    login: builder.mutation({
+      query: (bodyParams) => {
+        console.log("🚀 ~ file: authSliceV2.ts:29 ~ bodyParams:", bodyParams);
+        return {
+          url: `/loginfinxpmobile`,
+          method: "POST",
           body: bodyParams,
         };
       },
@@ -27,4 +34,4 @@ export const authV2 = createApi({
   }),
 });
 
-export const { useUpdateBiometricMutation } = authV2;
+export const { useUpdateBiometricMutation, useLoginMutation } = authV2;

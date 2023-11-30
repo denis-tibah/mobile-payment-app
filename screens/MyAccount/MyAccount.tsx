@@ -44,7 +44,6 @@ export function MyAccount({ navigation }: any) {
   const currentPage = transactions?.current_page;
   const lastPage = transactions?.last_page;
   const userData = useSelector((state: RootState) => state?.auth?.userData);
-  const loading = useSelector((state: RootState) => state?.transaction.loading);
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
@@ -60,6 +59,7 @@ export function MyAccount({ navigation }: any) {
     try {
       setPaginateRefresh(true);
       if (userData && userData?.id) {
+        setIsLoading(prev => !prev);
         let search: SearchFilter = {
           account_id: userData?.id.toString(),
           sort: "id",
@@ -79,6 +79,7 @@ export function MyAccount({ navigation }: any) {
     } finally {
       setRefreshing(false);
       setPaginateRefresh(false);
+      setIsLoading(false);
     }
   };
 
@@ -246,7 +247,7 @@ export function MyAccount({ navigation }: any) {
             />
           </View>
           <View>
-            <Spinner visible={loading || paginateRefresh || isLoading} />
+            <Spinner visible={paginateRefresh || isLoading} />
             {_groupedByDateTransactions ? 
               (
                 <>

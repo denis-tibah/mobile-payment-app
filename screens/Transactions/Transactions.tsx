@@ -31,13 +31,11 @@ import DropDownPicker from "react-native-dropdown-picker";
 import LoadingScreen from "../../components/Loader/LoadingScreen";
 import Pagination from "../../components/Pagination/Pagination";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
-import Box from "../../components/Box";
 import {
   containsOnlyNumbers,
   groupedByDateTransactions,
-  transactionStatusOptions,
 } from "../../utils/helpers";
-import { searchOptions } from "../../utils/constants";
+import { transactionStatusOptions } from "../../utils/constants";
 import { Text } from "react-native";
 import BottomSheet from "../../components/BottomSheet";
 import Filter from "../../assets/icons/Filter";
@@ -90,11 +88,11 @@ export function Transactions({ navigation }: any) {
   const [sortByDate, setSortByDate] = useState<boolean>(false);
   const [currentSelectedSearchField, setCurrentSelectedSearchField] =
     useState<string>("");
+  const [selectedTransactionStatus, setSelectedTransactionStatus] =
+    useState<string>("");
   const [openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
   const [isSearchTextOpen, setIsSearchTextOpen] = useState<boolean>(false);
   const [isSheetFilterOpen, setIsSheetFilterOpen] = useState<boolean>(false);
-  const [isDateRangeModalOpen, setIsDateRangeModalOpen] =
-    useState<boolean>(false);
   const [isStatusOptionSelected, setIsStatusOptionSelected] =
     useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
@@ -273,171 +271,6 @@ export function Transactions({ navigation }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      <Modal isOpen={isDateRangeModalOpen}>
-        <Box
-          style={{
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <Typography
-            fontSize={16}
-            fontFamily="Nunito-SemiBold"
-            color="accent-blue"
-          >
-            Export Data
-          </Typography>
-          <Typography fontSize={14} fontFamily="Nunito-Regular" color="black">
-            Please select the date range you want to export
-          </Typography>
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-around",
-            }}
-          >
-            <Button
-              style={{
-                width: 110,
-                backgroundColor: "grey",
-                marginTop: 10,
-                lineHeight: 25,
-              }}
-              color="black-only"
-              onPress={() =>
-                setShowStatementPickerDateToAndFrom({
-                  ...showStatementPickerDateToAndFrom,
-                  dateFrom: {
-                    state: true,
-                    value: "",
-                  },
-                })
-              }
-            >
-              {!showStatementPickerDateToAndFrom.dateFrom.value
-                ? `From Date`
-                : `${showStatementPickerDateToAndFrom.dateFrom.value}`}
-            </Button>
-            {showStatementPickerDateToAndFrom.dateFrom.state && (
-              <DateTimePicker
-                mode="date"
-                display="spinner"
-                maximumDate={new Date()}
-                value={
-                  !showStatementPickerDateToAndFrom.dateFrom.value
-                    ? currentDate
-                    : new Date(showStatementPickerDateToAndFrom.dateFrom.value)
-                }
-                onChange={(event: any) => {
-                  if (event.type == "set") {
-                    const formattedDate = new Date(event.nativeEvent.timestamp)
-                      .toISOString()
-                      .split("T")[0];
-                    handleOnChangeShowPickerDate(
-                      formattedDate,
-                      setShowStatementPickerDateToAndFrom,
-                      showStatementPickerDateToAndFrom,
-                      "dateFrom"
-                    );
-                  }
-                }}
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                }}
-              />
-            )}
-            <Button
-              style={{
-                width: 110,
-                backgroundColor: "grey",
-                marginTop: 10,
-                lineHeight: 25,
-              }}
-              color="black-only"
-              onPress={() =>
-                setShowStatementPickerDateToAndFrom({
-                  ...showStatementPickerDateToAndFrom,
-                  dateTo: {
-                    state: !showPickerDateFilter.dateTo.state,
-                    value: "",
-                  },
-                })
-              }
-            >
-              {!showStatementPickerDateToAndFrom.dateTo.value
-                ? `To Date`
-                : `${showStatementPickerDateToAndFrom.dateTo.value}`}
-            </Button>
-            {showStatementPickerDateToAndFrom.dateTo.state && (
-              <DateTimePicker
-                mode="date"
-                display="spinner"
-                maximumDate={new Date()}
-                value={
-                  !showStatementPickerDateToAndFrom.dateTo.value
-                    ? currentDate
-                    : new Date(showStatementPickerDateToAndFrom.dateTo.value)
-                }
-                onChange={(event: any) => {
-                  if (event.type == "set") {
-                    const formattedDate = new Date(event.nativeEvent.timestamp)
-                      .toISOString()
-                      .split("T")[0];
-                    handleOnChangeShowPickerDate(
-                      formattedDate,
-                      setShowStatementPickerDateToAndFrom,
-                      showStatementPickerDateToAndFrom,
-                      "dateTo"
-                    );
-                  }
-                }}
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                }}
-              />
-            )}
-          </View>
-          <Button
-            style={{
-              width: 110,
-              marginTop: 10,
-              lineHeight: 25,
-              alignSelf: "center",
-            }}
-            color="green"
-            onPress={async () => {
-              const { dateFrom, dateTo } = showStatementPickerDateToAndFrom;
-              if (userData?.id && dateFrom.value && dateTo.value) {
-                const searchFilter: StatementFilter = {
-                  account_id: Number(userData?.id),
-                  from_date: dateFrom.value,
-                  to_date: dateTo.value,
-                };
-                try {
-                  await dispatch<any>(getStatementsfinxp(searchFilter))
-                    .unwrap()
-                    .then((res: StatementResponse) => {
-                      const { statements } = res;
-                      if (statements.length > 0) {
-                        return handleGeneratePDF(statements);
-                      }
-                    })
-                    .then(() => {
-                      setIsDateRangeModalOpen(false);
-                    });
-                } catch (error) {
-                  console.log({ error });
-                }
-              }
-            }}
-          >
-            Export
-          </Button>
-        </Box>
-      </Modal>
       <ScrollView bounces={false}>
         <View style={styles.container}>
           <Heading
@@ -482,284 +315,7 @@ export function Transactions({ navigation }: any) {
             </View>
           )
         }
-        {/* <View style={styles.searchBar}>
-          {isStatusOptionSelected ? (
-            <View
-              style={{ width: "75%", display: "flex", flexDirection: "row" }}
-            >
-              <DropDownPicker
-                listMode="SCROLLVIEW"
-                setValue={setSearchText}
-                items={transactionStatusOptions}
-                value={searchText}
-                onSelectItem={(item) => {
-                  let { value } = item;
-                  fetchTransactionsWithFilters({
-                    ...searchFieldData,
-                    status: value,
-                  });
-                }}
-                placeholder="Status options"
-                setOpen={setOpenStatusOptions}
-                open={openStatusOptions}
-                zIndex={101}
-                dropDownDirection="BOTTOM"
-                style={[
-                  styles.dropdown,
-                  { width: "80%", alignSelf: "flex-start" },
-                ]}
-                dropDownContainerStyle={[
-                  styles.dropdownContainerStatus,
-                  { zIndex: 20 },
-                ]}
-              />
-            </View>
-          ) : (
-            <FormGroup.Input
-              icon={<SearchIcon />}
-              placeholder={
-                currentSelectedSearchField === "max_amount"
-                  ? "Enter maximum amount"
-                  : "Enter minimum amount"
-              }
-              color={vars["black"]}
-              fontSize={14}
-              fontWeight={"400"}
-              style={{ width: "80%" }}
-              value={searchText}
-              onChangeText={(event: string) => setSearchText(event)}
-              onSubmitEditing={handleOnSubmitEditing}
-            />
-          )}
-          <View>
-            <TouchableOpacity
-              onPress={handleShowingAdvanceFilter}
-              style={{ paddingRight: 10 }}
-            >
-              <Ionicons
-                name="filter-sharp"
-                size={32}
-                color="#ff28b9"
-                iconStyle={{ marginTop: 180, color: "#FFC0CB" }}
-              ></Ionicons>
-            </TouchableOpacity>
-          </View>
-        </View> */}
-        {isMobileFilterShown && (
-          <View
-            style={{
-              backgroundColor: "white",
-              display: "flex",
-              flexDirection: "row",
-              zIndex: 10,
-            }}
-          >
-            <View
-              style={{
-                flex: 1,
-                minWidth: 72,
-              }}
-            >
-              <DropDownPicker
-                listMode="SCROLLVIEW"
-                setValue={setCurrentSelectedSearchField}
-                items={searchOptions}
-                value={currentSelectedSearchField}
-                placeholder="Search options"
-                setOpen={setOpenSearchOptions}
-                onChangeValue={(value) => {
-                  if (!value) {
-                    return;
-                  }
-                  setCurrentSelectedSearchField(value);
-                  if (value === "status") {
-                    setIsStatusOptionSelected((currentState) => !currentState);
-                  } else {
-                    setSearchText("");
-                    setIsStatusOptionSelected(false);
-                  }
-                }}
-                open={openSearchOptions}
-                zIndex={100}
-                style={styles.dropdown}
-                dropDownContainerStyle={styles.dropdownContainer}
-              />
-            </View>
-            <View
-              style={{
-                flex: 1,
-              }}
-            >
-              <Button
-                style={{
-                  width: 110,
-                  backgroundColor: "gey",
-                  marginTop: 10,
-                  lineHeight: 25,
-                }}
-                color="black-only"
-                onPress={() =>
-                  setShowPickerDateFilter({
-                    dateTo: {
-                      state: false,
-                      value: showPickerDateFilter.dateTo.value,
-                    },
-                    dateFrom: {
-                      state: true,
-                      value: showPickerDateFilter.dateFrom.value,
-                    },
-                  })
-                }
-              >
-                {!showPickerDateFilter.dateFrom.value
-                  ? `From Date`
-                  : `${showPickerDateFilter.dateFrom.value}`}
-              </Button>
-              {showPickerDateFilter.dateFrom.state && (
-                <DateTimePicker
-                  mode="date"
-                  display="spinner"
-                  onTouchCancel={() =>
-                    setShowPickerDateFilter({
-                      ...showPickerDateFilter,
-                      dateFrom: {
-                        state: false,
-                        value: "",
-                      },
-                    })
-                  }
-                  maximumDate={new Date()}
-                  value={
-                    !showPickerDateFilter.dateFrom.value
-                      ? currentDate
-                      : new Date(showPickerDateFilter.dateFrom.value)
-                  }
-                  textColor="black"
-                  onChange={(event: any) => {
-                    if (event.type == "set") {
-                      const formattedFromDate = new Date(
-                        event.nativeEvent.timestamp
-                      )
-                        .toISOString()
-                        .split("T")[0];
-                      handleOnChangeShowPickerDate(
-                        formattedFromDate,
-                        setShowPickerDateFilter,
-                        showPickerDateFilter,
-                        "dateFrom",
-                        true
-                      );
-                    }
-                  }}
-                  style={styles.dropdownIOSFrom}
-                />
-              )}
-            </View>
-            <View
-              style={{
-                flex: 1,
-              }}
-            >
-              <Button
-                style={{
-                  width: 110,
-                  backgroundColor: "grey",
-                  marginTop: 10,
-                  lineHeight: 25,
-                }}
-                color="black-only"
-                onPress={() =>
-                  setShowPickerDateFilter({
-                    dateFrom: {
-                      state: false,
-                      value: showPickerDateFilter.dateFrom.value,
-                    },
-                    dateTo: {
-                      state: true,
-                      value: showPickerDateFilter.dateTo.value,
-                    },
-                  })
-                }
-              >
-                {!showPickerDateFilter.dateTo.value
-                  ? `To Date`
-                  : `${showPickerDateFilter.dateTo.value}`}
-              </Button>
-              {showPickerDateFilter.dateTo.state && (
-                <DateTimePicker
-                  mode="date"
-                  display="spinner"
-                  onTouchCancel={() =>
-                    setShowPickerDateFilter({
-                      ...showPickerDateFilter,
-                      dateTo: {
-                        state: false,
-                        value: "",
-                      },
-                    })
-                  }
-                  value={
-                    !showPickerDateFilter.dateTo.value
-                      ? currentDate
-                      : new Date(showPickerDateFilter.dateTo.value)
-                  }
-                  textColor="black"
-                  onChange={(event: any) => {
-                    if (event.type == "set") {
-                      const formattedToDate = new Date(
-                        event.nativeEvent.timestamp
-                      )
-                        .toISOString()
-                        .split("T")[0];
-                      handleOnChangeShowPickerDate(
-                        formattedToDate,
-                        setShowPickerDateFilter,
-                        showPickerDateFilter,
-                        "dateTo",
-                        true
-                      );
-                    }
-                  }}
-                  style={styles.dropdownIOSTo}
-                />
-              )}
-            </View>
-          </View>
-        )}
         <View>
-          <Seperator backgroundColor={vars["grey"]} />
-          <View style={styles.listHead}>
-            <Typography
-              fontSize={16}
-              fontFamily="Nunito-SemiBold"
-              color="accent-blue"
-            >
-              Date
-            </Typography>
-            <TouchableOpacity onPress={() => setSortByDate(!sortByDate)}>
-              {sortByDate ? (
-                <Ionicons
-                  name="arrow-up"
-                  style={styles.arrow}
-                  size={16}
-                  color="#4472C4"
-                />
-              ) : (
-                <Ionicons
-                  name="arrow-down"
-                  style={styles.arrow}
-                  size={16}
-                  color="#4472C4"
-                />
-              )}
-            </TouchableOpacity>
-            {/* <Typography fontSize={16} fontFamily="Nunito-SemiBold" color="accent-blue">Date</Typography> */}
-            <Typography fontSize={16} fontFamily="Nunito-SemiBold">
-              Total Amount
-            </Typography>
-            {/* <Typography fontSize={16} fontFamily="Nunito-SemiBold">Balance</Typography> */}
-            <Typography></Typography>
-          </View>
           <Seperator backgroundColor={vars["grey"]} />
           <View>
             {_groupedByDateTransactions
@@ -816,14 +372,241 @@ export function Transactions({ navigation }: any) {
         </View>
         <Divider style={{marginVertical: 5}} />
         {/* filter for date range */}
-        <View style={styles.container}>
-          <Typography fontSize={16}>
-            State date
-          </Typography>
-          <Typography fontSize={16}>
-            State date
-          </Typography>
+        <View style={{display: 'flex', flexDirection: 'row'}}>
+          <View style={{flex: 1, flexWrap: 'wrap'}}>
+            <Typography fontSize={14} color="#696F7A">
+              Start date
+            </Typography>
+            <Button
+                style={{
+                  width: 110,
+                  backgroundColor: "gey",
+                  marginTop: 10,
+                  lineHeight: 25,
+                  borderWidth: 1,
+                  borderColor: vars['accent-blue']
+                }}
+                color="black-only"
+                onPress={() => {
+                   setShowPickerDateFilter({
+                    dateTo: {
+                      state: false,
+                      value: showPickerDateFilter.dateTo.value,
+                    },
+                    dateFrom: {
+                      state: true,
+                      value: showPickerDateFilter.dateFrom.value,
+                    },
+                  })
+                }}
+              >
+                {showPickerDateFilter.dateFrom.value}
+              </Button>
+              {showPickerDateFilter.dateFrom.state && (
+                <DateTimePicker
+                  mode="date"
+                  display="spinner"
+                  onTouchCancel={() =>
+                    setShowPickerDateFilter({
+                      ...showPickerDateFilter,
+                      dateFrom: {
+                        state: false,
+                        value: "",
+                      },
+                    })
+                  }
+                  maximumDate={new Date()}
+                  value={
+                    !showPickerDateFilter.dateFrom.value
+                      ? currentDate
+                      : new Date(showPickerDateFilter.dateFrom.value)
+                  }
+                  textColor="black"
+                  onChange={(event: any) => {
+                    if (event.type == "set") {
+                      const formattedFromDate = new Date(
+                        event.nativeEvent.timestamp
+                      )
+                        .toISOString()
+                        .split("T")[0];
+                      handleOnChangeShowPickerDate(
+                        formattedFromDate,
+                        setShowPickerDateFilter,
+                        showPickerDateFilter,
+                        "dateFrom",
+                        true
+                      );
+                    }
+                  }}
+                  style={styles.dropdownIOSFrom}
+                />
+              )}
+          </View>
+          <View style={{flex: 1}}>
+            <Typography fontSize={14} color="#696F7A">
+              Finish date
+            </Typography>
+            <Button
+                style={{
+                  width: 110,
+                  backgroundColor: "grey",
+                  marginTop: 10,
+                  lineHeight: 25,
+                  borderWidth: 1,
+                  borderColor: vars['accent-blue']
+                }}
+                color="black-only"
+                onPress={() => {
+                  setShowPickerDateFilter({
+                    dateFrom: {
+                      state: false,
+                      value: showPickerDateFilter.dateFrom.value,
+                    },
+                    dateTo: {
+                      state: true,
+                      value: showPickerDateFilter.dateTo.value,
+                    },
+                  })
+                }}
+              >
+                {showPickerDateFilter.dateTo.value}
+              </Button>
+              {showPickerDateFilter.dateTo.state && (
+                <DateTimePicker
+                  mode="date"
+                  display="spinner"
+                  onTouchCancel={() =>
+                    setShowPickerDateFilter({
+                      ...showPickerDateFilter,
+                      dateTo: {
+                        state: false,
+                        value: "",
+                      },
+                    })
+                  }
+                  value={
+                    !showPickerDateFilter.dateTo.value
+                      ? currentDate
+                      : new Date(showPickerDateFilter.dateTo.value)
+                  }
+                  textColor="black"
+                  onChange={(event: any) => {
+                    if (event.type == "set") {
+                      const formattedToDate = new Date(
+                        event.nativeEvent.timestamp
+                      )
+                        .toISOString()
+                        .split("T")[0];
+                      handleOnChangeShowPickerDate(
+                        formattedToDate,
+                        setShowPickerDateFilter,
+                        showPickerDateFilter,
+                        "dateTo",
+                        true
+                      );
+                    }
+                  }}
+                  style={styles.dropdownIOSTo}
+                />
+              )}
+          </View>
         </View>
+        <Typography fontSize={10} color="#696F7A">maximum date range is 60 days</Typography>
+        <Divider style={{marginVertical: 10}} />
+        <Typography fontSize={14} color="#696F7A">
+          Status
+        </Typography>
+        <ScrollView horizontal style={{display: 'flex', flexDirection: 'row'}}>
+          {transactionStatusOptions.map((option, index) => (
+            <TouchableOpacity
+              key={index}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                marginRight: 10,
+                backgroundColor: searchFieldData.status === option.value ? vars[option.colorActive] : vars[option.color],
+                paddingHorizontal: 18,
+                paddingVertical: 12,
+                borderRadius: 99,
+              }}
+              onPress={() => {
+                setSearchFieldData({
+                  ...searchFieldData,
+                  status: option.value,
+                });
+                setIsStatusOptionSelected(true);
+              }}
+            >
+              <Text style={{
+                color: searchFieldData.status === option.value ? '#fff' : vars[option.colorActive],
+                fontSize: 14
+              }}>{option.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+        <Divider style={{marginVertical: 10}} />
+        <View style={{display: 'flex', flexDirection: 'row'}}>
+            {/* two input fields for amount range: amount from and amount to */}
+            <View style={{flex: 1, flexWrap: 'wrap', paddingRight: 10}}>
+              <Typography fontSize={14} color="#696F7A">
+                Amount from
+              </Typography>
+              <FormGroup.Input
+                placeholder={"From"}
+                color={vars["black"]}
+                fontSize={14}
+                fontWeight={"400"}
+                style={{ width: "100%", borderWidth: 1, borderColor: vars['accent-blue'] }}
+                value={searchFieldData.min_amount}
+                onChangeText={(event: string) => {
+                  setSearchFieldData({
+                    ...searchFieldData,
+                    min_amount: Number(event),
+                  });
+                }}
+              />
+            </View>
+            <View style={{flex: 1, paddingLeft: 10}}>
+              <Typography fontSize={14} color="#696F7A">
+                Amount to
+              </Typography>
+              <FormGroup.Input
+                placeholder={"To"}
+                color={vars["black"]}
+                fontSize={14}
+                fontWeight={"400"}
+                style={{ width: "100%", borderWidth: 1, borderColor: vars['accent-blue'] }}
+                value={searchFieldData.max_amount}
+                onChangeText={(event: string) => {
+                  setSearchFieldData({
+                    ...searchFieldData,
+                    max_amount: Number(event),
+                  });
+                }}
+              />
+            </View>
+        </View>
+        <Divider style={{marginVertical: 10}} />
+        <Typography fontSize={14} color="#696F7A">
+          Your cards
+        </Typography>
+        <ScrollView horizontal>
+          {/* list of cards, blue if its physical and pink otherwise */}
+          <TouchableOpacity style={{
+              backgroundColor: vars['light-pink'],
+              paddingVertical: 12,
+              paddingHorizontal: 18,
+              borderRadius: 99,
+              width: 135,
+              height: 40,
+              }}
+            >
+            <Typography fontSize={14} color={vars['accent-pink']}>
+              **** **** **** 1234
+            </Typography>
+          </TouchableOpacity>
+        </ScrollView>
       </BottomSheet>
     </MainLayout>
   );

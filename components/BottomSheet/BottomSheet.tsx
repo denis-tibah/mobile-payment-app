@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, PanResponder, Animated } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 type Props = {
   isVisible: boolean;
@@ -9,6 +9,33 @@ type Props = {
 export const BottomSheet: React.FC<Props> = ({ isVisible, onClose, children }) => {
 
   const bottomSheetRef = useRef(null);
+
+  const [panResponder] = useState(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) => gestureState.dy > 5,
+      onPanResponderMove: Animated.event([null, { dy: new Animated.Value(0) }], {
+        useNativeDriver: false,
+      }),
+      onPanResponderRelease: (_, gestureState) => {
+        if (gestureState.dy > 50) {
+          Animated.timing(bottomSheetTranslateY, {
+            toValue: 400,
+            duration: 300,
+            useNativeDriver: false,
+          }).start(onClose);
+        } else {
+          Animated.spring(bottomSheetTranslateY, {
+            toValue: 0,
+            bounciness: 8,
+            useNativeDriver: false,
+          }).start();
+        }
+      },
+    })
+  );
+
+  const bottomSheetTranslateY = useRef(new Animated.Value(0)).current;
+
   const handleAnimationEnd = () => {
     if (!isVisible) {
       bottomSheetRef.current?.slideOutUp(300);
@@ -32,6 +59,7 @@ export const BottomSheet: React.FC<Props> = ({ isVisible, onClose, children }) =
         animation={isVisible ? 'slideInUp' : 'slideOutDown'}
         duration={300}
         onAnimationEnd={handleAnimationEnd}
+        {...panResponder.panHandlers}
       >
         <View style={styles.contentContainer}>
           {children}

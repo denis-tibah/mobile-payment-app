@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Alert, Pressable, View, Switch } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, CommonActions } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import * as LocalAuthentication from "expo-local-authentication";
 import * as SecureStore from "expo-secure-store";
-import { Formik } from "formik";
+import { useFormik, Formik } from "formik";
+import Spinner from "react-native-loading-spinner-overlay/lib";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Button from "../../components/Button";
@@ -17,15 +18,18 @@ import ProfileIcon from "../../assets/icons/TransactionLogoSelect";
 import EmailIcon from "../../assets/icons/Email";
 import LockIcon from "../../assets/icons/Lock";
 import FaceIdIcon from "../../assets/icons/FaceId";
+import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import {
   SIGNIN_SUCCESS_MESSAGES,
   refreshUserData,
   signin,
 } from "../../redux/auth/authSlice";
+import { useLoginMutation } from "../../redux/auth/authSliceV2";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
 import { screenNames } from "../../utils/helpers";
 import { validationAuthSchema } from "../../utils/validation";
+import { getDeviceDetails } from "../../utils/getIpAddress";
 
 export function LoginScreen({ navigation }: any) {
   const [apiErrorMessage, setApiErrorMessage] = useState<any>({});
@@ -33,15 +37,118 @@ export function LoginScreen({ navigation }: any) {
   const [isFaceId, setFaceId] = useState<boolean>(true);
   const [storageData, setStorageData] = useState<any>({});
   const [biometricFlag, setBiometricFlag] = useState<string>("null");
+  const [statusMessage, setStatusMessage] = useState<{
+    header: string;
+    body: string;
+    isOpen: boolean;
+    isError: boolean;
+  }>({ header: "", body: "", isOpen: false, isError: false });
 
   const { navigate }: any = useNavigation();
   const dispatch = useDispatch();
-  const validationSchema = validationAuthSchema();
+  /* const validationSchema = validationAuthSchema(); */
 
   const saveSecureCredetails = async (email: string, password: string) => {
     await SecureStore.setItemAsync("user_email", email);
     await SecureStore.setItemAsync("user_password", password);
   };
+
+  const [
+    loginMutation,
+    {
+      isLoading: isLoadingLogin,
+      isError: isErrorLogin,
+      isSuccess: isSuccessLogin,
+      error: errorLogin,
+      data: dataLogin,
+    },
+  ] = useLoginMutation();
+
+  useEffect(() => {
+    if (!isLoadingLogin && isSuccessLogin) {
+      if (dataLogin?.code === "401" || dataLogin?.code === "400") {
+        setStatusMessage({
+          header: `${dataLogin?.code} Error`,
+          body: dataLogin?.message,
+          isOpen: true,
+          isError: true,
+        });
+      }
+
+      const handleLogin = async () => {
+        if (dataLogin?.biometricYN && dataLogin?.biometricYN === "Y") {
+          console.log("use biometric");
+          await saveSecureCredetails(values?.email, values?.password);
+          await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
+          await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
+          /* navigation.navigate("DashboardStack", {
+            screen: screenNames.transactions,
+          }); */
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 1,
+              routes: [
+                {
+                  name: "dashboard",
+                  params: {
+                    screen: screenNames.transactions,
+                  },
+                },
+              ],
+            })
+          );
+        } else {
+          console.log("do notuse biometric");
+          await SecureStore.deleteItemAsync("email");
+          await SecureStore.deleteItemAsync("password");
+        }
+      };
+      console.log(
+        "🚀 ~ file: index.tsx:101 ~ useEffect ~ dataLogin:",
+        dataLogin
+      );
+      if (dataLogin?.code === "200" || dataLogin?.code === "201") {
+        handleLogin();
+      } else {
+        setStatusMessage({
+          header: `Error`,
+          body: "Something went wrong",
+          isOpen: true,
+          isError: true,
+        });
+      }
+    }
+  }, [isLoadingLogin, isSuccessLogin, dataLogin]);
+
+  useEffect(() => {
+    if (!isLoadingLogin && isErrorLogin) {
+      setStatusMessage({
+        header: `${errorLogin?.data?.code} Error`,
+        body: errorLogin?.data?.message,
+        isOpen: true,
+        isError: true,
+      });
+    }
+  }, [isLoadingLogin, isErrorLogin, errorLogin]);
+
+  const { handleSubmit, handleChange, values, touched, errors, handleBlur } =
+    useFormik({
+      initialValues: {
+        email: "",
+        password: "",
+      },
+      validationSchema: validationAuthSchema,
+      onSubmit: async ({ email, password }) => {
+        const ipAddress = await getDeviceDetails();
+        const reqData = {
+          email,
+          password,
+          ipAddress,
+          browserfingerprint: "react native app",
+        };
+        loginMutation(reqData);
+      },
+    });
 
   const checkCompatible = async () => {
     const compatible: boolean = await LocalAuthentication.hasHardwareAsync();
@@ -239,8 +346,25 @@ export function LoginScreen({ navigation }: any) {
     }
   }, [isFaceId, storageData]);
 
+  const onCloseModal = (): void => {
+    setStatusMessage({
+      header: "",
+      body: "",
+      isOpen: false,
+      isError: false,
+    });
+  };
+
   return (
-    <MainLayout navigation={navigation}>
+    <MainLayout /* navigation={navigation} */>
+      <Spinner visible={isLoadingLogin} />
+      <SuccessModal
+        isOpen={statusMessage?.isOpen}
+        title={statusMessage.header}
+        text={statusMessage.body}
+        isError={statusMessage.isError}
+        onClose={onCloseModal}
+      />
       <View style={styles.container}>
         <View style={styles.innerContainer}>
           <View style={styles.card}>
@@ -267,7 +391,99 @@ export function LoginScreen({ navigation }: any) {
               </View>
             </View>
             <Seperator marginBottom={36} backgroundColor={vars["grey"]} />
-            <Formik
+            <View>
+              <View style={styles.cardBody}>
+                <View>
+                  <FormGroup
+                    validationError={
+                      errors.email && touched.email && errors.email
+                    }
+                  >
+                    <FormGroup.Input
+                      keyboardType="email-address"
+                      onChangeText={handleChange("email")}
+                      onBlur={handleBlur("email")}
+                      value={values.email}
+                      placeholderTextColor={vars["ios-default-text"]}
+                      placeholder="Email address"
+                      iconColor="blue"
+                      icon={<EmailIcon />}
+                    />
+                  </FormGroup>
+                </View>
+                <View>
+                  <FormGroup
+                    validationError={
+                      errors.password && touched.password && errors.password
+                    }
+                  >
+                    <FormGroup.Password
+                      iconColor="blue"
+                      icon={<LockIcon />}
+                      rightIcon
+                      onChangeText={handleChange("password")}
+                      onBlur={handleBlur("password")}
+                      value={values.password}
+                      placeholderTextColor={vars["ios-default-text"]}
+                      placeholder="Password"
+                    />
+                  </FormGroup>
+                </View>
+                <View style={styles.cardBodyLink}>
+                  <Pressable onPress={() => navigate("forgottenPassword")}>
+                    <Typography color="accent-blue" fontFamily="Mukta-Regular">
+                      Forgot Password?
+                    </Typography>
+                  </Pressable>
+                </View>
+              </View>
+              {biometricFlag !== "null" ? (
+                <View style={styles.faceIdContainer}>
+                  <View style={styles.faceIdIconContainer}>
+                    <FaceIdIcon size={20} color="blue" />
+                    <Typography fontSize={16}>Use FaceID next time</Typography>
+                  </View>
+                  <View
+                    style={{
+                      marginTop: 18,
+                    }}
+                  >
+                    <Switch
+                      value={isFaceId}
+                      trackColor={{
+                        false: "#767577",
+                        true: "#81b0ff",
+                      }}
+                      thumbColor={isFaceId ? "white" : vars["light-blue"]}
+                      style={{ marginTop: -24 }}
+                      ios_backgroundColor="#3e3e3e"
+                      onValueChange={handleChangeFaceId}
+                    />
+                  </View>
+                </View>
+              ) : null}
+              <FixedBottomAction rounded isFullWidth isNoTopMargin>
+                <View
+                  style={{
+                    width: "100%",
+                    paddingLeft: 12,
+                    paddingRight: 12,
+                  }}
+                >
+                  <Button
+                    style={styles.signinButton}
+                    loading={isLoadingLogin}
+                    disabled={isLoadingLogin}
+                    color="light-pink"
+                    onPress={handleSubmit}
+                    leftIcon={<ProfileIcon size={14} />}
+                  >
+                    Submit
+                  </Button>
+                </View>
+              </FixedBottomAction>
+            </View>
+            {/* <Formik
               initialValues={{
                 email: "",
                 password: "",
@@ -278,7 +494,7 @@ export function LoginScreen({ navigation }: any) {
                 setIsLoading(true);
                 try {
                   const result = await dispatch<any>(
-                    signin({ values, navigate /* , ip */ })
+                    signin({ values, navigate  })
                   ).unwrap();
 
                   if (
@@ -437,7 +653,7 @@ export function LoginScreen({ navigation }: any) {
                   </View>
                 );
               }}
-            </Formik>
+            </Formik> */}
           </View>
         </View>
       </View>

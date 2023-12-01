@@ -42,6 +42,7 @@ export const styles: any = StyleSheet.create<any>({
     marginBottom: 10,
     marginHorizontal: 3,
     borderRadius: 18,
+    height: 64,
   },
   balanceContainer: {
     display: "flex",

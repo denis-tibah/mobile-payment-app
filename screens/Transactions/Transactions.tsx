@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { View, ScrollView, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { Ionicons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import FormGroup from "../../components/FormGroup";
 import Heading from "../../components/Heading";
 import Modal from "../../components/Modal";
@@ -33,13 +33,16 @@ import Pagination from "../../components/Pagination/Pagination";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 import {
   containsOnlyNumbers,
+  getUserActiveCards,
   groupedByDateTransactions,
+  sortUserActiveToInactiveCards,
 } from "../../utils/helpers";
-import { transactionStatusOptions } from "../../utils/constants";
+import { CardStatus, transactionStatusOptions } from "../../utils/constants";
 import { Text } from "react-native";
 import BottomSheet from "../../components/BottomSheet";
 import Filter from "../../assets/icons/Filter";
 import { Divider } from "react-native-paper";
+import { useLazyGetCardV2Query } from "../../redux/card/cardSliceV2";
 
 interface DateRangeType {
   dateTo: {
@@ -102,13 +105,20 @@ export function Transactions({ navigation }: any) {
   );
   const [showPickerDateFilter, setShowPickerDateFilter] =
     useState<DateRangeType>(initialDateRange);
-  const [
-    showStatementPickerDateToAndFrom,
-    setShowStatementPickerDateToAndFrom,
-  ] = useState<DateRangeType>(initialDateRange);
+    const [
+      getCardDetails,
+      {
+        isLoading: isLoadingCardInfo,
+        data: userCardsList,
+      },
+    ] = useLazyGetCardV2Query();
+  useEffect(() => {
+    getCardDetails(undefined,true);
+  }, []);
+  const listOfActiveCards = sortUserActiveToInactiveCards(userCardsList);
 
   const clearFilter = () => {
-    setShowStatementPickerDateToAndFrom(initialDateRange);
+    // setShowStatementPickerDateToAndFrom(initialDateRange);
     setShowPickerDateFilter(initialDateRange);
     setSearchFieldData(initialSearchFieldData);
     setCurrentSelectedSearchField("");
@@ -275,7 +285,7 @@ export function Transactions({ navigation }: any) {
         <View style={styles.container}>
           <Heading
             icon={<TransactionIcon size={18} color="pink" />}
-            title={"Latest Transactions"}
+            title={"Transactions History"}
             rightAction={
               <View style={{display: 'flex', flexDirection: 'row'}}>
                 <TouchableOpacity 
@@ -379,7 +389,7 @@ export function Transactions({ navigation }: any) {
             </Typography>
             <Button
                 style={{
-                  width: 110,
+                  width: 131,
                   backgroundColor: "gey",
                   marginTop: 10,
                   lineHeight: 25,
@@ -448,7 +458,7 @@ export function Transactions({ navigation }: any) {
             </Typography>
             <Button
                 style={{
-                  width: 110,
+                  width: 131,
                   backgroundColor: "grey",
                   marginTop: 10,
                   lineHeight: 25,
@@ -512,7 +522,7 @@ export function Transactions({ navigation }: any) {
           </View>
         </View>
         <Typography fontSize={10} color="#696F7A">maximum date range is 60 days</Typography>
-        <Divider style={{marginVertical: 10}} />
+        <Divider style={{marginVertical: 15}} />
         <Typography fontSize={14} color="#696F7A">
           Status
         </Typography>
@@ -545,7 +555,7 @@ export function Transactions({ navigation }: any) {
             </TouchableOpacity>
           ))}
         </ScrollView>
-        <Divider style={{marginVertical: 10}} />
+        <Divider style={{marginVertical: 15}} />
         <View style={{display: 'flex', flexDirection: 'row'}}>
             {/* two input fields for amount range: amount from and amount to */}
             <View style={{flex: 1, flexWrap: 'wrap', paddingRight: 10}}>
@@ -592,21 +602,45 @@ export function Transactions({ navigation }: any) {
           Your cards
         </Typography>
         <ScrollView horizontal>
-          {/* list of cards, blue if its physical and pink otherwise */}
-          <TouchableOpacity style={{
-              backgroundColor: vars['light-pink'],
+          {listOfActiveCards?.map((card: any, index: number) => (
+            <TouchableOpacity style={{
+              backgroundColor: card.cardStatus === CardStatus.INACTIVE ? vars['light-yellow'] : 
+              card.lostYN === "N" ? card.type === "P" ? vars['light-blue'] : vars['light-pink'] : vars['light-grey'],
               paddingVertical: 12,
               paddingHorizontal: 18,
               borderRadius: 99,
-              width: 135,
+              marginHorizontal: 3,
+              width: 151,
               height: 40,
-              }}
-            >
-            <Typography fontSize={14} color={vars['accent-pink']}>
-              **** **** **** 1234
+              }}>
+            <Typography fontSize={14} color={
+              card.cardStatus === CardStatus.INACTIVE ? vars['accent-yellow'] : 
+              card.lostYN === "N" ? card.type === "P" ? vars['accent-blue'] : vars['accent-pink'] : vars['accent-grey']
+            }>
+              {card.pan}
             </Typography>
           </TouchableOpacity>
+          ))}
         </ScrollView>
+        <Divider style={{marginVertical: 15}} />
+        <Button
+          style={{
+            width: '100%',
+            backgroundColor: "grey",
+            marginTop: 10,
+            lineHeight: 25,
+            borderWidth: 1,
+            borderColor: vars['accent-pink']
+          }}
+          color="light-pink"
+          leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
+          onPress={() => {
+           setIsSheetFilterOpen(!isSheetFilterOpen)
+          }}
+        >
+          Submit
+        </Button>
+        <Divider style={{marginVertical: 15}} />
       </BottomSheet>
     </MainLayout>
   );

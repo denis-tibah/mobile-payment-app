@@ -8,7 +8,7 @@ import {
 import { styles } from "./styles";
 import ArrowDown from "../../assets/icons/ArrowDown";
 import Button from "../Button";
-import Chip from "../Chip";
+import { AntDesign } from '@expo/vector-icons'; 
 import * as Clipboard from "expo-clipboard";
 import CalenderEmptyIcon from "../../assets/icons/CalenderEmpty";
 import Box from "../Box";
@@ -193,6 +193,17 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                           </Text>
                         </Box>
                       </View>
+                    </View>
+                    {/* <Divider style={{marginVertical: 5}} /> */}
+                    <View style={{marginTop: 10}}>
+                      <Button
+                        color={"light-pink"}
+                        style={{width: 154}}
+                        onPress={() => console.log('customer service')}
+                        leftIcon={<AntDesign name="customerservice" size={14} color={vars['accent-pink']} />}
+                        >
+                          Customer Service
+                        </Button>
                     </View>
                   </View>
                 </Pressable>

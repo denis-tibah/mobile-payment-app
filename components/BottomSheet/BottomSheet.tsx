@@ -62,12 +62,13 @@ export const BottomSheet: React.FC<Props> = ({ isVisible, onClose, children }) =
         {...panResponder.panHandlers}
       >
         <View style={styles.contentContainer}>
+          <View style={{ }} />
           {children}
-          <TouchableOpacity onPress={handleClose}
+          {/* <TouchableOpacity onPress={handleClose}
             style={styles.closeButton}
           >
             <Text>Close</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </Animatable.View>
   );

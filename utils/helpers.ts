@@ -149,6 +149,13 @@ export const getUserActiveCards = (cards: any) => {
   return cards.filter((card: any) => card.lostYN === "N");
 }
 
+export const sortUserActiveToInactiveCards = (cards: any) => {
+  if (!cards || chechIfResponseIsError(cards) || typeof cards === undefined) return [];
+  const activeCards = cards.filter((card: any) => card.lostYN === "N");
+  const inactiveCards = cards.filter((card: any) => card.lostYN === "Y");
+  return [...activeCards, ...inactiveCards];
+}
+
 export function getPendingAmount(avlbal: any, currentBalance: any) {
   const pendingAmount = Math.abs(currentBalance - avlbal);
   //use toFixed(2) to format nuber to 2 decimal places

@@ -16,6 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import thunk from "redux-thunk";
 import { accountV2 } from "./redux/account/accountSliceV2";
 import { authV2 } from "./redux/auth/authSliceV2";
+import { cardsV2 } from "./redux/card/cardSliceV2";
 
 export const reducers = combineReducers({
   auth: authSlice,
@@ -30,6 +31,7 @@ export const reducers = combineReducers({
   card: cardSlice,
   [accountV2.reducerPath]: accountV2.reducer,
   [authV2.reducerPath]: authV2.reducer,
+  [cardsV2.reducerPath]: cardsV2.reducer,
 });
 
 export interface RootState {
@@ -45,6 +47,7 @@ export interface RootState {
   card: CardState;
   accountV2: any;
   authV2: any;
+  cardsV2: any;
 }
 
 const rootReducer = (state: RootState | undefined, action: any) => {
@@ -87,7 +90,12 @@ export const store = configureStore({
           "persist/FLUSH",
         ],
       },
-    }).concat(thunk, accountV2.middleware, authV2.middleware),
+    }).concat(
+      thunk,
+      accountV2.middleware,
+      authV2.middleware,
+      cardsV2.middleware,
+    ),
 });
 
 export const persistor = persistStore(store);

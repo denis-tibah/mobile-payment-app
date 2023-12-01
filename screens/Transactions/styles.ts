@@ -5,6 +5,26 @@ export const styles:any = StyleSheet.create<any>({
     marginTop: 26,
     zIndex:1
   },
+  containerDate: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  iconFilter: {
+    height: 34,
+    width: 34,
+    padding: 10,
+    backgroundColor: '#F5F9FF',
+    borderRadius: 20,
+  },
+  dateRange: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: 300,
+    marginTop: 10,
+  
+  },
   listHead: {
     backgroundColor: "white",
     display: "flex",

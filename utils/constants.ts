@@ -7,12 +7,18 @@ export const countries = [
 
 export enum TRANSACTIONS_STATUS {
     // PENDING='PENDING',
-    ALL='',
-    CANCELLED='CANCELLED',
-    COMPLETED = 'SUCCESS',
+    SUCCESS = 'SUCCESS',
     PROCESSING = 'PROCESSING',
-    FAILED ='FAILED'
+    CANCELLED='CANCELLED',
+    REJECTED = 'FAILED'
 }
+
+export const transactionStatusOptions = [
+    {label: "Success", value: TRANSACTIONS_STATUS.SUCCESS, color: 'light-green', colorActive: 'heavy-green'},
+    {label: "Processing", value: TRANSACTIONS_STATUS.PROCESSING, color: 'light-blue', colorActive: 'accent-blue'},
+    {label: "Cancelled", value: TRANSACTIONS_STATUS.CANCELLED, color: 'light-yellow', colorActive: 'heavy-yellow'},
+    {label: "Failed", value: TRANSACTIONS_STATUS.REJECTED, color: 'light-red', colorActive: 'heavy-red'}
+]
 
 export const searchOptions = [
     // { label: "BIC", value: 'bic' },

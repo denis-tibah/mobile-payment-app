@@ -12,7 +12,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // live backend
 const baseURL = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
-export const exportedBaseUrl = process.env.APIURL || "https://zazooapi.com/prod/ziyl";
+export const exportedBaseUrl =
+  process.env.APIURL || "https://zazooapi.com/prod/ziyl";
 
 export const api = axios.create({ baseURL });
 let _store: any;

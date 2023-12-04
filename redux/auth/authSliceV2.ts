@@ -23,7 +23,6 @@ export const authV2 = createApi({
     }),
     login: builder.mutation({
       query: (bodyParams) => {
-        console.log("🚀 ~ file: authSliceV2.ts:29 ~ bodyParams:", bodyParams);
         return {
           url: `/loginfinxpmobile`,
           method: "POST",

@@ -15,8 +15,8 @@ const defaultTransactionsDetails: TransactionDetailsNew = {
   transactions: [],
 };
 const defaultStatementDetails: StatementResponse = {
-  statements: []
-}
+  statements: [],
+};
 
 export interface TransactionState {
   data: TransactionDetailsNew;
@@ -59,7 +59,8 @@ export const transactionSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     // get transactions
-    builder.addCase(getTransactions.fulfilled, (state, action) => { // line 63 - line 70 is not needed anymore must be removed
+    builder.addCase(getTransactions.fulfilled, (state, action) => {
+      // line 63 - line 70 is not needed anymore must be removed
       state.data = action.payload;
       state.loading = false;
     });
@@ -149,7 +150,6 @@ export const getTransactionsWithFilters = createAsyncThunk<
         to_date: searchFilter?.to_date,
         account_id: searchFilter.account_id,
       });
-      //  console.log("data ",data);
       return fulfillWithValue(data);
     } catch (error) {
       // console.log("error with transaction search",error);
@@ -164,16 +164,16 @@ export interface StatementFilter {
   from_date: string;
 }
 export interface StatementTransactionsResponse {
-  "transaction_ref_no": "string",
-  "transfer_currency": "string",
-  "debit": "float",
-  "credit": "integer",
-  "opening_balance": "integer",
-  "closing_balance": "float",
-  "balance": "integer",
-  "sender_receiver": "string",
-  "description": "string",
-  "transaction_date": "date"
+  transaction_ref_no: "string";
+  transfer_currency: "string";
+  debit: "float";
+  credit: "integer";
+  opening_balance: "integer";
+  closing_balance: "float";
+  balance: "integer";
+  sender_receiver: "string";
+  description: "string";
+  transaction_date: "date";
 }
 
 export interface StatementResponse {
@@ -181,23 +181,26 @@ export interface StatementResponse {
 }
 
 export const getStatementsfinxp = createAsyncThunk<
-StatementResponse,
-StatementFilter
+  StatementResponse,
+  StatementFilter
 >(
   "getStatementsfinxp",
-    async (params, { rejectWithValue, fulfillWithValue }) => {
-      console.log("redux", params);
+  async (params, { rejectWithValue, fulfillWithValue }) => {
+    console.log("redux", params);
     try {
       const { data } = await api.post("/getStatementfinxp", params);
       return fulfillWithValue(data);
-      } catch (error) {
-        rejectWithValue(error);
-      }
+    } catch (error) {
+      rejectWithValue(error);
     }
+  }
 );
 
-export const clearTransactions = createAsyncThunk("clearTransactions", async () => {
-  return initialState;
-});
+export const clearTransactions = createAsyncThunk(
+  "clearTransactions",
+  async () => {
+    return initialState;
+  }
+);
 
 export default transactionSlice.reducer;

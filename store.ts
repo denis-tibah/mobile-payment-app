@@ -52,7 +52,7 @@ export interface RootState {
 
 const rootReducer = (state: RootState | undefined, action: any) => {
   if (action.type === "auth/signout") {
-    AsyncStorage.removeItem("persist:root");
+    // AsyncStorage.removeItem("persist:root");
     AsyncStorage.removeItem("accessToken");
     AsyncStorage.removeItem("token_ziyl");
     AsyncStorage.removeItem("token_receive_mobile_notifications");

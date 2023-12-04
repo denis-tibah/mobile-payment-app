@@ -900,8 +900,8 @@ export function Profile({ route, navigation }: any) {
               text="Log Out"
               icon={<Ionicons name={"ios-exit-outline"} />}
               onPress={async () => {
-                await SecureStore.deleteItemAsync("email");
-                await SecureStore.deleteItemAsync("password");
+                /* await SecureStore.deleteItemAsync("email");
+                await SecureStore.deleteItemAsync("password"); */
                 dispatch(signout());
               }}
             />

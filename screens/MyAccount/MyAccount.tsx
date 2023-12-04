@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import * as SecureStore from "expo-secure-store";
 
 import { useDispatch, useSelector } from "react-redux";
 import Heading from "../../components/Heading";
@@ -51,12 +52,37 @@ export function MyAccount({ navigation }: any) {
   const [sortByStatus, setSortByStatus] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [paginateRefresh, setPaginateRefresh] = useState<boolean>(false);
-  const _groupedByDateTransactions = groupedByDateTransactions(transactions?.transactions);
+  const _groupedByDateTransactions = groupedByDateTransactions(
+    transactions?.transactions
+  );
   const { data: userAccountInformation } = useGetAccountDetailsQuery({
     accountId: userData?.id || 0,
-  })
+  });
 
-  const fetchTransactions = async (filterParams?: {pageNumber?: number, status?: string}) => {
+  const getSavedCredetails = async () => {
+    const email = await SecureStore.getItemAsync("user_email");
+    const password = await SecureStore.getItemAsync("user_password");
+    if (email && password) {
+      return { email, password };
+    }
+    return {};
+  };
+
+  const handleGetStoredEmailPassword = async () => {
+    const credentials = await getSavedCredetails();
+    console.log(
+      "🚀 ~ file: index.tsx:286 ~ handleGetStoredEmailPassword ~ credentials:",
+      credentials
+    );
+    if (credentials?.email && credentials?.password) {
+    }
+  };
+
+  handleGetStoredEmailPassword();
+  const fetchTransactions = async (filterParams?: {
+    pageNumber?: number;
+    status?: string;
+  }) => {
     try {
       setPaginateRefresh(true);
       if (userData && userData?.id) {
@@ -69,7 +95,7 @@ export function MyAccount({ navigation }: any) {
           page: filterParams?.pageNumber || 1,
         };
         await dispatch<any>(getTransactionsWithFilters(search));
-        await dispatch<any>(getAccountDetails(userData.id));
+        // await dispatch<any>(getAccountDetails(userData.id));
         setPaginateRefresh(false);
       }
     } catch (error) {
@@ -85,14 +111,14 @@ export function MyAccount({ navigation }: any) {
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       const _currentPage = currentPage - 1;
-      fetchTransactions({pageNumber: _currentPage});
+      fetchTransactions({ pageNumber: _currentPage });
     }
   };
 
   const handleNextPage = () => {
     if (currentPage < lastPage) {
       const _currentPage = currentPage + 1;
-      fetchTransactions({pageNumber: _currentPage});
+      fetchTransactions({ pageNumber: _currentPage });
     }
   };
 
@@ -129,9 +155,9 @@ export function MyAccount({ navigation }: any) {
   //     arrayChecker(transactions?.transactions) &&
   //     transactions?.transactions.length > 0
   //   ) {
-      // get only first value of array since it contains all data ex last_page, arr of transaction etc
-      // const [transactionsObj] = transactions.transactions;
-      // console.log("transactionsObj", transactions.transactions.length);
+  // get only first value of array since it contains all data ex last_page, arr of transaction etc
+  // const [transactionsObj] = transactions.transactions;
+  // console.log("transactionsObj", transactions.transactions.length);
 
   //     setTransactionsData({
   //       data: transactions.transactions || [],
@@ -190,56 +216,64 @@ export function MyAccount({ navigation }: any) {
             onRefresh={fetchTransactions}
           />
         }
-      > 
-      <View style={styles.balanceContainer}>
-        <Box style={{...styles.totalBalance, ...styles.currentBalanceShadow}}>
-          <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
-            Current Balance
-          </Typography>
-          <Typography color={"accent-pink"} fontWeight={600} fontSize={16}>
-            {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${userAccountInformation?.data?.curbal || 0}`}
-          </Typography>
-        </Box>
-        <Box style={{...styles.totalBalance, ...styles.pendingBalanceShadow}}>
-        <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
-            Pending
-          </Typography>
-          <Typography color={"accent-orange"} fontWeight={600} fontSize={16}>
-            {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${userAccountInformation?.data?.blocked_amount || 0}`}
-          </Typography>
-        </Box>
-        <Box style={{...styles.totalBalance, ...styles.availableBalanceShadow}}>
-        <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
-            Available Balance
-          </Typography>
-          <Typography color={"accent-green"} fontWeight={600} fontSize={16}>
-            {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${userAccountInformation?.data?.avlbal || 0}`}
-          </Typography>
-        </Box>
-      </View>
+      >
+        <View style={styles.balanceContainer}>
+          <Box
+            style={{ ...styles.totalBalance, ...styles.currentBalanceShadow }}
+          >
+            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
+              Current Balance
+            </Typography>
+            <Typography color={"accent-pink"} fontWeight={600} fontSize={16}>
+              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
+                userAccountInformation?.data?.curbal || 0
+              }`}
+            </Typography>
+          </Box>
+          <Box
+            style={{ ...styles.totalBalance, ...styles.pendingBalanceShadow }}
+          >
+            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
+              Pending
+            </Typography>
+            <Typography color={"accent-orange"} fontWeight={600} fontSize={16}>
+              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
+                userAccountInformation?.data?.blocked_amount || 0
+              }`}
+            </Typography>
+          </Box>
+          <Box
+            style={{ ...styles.totalBalance, ...styles.availableBalanceShadow }}
+          >
+            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
+              Available Balance
+            </Typography>
+            <Typography color={"accent-green"} fontWeight={600} fontSize={16}>
+              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
+                userAccountInformation?.data?.avlbal || 0
+              }`}
+            </Typography>
+          </Box>
+        </View>
         <View>
           <View style={styles.base}>
             <Heading
               icon={<AccountIcon color="pink" size={18} />}
               title="Latest Transactions"
               rightAction={
-                <TouchableOpacity
-                  onPress={() => {
-                    
-                  }}
-                >
+                <TouchableOpacity onPress={() => {}}>
                   <Button
                     color="light-pink"
                     style={styles.sortButton}
-                    onPress={() =>{
+                    onPress={() => {
                       setSortByStatus(!sortByStatus);
-                      fetchTransactions({status: sortByStatus ? "SUCCESS" : "PROCESSING"});
+                      fetchTransactions({
+                        status: sortByStatus ? "SUCCESS" : "PROCESSING",
+                      });
                     }}
-                    leftIcon={
-                      <TransactionIcon size={18} color="pink" />
-                    }
+                    leftIcon={<TransactionIcon size={18} color="pink" />}
                   >
-                    { sortByStatus ? "Pending" : "Completed"}
+                    {sortByStatus ? "Pending" : "Completed"}
                   </Button>
                 </TouchableOpacity>
               }
@@ -247,54 +281,56 @@ export function MyAccount({ navigation }: any) {
           </View>
           <View>
             <Spinner visible={loading || paginateRefresh || isLoading} />
-            {_groupedByDateTransactions ? 
-              (
-                <>
-                  <View>
-                  {_groupedByDateTransactions ? Object.keys(_groupedByDateTransactions)
-                    // .sort((a, b) => {
-                    //   return sortByDate
-                    //     ? new Date(a).getTime() - new Date(b).getTime()
-                    //     : new Date(b).getTime() - new Date(a).getTime();
-                    // })
-                    .map((date: string) => {
-                      let _amount: number = 0;
-                      const transactionsByDate = _groupedByDateTransactions[
-                        date
-                      ]
-                      // .filter((tx) => {
-                      //   return sortByStatus ? tx.status !== "SUCCESS"  : tx.status === "SUCCESS";
-                      // })
-                      .map((tx) => {
-                        const { amount } = tx;
-                        _amount = Number(_amount) + Number(amount);
-                        
-                        return tx;
-                      });
-                      
-                      const shownData = {
-                        date,
-                        totalAmount: _amount.toString(),
-                        currency: _groupedByDateTransactions[date][0].currency,
-                      };
-                      // if (transactionsByDate.length === 0) {
-                      //   return null;
-                      // }
-                      return (
-                        <TransactionsByDate
-                          key={
-                            _groupedByDateTransactions[date][0].transaction_uuid
-                          }
-                          shownData={shownData}
-                          transactionsByDate={transactionsByDate}
-                          totalAmount={_amount.toString()}
-                        />
-                      );
-                    }) : null}
-                  </View>
-                </>
-              )
-            : (
+            {_groupedByDateTransactions ? (
+              <>
+                <View>
+                  {_groupedByDateTransactions
+                    ? Object.keys(_groupedByDateTransactions)
+                        // .sort((a, b) => {
+                        //   return sortByDate
+                        //     ? new Date(a).getTime() - new Date(b).getTime()
+                        //     : new Date(b).getTime() - new Date(a).getTime();
+                        // })
+                        .map((date: string) => {
+                          let _amount: number = 0;
+                          const transactionsByDate = _groupedByDateTransactions[
+                            date
+                          ]
+                            // .filter((tx) => {
+                            //   return sortByStatus ? tx.status !== "SUCCESS"  : tx.status === "SUCCESS";
+                            // })
+                            .map((tx) => {
+                              const { amount } = tx;
+                              _amount = Number(_amount) + Number(amount);
+
+                              return tx;
+                            });
+
+                          const shownData = {
+                            date,
+                            totalAmount: _amount.toString(),
+                            currency:
+                              _groupedByDateTransactions[date][0].currency,
+                          };
+                          // if (transactionsByDate.length === 0) {
+                          //   return null;
+                          // }
+                          return (
+                            <TransactionsByDate
+                              key={
+                                _groupedByDateTransactions[date][0]
+                                  .transaction_uuid
+                              }
+                              shownData={shownData}
+                              transactionsByDate={transactionsByDate}
+                              totalAmount={_amount.toString()}
+                            />
+                          );
+                        })
+                    : null}
+                </View>
+              </>
+            ) : (
               <View style={styles.listHead}>
                 <Typography fontFamily="Nunito-SemiBold">
                   No Transactions Found

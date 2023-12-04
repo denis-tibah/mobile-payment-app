@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Alert, Pressable, View, Switch } from "react-native";
-import { useNavigation, CommonActions } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import * as LocalAuthentication from "expo-local-authentication";
 import * as SecureStore from "expo-secure-store";
-import { useFormik, Formik } from "formik";
+import { useFormik } from "formik";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -20,20 +20,18 @@ import LockIcon from "../../assets/icons/Lock";
 import FaceIdIcon from "../../assets/icons/FaceId";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import {
-  SIGNIN_SUCCESS_MESSAGES,
-  refreshUserData,
-  signin,
+  signInViaRTK,
+  signInViaRTKFulfillByValue,
 } from "../../redux/auth/authSlice";
 import { useLoginMutation } from "../../redux/auth/authSliceV2";
+import { useGetAccountQuery } from "../../redux/account/accountSliceV2";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
-import { screenNames } from "../../utils/helpers";
+import { arrayChecker } from "../../utils/helpers";
 import { validationAuthSchema } from "../../utils/validation";
 import { getDeviceDetails } from "../../utils/getIpAddress";
 
 export function LoginScreen({ navigation }: any) {
-  const [apiErrorMessage, setApiErrorMessage] = useState<any>({});
-  const [isLoading, setIsLoading] = useState(false);
   const [isFaceId, setFaceId] = useState<boolean>(true);
   const [storageData, setStorageData] = useState<any>({});
   const [biometricFlag, setBiometricFlag] = useState<string>("null");
@@ -64,6 +62,36 @@ export function LoginScreen({ navigation }: any) {
     },
   ] = useLoginMutation();
 
+  const {
+    isLoading: isLoadingAccount,
+    /* isError: isErrorAccount, */
+    isSuccess: isSuccessAccount,
+    /* error: errorAccount, */
+    data: dataAccount,
+  } = useGetAccountQuery(
+    { accessToken: dataLogin?.access_token, tokenZiyl: dataLogin?.token_ziyl },
+    {
+      skip:
+        !arrayChecker(dataLogin) &&
+        !dataLogin?.access_token &&
+        !dataLogin?.token_ziyl,
+    }
+  );
+
+  useEffect(() => {
+    const handleAuth = (data: any) => {
+      dispatch<any>(signInViaRTK(data));
+    };
+    if (
+      !isLoadingAccount &&
+      isSuccessAccount &&
+      arrayChecker(dataAccount) &&
+      dataAccount.length > 0
+    ) {
+      handleAuth(dataAccount[0]);
+    }
+  }, [isLoadingAccount, isSuccessAccount, arrayChecker(dataAccount)]);
+
   useEffect(() => {
     if (!isLoadingLogin && isSuccessLogin) {
       if (dataLogin?.code === "401" || dataLogin?.code === "400") {
@@ -75,40 +103,27 @@ export function LoginScreen({ navigation }: any) {
         });
       }
 
-      const handleLogin = async () => {
+      const handleLogin = async (dataLogin: any) => {
         if (dataLogin?.biometricYN && dataLogin?.biometricYN === "Y") {
-          console.log("use biometric");
-          await saveSecureCredetails(values?.email, values?.password);
-          await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
-          await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
-          /* navigation.navigate("DashboardStack", {
-            screen: screenNames.transactions,
-          }); */
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 1,
-              routes: [
-                {
-                  name: "dashboard",
-                  params: {
-                    screen: screenNames.transactions,
-                  },
-                },
-              ],
-            })
+          await saveSecureCredetails(
+            values?.email || storageData?.email,
+            values?.password || storageData?.password
           );
+          if (dataLogin?.token_ziyl && dataLogin?.access_token) {
+            console.log("use biometric");
+            await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
+            await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
+            dispatch<any>(signInViaRTKFulfillByValue(dataLogin));
+          }
         } else {
-          console.log("do notuse biometric");
+          console.log("do not use biometric");
           await SecureStore.deleteItemAsync("email");
           await SecureStore.deleteItemAsync("password");
         }
       };
-      console.log(
-        "🚀 ~ file: index.tsx:101 ~ useEffect ~ dataLogin:",
-        dataLogin
-      );
+
       if (dataLogin?.code === "200" || dataLogin?.code === "201") {
-        handleLogin();
+        handleLogin(dataLogin);
       } else {
         setStatusMessage({
           header: `Error`,
@@ -251,6 +266,10 @@ export function LoginScreen({ navigation }: any) {
   // get storage data for biometric
   const handleGetBiometricFlag = async () => {
     const isBiometric = await AsyncStorage.getItem("IsBiometricOn");
+    console.log(
+      "🚀 ~ file: index.tsx:287 ~ handleGetBiometricFlag ~ isBiometric:",
+      isBiometric
+    );
     return isBiometric;
   };
   // set storage data for faceId switch. this will be remembered when user go to login page
@@ -277,8 +296,10 @@ export function LoginScreen({ navigation }: any) {
     // set biometricFlag true/false to show or hide biometrics switch
     handleGetBiometricFlag()
       .then((res: any) => {
-        if (res === "null") {
+        if (res === "null" || res === null) {
           setBiometricFlag("null");
+        } else {
+          setBiometricFlag(res);
         }
       })
       .catch((err: any) => console.log(err));
@@ -313,34 +334,20 @@ export function LoginScreen({ navigation }: any) {
           const auth = await handleBiometricAuth();
           console.log(auth, "AUTHH");
           if (auth) {
-            console.log("eee");
-            setIsLoading(true);
-            const result = await dispatch<any>(
-              signin({
-                values: {
-                  email: storageData?.email,
-                  password: storageData?.password,
-                },
-                navigate,
-              })
-            );
-            // console.log({ result });
-            await AsyncStorage.setItem("tokenZiyl", result?.token_ziyl);
-            await AsyncStorage.setItem("accessToken", result?.access_token);
-            await dispatch<any>(refreshUserData());
-            if (result.error) {
-              setApiErrorMessage({ message: result.payload });
-            } else {
-              setApiErrorMessage({});
-            }
-            setIsLoading(false);
+            const ipAddress = await getDeviceDetails();
+            const reqData = {
+              email: storageData?.email,
+              password: storageData?.password,
+              ipAddress,
+              browserfingerprint: "react native app",
+            };
+            loginMutation(reqData);
           } else {
             setFaceId(false);
           }
         }
       }
     };
-
     if (isFaceId && storageData?.email && storageData?.password) {
       triggerBiometric();
     }
@@ -356,8 +363,8 @@ export function LoginScreen({ navigation }: any) {
   };
 
   return (
-    <MainLayout /* navigation={navigation} */>
-      <Spinner visible={isLoadingLogin} />
+    <MainLayout navigation={navigation}>
+      <Spinner visible={isLoadingLogin || isLoadingAccount} />
       <SuccessModal
         isOpen={statusMessage?.isOpen}
         title={statusMessage.header}
@@ -472,8 +479,8 @@ export function LoginScreen({ navigation }: any) {
                 >
                   <Button
                     style={styles.signinButton}
-                    loading={isLoadingLogin}
-                    disabled={isLoadingLogin}
+                    loading={isLoadingLogin || isLoadingAccount}
+                    disabled={isLoadingLogin || isLoadingAccount}
                     color="light-pink"
                     onPress={handleSubmit}
                     leftIcon={<ProfileIcon size={14} />}
@@ -483,177 +490,6 @@ export function LoginScreen({ navigation }: any) {
                 </View>
               </FixedBottomAction>
             </View>
-            {/* <Formik
-              initialValues={{
-                email: "",
-                password: "",
-              }}
-              validateOnChange={true}
-              validationSchema={validationSchema}
-              onSubmit={async (values) => {
-                setIsLoading(true);
-                try {
-                  const result = await dispatch<any>(
-                    signin({ values, navigate  })
-                  ).unwrap();
-
-                  if (
-                    result &&
-                    (result?.payload?.biometricYN || result?.biometricYN) &&
-                    (result?.payload?.biometricYN === "Y" ||
-                      result?.biometricYN === "Y")
-                  ) {
-                    console.log("Use biometic ");
-                    let tokenZiyl;
-                    if (result?.token_ziyl) {
-                      tokenZiyl = result?.token_ziyl;
-                    } else if (result?.payload?.token_ziyl) {
-                      tokenZiyl = result?.payload?.token_ziyl;
-                    }
-                    await saveSecureCredetails(values?.email, values?.password);
-                    await AsyncStorage.setItem("tokenZiyl", tokenZiyl);
-                    await AsyncStorage.setItem(
-                      "accessToken",
-                      result?.access_token
-                    );
-                  } else {
-                    // console.log("Do not use biometric");
-                    await SecureStore.deleteItemAsync("email");
-                    await SecureStore.deleteItemAsync("password");
-                  }
-                  await dispatch<any>(refreshUserData());
-                  if (result.error)
-                    setApiErrorMessage({ message: result.payload });
-                  else setApiErrorMessage({});
-                } catch (error: any) {
-                  console.log({ error });
-                  if (error?.message === SIGNIN_SUCCESS_MESSAGES.EXPIRED) {
-                    Alert.alert(SIGNIN_SUCCESS_MESSAGES.EXPIRED);
-                    navigate(screenNames.resetPassword, {
-                      email: values.email,
-                      resetToken: error.resetToken,
-                    });
-                  } else {
-                    setApiErrorMessage({ message: error });
-                  }
-                } finally {
-                  setIsLoading(false);
-                }
-              }}
-            >
-              {({
-                handleSubmit,
-                handleChange,
-                handleBlur,
-                values,
-                errors,
-                touched,
-              }) => {
-                return (
-                  <View>
-                    <View style={styles.cardBody}>
-                      <View>
-                        <FormGroup
-                          validationError={touched.email ? errors.email : null}
-                        >
-                          <FormGroup.Input
-                            keyboardType="email-address"
-                            onChangeText={handleChange("email")}
-                            onBlur={handleBlur("email")}
-                            value={values.email}
-                            placeholderTextColor={vars["ios-default-text"]}
-                            placeholder="Email address"
-                            iconColor="blue"
-                            icon={<EmailIcon />}
-                          />
-                        </FormGroup>
-                      </View>
-                      <View style={styles.passwordField}>
-                        <FormGroup
-                          validationError={
-                            touched.password
-                              ? errors.password || apiErrorMessage.message
-                              : null
-                          }
-                        >
-                          <FormGroup.Password
-                            iconColor="blue"
-                            icon={<LockIcon />}
-                            rightIcon
-                            onChangeText={handleChange("password")}
-                            onBlur={handleBlur("password")}
-                            value={values.password}
-                            placeholderTextColor={vars["ios-default-text"]}
-                            placeholder="Password"
-                          />
-                        </FormGroup>
-                      </View>
-                      <View style={styles.cardBodyLink}>
-                        <Pressable
-                          onPress={() => navigate("forgottenPassword")}
-                        >
-                          <Typography
-                            color="accent-blue"
-                            fontFamily="Mukta-Regular"
-                          >
-                            Forgot Password?
-                          </Typography>
-                        </Pressable>
-                      </View>
-                      {biometricFlag !== "null" ? (
-                        <View style={styles.faceIdContainer}>
-                          <View style={styles.faceIdIconContainer}>
-                            <FaceIdIcon size={20} color="blue" />
-                            <Typography fontSize={16}>
-                              Use FaceID next time
-                            </Typography>
-                          </View>
-                          <View
-                            style={{
-                              marginTop: 18,
-                            }}
-                          >
-                            <Switch
-                              value={isFaceId}
-                              trackColor={{
-                                false: "#767577",
-                                true: "#81b0ff",
-                              }}
-                              thumbColor={
-                                isFaceId ? "white" : vars["light-blue"]
-                              }
-                              style={{ marginTop: -24 }}
-                              ios_backgroundColor="#3e3e3e"
-                              onValueChange={handleChangeFaceId}
-                            />
-                          </View>
-                        </View>
-                      ) : null}
-                    </View>
-                    <FixedBottomAction rounded isFullWidth isNoTopMargin>
-                      <View
-                        style={{
-                          width: "100%",
-                          paddingLeft: 12,
-                          paddingRight: 12,
-                        }}
-                      >
-                        <Button
-                          style={styles.signinButton}
-                          loading={isLoading}
-                          disabled={isLoading}
-                          color="light-pink"
-                          onPress={handleSubmit}
-                          leftIcon={<ProfileIcon size={14} />}
-                        >
-                          Submit
-                        </Button>
-                      </View>
-                    </FixedBottomAction>
-                  </View>
-                );
-              }}
-            </Formik> */}
           </View>
         </View>
       </View>

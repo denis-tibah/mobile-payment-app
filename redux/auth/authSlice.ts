@@ -1,8 +1,8 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { /* PayloadAction, */ createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../api";
 import { UserData } from "../../models/UserData";
-import { getIpAddress, getDeviceDetails } from "../../utils/getIpAddress";
+/* import {  getIpAddress,  getDeviceDetails } from "../../utils/getIpAddress"; */
 
 export const SIGNIN_SUCCESS_MESSAGES = {
   EXPIRED: "Your password is Expired. Please update.",
@@ -32,7 +32,7 @@ const initialState: AuthState = {
   userData: undefined,
 };
 
-export const refreshUserData = createAsyncThunk(
+/* export const refreshUserData = createAsyncThunk(
   "refreshUserData",
   async (_, { fulfillWithValue, rejectWithValue }) => {
     try {
@@ -45,7 +45,7 @@ export const refreshUserData = createAsyncThunk(
       return rejectWithValue("Something went wrong getting accounts");
     }
   }
-);
+); */
 export type IpAddress = {
   country_code?: string;
   country_name?: string;
@@ -58,48 +58,10 @@ export type IpAddress = {
   state_code?: string;
   ipv4?: string;
 };
-export const signin = createAsyncThunk(
+/* export const signin = createAsyncThunk(
   "signin",
-  async ({ values /* , ip */ }: any, { rejectWithValue, fulfillWithValue }) => {
+  async ({ values }: any, { rejectWithValue, fulfillWithValue }) => {
     try {
-      /* if (ip && Object.keys(ip).length > 0) {
-        const { data } = await api.post("/loginfinxpmobile", {
-          ...values,
-          ipAddress: ip,
-          browserfingerprint: "react native app",
-        });
-
-        const { message } = data;
-
-        if (data.code === 400 && data.message === SIGNIN_SUCCESS_MESSAGES.EXPIRED) {
-          return rejectWithValue(SIGNIN_SUCCESS_MESSAGES.EXPIRED);
-        }
-
-        if (data.code === 401 || !data)
-          return rejectWithValue("Invalid email or password");
-
-        if (data.code !== "200" && data.code !== "201")
-          return rejectWithValue(message);
-        if (data.code === "200" || data.code === "201" && data.message === SIGNIN_SUCCESS_MESSAGES.EXPIRED) {
-          return rejectWithValue(message);
-        }
-        if (data.code === "200" || data.code === "201")
-          return fulfillWithValue(data);
-      } else {
-        return rejectWithValue("Failed to load ip location");
-      } */
-      //Aristos Christofides: we have an issue getting the ip address of mobile device
-      //so will disable it
-      // const ipResponse = await getIpAddress().catch((error) => {
-      //   console.log("error getting ip", error);
-      // });
-      // console.log("🚀 ~ file: authSlice.ts:68 ~ ipResponse:", ipResponse);
-
-      // if (ipResponse && Object.keys(ipResponse).length > 0) {
-
-      //new logic
-
-      // getDeviceDetails().then(ip => {console.log(ip)});
       const ipAddress = await getDeviceDetails();
 
       const { data } = await api.post("/loginfinxpmobile", {
@@ -141,7 +103,7 @@ export const signin = createAsyncThunk(
       return rejectWithValue("Something went wrong login on");
     }
   }
-);
+); */
 
 export const changePassword = createAsyncThunk(
   "changePassword",
@@ -198,9 +160,18 @@ export const authSlice = createSlice({
       state.userData = undefined;
       state.loading = false;
     },
+    // quickfix once rtk is implemented on login user signInViaRTK and signInViaRTKFulfillByValue will be deleted
+    signInViaRTK(state, action) {
+      state.isAuthenticated = true;
+      state.loading = false;
+      state.userData = action.payload;
+    },
+    signInViaRTKFulfillByValue(state, action) {
+      state.data = action.payload;
+    },
   },
   extraReducers: (builder) => {
-    builder.addCase(signin.fulfilled, (state, action) => {
+    /* builder.addCase(signin.fulfilled, (state, action) => {
       state.isAuthenticated = true;
       state.data = action.payload;
       state.loading = false;
@@ -224,7 +195,7 @@ export const authSlice = createSlice({
     builder.addCase(refreshUserData.fulfilled, (state, action) => {
       state.userData = action.payload;
       state.loading = false;
-    });
+    }); */
     builder.addCase(changePassword.fulfilled, (state) => {
       state.loading = false;
     });
@@ -242,5 +213,7 @@ export const authSlice = createSlice({
 
 export const { resetAuth } = authSlice.actions;
 export const { signout } = authSlice.actions;
+export const { signInViaRTK } = authSlice.actions;
+export const { signInViaRTKFulfillByValue } = authSlice.actions;
 
 export default authSlice.reducer;

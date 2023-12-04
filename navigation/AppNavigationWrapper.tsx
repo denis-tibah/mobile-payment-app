@@ -75,7 +75,7 @@ function DashboardStack() {
     <TabNavigation>
       <Tab.Screen name={screenNames.myaccount} component={MyAccountScreen} />
       <Tab.Screen
-        name="transactions"
+        name={screenNames.transactions}
         component={TransactionsScreen}
         // children={() => <TransactionsScreen initial={true} />}
       />

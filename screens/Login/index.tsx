@@ -266,10 +266,6 @@ export function LoginScreen({ navigation }: any) {
   // get storage data for biometric
   const handleGetBiometricFlag = async () => {
     const isBiometric = await AsyncStorage.getItem("IsBiometricOn");
-    console.log(
-      "🚀 ~ file: index.tsx:287 ~ handleGetBiometricFlag ~ isBiometric:",
-      isBiometric
-    );
     return isBiometric;
   };
   // set storage data for faceId switch. this will be remembered when user go to login page

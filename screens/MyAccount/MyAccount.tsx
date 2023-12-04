@@ -58,26 +58,6 @@ export function MyAccount({ navigation }: any) {
     accountId: userData?.id || 0,
   });
 
-  const getSavedCredetails = async () => {
-    const email = await SecureStore.getItemAsync("user_email");
-    const password = await SecureStore.getItemAsync("user_password");
-    if (email && password) {
-      return { email, password };
-    }
-    return {};
-  };
-
-  const handleGetStoredEmailPassword = async () => {
-    const credentials = await getSavedCredetails();
-    console.log(
-      "🚀 ~ file: index.tsx:286 ~ handleGetStoredEmailPassword ~ credentials:",
-      credentials
-    );
-    if (credentials?.email && credentials?.password) {
-    }
-  };
-
-  handleGetStoredEmailPassword();
   const fetchTransactions = async (filterParams?: {
     pageNumber?: number;
     status?: string;
@@ -281,7 +261,7 @@ export function MyAccount({ navigation }: any) {
             />
           </View>
           <View>
-            <Spinner visible={loading || paginateRefresh || isLoading} />
+            <Spinner visible={paginateRefresh || isLoading} />
             {_groupedByDateTransactions ? (
               <>
                 <View>

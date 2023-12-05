@@ -114,6 +114,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 value={values.annualSalary}
                 placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Monthly account deposits"
+                iconColor="blue"
                 icon={<PigIcon />}
               />
             </FormGroup>
@@ -218,6 +219,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 placeholder="Occupation"
                 editable={values.occupation === "N/A" ? false : true}
                 selectTextOnFocus={values.occupation === "N/A" ? false : true}
+                iconColor="blue"
                 icon={<ProfileIcon />}
               />
             </FormGroup>
@@ -240,6 +242,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 placeholder="Employer name"
                 editable={values.employerName === "N/A" ? false : true}
                 selectTextOnFocus={values.employerName === "N/A" ? false : true}
+                iconColor="blue"
                 icon={<SalutationIcon />}
               />
             </FormGroup>
@@ -262,6 +265,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 placeholder="Position held"
                 editable={values.positionHeld === "N/A" ? false : true}
                 selectTextOnFocus={values.positionHeld === "N/A" ? false : true}
+                iconColor="blue"
                 icon={<ProfileIcon />}
               />
             </FormGroup>
@@ -286,6 +290,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 selectTextOnFocus={
                   values.lengthWithEmployer === "N/A" ? false : true
                 }
+                iconColor="blue"
                 icon={<ProfileIcon />}
               />
             </FormGroup>

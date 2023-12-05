@@ -4,13 +4,14 @@ export const styles: any = StyleSheet.create<any>({
   container: {
     marginBottom: 48,
   },
-  keyboard:{
-    backgroundColor: 'transparent',
+  keyboard: {
+    backgroundColor: "transparent",
   },
   innerContainer: {
     paddingLeft: 12,
     paddingRight: 12,
-    paddingTop: 40,
+    /* paddingTop: 40, */
+    paddingTop: 10,
   },
   card: {
     backgroundColor: "white",

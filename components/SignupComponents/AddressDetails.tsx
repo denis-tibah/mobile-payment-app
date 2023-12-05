@@ -263,6 +263,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                 value={values.street}
                 placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Address"
+                iconColor="blue"
                 icon={<KeyIcon />}
               />
             </FormGroup>
@@ -281,6 +282,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                 value={values.subStreet}
                 placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Address 2"
+                iconColor="blue"
                 icon={<KeyIcon />}
               />
             </FormGroup>
@@ -299,6 +301,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                 value={values.postCode}
                 placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Post code"
+                iconColor="blue"
                 icon={<MapIcon />}
               />
             </FormGroup>
@@ -315,6 +318,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                 value={values.town}
                 placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Town"
+                iconColor="blue"
                 icon={<LocationIcon />}
               />
             </FormGroup>
@@ -331,6 +335,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                 value={values.state}
                 placeholderTextColor={vars["ios-default-text"]}
                 placeholder="State"
+                iconColor="blue"
                 icon={<MapIcon />}
               />
             </FormGroup>
@@ -500,6 +505,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                       value={values.additionalStreet}
                       placeholderTextColor={vars["ios-default-text"]}
                       placeholder="Address"
+                      iconColor="blue"
                       icon={<KeyIcon />}
                     />
                   </FormGroup>
@@ -520,6 +526,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                       value={values.additionalSubStreet}
                       placeholderTextColor={vars["ios-default-text"]}
                       placeholder="Address 2"
+                      iconColor="blue"
                       icon={<KeyIcon />}
                     />
                   </FormGroup>
@@ -540,6 +547,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                       value={values.additionalPostcode}
                       placeholderTextColor={vars["ios-default-text"]}
                       placeholder="Post code"
+                      iconColor="blue"
                       icon={<MapIcon />}
                     />
                   </FormGroup>
@@ -560,6 +568,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                       value={values.additionalTown}
                       placeholderTextColor={vars["ios-default-text"]}
                       placeholder="Town"
+                      iconColor="blue"
                       icon={<LocationIcon />}
                     />
                   </FormGroup>
@@ -580,6 +589,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                       value={values.additionalState}
                       placeholderTextColor={vars["ios-default-text"]}
                       placeholder="State"
+                      iconColor="blue"
                       icon={<MapIcon />}
                     />
                   </FormGroup>

@@ -24,37 +24,48 @@ const ScrollableStepper: FC<IScrollableStepper> = ({
   }, [selectedNavIndex]);
 
   return (
-    <View style={styles.header}>
-      <Image
-        style={{ height: 30, width: 125 }}
-        source={require("../../assets/images/ZazooLogo.png")}
-      />
-      <ScrollView
-        horizontal={true}
-        persistentScrollbar={true}
-        ref={refScrollView}
-      >
-        <View style={styles.scrollableContainer}>
-          {navList.map((item, index) => {
-            //if (index === 6 || index == 7) return null;
+    <View>
+      <View style={styles.headerV2}>
+        <Image
+          style={{ height: 30, width: 125 }}
+          source={require("../../assets/images/ZazooLogo.png")}
+        />
+      </View>
+      <View style={styles.scrollableContainer}>
+        <ScrollView
+          horizontal={true}
+          persistentScrollbar={true}
+          ref={refScrollView}
+        >
+          <View style={styles.scrollableContainerV2}>
+            {navList.map((item, index) => {
+              //if (index === 6 || index == 7) return null;
 
-            return (
-              <TouchableOpacity
-                key={item}
-                onLayout={(event) => {
-                  const layout = event.nativeEvent.layout;
-                  coordinate[index] = layout.x;
-                  // console.log(layout.x);
-                }}
-                onPress={() => {
-                  /* refScrollView.current.scrollTo({
-                    x: coordinate[selectedNavIndex] - 50,
-                  });
-                  handleSelecNavIndex(index); */
-                }}
-              >
-                <View style={styles.scrollableItems}>
-                  <View
+              return (
+                <TouchableOpacity
+                  key={item}
+                  onLayout={(event) => {
+                    const layout = event.nativeEvent.layout;
+                    coordinate[index] = layout.x;
+                    // console.log(layout.x);
+                  }}
+                  onPress={() => {
+                    refScrollView.current.scrollTo({
+                      x: coordinate[selectedNavIndex] - 50,
+                    });
+                    handleSelecNavIndex(index);
+                  }}
+                >
+                  <View style={styles.scrollableItems}>
+                    <View
+                      style={[
+                        styles.circleIndexV2,
+                        selectedNavIndex === index
+                          ? styles.circleIndexBgSelectedV2
+                          : styles.circleIndexBg,
+                      ]}
+                    />
+                    {/* <View
                     style={[
                       styles.circleIndex,
                       selectedNavIndex === index
@@ -72,13 +83,14 @@ const ScrollableStepper: FC<IScrollableStepper> = ({
                     ]}
                   >
                     {item}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      </ScrollView>
+                  </Text> */}
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </ScrollView>
+      </View>
     </View>
   );
 };

@@ -234,6 +234,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
                 value={values.email}
                 placeholder="Email Address"
                 placeholderTextColor={vars["ios-default-text"]}
+                iconColor="blue"
                 icon={<EmailIcon />}
               />
             </FormGroup>
@@ -285,6 +286,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
                 value={values.phoneNumber}
                 placeholder="Phone Number"
                 placeholderTextColor={vars["ios-default-text"]}
+                iconColor="blue"
                 icon={<PhoneIcon />}
               />
             </FormGroup>

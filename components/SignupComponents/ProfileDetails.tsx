@@ -179,6 +179,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                 value={values.firstName}
                 placeholder="First Name"
                 placeholderTextColor={vars["ios-default-text"]}
+                iconColor="blue"
                 icon={<ProfileIcon />}
               />
             </FormGroup>
@@ -197,6 +198,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                 value={values.lastName}
                 placeholder="Last Name"
                 placeholderTextColor={vars["ios-default-text"]}
+                iconColor="blue"
                 icon={<ProfileIcon />}
               />
             </FormGroup>
@@ -206,7 +208,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
               validationError={errors.dob && touched.dob && errors.dob}
             >
               <View style={styles.dobWrapper}>
-                <DobIcon size={18} color="medium-grey" />
+                <DobIcon size={18} color="blue" />
                 <TouchableOpacity onPress={showDatePicker}>
                   <Text
                     style={[
@@ -244,6 +246,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                 value={values.placeOfBirth}
                 placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Place of birth"
+                iconColor="blue"
                 icon={<ProfileIcon />}
               />
             </FormGroup>

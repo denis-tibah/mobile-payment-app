@@ -48,8 +48,9 @@ export const styles = StyleSheet.create({
   dobWrapper: {
     width: "100%",
     height: 42,
+    borderWidth: 1,
     backgroundColor: "#f9f9f9",
-
+    borderColor: vars["accent-blue"],
     borderRadius: 999,
     display: "flex",
     flexDirection: "row",

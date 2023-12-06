@@ -3,17 +3,14 @@ import { api } from "../../api";
 import { Alert, Platform } from "react-native";
 import * as Device from "expo-device";
 
-
 // Set up push notifications
 export const registerForPushNotificationsAsync = async (
   userId: number,
   uuid: string,
-  email: string,
+  email: string
 ) => {
-
   let token;
-  let projectId = '7454c009-85fa-4eb0-ae8c-5834ded616c2';
-
+  let projectId = "7454c009-85fa-4eb0-ae8c-5834ded616c2";
 
   // console.log("********Platform.OS*********** ", Platform.OS);
 
@@ -29,7 +26,8 @@ export const registerForPushNotificationsAsync = async (
   if (Device.isDevice) {
     console.log("from registerForPushNotificationsAsync Device.isDevice ");
     try {
-      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
 
       if (existingStatus !== "granted") {
@@ -40,11 +38,9 @@ export const registerForPushNotificationsAsync = async (
         alert("Failed to get push token for push notification!");
         return;
       }
-
-    } 
-      catch (error) {
-        console.log({ notificationRegError: error });
-      }
+    } catch (error) {
+      console.log({ notificationRegError: error });
+    }
 
     try {
       token = (
@@ -54,23 +50,27 @@ export const registerForPushNotificationsAsync = async (
         })
       ).data;
 
-      console.log("***from registerForPushNotificationsAsync expo token*** ", token, ' email ', email, ' uuid ', uuid);
-              
+      console.log(
+        "***from registerForPushNotificationsAsync expo token*** ",
+        token,
+        " email ",
+        email,
+        " uuid ",
+        uuid
+      );
+
       await api.post("/registerPushToken", {
         token,
         // userId,
         uuid,
-        email: email //modification by aristos
+        email: email, //modification by aristos
       });
     } catch (error) {
       console.log({ getingTokenError: error });
     }
-
-
   } else {
     alert("Must use physical device for Push Notifications");
   }
-
 
   return token;
 };

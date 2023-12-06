@@ -21,6 +21,7 @@ import {
   setLoginCredentials,
   setRegistrationData,
 } from "../../redux/registration/registrationSlice";
+import { useLoginCredentialsMutation } from "../../redux/registration/registrationSliceV2";
 import { loginCredentialsSchema } from "../../utils/formikSchema";
 import { AppDispatch } from "../../store";
 import vars from "../../styles/vars";
@@ -97,7 +98,6 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
     handleSubmit,
     handleChange,
     values,
-
     touched,
     errors,
     handleBlur,
@@ -110,15 +110,15 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
       phoneNumber: registration?.data?.phoneNumber || "",
     },
     validationSchema: loginCredentialsSchema,
-    onSubmit: ({ email, alternateEmail, phoneNumber, countryCode }) => {
+    onSubmit: async ({ email, alternateEmail, phoneNumber, countryCode }) => {
       // console.log("hit here 1 emailToken ", emailToken);
 
       // if (emailToken) {
-      setIsLoading(true);
+      //setIsLoading(true);
       //added by Aristos
       //generate expo token
       // registerForPushNotificationsRegistrationAsync(
-      registerForPushNotificationsAsync(
+      /* registerForPushNotificationsAsync(
         alternateEmail ? alternateEmail : email,
         ""
       ).then((token: any) => {
@@ -180,9 +180,33 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
             }
             setIsLoading(false);
           });
-      });
+      }); */
 
-      if (emailToken) {
+      const expoToken = await registerForPushNotificationsAsync(
+        alternateEmail ? alternateEmail : email
+      ).catch((error: any) => {
+        setStatusMessage({
+          header: "Error",
+          body: "Something went wrong with youre token",
+          isOpen: true,
+          isError: true,
+        });
+      });
+      if (expoToken) {
+        console.log(
+          "🚀 ~ file: LoginDetails.tsx:196 ~ onSubmit: ~ expoToken:",
+          expoToken
+        );
+      } else {
+        setStatusMessage({
+          header: "Error",
+          body: "Something went wrong with youre token",
+          isOpen: true,
+          isError: true,
+        });
+      }
+
+      /* if (emailToken) {
         dispatch(
           setRegistrationData({
             email: alternateEmail ? alternateEmail : email,
@@ -199,8 +223,7 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
           phone_number: `${countryCode}${phoneNumber}`,
           identifier: `${countryCode}${phoneNumber}`,
         })
-      );
-      // handleNextStep();
+      ); */
     },
   });
 

@@ -1,5 +1,5 @@
 import { FC, useState, useRef, useEffect } from "react";
-import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
+import { View, Image, TouchableOpacity, ScrollView } from "react-native";
 
 import { styles } from "./styles";
 

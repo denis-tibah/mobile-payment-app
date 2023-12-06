@@ -1,20 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { exportedBaseUrl } from "../../api";
-const getTokens = async (): Promise<{
-  accessToken: string | null;
-  tokenZiyl: string | null;
-}> => {
-  const accessToken = await AsyncStorage.getItem("accessToken");
-  const tokenZiyl = await AsyncStorage.getItem("tokenZiyl");
-  return { accessToken, tokenZiyl };
-};
+
 export const accountV2 = createApi({
   reducerPath: "accountV2",
   baseQuery: fetchBaseQuery({
     baseUrl: exportedBaseUrl,
   }),
-
   keepUnusedDataFor: 30,
   tagTypes: ["accountV2"],
   endpoints: (builder) => ({
@@ -22,7 +13,7 @@ export const accountV2 = createApi({
       query: ({
         tokenZiyl,
         accessToken,
-      }: {
+      } : {
         tokenZiyl: string;
         accessToken: string;
       }) => {
@@ -39,10 +30,15 @@ export const accountV2 = createApi({
       },
     }),
     getAccountDetails: builder.query({
-      query: ({ accountId }) => {
+      query: ({ accountId, tokenZiyl, accessToken }) => {
         return {
           url: `/accountdetailsfinxp/${accountId}`,
           method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            AuthorizationFinxp: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${tokenZiyl}`,
+          },
         };
       },
     }),

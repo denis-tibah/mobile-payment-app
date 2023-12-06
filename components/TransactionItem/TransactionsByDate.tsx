@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Text, View, TouchableOpacity, Pressable } from "react-native";
 import {
   formatAmountTableValue,
-  formatDateTableValue,
   getFormattedDate,
+  getFormattedDateAndTime,
 } from "../../utils/helpers";
 import { styles } from "./styles";
 import ArrowDown from "../../assets/icons/ArrowDown";
@@ -15,8 +15,6 @@ import Box from "../Box";
 import Typography from "../Typography";
 import EuroIcon from "../../assets/icons/Euro";
 import DollarIcon from "../../assets/icons/Dollar";
-import { generateTransactionPDF } from "../../utils/files";
-import { printAsync } from "expo-print";
 import { Transaction } from "../../models/Transactions";
 import ArrowRight from "../../assets/icons/ArrowRight";
 import CardIcon from "../../assets/icons/Card";
@@ -25,6 +23,8 @@ import { Divider } from "react-native-paper";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
 
 interface TransactionItemProps {
+  setIsOneTransactionOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  // isOpen: boolean;
   transactionsByDate: Transaction[];
   totalAmount: string;
   shownData: any;
@@ -35,16 +35,19 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
   transactionsByDate,
   totalAmount,
   shownData,
+  setIsOneTransactionOpen,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const handleOnOpen = (): void => {
     setIsOpen(!isOpen);
+    setIsOneTransactionOpen && setIsOneTransactionOpen(!isOpen);
   };
 
-  const handleExportData = async (): Promise<void> => {
-    const pdfUri = await generateTransactionPDF([transactionsByDate]);
-    await printAsync({ uri: pdfUri });
-  };
+  // const handleExportData = async (): Promise<void> => {
+  //   const pdfUri = await generateTransactionPDF([transactionsByDate]);
+  //   await printAsync({ uri: pdfUri });
+  // };
 
   // create a box from material ui showing the name and amount of each transactions
 
@@ -98,8 +101,6 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                           : styles.amountDeductedDetail,
                       ]}
                     >
-                      {/* {`${isBalanceAdded ? `+ ` : `- `} ${transaction.amount}`} */}
-                      {/* {transaction.amount} */}
                       {formatAmountTableValue(
                         transaction.amount,
                         shownData.currency
@@ -181,7 +182,7 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                         <Box style={styles.detailMobile}>
                           <Text style={styles.nameDetailMobile}>Type</Text>
                           <Text style={styles.valueDetailMobile}>
-                            {transaction?.trn_type}
+                            {transaction?.service}
                           </Text>
                         </Box>
                       </View>
@@ -189,7 +190,7 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                         <Box style={styles.detailMobile}>
                           <Text style={styles.nameDetailMobile}>Date & Time</Text>
                           <Text style={styles.valueDetailMobile}>
-                            {getFormattedDate(transaction?.transaction_datetime)}
+                            {getFormattedDateAndTime(transaction?.transaction_datetime)}
                           </Text>
                         </Box>
                       </View>

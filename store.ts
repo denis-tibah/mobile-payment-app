@@ -17,6 +17,7 @@ import thunk from "redux-thunk";
 import { accountV2 } from "./redux/account/accountSliceV2";
 import { authV2 } from "./redux/auth/authSliceV2";
 import { cardsV2 } from "./redux/card/cardSliceV2";
+import { transactionV2 } from "./redux/transaction/transactionV2Slice";
 
 export const reducers = combineReducers({
   auth: authSlice,
@@ -32,6 +33,7 @@ export const reducers = combineReducers({
   [accountV2.reducerPath]: accountV2.reducer,
   [authV2.reducerPath]: authV2.reducer,
   [cardsV2.reducerPath]: cardsV2.reducer,
+  [transactionV2.reducerPath]: transactionV2.reducer,
 });
 
 export interface RootState {
@@ -48,6 +50,7 @@ export interface RootState {
   accountV2: any;
   authV2: any;
   cardsV2: any;
+  transactionV2: any;
 }
 
 const rootReducer = (state: RootState | undefined, action: any) => {
@@ -95,6 +98,7 @@ export const store = configureStore({
       accountV2.middleware,
       authV2.middleware,
       cardsV2.middleware,
+      transactionV2.middleware,
     ),
 });
 

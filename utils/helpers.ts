@@ -14,7 +14,7 @@ export function formatDateTableValue(date = "") {
 //added by Aristos
 export function formatAmountTableValue(amount: any = "", currency = "") {
   if (!amount || !currency) return Number.parseFloat("0").toFixed(2);
-  return Number.parseFloat(amount).toFixed(2);
+  return `${Number(amount) > 0 ? '+ ' : '- '}${Math.abs(Number.parseFloat(amount)).toFixed(2)}`;
 }
 
 export function formatAmountTableValue_old(amount: any = "", currency = "") {
@@ -161,15 +161,37 @@ export function getPendingAmount(avlbal: any, currentBalance: any) {
   //use toFixed(2) to format nuber to 2 decimal places
   return pendingAmount.toFixed(2) || "0.00";
 }
+export function formatDateDayMonthYear(dateToFormat: number) {
+  return new Date(dateToFormat).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+  });
+}
 
 export function getFormattedDate(dateToFormat: any) {
-  const date = new Date(dateToFormat); // Create a new Date object with the current date and time
+  const date = new Date(dateToFormat);
 
   const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(
     date.getMonth() + 1
   )
     .toString()
     .padStart(2, "0")}/${date.getFullYear()}`;
+
+  return formattedDate;
+}
+
+export function getFormattedDateAndTime(dateToFormat: any) {
+  const date = new Date(dateToFormat);
+
+  const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(
+    date.getMonth() + 1
+  )
+    .toString()
+    .padStart(2, "0")}/${date.getFullYear()} ${date.getHours()}:${date
+    .getMinutes()
+    .toString()
+    .padStart(2, "0")}`;
 
   return formattedDate;
 }

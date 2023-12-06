@@ -1,26 +1,22 @@
+import { createSlice } from "@reduxjs/toolkit";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { exportedBaseUrl } from "../../api";
 
 export const transactionV2 = createApi({
   reducerPath: "transactionV2",
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_APIURL,
+    baseUrl: exportedBaseUrl,
     prepareHeaders: (headers) => {
-      const accessToken = localStorage.getItem("accessToken");
-      const tokenZiyl = localStorage.getItem("token_ziyl");
-      if (accessToken && tokenZiyl) {
         headers.set("Content-Type", "application/json");
-        headers.set("AuthorizationFinxp", `Bearer ${accessToken}`);
-        headers.set("Authorization", `Bearer ${tokenZiyl}`);
         return headers;
-      }
     },
   }),
   keepUnusedDataFor: 30,
-  tagTypes: ["TransactionV2"],
+  tagTypes: ["transactionV2"],
   endpoints: (builder) => ({
-    getTransactions: builder.query({
+    getTransactions: builder.query<any, any>({
       query: (params) => ({
-        url: `/ziyl/getTransactionsV2finxp`,
+        url: `/getTransactionsV2finxp`,
         method: "POST",
         body: {
           account_id: params?.accountId,
@@ -37,6 +33,12 @@ export const transactionV2 = createApi({
           to_date: params?.to_date,
           bic: params?.bic,
           reference_no: params?.reference_no,
+          card_id: params?.card_id,
+        },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${params?.tokenZiyl}`,
+          AuthorizationFinxp: `Bearer ${params?.accessToken}`,
         },
       }),
     }),
@@ -60,5 +62,4 @@ export const {
   useGetTransactionsQuery,
   useLazyGetTransactionsQuery,
   useLazyGetStatementfinxpQuery,
-} =
-  transactionV2;
+} = transactionV2;

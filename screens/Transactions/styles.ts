@@ -3,7 +3,18 @@ import { StyleSheet } from "react-native"
 export const styles:any = StyleSheet.create<any>({
   container: {
     marginTop: 26,
-    zIndex:1
+    zIndex:1,
+  },
+  containerBottomSheetHeader: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    // backgroundColor: '#F5F9FF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    paddingBottom: 0,
   },
   containerDate: {
     display: 'flex',

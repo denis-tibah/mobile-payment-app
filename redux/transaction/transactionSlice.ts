@@ -37,7 +37,8 @@ const initialState: TransactionState = {
 };
 
 export interface SearchFilter {
-  account_id: string | undefined;
+  accountId: string | undefined;
+  card_id?: string | undefined;
   sort?: string;
   name?: string;
   from_date?: string;
@@ -51,31 +52,20 @@ export interface SearchFilter {
   iban?: string;
   reference_no?: number;
   bic?: string;
+  accessToken?: string;
+  tokenZiyl?: string;
 }
 
 export const transactionSlice = createSlice({
   name: "transaction",
   initialState,
-  reducers: {},
+  reducers: {
+    setTransationsData: (state, action) => {
+      state.data = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     // get transactions
-    builder.addCase(getTransactions.fulfilled, (state, action) => {
-      // line 63 - line 70 is not needed anymore must be removed
-      state.data = action.payload;
-      state.loading = false;
-    });
-    builder.addCase(getTransactions.rejected, (state) => {
-      state.loading = false;
-      state.error = true;
-    });
-    builder.addCase(getTransactionsWithFilters.fulfilled, (state, action) => {
-      state.data = action.payload;
-      state.loading = false;
-    });
-    builder.addCase(getTransactionsWithFilters.rejected, (state) => {
-      state.loading = false;
-      state.error = true;
-    });
     builder.addCase(getStatementsfinxp.fulfilled, (state, action) => {
       state.statements = action.payload;
       state.loading = false;
@@ -104,59 +94,27 @@ export const transactionSlice = createSlice({
 //     }
 //   }
 // );
-export const getTransactions = createAsyncThunk<
-  TransactionDetailsNew,
-  SearchFilter
->(
-  "getTransactions",
-  async (searchFilter, { rejectWithValue, fulfillWithValue }) => {
-    try {
-      const { data } = await api.post("/getTransactionsV2finxp", {
-        account_id: searchFilter.account_id,
-        sort: searchFilter.sort,
-        direction: searchFilter.direction,
-        status: searchFilter.status,
-        limit: 20,
-      });
-      return fulfillWithValue(data);
-    } catch (error) {
-      // console.log("error aristos ", error);
-      rejectWithValue(error);
-    }
-  }
-);
-
-export const getTransactionsWithFilters = createAsyncThunk<
-  TransactionDetailsNew,
-  SearchFilter
->(
-  "getTransactionsWithfilters",
-  async (searchFilter, { rejectWithValue, fulfillWithValue }) => {
-    try {
-      const { data } = await api.post("/getTransactionsV2finxp", {
-        // searchFilter,
-        sort: searchFilter?.sort,
-        direction: searchFilter?.direction,
-        limit: searchFilter.limit,
-        page: searchFilter?.page,
-        iban: searchFilter?.iban,
-        name: searchFilter?.name,
-        min_amount: searchFilter?.min_amount,
-        max_amount: searchFilter?.max_amount,
-        status: searchFilter?.status,
-        reference_no: searchFilter?.reference_no,
-        bic: searchFilter?.bic,
-        from_date: searchFilter?.from_date,
-        to_date: searchFilter?.to_date,
-        account_id: searchFilter.account_id,
-      });
-      return fulfillWithValue(data);
-    } catch (error) {
-      // console.log("error with transaction search",error);
-      rejectWithValue(error);
-    }
-  }
-);
+// export const getTransactions = createAsyncThunk<
+//   TransactionDetailsNew,
+//   SearchFilter
+// >(
+//   "getTransactions",
+//   async (searchFilter, { rejectWithValue, fulfillWithValue }) => {
+//     try {
+//       const { data } = await api.post("/getTransactionsV2finxp", {
+//         account_id: searchFilter.account_id,
+//         sort: searchFilter.sort,
+//         direction: searchFilter.direction,
+//         status: searchFilter.status,
+//         limit: 20,
+//       });
+//       return fulfillWithValue(data);
+//     } catch (error) {
+//       // console.log("error aristos ", error);
+//       rejectWithValue(error);
+//     }
+//   }
+// );
 
 export interface StatementFilter {
   account_id: number;
@@ -202,5 +160,5 @@ export const clearTransactions = createAsyncThunk(
     return initialState;
   }
 );
-
+export const { setTransationsData } = transactionSlice.actions;
 export default transactionSlice.reducer;

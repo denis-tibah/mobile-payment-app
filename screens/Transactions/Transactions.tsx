@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
 import FormGroup from "../../components/FormGroup";
 import Heading from "../../components/Heading";
-import Modal from "../../components/Modal";
 import MainLayout from "../../layout/Main";
 import { styles } from "./styles";
 import Button from "../../components/Button";
@@ -13,27 +12,19 @@ import TransactionIcon from "../../assets/icons/Transaction";
 import SearchIcon from "../../assets/icons/Search";
 import {
   SearchFilter,
-  StatementFilter,
-  StatementResponse,
-  StatementTransactionsResponse,
   clearTransactions,
-  getStatementsfinxp,
-  getTransactionsWithFilters,
+  setTransationsData,
 } from "../../redux/transaction/transactionSlice";
-import { generatePDF } from "../../utils/files";
-import { printAsync } from "expo-print";
 import { RootState } from "../../store";
 import vars from "../../styles/vars";
 import { Seperator } from "../../components/Seperator/Seperator";
 import { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import DropDownPicker from "react-native-dropdown-picker";
 import LoadingScreen from "../../components/Loader/LoadingScreen";
 import Pagination from "../../components/Pagination/Pagination";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 import {
-  containsOnlyNumbers,
-  getUserActiveCards,
+  formatDateDayMonthYear,
   groupedByDateTransactions,
   sortUserActiveToInactiveCards,
 } from "../../utils/helpers";
@@ -43,63 +34,55 @@ import BottomSheet from "../../components/BottomSheet";
 import Filter from "../../assets/icons/Filter";
 import { Divider } from "react-native-paper";
 import { useLazyGetCardV2Query } from "../../redux/card/cardSliceV2";
+import { useLazyGetTransactionsQuery } from "../../redux/transaction/transactionV2Slice";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 interface DateRangeType {
   dateTo: {
     state: boolean;
-    value: string;
+    value: number | null;
   };
   dateFrom: {
     state: boolean;
-    value: string;
+    value: number | null;
   };
 }
 
 const currentDate = new Date();
+
 const initialSearchFieldData: SearchFilter = {
-  account_id: "",
-  // sort:  "id",
+  accountId: "",
   direction: "desc",
   status: "",
   limit: 20,
   page: 1,
 };
+
 const initialDateRange: DateRangeType = {
   dateTo: {
     state: false,
-    value: "",
+    value: null,
   },
   dateFrom: {
     state: false,
-    value: "",
+    value: null,
   },
 };
 
 export function Transactions({ navigation }: any) {
   const dispatch = useDispatch();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
-  const transactions = useSelector(
-    (state: RootState) => state?.transaction.data
-  );
-  const currentPage = transactions?.current_page;
-  const lastPage = transactions?.last_page;
-  const transactionsList = transactions?.transactions;
-  const _groupedByDateTransactions =
-    groupedByDateTransactions(transactionsList);
-  const [isMobileFilterShown, setIsMobileFilterShown] =
-    useState<boolean>(false);
-  const [sortByDate, setSortByDate] = useState<boolean>(false);
-  const [currentSelectedSearchField, setCurrentSelectedSearchField] =
-    useState<string>("");
-  const [selectedTransactionStatus, setSelectedTransactionStatus] =
-    useState<string>("");
-  const [openSearchOptions, setOpenSearchOptions] = useState<boolean>(false);
+  const userTokens = useSelector((state: RootState) => state?.auth?.data);
+  const [getTransactionsWithFilter, { data: transactionsWithFilter }] = useLazyGetTransactionsQuery();
+  const currentPage = transactionsWithFilter?.current_page;
+  const lastPage = transactionsWithFilter?.last_page;
+  const transactionsList = transactionsWithFilter?.transactions;
+  const _groupedByDateTransactions = groupedByDateTransactions(transactionsList);
   const [isSearchTextOpen, setIsSearchTextOpen] = useState<boolean>(false);
   const [isSheetFilterOpen, setIsSheetFilterOpen] = useState<boolean>(false);
-  const [isStatusOptionSelected, setIsStatusOptionSelected] =
-    useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchFieldData, setSearchFieldData] = useState<SearchFilter>(
     initialSearchFieldData
   );
@@ -118,13 +101,9 @@ export function Transactions({ navigation }: any) {
   const listOfActiveCards = sortUserActiveToInactiveCards(userCardsList);
 
   const clearFilter = () => {
-    // setShowStatementPickerDateToAndFrom(initialDateRange);
     setShowPickerDateFilter(initialDateRange);
     setSearchFieldData(initialSearchFieldData);
-    setCurrentSelectedSearchField("");
     setSearchText("");
-    setIsStatusOptionSelected(false);
-    isMobileFilterShown && fetchTransactionsWithFilters();
   };
 
   const fetchTransactionsWithFilters = async (value?: SearchFilter) => {
@@ -133,9 +112,21 @@ export function Transactions({ navigation }: any) {
       if (userData && userData?.id) {
         let search: SearchFilter = {
           ...(value ? value : initialSearchFieldData),
-          account_id: `${userData?.id}`,
+          accountId: `${userData?.id}`,
+          accessToken: userTokens?.access_token,
+          tokenZiyl: userTokens?.token_ziyl,
         };
-        await dispatch<any>(getTransactionsWithFilters(search));
+        getTransactionsWithFilter(search)
+        .then((res) => {
+          if (res.data) {
+            const { data: _transactions } = res;
+            dispatch<any>(setTransationsData(_transactions));
+          }
+        }
+        ).catch((err) => {
+          console.log('error')
+          console.log({ err });
+        });
         setSearchFieldData(search);
       }
     } catch (error) {
@@ -145,86 +136,99 @@ export function Transactions({ navigation }: any) {
     }
   };
 
-  const filterFromToDate = async (fromDate: string, toDate: string) => {
-    const userId = userData?.id;
-    if (fromDate && toDate && userId) {
-      const search: SearchFilter = {
-        ...searchFieldData,
-        ...(fromDate && { from_date: fromDate }),
-        ...(toDate && { to_date: toDate }),
-        account_id: `${userId}`,
-        direction: "desc",
-      };
-      setSortByDate(false);
-      setSearchFieldData(search);
-      await fetchTransactionsWithFilters(search);
-    }
-  };
+  // const filterFromToDate = async (fromDate: string, toDate: string) => {
+  //   const userId = userData?.id;
+  //   if (fromDate && toDate && userId) {
+  //     const search: SearchFilter = {
+  //       ...searchFieldData,
+  //       ...(fromDate && { from_date: fromDate }),
+  //       ...(toDate && { to_date: toDate }),
+  //       account_id: `${userId}`,
+  //       direction: "desc",
+  //     };
+  //     setSortByDate(false);
+  //     setSearchFieldData(search);
+  //     await fetchTransactionsWithFilters(search);
+  //   }
+  // };
 
-  const handleOnSubmitEditing = (event: any) => {
-    const isNumberOnly = containsOnlyNumbers(searchText);
-    const userId = userData?.id;
-    if (!userId) {
-      return;
+  // const handleOnSubmitEditing = (event: any) => {
+  //   const isNumberOnly = containsOnlyNumbers(searchText);
+  //   const userId = userData?.id;
+  //   if (!userId) {
+  //     return;
+  //   }
+  //   const { from_date, to_date } = searchFieldData;
+  //   const _searchFieldData: SearchFilter = {
+  //     ...(!currentSelectedSearchField && !isNumberOnly && { name: searchText }),
+  //     ...(!currentSelectedSearchField &&
+  //       isNumberOnly && { min_amount: Number(searchText) }),
+  //     ...(currentSelectedSearchField === "bic" && { bic: searchText }),
+  //     ...(currentSelectedSearchField === "status" && { status: searchText }),
+  //     ...(currentSelectedSearchField === "reference_no" && {
+  //       reference_no: Number(searchText),
+  //     }),
+  //     ...(currentSelectedSearchField === "min_amount" && {
+  //       min_amount: Number(searchText),
+  //     }),
+  //     ...(currentSelectedSearchField === "iban" && { iban: searchText }),
+  //     ...(currentSelectedSearchField === "max_amount" && {
+  //       max_amount: Number(searchText),
+  //     }),
+  //     ...(from_date && { from_date }),
+  //     ...(to_date && { to_date }),
+  //     ...initialSearchFieldData,
+  //     accountId: `${userId}`,
+  //   };
+  //   setSearchFieldData(_searchFieldData);
+  //   fetchTransactionsWithFilters({
+  //     ..._searchFieldData,
+  //   });
+  // };
+
+  const handleBackgroundChangeActiveInactive = (card: any) : string => {
+    if (card.cardreferenceId === searchFieldData.card_id) {
+      if (card.cardStatus === CardStatus.INACTIVE) {
+        return vars["accent-yellow"];
+      } else if (card.lostYN === "N") {
+        return card.type === "P" ? vars["accent-blue"] : vars["accent-pink"];
+      } else {
+        return vars["accent-grey"];
+      }
+    } else {
+      if (card.cardStatus === CardStatus.INACTIVE) {
+        return vars["light-yellow"];
+      } else if (card.lostYN === "N") {
+        return card.type === "P" ? vars["light-blue"] : vars["light-pink"];
+      } else {
+        return vars["light-grey"];
+      }
     }
-    const { from_date, to_date } = searchFieldData;
-    const _searchFieldData: SearchFilter = {
-      ...(!currentSelectedSearchField && !isNumberOnly && { name: searchText }),
-      ...(!currentSelectedSearchField &&
-        isNumberOnly && { min_amount: Number(searchText) }),
-      ...(currentSelectedSearchField === "bic" && { bic: searchText }),
-      ...(currentSelectedSearchField === "status" && { status: searchText }),
-      ...(currentSelectedSearchField === "reference_no" && {
-        reference_no: Number(searchText),
-      }),
-      ...(currentSelectedSearchField === "min_amount" && {
-        min_amount: Number(searchText),
-      }),
-      ...(currentSelectedSearchField === "iban" && { iban: searchText }),
-      ...(currentSelectedSearchField === "max_amount" && {
-        max_amount: Number(searchText),
-      }),
-      ...(from_date && { from_date }),
-      ...(to_date && { to_date }),
-      ...initialSearchFieldData,
-      account_id: `${userId}`,
-    };
-    setSearchFieldData(_searchFieldData);
-    fetchTransactionsWithFilters({
-      ..._searchFieldData,
-    });
   };
 
   const handleOnChangeShowPickerDate = (
-    formattedDate: string,
+    rawTimeStamp: number,
     setState: any,
     values: any,
     key: string,
-    isOnChangeForStatements?: boolean
   ) => {
     const { dateFrom, dateTo } = values;
     if (key === "dateFrom") {
       if (dateTo.value) {
-        const fromDate = new Date(formattedDate);
+        const fromDate = new Date(rawTimeStamp);
         const toDate = new Date(dateTo.value);
         if (fromDate > toDate) {
           alert("Date from should be before or same with Date to");
           return;
-        } else {
-          isOnChangeForStatements &&
-            filterFromToDate(formattedDate, dateTo.value);
-        }
+        } 
       }
     } else {
       if (dateFrom.value) {
         const fromDate = new Date(dateFrom.value);
-        const toDate = new Date(formattedDate);
+        const toDate = new Date(rawTimeStamp);
         if (fromDate > toDate) {
           alert("Date from should be before or same with Date to");
           return;
-        } else {
-          isOnChangeForStatements &&
-            filterFromToDate(dateFrom.value, formattedDate);
         }
       }
     }
@@ -232,17 +236,36 @@ export function Transactions({ navigation }: any) {
       ...values,
       [key]: {
         state: false,
-        value: formattedDate,
+        value: rawTimeStamp,
       },
+    });
+    setSearchFieldData({
+      ...searchFieldData,
+      [key === 'dateFrom' ? 'from_date' : 'to_date']: new Date(rawTimeStamp).toISOString().split('T')[0],
     });
   };
 
-  const handleShowingAdvanceFilter = () => {
-    clearFilter();
-    setIsStatusOptionSelected(false);
-    // setIsMobileFilterShown(!isMobileFilterShown);
-    setIsSheetFilterOpen(!isSheetFilterOpen);
-  };
+  const amountRangeFilter = (amount: number, key: string) => {
+    const userId = userData?.id;
+    if (!userId) {
+      return;
+    }
+    if (key === 'min_amount') {
+      if (searchFieldData.max_amount && amount > searchFieldData.max_amount) {
+        alert("Amount from should be less than Amount to");
+        return;
+      }
+    } else {
+      if (searchFieldData.min_amount && amount < searchFieldData.min_amount) {
+        alert("Amount to should be greater than Amount from");
+        return;
+      }
+    }
+    setSearchFieldData({
+      ...searchFieldData,
+      [key]: amount,
+    });
+  }
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
@@ -264,12 +287,12 @@ export function Transactions({ navigation }: any) {
     }
   };
 
-  const handleGeneratePDF = async (
-    statements: StatementTransactionsResponse[]
-  ) => {
-    const pdfUri = await generatePDF(statements);
-    return await printAsync({ uri: pdfUri });
-  };
+  // const handleGeneratePDF = async (
+  //   statements: StatementTransactionsResponse[]
+  // ) => {
+  //   const pdfUri = await generatePDF(statements);
+  //   return await printAsync({ uri: pdfUri });
+  // };
 
   useEffect(() => {
     fetchTransactionsWithFilters();
@@ -320,7 +343,10 @@ export function Transactions({ navigation }: any) {
                 style={{ width: "100%" }}
                 value={searchText}
                 onChangeText={(event: string) => setSearchText(event)}
-                onSubmitEditing={handleOnSubmitEditing}
+                onSubmitEditing={() => fetchTransactionsWithFilters({
+                  ...searchFieldData,
+                  name: searchText,
+                })}
               />
             </View>
           )
@@ -330,11 +356,6 @@ export function Transactions({ navigation }: any) {
           <View>
             {_groupedByDateTransactions
               ? Object.keys(_groupedByDateTransactions)
-                  .sort((a, b) => {
-                    return sortByDate
-                      ? new Date(a).getTime() - new Date(b).getTime()
-                      : new Date(b).getTime() - new Date(a).getTime();
-                  })
                   .map((date: string) => {
                     let _amount: number = 0;
                     const transactionsByDate = _groupedByDateTransactions[
@@ -375,10 +396,14 @@ export function Transactions({ navigation }: any) {
         <LoadingScreen isLoading={isLoading} />
       </ScrollView>
       <BottomSheet isVisible={isSheetFilterOpen} onClose={() => setIsSheetFilterOpen(!isSheetFilterOpen)}>
-        <View style={styles.container}>
+        <View style={styles.containerBottomSheetHeader}>
           <Typography fontSize={18}>
             Filters
           </Typography>
+          {/* icon button to clear filter */}
+          <TouchableOpacity onPress={() => clearFilter()}>
+            <Ionicons name="refresh" size={18} color={vars['accent-blue']} />
+          </TouchableOpacity>
         </View>
         <Divider style={{marginVertical: 5}} />
         {/* filter for date range */}
@@ -410,7 +435,7 @@ export function Transactions({ navigation }: any) {
                   })
                 }}
               >
-                {showPickerDateFilter.dateFrom.value}
+                {showPickerDateFilter.dateFrom.value && formatDateDayMonthYear(showPickerDateFilter.dateFrom.value)}
               </Button>
               {showPickerDateFilter.dateFrom.state && (
                 <DateTimePicker
@@ -421,10 +446,11 @@ export function Transactions({ navigation }: any) {
                       ...showPickerDateFilter,
                       dateFrom: {
                         state: false,
-                        value: "",
+                        value: null,
                       },
                     })
                   }
+                  minimumDate={new Date(new Date().setMonth(new Date().getMonth() - 2))}
                   maximumDate={new Date()}
                   value={
                     !showPickerDateFilter.dateFrom.value
@@ -434,17 +460,11 @@ export function Transactions({ navigation }: any) {
                   textColor="black"
                   onChange={(event: any) => {
                     if (event.type == "set") {
-                      const formattedFromDate = new Date(
-                        event.nativeEvent.timestamp
-                      )
-                        .toISOString()
-                        .split("T")[0];
                       handleOnChangeShowPickerDate(
-                        formattedFromDate,
+                        event.nativeEvent.timestamp,
                         setShowPickerDateFilter,
                         showPickerDateFilter,
                         "dateFrom",
-                        true
                       );
                     }
                   }}
@@ -479,7 +499,7 @@ export function Transactions({ navigation }: any) {
                   })
                 }}
               >
-                {showPickerDateFilter.dateTo.value}
+                {showPickerDateFilter.dateTo.value && formatDateDayMonthYear(showPickerDateFilter.dateTo.value)}
               </Button>
               {showPickerDateFilter.dateTo.state && (
                 <DateTimePicker
@@ -490,10 +510,12 @@ export function Transactions({ navigation }: any) {
                       ...showPickerDateFilter,
                       dateTo: {
                         state: false,
-                        value: "",
+                        value: null,
                       },
                     })
                   }
+                  minimumDate={new Date(new Date().setMonth(new Date().getMonth() - 2))}
+                  maximumDate={new Date()}
                   value={
                     !showPickerDateFilter.dateTo.value
                       ? currentDate
@@ -502,17 +524,11 @@ export function Transactions({ navigation }: any) {
                   textColor="black"
                   onChange={(event: any) => {
                     if (event.type == "set") {
-                      const formattedToDate = new Date(
-                        event.nativeEvent.timestamp
-                      )
-                        .toISOString()
-                        .split("T")[0];
                       handleOnChangeShowPickerDate(
-                        formattedToDate,
+                        event.nativeEvent.timestamp,
                         setShowPickerDateFilter,
                         showPickerDateFilter,
                         "dateTo",
-                        true
                       );
                     }
                   }}
@@ -545,7 +561,6 @@ export function Transactions({ navigation }: any) {
                   ...searchFieldData,
                   status: option.value,
                 });
-                setIsStatusOptionSelected(true);
               }}
             >
               <Text style={{
@@ -570,10 +585,7 @@ export function Transactions({ navigation }: any) {
                 style={{ width: "100%", borderWidth: 1, borderColor: vars['accent-blue'] }}
                 value={searchFieldData.min_amount}
                 onChangeText={(event: string) => {
-                  setSearchFieldData({
-                    ...searchFieldData,
-                    min_amount: Number(event),
-                  });
+                  amountRangeFilter(Number(event), 'min_amount');
                 }}
               />
             </View>
@@ -589,10 +601,7 @@ export function Transactions({ navigation }: any) {
                 style={{ width: "100%", borderWidth: 1, borderColor: vars['accent-blue'] }}
                 value={searchFieldData.max_amount}
                 onChangeText={(event: string) => {
-                  setSearchFieldData({
-                    ...searchFieldData,
-                    max_amount: Number(event),
-                  });
+                  amountRangeFilter(Number(event), 'max_amount');
                 }}
               />
             </View>
@@ -604,16 +613,23 @@ export function Transactions({ navigation }: any) {
         <ScrollView horizontal>
           {listOfActiveCards?.map((card: any, index: number) => (
             <TouchableOpacity style={{
-              backgroundColor: card.cardStatus === CardStatus.INACTIVE ? vars['light-yellow'] : 
-              card.lostYN === "N" ? card.type === "P" ? vars['light-blue'] : vars['light-pink'] : vars['light-grey'],
-              paddingVertical: 12,
+              backgroundColor: handleBackgroundChangeActiveInactive(card),
+              paddingVertical: 10,
               paddingHorizontal: 18,
               borderRadius: 99,
               marginHorizontal: 3,
               width: 151,
               height: 40,
-              }}>
-            <Typography fontSize={14} color={
+              }}
+               onPress={() => {
+                setSearchFieldData({
+                  ...searchFieldData,
+                  card_id: card.cardreferenceId,
+                });
+                }
+               }
+              >
+            <Typography fontSize={14} color={ searchFieldData.card_id  === card.cardreferenceId ? '#fff' :
               card.cardStatus === CardStatus.INACTIVE ? vars['accent-yellow'] : 
               card.lostYN === "N" ? card.type === "P" ? vars['accent-blue'] : vars['accent-pink'] : vars['accent-grey']
             }>
@@ -636,6 +652,7 @@ export function Transactions({ navigation }: any) {
           leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
           onPress={() => {
            setIsSheetFilterOpen(!isSheetFilterOpen)
+           fetchTransactionsWithFilters(searchFieldData);
           }}
         >
           Submit

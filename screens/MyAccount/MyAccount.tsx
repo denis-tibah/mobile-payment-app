@@ -1,42 +1,31 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   ScrollView,
   RefreshControl,
   TouchableOpacity,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
-import * as SecureStore from "expo-secure-store";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
 import { styles } from "./style";
 import TransactionIcon from "../../assets/icons/Transaction";
-
-import TransactionItem from "../../components/TransactionItem";
 import Typography from "../../components/Typography";
 import AccountIcon from "../../assets/icons/Account";
 import Pagination from "../../components/Pagination/Pagination";
 import {
   SearchFilter,
-  getTransactionsWithFilters,
 } from "../../redux/transaction/transactionSlice";
 import { RootState } from "../../store";
 import Box from "../../components/Box";
-import { getAccountDetails } from "../../redux/account/accountSlice";
 import { getCurrency, groupedByDateTransactions } from "../../utils/helpers";
 import Spinner from "react-native-loading-spinner-overlay/lib";
-import { Transaction } from "../../utils/types";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
 import Button from "../../components/Button";
+import { useLazyGetTransactionsQuery } from "../../redux/transaction/transactionV2Slice";
 
-interface ITransactions {
-  data: Transaction[];
-  totalPage: number;
-}
 const defaultStatus = "SUCCESS";
 export function MyAccount({ navigation }: any) {
   const transactions: any = useSelector(
@@ -45,17 +34,20 @@ export function MyAccount({ navigation }: any) {
   const currentPage = transactions?.current_page;
   const lastPage = transactions?.last_page;
   const userData = useSelector((state: RootState) => state?.auth?.userData);
-  const dispatch = useDispatch();
+  const userId = userData?.id;
+  const userTokens = useSelector((state: RootState) => state?.auth?.data);
+  const [getTransactionsWithFilter, { data: transactionsWithFilter }] = useLazyGetTransactionsQuery();
+  const transactionsList = transactionsWithFilter?.transactions;
+  const _groupedByDateTransactions = groupedByDateTransactions(transactionsList);
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [page, setPage] = useState<number>(1);
   const [sortByStatus, setSortByStatus] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [paginateRefresh, setPaginateRefresh] = useState<boolean>(false);
-  const _groupedByDateTransactions = groupedByDateTransactions(
-    transactions?.transactions
-  );
+  const [isOneTransactionOpen, setIsOneTransactionOpen] = useState<boolean>(false);
   const { data: userAccountInformation } = useGetAccountDetailsQuery({
     accountId: userData?.id || 0,
+    accessToken: userTokens?.access_token,
+    tokenZiyl: userTokens?.token_ziyl,
   });
 
   const fetchTransactions = async (filterParams?: {
@@ -67,15 +59,15 @@ export function MyAccount({ navigation }: any) {
       if (userData && userData?.id) {
         setIsLoading((prev) => !prev);
         let search: SearchFilter = {
-          account_id: userData?.id.toString(),
-          sort: "id",
+          accountId: `${userData?.id}`,
           direction: "desc",
-          status: filterParams?.status ? filterParams?.status : defaultStatus, // commented out since the webservice breaks if status is added in the filter - arjajy: august 22, 2023
+          status: filterParams?.status ? filterParams?.status : defaultStatus,
           limit: 20,
           page: filterParams?.pageNumber || 1,
+          accessToken: userTokens?.access_token,
+          tokenZiyl: userTokens?.token_ziyl,
         };
-        await dispatch<any>(getTransactionsWithFilters(search));
-        // await dispatch<any>(getAccountDetails(userData.id));
+        getTransactionsWithFilter(search);
         setPaginateRefresh(false);
       }
     } catch (error) {
@@ -103,87 +95,11 @@ export function MyAccount({ navigation }: any) {
     }
   };
 
-  // #HACK needs improvement
-  // run only once when the component mounts/unmounts
-  // will load fetchTransactions on every mount of component/page
-  // reset page to 1 when the component unmounts
-  useFocusEffect(
-    useCallback(() => {
-      fetchTransactions();
-      return () => {
-        setPage(1);
-      };
-    }, [])
-  );
-
-  // :start:disabled by Aristos because json reponse has changed
-  // useEffect(() => {
-  //   if (arrayChecker(transactions) && transactions.length > 0) {
-  //     // get only first value of array since it contains all data ex last_page, arr of transaction etc
-  //     const [transactionsObj] = transactions;
-  //     setTransactionsData({
-  //       data: transactionsObj?.data || [],
-  //       totalPage: parseInt(transactionsObj?.last_page, 10) || 0,
-  //     });
-  //   }
-  // }, [transactions]);
-
-  // :end:disabled by Aristos because json reponse has changed
-
-  //added by Aristos
-  // useEffect(() => {
-  //   if (
-  //     arrayChecker(transactions?.transactions) &&
-  //     transactions?.transactions.length > 0
-  //   ) {
-  // get only first value of array since it contains all data ex last_page, arr of transaction etc
-  // const [transactionsObj] = transactions.transactions;
-  // console.log("transactionsObj", transactions.transactions.length);
-
-  //     setTransactionsData({
-  //       data: transactions.transactions || [],
-  //       totalPage: parseInt(transactions.last_page, 10) || 0,
-  //     });
-  //   }
-  // }, [transactions]);
-
-  /* const refreshTransactions = async () => {
-    try {
-      setRefreshing(true);
-
-      if (userData) {
-        let search = {
-          account_id: userData?.id,
-          sort: "id",
-          direction: "desc",
-          // status: "PROCESSING"
-          status: "SUCCESS",
-        };
-        // await dispatch<any>(getTransactions(userData));
-
-        await dispatch<any>(getTransactionsWithFilters(search));
-        await dispatch<any>(getAccountDetails(userData.id));
-      }
-    } catch (error) {
-      console.log({ error });
-    } finally {
-      setRefreshing(false);
-    }
-  }; */
-
   useEffect(() => {
-    if (!!userData?.id) fetchTransactions();
-  }, [userData?.id, page]);
-
-  //get transactionns every 15 mins
-  /*  useEffect(() => {
-    const interval = setInterval(() => {
-      // console.log('This will run every 15m is !');
+    if (!!userId) {
       fetchTransactions();
-    }, 900000);
-    return () => clearInterval(interval);
-  }, []);
- */
+    }
+  }, [userId]);
 
   return (
     <MainLayout navigation={navigation}>
@@ -211,18 +127,22 @@ export function MyAccount({ navigation }: any) {
               }`}
             </Typography>
           </Box>
-          <Box
-            style={{ ...styles.totalBalance, ...styles.pendingBalanceShadow }}
-          >
-            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
-              Pending
-            </Typography>
-            <Typography color={"accent-orange"} fontWeight={600} fontSize={16}>
-              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
-                userAccountInformation?.data?.blocked_amount || 0
-              }`}
-            </Typography>
-          </Box>
+          { isOneTransactionOpen ? null : (
+              <Box
+                style={{ ...styles.totalBalance, ...styles.pendingBalanceShadow }}
+              >
+                <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
+                  Pending
+                </Typography>
+                <Typography color={"accent-orange"} fontWeight={600} fontSize={16}>
+                  {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${Number(userAccountInformation?.data?.blocked_amount) < 0 ? `` : `0`}${
+                    userAccountInformation?.data?.blocked_amount || 0
+                  }`}
+                </Typography>
+              </Box>
+            )
+          }
+          { isOneTransactionOpen ? null : (
           <Box
             style={{ ...styles.totalBalance, ...styles.availableBalanceShadow }}
           >
@@ -235,6 +155,8 @@ export function MyAccount({ navigation }: any) {
               }`}
             </Typography>
           </Box>
+          ) }
+          
         </View>
         <View>
           <View style={styles.base}>
@@ -267,19 +189,11 @@ export function MyAccount({ navigation }: any) {
                 <View>
                   {_groupedByDateTransactions
                     ? Object.keys(_groupedByDateTransactions)
-                        // .sort((a, b) => {
-                        //   return sortByDate
-                        //     ? new Date(a).getTime() - new Date(b).getTime()
-                        //     : new Date(b).getTime() - new Date(a).getTime();
-                        // })
                         .map((date: string) => {
                           let _amount: number = 0;
                           const transactionsByDate = _groupedByDateTransactions[
                             date
                           ]
-                            // .filter((tx) => {
-                            //   return sortByStatus ? tx.status !== "SUCCESS"  : tx.status === "SUCCESS";
-                            // })
                             .map((tx) => {
                               const { amount } = tx;
                               _amount = Number(_amount) + Number(amount);
@@ -293,11 +207,9 @@ export function MyAccount({ navigation }: any) {
                             currency:
                               _groupedByDateTransactions[date][0].currency,
                           };
-                          // if (transactionsByDate.length === 0) {
-                          //   return null;
-                          // }
                           return (
                             <TransactionsByDate
+                              setIsOneTransactionOpen={setIsOneTransactionOpen}
                               key={
                                 _groupedByDateTransactions[date][0]
                                   .transaction_uuid

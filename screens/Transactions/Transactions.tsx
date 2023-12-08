@@ -109,6 +109,7 @@ export function Transactions({ navigation }: any) {
   const fetchTransactionsWithFilters = async (value?: SearchFilter) => {
     try {
       setIsLoading(true);
+    
       if (userData && userData?.id) {
         let search: SearchFilter = {
           ...(value ? value : initialSearchFieldData),
@@ -116,6 +117,9 @@ export function Transactions({ navigation }: any) {
           accessToken: userTokens?.access_token,
           tokenZiyl: userTokens?.token_ziyl,
         };
+
+        // console.log("date search", initialSearchFieldData)
+        
         getTransactionsWithFilter(search)
         .then((res) => {
           if (res.data) {
@@ -450,7 +454,9 @@ export function Transactions({ navigation }: any) {
                       },
                     })
                   }
-                  minimumDate={new Date(new Date().setMonth(new Date().getMonth() - 2))}
+                  // minimumDate={new Date(new Date().setMonth(new Date().getMonth() - 2))}
+                  //go back 5 years 12*5
+                  minimumDate={new Date(new Date().setMonth(new Date().getMonth()- 60))}
                   maximumDate={new Date()}
                   value={
                     !showPickerDateFilter.dateFrom.value
@@ -514,7 +520,9 @@ export function Transactions({ navigation }: any) {
                       },
                     })
                   }
-                  minimumDate={new Date(new Date().setMonth(new Date().getMonth() - 2))}
+                  // minimumDate={new Date(new Date().setMonth(new Date().getMonth() - 2))}
+                   //go back 5 years 12*5
+                  minimumDate={new Date(new Date().setMonth(new Date().getMonth()- 60))}
                   maximumDate={new Date()}
                   value={
                     !showPickerDateFilter.dateTo.value

@@ -29,6 +29,19 @@ export const styles: any = StyleSheet.create<any>({
   //   borderBottomColor: vars.grey,
   //   borderBottomWidth: 1,
   // },
+  cardActionsListContainer: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+  },
+  cardActionItem: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 5,
+  },
   listItemInnerText: {
     textAligjt: 'left',
     width: '40%',
@@ -65,9 +78,12 @@ export const styles: any = StyleSheet.create<any>({
     marginTop: 24,
     marginBottom: 24,
     marginLeft: 24,
+    display: "flex",
+    flexDirection: "row",
   },
   cardActionsButtonMargin: {
     marginRight: 8,
+    flex: 1,
   },
   cardTransactions: {
     marginTop: 24,

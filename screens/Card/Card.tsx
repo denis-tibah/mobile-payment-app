@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Pressable,
   RefreshControl,
@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Text,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
@@ -25,7 +26,7 @@ import LostCardIcon from "../../assets/icons/LostCard";
 import TransactionIcon from "../../assets/icons/Transaction";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
 import Box from "../../components/Box";
-// import ZazooVirtualCard from "../../assets/images/zazoo-virtual-card.png";
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
 import {
   getCardTransactions,
   getCards,
@@ -45,6 +46,7 @@ import {
   /* convertImageToBase64, */
   getPendingAmount,
 } from "../../utils/helpers";
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { getAccountDetails } from "../../redux/account/accountSlice";
 import { CardView } from "../../components/Card/CardView";
 import { GetCardModal } from "./GetCardModal";
@@ -69,6 +71,12 @@ import TransactionItem from "../../components/TransactionItem";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { arrayChecker } from "../../utils/helpers";
 import TerminatingCardModal from "./TerminatingCardModal";
+import { Divider } from "react-native-paper";
+import ArrowRight from "../../assets/icons/ArrowRight";
+import { ArrowSwitch } from "../../assets/icons/ArrowSwitch";
+import { FontAwesome } from '@expo/vector-icons'; 
+import { PinNumberCode } from "../../assets/icons/PinNumber";
+import { BugIcon } from "../../assets/icons/BugIcon";
 
 /* import { Circle } from "react-native-svg"; */
 const DEFAULT_CARD_ENROLLMENT_STATUS = {
@@ -80,6 +88,7 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
 export function Card({ navigation }: any) {
   const dispatch = useDispatch();
   const accountDetails = useSelector((state: RootState) => state.account?.details);
+  const bottomSheetRef = useRef<BottomSheet>(null);
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
   const profile = useSelector((state: any) => state.profile?.profile);
@@ -469,7 +478,7 @@ export function Card({ navigation }: any) {
           }}
         />
       )}
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <ScrollView
           bounces={true}
           style={{ flex: 1 }}
@@ -481,49 +490,48 @@ export function Card({ navigation }: any) {
             <View style={styles.container}>
               <Heading
                 icon={<CardIcon size={18} color="pink" />}
-                title={"Card"}
+                title={"My Card"}
                 rightAction={
                   <Button
                     onPress={() => {
                       console.log("get card");
-                      setShowGetCardModal(true);
+                      // setShowGetCardModal(true);
                     }}
                     color={"light-pink"}
-                    rightIcon={<AddIcon color="pink" size={14} />}
-                    disabled={isCardHaveVirtual}
+                    leftIcon={<MaterialCommunityIcons name="credit-card-plus-outline" size={14} color={vars['accent-pink']} />}
+                    // disabled={isCardHaveVirtual}
                   >
-                    Get Card
+                    Create
                   </Button>
                 }
               />
             </View>
           </Pressable>
-          { !!isCardHaveVirtual && 
             <View style={styles.cardSection}>
-                <View style={styles.cardImages}>
-                  <Carousel
-                    data={cardDetails?.cardImage ? [cardDetails] : shownCardsOnCarousel}
-                    renderItem={_renderItem}
-                    refreshing={isLoading}
-                    sliderWidth={400}
-                    itemWidth={303}
-                    layout="default"
-                    lockScrollWhileSnapping={false}
-                    // swipeThreshold={10}
-                    onSnapToItem={(index) => {
-                      handleGetCardsTransactions(shownCardsOnCarousel[index]);
-                      setSelectedCard(shownCardsOnCarousel[index]);
-                    }}
-                  />
-                  {cardDetails?.cardNumber ? (
-                    <TouchableOpacity onPress={handleCopyToClipboard}>
-                      <View style={styles.clipboardContainer}>
-                        <CopyClipboard color="light-pink" size={18} />
-                      </View>
-                    </TouchableOpacity>
-                  ) : null}
-                </View>
-              <View style={styles.incomeBox}>
+              <View style={styles.cardImages}>
+                <Carousel
+                  data={cardDetails?.cardImage ? [cardDetails] : shownCardsOnCarousel}
+                  renderItem={_renderItem}
+                  refreshing={isLoading}
+                  sliderWidth={400}
+                  itemWidth={303}
+                  layout="default"
+                  lockScrollWhileSnapping={false}
+                  // swipeThreshold={10}
+                  onSnapToItem={(index) => {
+                    handleGetCardsTransactions(shownCardsOnCarousel[index]);
+                    setSelectedCard(shownCardsOnCarousel[index]);
+                  }}
+                />
+                {cardDetails?.cardNumber ? (
+                  <TouchableOpacity onPress={handleCopyToClipboard}>
+                    <View style={styles.clipboardContainer}>
+                      <CopyClipboard color="light-pink" size={18} />
+                    </View>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+              {/* <View style={styles.incomeBox}>
                 <Pressable>
                   <View style={styles.incomeBox__group}>
                     <Typography
@@ -561,9 +569,19 @@ export function Card({ navigation }: any) {
                     </Box>
                   </View>
                 </Pressable>
-              </View>
-              { !isShowingCardDetails && <View style={styles.cardActions}>
-                <ScrollView horizontal>
+              </View> */}
+              <View style={styles.cardActions}>
+                  <View style={styles.cardActionsButtonMargin}>
+                    <Pressable>
+                      <Button
+                        color="light-blue"
+                        onPress={requestShowCard}
+                        leftIcon={<EyeIcon color="blue" size={14} />}
+                      >
+                        Show Card
+                      </Button>
+                    </Pressable>
+                  </View>
                   <View style={styles.cardActionsButtonMargin}>
                     <Pressable>
                       <Button
@@ -585,6 +603,74 @@ export function Card({ navigation }: any) {
                       </Button>
                     </Pressable>
                   </View>
+                  </View>
+                </View>
+                <Divider style={{marginVertical: 10, paddingHorizontal: 15}} />
+                  <View style={styles.cardActionsListContainer}>
+                    <View style={styles.cardActionItem}>
+                      <View style={{display: 'flex', flexDirection: 'row'}}>
+                        <View style={{paddingRight: 8, marginTop: 5}}>
+                          <ArrowSwitch color="heavy-blue" size={18}/>
+                        </View>
+                        <Typography fontSize={16} fontWeight={600}>
+                          See Card Transactions
+                        </Typography>
+                      </View>
+                      <TouchableOpacity style={{marginTop: 7}}>
+                        <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
+                  <View style={styles.cardActionsListContainer}>
+                    <View style={styles.cardActionItem}>
+                      <View style={{display: 'flex', flexDirection: 'row'}}>
+                        <View style={{paddingRight: 8, marginTop: 5}}>
+                          <FontAwesome name="cog" size={18} color={vars['accent-blue']} />
+                        </View>
+                        <Typography fontSize={16} fontWeight={600}>
+                          Manage Payment Method
+                        </Typography>
+                      </View>
+                      <TouchableOpacity style={{marginTop: 7}}>
+                        <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
+                  <View style={styles.cardActionsListContainer}>
+                    <View style={styles.cardActionItem}>
+                      <View style={{display: 'flex', flexDirection: 'row'}}>
+                        <View style={{paddingRight: 8, marginTop: 5}}>
+                          <PinNumberCode color="heavy-blue" size={18} />
+                        </View>
+                        <Typography fontSize={16} fontWeight={600}>
+                          Show Pin
+                        </Typography>
+                      </View>
+                      <TouchableOpacity style={{marginTop: 7}}>
+                        <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
+                  <View style={styles.cardActionsListContainer}>
+                    <View style={styles.cardActionItem}>
+                      <View style={{display: 'flex', flexDirection: 'row'}}>
+                        <View style={{paddingRight: 8, marginTop: 5}}>
+                          <BugIcon size={18} color={vars['accent-blue']} />
+                        </View>
+                        <Typography fontSize={16} fontWeight={600}>
+                          Lost card
+                        </Typography>
+                      </View>
+                      <TouchableOpacity style={{marginTop: 7}}>
+                        <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
+
                   {/* <View style={styles.cardActionsButtonMargin}> -- https://paymentworld.atlassian.net/browse/ZAZ-532 --
                     <Pressable>
                       <Button
@@ -599,18 +685,7 @@ export function Card({ navigation }: any) {
                       </Button>
                     </Pressable>
                   </View> */}
-                  <View style={styles.cardActionsButtonMargin}>
-                    <Pressable>
-                      <Button
-                        color="light-blue"
-                        onPress={requestShowCard}
-                        leftIcon={<EyeIcon color="blue" size={14} />}
-                      >
-                        Show Card
-                      </Button>
-                    </Pressable>
-                  </View>
-                  <View style={styles.cardActionsButtonMargin}>
+                  {/* <View style={styles.cardActionsButtonMargin}>
                     <Pressable>
                       <Button
                         color="light-pink"
@@ -623,8 +698,8 @@ export function Card({ navigation }: any) {
                         Lost Card
                       </Button>
                     </Pressable>
-                  </View>
-                  <View style={styles.cardActionsButtonMargin}>
+                  </View> */}
+                  {/* <View style={styles.cardActionsButtonMargin}>
                     <Pressable>
                       <Button
                         color="light-pink"
@@ -632,8 +707,8 @@ export function Card({ navigation }: any) {
                         onPress={() => {
                           setIsTerminatedCardShown(!isTerminatedCardShown);
                           setIsloading(prev => true);
-                          // handleSetSelectedCard(!isTerminatedCardShown ? cardData[0] : cardsActiveList[0]);
-                          // const getActiveCardOnly 
+                          handleSetSelectedCard(!isTerminatedCardShown ? cardData[0] : cardsActiveList[0]);
+                          const getActiveCardOnly 
                           setSelectedCard(cardsActiveList[0]);
                           setIsloading(prev => false);
                         }}
@@ -642,13 +717,9 @@ export function Card({ navigation }: any) {
                         {!isTerminatedCardShown ? "Show All Cards" : "Hide Lost Cards"}
                       </Button>
                     </Pressable>
-                  </View>
-                </ScrollView>
-              </View>
-              }
-            </View>
-          }
-          <View style={styles.cardTransactions}>
+                  </View> */}
+
+          {/* <View style={styles.cardTransactions}>
             <View>
               <Heading
                 icon={<TransactionIcon color="pink" size={18} />}
@@ -668,7 +739,6 @@ export function Card({ navigation }: any) {
             </View>
             <View>
               <Seperator backgroundColor={vars["grey"]} />
-              {/* start: Added by Aritos  */}
               <View>
                 {!!cardTransactionsData?.length ? (
                   <>
@@ -692,7 +762,6 @@ export function Card({ navigation }: any) {
                           Date
                         </Typography>
                         <TouchableOpacity
-                          // temp disabled sorting logic
                           onPress={() => {
                             setIsloading(!isLoading);
                             setSortByDate(!sortByDate);
@@ -767,7 +836,7 @@ export function Card({ navigation }: any) {
                     setEnrollmentStatus(false);
                   }}
                 />
-              )} */}
+              )}
               {isEnrollmentSuccess && (
                 <SuccessModal
                   isError={enrollmentCardStatus.isError}
@@ -782,7 +851,18 @@ export function Card({ navigation }: any) {
                 />
               )}
             </View>
-          </View>
+          </View> */}
+          <BottomSheet
+            ref={bottomSheetRef}
+            snapPoints={['60%']}
+            enablePanDownToClose={true}
+          >
+            <BottomSheetView>
+              <Text>
+                Hello
+              </Text>
+            </BottomSheetView>
+          </BottomSheet>
           <Spinner visible={isLoading} />
         </ScrollView>
       </View>

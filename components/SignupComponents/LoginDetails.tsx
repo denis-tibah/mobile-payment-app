@@ -2,7 +2,6 @@ import { useState, FC, useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigation } from "@react-navigation/native";
 import * as Linking from "expo-linking";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -17,10 +16,7 @@ import FormGroup from "../../components/FormGroup";
 import FixedBottomAction from "../../components/FixedBottomAction";
 import Button from "../../components/Button";
 import { SuccessModal } from "../SuccessModal/SuccessModal";
-import {
-  setLoginCredentials,
-  setRegistrationData,
-} from "../../redux/registration/registrationSlice";
+import { setRegistrationData } from "../../redux/registration/registrationSlice";
 import { useLoginCredentialsMutation } from "../../redux/registration/registrationSliceV2";
 import { loginCredentialsSchema } from "../../utils/formikSchema";
 import { AppDispatch } from "../../store";
@@ -33,11 +29,8 @@ interface ILoginDetails {
 }
 
 const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
-  const navigation = useNavigation();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isValidEmail, setIsValidEmail] = useState<boolean>(false);
   const [isChangeEmail, setIsChangeEmail] = useState<boolean>(false);
-  const [expoPushToken, setExpoPushToken] = useState<string>();
   const [openListForCountryCode, setOpenListForCountryCode] =
     useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<{
@@ -50,6 +43,117 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
 
   const dispatch = useDispatch<AppDispatch>();
   const registration = useSelector((state: any) => state.registration);
+
+  const [
+    loginCredentialsMutation,
+    {
+      isLoading: isLoadingLogin,
+      isError: isErrorLogin,
+      isSuccess: isSuccessLogin,
+      error: errorLogin,
+      data: dataLoginCredentials,
+    },
+  ] = useLoginCredentialsMutation();
+
+  const {
+    handleSubmit,
+    handleChange,
+    values,
+    touched,
+    errors,
+    handleBlur,
+    setValues,
+  } = useFormik({
+    initialValues: {
+      email: registration?.data?.email || "",
+      alternateEmail: "",
+      countryCode: registration?.data?.countryCode || "",
+      phoneNumber: registration?.data?.phoneNumber || "",
+    },
+    validationSchema: loginCredentialsSchema,
+    onSubmit: async ({ email, alternateEmail, phoneNumber, countryCode }) => {
+      const expoToken = await registerForPushNotificationsAsync(
+        alternateEmail ? alternateEmail : email
+      ).catch((error: any) => {
+        setStatusMessage({
+          header: "Error",
+          body: "Something went wrong with youre token",
+          isOpen: true,
+          isError: true,
+        });
+      });
+
+      if (expoToken) {
+        const reqData = {
+          email: alternateEmail ? alternateEmail : email,
+          phone_number: `${countryCode}${phoneNumber}`,
+          mobile: true,
+          expoToken,
+        };
+        loginCredentialsMutation(reqData);
+      } else {
+        setStatusMessage({
+          header: "Error",
+          body: "Something went wrong with youre token",
+          isOpen: true,
+          isError: true,
+        });
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (!isLoadingLogin && isSuccessLogin) {
+      if (dataLoginCredentials?.code === 200) {
+        setIsValidEmail(true);
+        dispatch(
+          setRegistrationData({
+            email: values?.alternateEmail
+              ? values?.alternateEmail
+              : values?.email,
+            phone_number: `${values?.countryCode}${values?.phoneNumber}`,
+            identifier: `${values?.countryCode}${values?.phoneNumber}`,
+          })
+        );
+      } else {
+        setStatusMessage({
+          header: `${dataLoginCredentials?.code}: Error`,
+          body: dataLoginCredentials?.message || `Something went wrong`,
+          isOpen: true,
+          isError: true,
+        });
+      }
+    }
+
+    if (!isLoadingLogin && isErrorLogin) {
+      setStatusMessage({
+        header: `${errorLogin?.data?.code}: Error`,
+        body: errorLogin?.data?.message || `Something went wrong`,
+        isOpen: true,
+        isError: true,
+      });
+    }
+  }, [
+    isLoadingLogin,
+    isSuccessLogin,
+    isErrorLogin,
+    dataLoginCredentials,
+    errorLogin,
+  ]);
+
+  useEffect(() => {
+    if (emailToken) {
+      dispatch(
+        setRegistrationData({
+          email: values?.alternateEmail
+            ? values?.alternateEmail
+            : values?.email,
+          phone_number: `${values?.countryCode}${values?.phoneNumber}`,
+          identifier: `${values?.countryCode}${values?.phoneNumber}`,
+        })
+      );
+    }
+  }, [emailToken]);
 
   const handleLink = (url: string): void => {
     const { queryParams } = Linking.parse(url);
@@ -81,10 +185,6 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
     };
   }, []);
 
-  useEffect(() => {
-    console.log("expotoken is ", expoPushToken);
-  }, [expoPushToken]);
-
   const onCloseModal = (): void => {
     setStatusMessage({
       header: "",
@@ -94,142 +194,9 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
     });
   };
 
-  const {
-    handleSubmit,
-    handleChange,
-    values,
-    touched,
-    errors,
-    handleBlur,
-    setValues,
-  } = useFormik({
-    initialValues: {
-      email: registration?.data?.email || "",
-      alternateEmail: "",
-      countryCode: registration?.data?.countryCode || "",
-      phoneNumber: registration?.data?.phoneNumber || "",
-    },
-    validationSchema: loginCredentialsSchema,
-    onSubmit: async ({ email, alternateEmail, phoneNumber, countryCode }) => {
-      // console.log("hit here 1 emailToken ", emailToken);
-
-      // if (emailToken) {
-      //setIsLoading(true);
-      //added by Aristos
-      //generate expo token
-      // registerForPushNotificationsRegistrationAsync(
-      /* registerForPushNotificationsAsync(
-        alternateEmail ? alternateEmail : email,
-        ""
-      ).then((token: any) => {
-        dispatch(
-          setLoginCredentials({
-            email: alternateEmail ? alternateEmail : email,
-            phone_number: `${countryCode}${phoneNumber}`,
-            mobile: true,
-            expoToken: token,
-          })
-        )
-          .unwrap()
-          .then((payload: any) => {
-            console.log(
-              "🚀 ~ file: LoginDetails.tsx:125 ~ .then ~ payload:",
-              payload
-            );
-            //We need to ask Santiago to chanage response message to generic one or an id value
-            if (payload?.data?.code === 200) {
-              setIsValidEmail(true);
-            } else if (
-              payload?.data?.code === 400 ||
-              payload?.data?.code === 500
-            ) {
-              setStatusMessage({
-                header: "Error",
-                body: payload?.data?.message,
-                isOpen: true,
-                isError: true,
-              });
-              setIsValidEmail(false);
-            } else {
-              setStatusMessage({
-                header: "Error",
-                body: "Something went wrong",
-                isOpen: true,
-                isError: true,
-              });
-              setIsValidEmail(false);
-            }
-            dispatch(
-              setRegistrationData({
-                email: alternateEmail ? alternateEmail : email,
-                phone_number: `${countryCode}${phoneNumber}`,
-                identifier: `${countryCode}${phoneNumber}`,
-              })
-            );
-            setIsLoading(false);
-          })
-          .catch((error: any) => {
-            if (error) {
-              setStatusMessage({
-                header: "Error",
-                body: "Something went wrong",
-                isOpen: true,
-                isError: true,
-              });
-              setIsValidEmail(false);
-            }
-            setIsLoading(false);
-          });
-      }); */
-
-      const expoToken = await registerForPushNotificationsAsync(
-        alternateEmail ? alternateEmail : email
-      ).catch((error: any) => {
-        setStatusMessage({
-          header: "Error",
-          body: "Something went wrong with youre token",
-          isOpen: true,
-          isError: true,
-        });
-      });
-      if (expoToken) {
-        console.log(
-          "🚀 ~ file: LoginDetails.tsx:196 ~ onSubmit: ~ expoToken:",
-          expoToken
-        );
-      } else {
-        setStatusMessage({
-          header: "Error",
-          body: "Something went wrong with youre token",
-          isOpen: true,
-          isError: true,
-        });
-      }
-
-      /* if (emailToken) {
-        dispatch(
-          setRegistrationData({
-            email: alternateEmail ? alternateEmail : email,
-            phone_number: `${countryCode}${phoneNumber}`,
-            identifier: `${countryCode}${phoneNumber}`,
-          })
-        );
-        return;
-      }
-
-      dispatch(
-        setRegistrationData({
-          email: alternateEmail ? alternateEmail : email,
-          phone_number: `${countryCode}${phoneNumber}`,
-          identifier: `${countryCode}${phoneNumber}`,
-        })
-      ); */
-    },
-  });
-
   return (
     <View style={styles.card}>
-      <Spinner visible={isLoading} />
+      <Spinner visible={isLoadingLogin} />
       <SuccessModal
         isOpen={statusMessage?.isOpen}
         title={statusMessage.header}
@@ -358,13 +325,14 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
                         onBlur={handleBlur("alternateEmail")}
                         value={values.alternateEmail}
                         placeholder="Email Address"
+                        iconColor="blue"
                         icon={<EmailIcon />}
                       />
                     </FormGroup>
-                    <View style={{ marginLeft: 20 }}>
+                    <View style={{ marginLeft: 12 }}>
                       <Button
-                        loading={isLoading}
-                        disabled={isLoading}
+                        loading={isLoadingLogin}
+                        disabled={isLoadingLogin}
                         color="light-blue"
                         onPress={handleSubmit}
                         rightIcon={<EmailIcon size={14} color="blue" />}
@@ -378,23 +346,16 @@ const LoginDetails: FC<ILoginDetails> = ({ handleNextStep }) => {
               ) : null}
             </View>
           ) : null}
-
           <FixedBottomAction rounded>
             <Button
-              loading={isLoading}
-              disabled={isLoading}
+              loading={isLoadingLogin}
+              disabled={isLoadingLogin}
               color="light-pink"
               onPress={handleSubmit}
               leftIcon={<ArrowRightLong size={14} />}
             >
-              {isLoading ? "Authenticating..." : "Continue"}
+              {isLoadingLogin ? "Authenticating..." : "Continue"}
             </Button>
-            {/* <Btn
-              onPress={() => {
-                navigation.navigate("emailVerified", { isOpen: true });
-              }}
-              title="notif"
-            /> */}
           </FixedBottomAction>
         </View>
       </View>

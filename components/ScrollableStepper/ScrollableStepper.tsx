@@ -49,12 +49,12 @@ const ScrollableStepper: FC<IScrollableStepper> = ({
                     coordinate[index] = layout.x;
                     // console.log(layout.x);
                   }}
-                  onPress={() => {
+                  /* onPress={() => {
                     refScrollView.current.scrollTo({
                       x: coordinate[selectedNavIndex] - 50,
                     });
                     handleSelecNavIndex(index);
-                  }}
+                  }} */
                 >
                   <View style={styles.scrollableItems}>
                     <View

@@ -1,4 +1,3 @@
-// a list of slide toggle for atm withdrawals, online payment, chip & pin transactions, mobile wallets, contactless transactions, magnetic stripe transactions
 import React, { useState } from "react";
 import { View, Text, Switch } from "react-native";
 import { styles } from "../styles";

@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Text,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as Clipboard from "expo-clipboard";
@@ -19,7 +20,6 @@ import FreezeIcon from "../../assets/icons/Freeze";
 import EyeIcon from "../../assets/icons/Eye";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
 import {
-  getCardTransactions,
   getCards,
   sendSmsShowCardVerification,
   setCardAsFrozen,
@@ -29,7 +29,6 @@ import {
   enrollforCardScheme,
   setPrimaryCardID,
 } from "../../redux/card/cardSlice";
-import { getTodaysDate } from "../../utils/dates";
 import {
   getUserActiveCards,
 } from "../../utils/helpers";
@@ -45,7 +44,6 @@ import { ICardDetails } from "../../models/interface";
 import vars from "../../styles/vars";
 import { useDebounce } from "usehooks-ts";
 import { CardTransaction } from "../../models/Transactions";
-import { arrayChecker } from "../../utils/helpers";
 import TerminatingCardModal from "./TerminatingCardModal";
 import { Divider } from "react-native-paper";
 import ArrowRight from "../../assets/icons/ArrowRight";
@@ -54,6 +52,7 @@ import { PinNumberCode } from "../../assets/icons/PinNumber";
 import { BugIcon } from "../../assets/icons/BugIcon";
 import BottomSheet from "../../components/BottomSheet";
 import ManagePaymentMethod from "./Components/ManagePayment";
+import { PinCodeInputBoxes } from "../../components/FormGroup/FormGroup";
 
 const DEFAULT_CARD_ENROLLMENT_STATUS = {
   title: "",
@@ -78,15 +77,12 @@ export function Card({ navigation }: any) {
   const [showCardOtpModal, setShowCardOtpModal] = useState(false);
   const [showGetCardModal, setShowGetCardModal] = useState(false);
   const [showCardOtpLoading, setShowCardOtpLoading] = useState(false);
-  const [storedIntervalId, setStoredIntervalId] = useState<any>(null);
-  const [sortByDate, setSortByDate] = useState<boolean>(false);
-  const debounceSortByDate = useDebounce<boolean>(sortByDate, 300);
-  const [cardTransactionsData, setCardTransactionsData] = useState<
-    CardTransaction[]
-  >([]);
   const [selectedCard, setSelectedCard] = useState<any>(null);
   const [isLoading, setIsloading] = useState<boolean>(false);
   const [isManagePaymentMethod, setIsManagePaymentMethod] = useState<boolean>(false);
+  const [isShowPinActionPressed, setIsShowPinActionPressed] = useState<boolean>(false);
+  const [isLostPinActionPressed, setIsLostPinActionPressed] = useState<boolean>(false);
+  const [showCardDetailOTP, setShowCardDetailOTP] = useState<number>(0);
   const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
   const [isEnrollingCard, setIsEnrollingCard] = useState<boolean>(false);
   const [enrollmentCardStatus, setEnrollmentCardStatus] = useState<{
@@ -96,6 +92,7 @@ export function Card({ navigation }: any) {
   }>(DEFAULT_CARD_ENROLLMENT_STATUS);
   const shownCardsOnCarousel = isTerminatedCardShown ? cardsActiveList ? [...cardsActiveList, ...cardData] : [] : cardsActiveList ? cardsActiveList : [];
   const isShowingCardDetails = !!cardDetails?.cardImage;
+
   const handleGetCards = async () => {
     try {
       await dispatch(getCards() as any);
@@ -103,39 +100,6 @@ export function Card({ navigation }: any) {
       console.log({ error });
     } finally {
       setIsloading(false);
-    }
-  };
-
-  // TODO: Optimization task - remove dot then and use redux state instead
-  const handleGetCardsTransactions = async (_cardDetails?: any) => {
-    try {
-      // console.log("fetchCardData", _cardDetails);
-      if (userID && (_cardDetails || selectedCard)) {
-        await dispatch<any>(
-          getCardTransactions({
-            account_id: userID,
-            from_date: "2022-06-02",
-            to_date: getTodaysDate(),
-            type: "ALL",
-            card_id: _cardDetails ? _cardDetails.cardreferenceId : selectedCard?.cardreferenceId,
-          })
-        )
-        .unwrap()
-        .then((res: any) => {
-          //added this modificaton because Response has changed
-          // setCardTransactionsData(res.data);
-          if (res && arrayChecker(res)) {
-            setCardTransactionsData(res);
-          } else {
-            //clear old data
-            setCardTransactionsData([]);
-          }
-        });
-      }
-    } catch (error) {
-      console.log({ error });
-    } finally {
-      setIsloading(prev => false);
     }
   };
 
@@ -166,7 +130,7 @@ export function Card({ navigation }: any) {
     setCardPin("");
     setCardDetails({});
     setRemainingTime(30);
-    clearInterval(storedIntervalId);
+    // clearInterval(storedIntervalId);
   };
 
   const requestShowCard = async () => {
@@ -254,7 +218,6 @@ export function Card({ navigation }: any) {
         });
       }
     } else {
-      let intervalId: any;
       setShowCardOtpLoading(true);
       setIsTerminatedCardShown(false);
 
@@ -269,46 +232,17 @@ export function Card({ navigation }: any) {
       if (payload) {
         setCardPin("");
         setRemainingTime(30);
-        clearInterval(storedIntervalId);
         setCardDetails({
           cardreferenceId: cardsActiveList[0]?.cardreferenceId,
           card: cardsActiveList[0],
           cardImage: payload.cardImageBase64,
-          //Added by Aristos
-          // cardImage:image,
           cardNumber: payload?.cardNumber,
         });
-        // let remainingTimer = 30;  --- this causes rerendering the app for every second and causes the app to freeze. should be removed
-        // intervalId = setInterval(() => {
-        //   setStoredIntervalId(intervalId);
-        //   if (remainingTimer <= 0) return resetCard();
-        //   setRemainingTime(remainingTimer);
-        //   remainingTimer--;
-        // }, 1000);
       }
       setShowCardOtpLoading(false);
       setShowCardOtpModal(false);
       await delayCode(100);
     }
-  };
-
-  const enrollCard = async () => {
-    // try {
-    //   await dispatch(sendSmsShowCardVerification({
-    //     type: "trusted",
-    //   }) as any);
-      setIsEnrollingCard(true);
-      setShowCardOtpModal(true);
-    // } catch (error: any) {
-    //   console.log("Something went wrong with otp: ", error);
-    //   setEnrollmentCardStatus({
-    //     title: "Card Enrollment",
-    //     text: `${error?.code}: ${error?.message}`,
-    //     isError: true,
-    //   });
-    // } finally {
-    //   setIsloading(false);
-    // }
   };
 
   // TODO: target each card when doing action on each card, right now it only targets the first card
@@ -346,7 +280,7 @@ export function Card({ navigation }: any) {
         Alert.alert("Error", "Something went wrong");
       } finally {
         setIsloading(false);
-        handleGetCardsTransactions();
+        // handleGetCardsTransactions();
         setTerminatedCardModal(false);
         await dispatch<any>(getCards());
       }
@@ -357,37 +291,41 @@ export function Card({ navigation }: any) {
     await Clipboard.setStringAsync(cardDetails?.cardNumber || "");
   };
 
-  const sortCardTransactionsByDate = (sortState: boolean) => {
-    const sortedTransactions = [...cardTransactionsData].sort(
-      (a: CardTransaction, b: CardTransaction) => {
-        const dateA = new Date(a.receiptDate);
-        const dateB = new Date(b.receiptDate);
-        return sortState
-          ? dateA.getTime() - dateB.getTime()
-          : dateB.getTime() - dateA.getTime();
-      }
-    );
-    setCardTransactionsData(sortedTransactions);
-    setIsloading(false);
-  };
+  // const sortCardTransactionsByDate = (sortState: boolean) => {
+  //   const sortedTransactions = [...cardTransactionsData].sort(
+  //     (a: CardTransaction, b: CardTransaction) => {
+  //       const dateA = new Date(a.receiptDate);
+  //       const dateB = new Date(b.receiptDate);
+  //       return sortState
+  //         ? dateA.getTime() - dateB.getTime()
+  //         : dateB.getTime() - dateA.getTime();
+  //     }
+  //   );
+  //   setCardTransactionsData(sortedTransactions);
+  //   setIsloading(false);
+  // };
 
   useEffect(() => {
-    (() => {
+    (async () => {
       if (!selectedCard && cardsActiveList.length > 0) {
         setPrimaryCardID(cardsActiveList[0]?.cardreferenceId);
         setSelectedCard(shownCardsOnCarousel[0]);
-        handleGetCardsTransactions(shownCardsOnCarousel[0]);
       }
-      if (cardsActiveList.length === 0 && cardData.length > 0 || cardData?.code === "500") {
-        enrollCard();
+      if (cardsActiveList.length === 0 && cardData.length > 0) {
+        try {
+          await dispatch<any>(
+            sendSmsShowCardVerification({
+              type: "trusted",
+            }))
+          setIsEnrollingCard(true);
+          setShowCardOtpModal(true);
+        } catch(error) {
+          console.log({error});
+        }
       }
       setSelectedCard(shownCardsOnCarousel[0]);
     })();
   }, [cardData]);
-
-  useEffect(() => {
-    sortCardTransactionsByDate(debounceSortByDate);
-  }, [debounceSortByDate]);
 
   useEffect(() => {
     let interval: any;
@@ -412,10 +350,11 @@ export function Card({ navigation }: any) {
       <GetCardModal
         onClose={() => setShowGetCardModal(false)}
         isModalVisible={showGetCardModal}
-        onGetVirtualCard={() => {
+        onGetVirtualCard={({currency}: any) => {
           setShowGetCardModal(false);
-          // setIsloading(true);
-          enrollCard();
+          setIsEnrollingCard(true);
+          setShowCardOtpModal(true);
+  
           }
         }
       />
@@ -485,7 +424,6 @@ export function Card({ navigation }: any) {
                 lockScrollWhileSnapping={false}
                 // swipeThreshold={10}
                 onSnapToItem={(index) => {
-                  handleGetCardsTransactions(shownCardsOnCarousel[index]);
                   setSelectedCard(shownCardsOnCarousel[index]);
                 }}
               />
@@ -543,7 +481,7 @@ export function Card({ navigation }: any) {
                     See Card Transactions
                   </Typography>
                 </View>
-                <TouchableOpacity style={{marginTop: 7}} onPress={() => console.log('press')}>
+                <TouchableOpacity style={{marginTop: 7}} onPress={() => navigation.navigate('Transactions')}>
                   <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
                 </TouchableOpacity>
               </View>
@@ -578,7 +516,7 @@ export function Card({ navigation }: any) {
                     Show Pin
                   </Typography>
                 </View>
-                <TouchableOpacity style={{marginTop: 7}}>
+                <TouchableOpacity style={{marginTop: 7}} onPress={() => setIsShowPinActionPressed(true)}>
                   <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
                 </TouchableOpacity>
               </View>
@@ -594,7 +532,7 @@ export function Card({ navigation }: any) {
                     Lost card
                   </Typography>
                 </View>
-                <TouchableOpacity style={{marginTop: 7}}>
+                <TouchableOpacity style={{marginTop: 7}} onPress={() => setIsLostPinActionPressed(true)}>
                   <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
                 </TouchableOpacity>
               </View>
@@ -617,6 +555,85 @@ export function Card({ navigation }: any) {
             >
               Close
             </Button>
+          </BottomSheet>
+          <BottomSheet
+            isVisible={isShowPinActionPressed}
+            onClose={() => setIsShowPinActionPressed(false)}
+          >
+            <Typography fontSize={16} fontWeight={600}>
+              Show Card Pin Number
+            </Typography>
+            <Typography fontSize={12} fontWeight={400} color={"#696F7A"}>
+              You will receive an sms to your mobile device. 
+              Please enter this code below.
+            </Typography>
+            <Divider style={{marginVertical: 15, paddingHorizontal: 15}} />
+            <View style={{
+                width: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+                paddingVertical: 10,
+                marginBottom: 20,
+              }}>
+              <PinCodeInputBoxes
+                fieldCount={6}
+                onChange={(otp: number) => setShowCardDetailOTP(otp)}
+              />
+              <TouchableOpacity >
+                <Text style={{
+                  color: vars['accent-pink'],
+                  fontSize: 14,
+                  fontWeight: 500,
+                  marginTop: 10,
+                } as any}>
+                  Did not get a verification code?
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <Divider style={{marginVertical: 15, paddingHorizontal: 15}} />
+            <Button 
+              onPress={() => setIsShowPinActionPressed(false)}
+              style={{color: '#fff'}}
+              color="light-pink"
+              leftIcon={<EyeIcon color="pink" size={14} />}
+            >
+              Show Pin Number
+            </Button>
+          </BottomSheet>
+          <BottomSheet
+            isVisible={isLostPinActionPressed}
+            onClose={() => setIsLostPinActionPressed(false)}
+          >
+            <Typography fontSize={16} fontWeight={600}>
+              Terminate This Card?
+            </Typography>
+            <Typography fontSize={12} fontWeight={400} color={"#696F7A"}>
+              You will receive an sms to your mobile device. 
+              Please enter this code below.
+            </Typography>
+            <Divider style={{marginVertical: 15, paddingHorizontal: 15}} />
+            <Typography fontSize={16} fontWeight={400} color={"#000"}>
+              Are you sure you want to terminate this card?
+            </Typography>
+            <Divider style={{marginVertical: 15, paddingHorizontal: 15}} />
+            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Button 
+                onPress={() => setIsLostPinActionPressed(false)}
+                style={{color: '#fff', width: 140}}
+                color="light-pink"
+                leftIcon={<EyeIcon color="pink" size={14} />}
+              >
+                Yes
+              </Button>
+              <Button 
+                onPress={() => setIsLostPinActionPressed(false)}
+                style={{color: '#fff', width: 140}}
+                color="light-pink"
+                leftIcon={<EyeIcon color="pink" size={14} />}
+              >
+                No
+              </Button>
+            </View>
           </BottomSheet>
           <Spinner visible={isLoading} />
         </ScrollView>

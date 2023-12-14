@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-
-import PinIcon from "../../assets/icons/Pin";
+import { ImageBackground, StyleSheet, Text, View } from "react-native";
+import ZazooVirualCard from "../../assets/images/card_background_images/virtual_card.png";
+// import ZazooVirualCard from "../../assets/images/zazoo-virtual-card.png";
+import CardIcon from "../../assets/icons/Card";
+import { AntDesign } from '@expo/vector-icons'; 
 import { Modal } from "../../components/Modal/Modal";
 import Button from "../../components/Button";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,19 +21,18 @@ import { delayCode } from "../../utils/delay";
 import { getAccountDetails } from "../../redux/account/accountSlice";
 import { RadioButton } from "react-native-paper";
 import { arrayChecker } from "../../utils/helpers";
+import vars from "../../styles/vars";
 
 interface GerCardModalProps {
   onClose: () => void;
-  hasPhysicalCard?: boolean;
-  hasVirtualCard?: boolean;
+  isModalVisible: boolean;
   onGetVirtualCard?: () => void;
 }
 
 export const GetCardModal = ({
   onClose,
-  hasPhysicalCard,
-  hasVirtualCard,
-  onGetVirtualCard
+  onGetVirtualCard,
+  isModalVisible
 }: GerCardModalProps) => {
   const dispatch = useDispatch();
   const [getCardSuccessResponse, setGetCardSuccessResponse] = useState(false);
@@ -56,10 +57,6 @@ export const GetCardModal = ({
 
   const [open, setOpen] = useState(false);
   const [openCurrency, setOpenCurrency] = useState(false);
-
-  // console.log('******cardData**********',cardData[0].type);
-  // {console.log('do we have any cards',cardData?.type )}
-  // console.log('******showChangeRequest**********',showChangeRequest);
 
   useEffect(() => {
     dispatch(getProfile() as any);
@@ -95,300 +92,115 @@ export const GetCardModal = ({
     }
   };
 
-  const handleOrderCard = async ({ code }: any) => {
-    try {
-      setLoading(true);
-      const payload = await dispatch(
-        orderCard({
-          accountUuid: accountDetails?.info?.id,
-          firstname: profile?.data?.first_name,
-          lastname: profile?.data?.last_name,
-          email: profile?.data?.email,
-          cardType: cardType,
-          currency: currency,
-          street: profile?.data?.address_line_1,
-          subStreet: profile?.data?.address_line_2,
-          postCode: profile?.data?.postal_code,
-          state: profile?.data?.state,
-          town: profile?.data?.town,
-          country: profile?.data?.country,
-          otp: code,
-        }) as any
-      ).unwrap();
+  // const handleOrderCard = async ({ code }: any) => {
+  //   try {
+  //     setLoading(true);
+  //     const payload = await dispatch(
+  //       orderCard({
+  //         accountUuid: accountDetails?.info?.id,
+  //         firstname: profile?.data?.first_name,
+  //         lastname: profile?.data?.last_name,
+  //         email: profile?.data?.email,
+  //         cardType: cardType,
+  //         currency: currency,
+  //         street: profile?.data?.address_line_1,
+  //         subStreet: profile?.data?.address_line_2,
+  //         postCode: profile?.data?.postal_code,
+  //         state: profile?.data?.state,
+  //         town: profile?.data?.town,
+  //         country: profile?.data?.country,
+  //         otp: code,
+  //       }) as any
+  //     ).unwrap();
+  //     if (payload) {
+  //       if (payload.code === 200 || payload.code === "200") {
+  //         setGetCardSuccessResponse(true);
+  //         dispatch(getCards() as any);
+  //       } else {
+  //         setGetCardErrorResponse(true);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log({ error });
+  //     setGetCardErrorResponse(true);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-      if (payload) {
-        if (payload.code === 200 || payload.code === "200") {
-          setGetCardSuccessResponse(true);
-          dispatch(getCards() as any);
-        } else {
-          setGetCardErrorResponse(true);
-        }
-      }
-    } catch (error) {
-      console.log({ error });
-      setGetCardErrorResponse(true);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const handleSubmitOTP = async ({ code }: any) => {
+  //   setShowCodeModal(false);
+  //   await delayCode(100);
+  //   setShowCardModal(true);
+  //   handleOrderCard({ code });
+  // };
 
-  const handleSubmitOTP = async ({ code }: any) => {
-    setShowCodeModal(false);
-    await delayCode(100);
-    setShowCardModal(true);
-    handleOrderCard({ code });
-  };
+  // const getCardOptions = () => {
+  //   if (!hasPhysicalCard && !hasVirtualCard)
+  //     return [
+  //       { label: "Virtual", value: "V" },
+  //       { label: "Physical", value: "P" },
+  //     ];
+  //   if (hasPhysicalCard && !hasVirtualCard)
+  //     return [{ label: "Virtual", value: "V" }];
+  //   if (!hasPhysicalCard && hasVirtualCard)
+  //     return [{ label: "Physical", value: "P" }];
 
-  const getCardOptions = () => {
-    if (!hasPhysicalCard && !hasVirtualCard)
-      return [
-        { label: "Virtual", value: "V" },
-        { label: "Physical", value: "P" },
-      ];
-    if (hasPhysicalCard && !hasVirtualCard)
-      return [{ label: "Virtual", value: "V" }];
-    if (!hasPhysicalCard && hasVirtualCard)
-      return [{ label: "Physical", value: "P" }];
-
-    return [];
-  };
-
-  return (
-    <>
-      <View>
-        {!!showCardModal && (
-          <Modal
-            isOpen
-            footer={
-              <View style={styles.buttonContainer}>
-                {!getCardSuccessResponse && !getCardErrorResponse && (
-                  <Button
-                    leftIcon={
-                      <PinIcon style={styles.icon} color="pink" size={18} />
-                    }
-                    disabled={loading}
-                    loading={loading}
-                    color="light-pink"
-                    onPress={initiateOrderCard}
-                  >
-                    Order Card
-                  </Button>
-                )}
-                <Button color="grey" onPress={handleCloseGetCardModal}>
-                  Close
-                </Button>
-              </View>
-            }
-            renderHeader={() => (
-              <View style={styles.headerTitleBox}>
-                <Text style={styles.headerTitle}>Order Card</Text>
-              </View>
-            )}
-          >
-            <View style={styles.container}>
-              {!getCardSuccessResponse && !getCardErrorResponse && (
-                <View
-                  style={{
-                    zIndex: 1,
-                  }}
-                >
-                  <View style={styles.cardTypeCombo}>
-                    <RadioButton
-                      value="V"
-                      status={cardType === "V" ? "checked" : "unchecked"}
-                      onPress={() => setCardType("V")}
-                      color="#E7038E"
-                    />
-                    <Text style={styles.cardTypeText}>Virtual Card</Text>
-                  </View>
-                  <DropDownPicker
-                    placeholder="Currency"
-                    style={styles.dropdownCurrency}
-                    open={openCurrency}
-                    value={currency || null}
-                    items={[{ label: "EUR", value: "EUR" }]}
-                    setOpen={setOpenCurrency}
-                    setValue={setCurrency}
-                    listMode="SCROLLVIEW"
-                    dropDownContainerStyle={styles.dropdownContainer}
-                    zIndex={1}
-                  />
-                </View>
-              )}
-
-              {!getCardSuccessResponse &&
-                !getCardErrorResponse &&
-                cardType === "P" && (
-                  <View style={styles.physicalCardAddress}>
-                    <Address
-                      compact
-                      profileData={profile?.data}
-                      showChangeRequest={showChangeRequest}
-                    />
-                  </View>
-                )}
-
-              {!getCardSuccessResponse &&
-                getCardErrorResponse &&
-                getCardSuccessResponse && <Text>Your card has been ordered</Text>}
-              {!getCardSuccessResponse && getCardErrorResponse && (
-                <Text>Something went wrong please try again</Text>
-              )}
-            </View>
-          </Modal>
-        )}
-      </View>
-    </>
-  );
-
-  // This component is not used anymore, so I commented it out. 10/24/2023 - arjay
-  // This component may be used in the future, so I commented it out. 10/24/2023 - arjay
+  //   return [];
+  // };
 
   return (
-    <View>
-      {!!showCodeModal && !showCardModal && (
-        <CodeModal
-          confirmButtonText="Order Card"
-          title="Order Card"
-          subtitle="You will receive an sms to your mobile device. Please enter this code below."
-          isOpen
-          loading={loading}
-          onSubmit={handleSubmitOTP}
-          onCancel={() => setShowCodeModal(false)}
-        />
-      )}
-      {!!showCardModal && !showCodeModal && (
-        <Modal
-          isOpen
-          footer={
-            <View style={styles.buttonContainer}>
-              {!getCardSuccessResponse && !getCardErrorResponse && (
-                <Button
-                  leftIcon={
-                    <PinIcon style={styles.icon} color="pink" size={18} />
-                  }
-                  disabled={loading}
-                  loading={loading}
-                  color="light-pink"
-                  onPress={initiateOrderCard}
-                >
-                  Order Card
-                </Button>
-              )}
-              <Button color="grey" onPress={handleCloseGetCardModal}>
-                Close
-              </Button>
-            </View>
-          }
-          renderHeader={() => (
-            <View style={styles.headerTitleBox}>
-              <Text style={styles.headerTitle}>Order Card</Text>
-            </View>
-          )}
-        >
-          <View style={styles.container}>
-            {!getCardSuccessResponse && !getCardErrorResponse && (
-              <View
-                style={{
-                  zIndex: 1,
-                }}
-              >
-                {/* <DropDownPicker
-                  placeholder="Card Type"
-                  style={styles.dropdownType}
-                  open={open}
-                  value={cardType || null}
-                  items={getCardOptions()}
-                  setOpen={setOpen}
-                  setValue={setCardType}
-                  listMode="SCROLLVIEW"
-                  dropDownContainerStyle={styles.dropdownContainer}
-                  zIndex={2}
-                /> */}
-
-                {/* only show card that has not been ordered yet--added by Aristos  19/06/2023        */}
-                {/* if we do not have any cards, show both options and enrol for a card by calling showcardregistrationfinxpV2 */}
-                {!arrayChecker(cardData) ? (
-                  <View style={styles.cardTypeCombo}>
-                    {/* <RadioButton
-                      value="P"
-                      status={cardType === "P" ? "checked" : "unchecked"}
-                      onPress={() => setCardType("P")}
-                      color="#E7038E"
-                    />
-                    <Text style={styles.cardTypeText}>Physical Card</Text> */}
-
-                    <RadioButton
-                      value="V"
-                      status={cardType === "V" ? "checked" : "unchecked"}
-                      onPress={() => setCardType("V")}
-                      color="#E7038E"
-                    />
-                    <Text style={styles.cardTypeText}>Virtual Card</Text>
-                  </View>
-                ) : cardData.some((_cardData: CardData) => _cardData.type === VirtualCard ) ? (
-                  <>
-                    { /*<View style={styles.cardTypeCombo}>
-                      <RadioButton
-                        value="P"
-                        status={cardType === "P" ? "checked" : "unchecked"}
-                        onPress={() => setCardType("P")}
-                        color="#E7038E"
-                      />
-                      <Text style={styles.cardTypeText}>Physical Card</Text>
-                    </View>
-                  */}
-                  </>
-                ) : (
-                  <View style={styles.cardTypeCombo}>
-                    <RadioButton
-                      value="V"
-                      status={cardType === "V" ? "checked" : "unchecked"}
-                      onPress={() => setCardType("V")}
-                      color="#E7038E"
-                    />
-                    <Text style={styles.cardTypeText}>Virtual Card</Text>
-                  </View>
-                )}
-                { !cardData.some((_cardData: CardData) => _cardData.type === VirtualCard ) && !cardData.some((_cardData: CardData) => _cardData.type === "P" ) && (
-                    <DropDownPicker
-                    placeholder="Currency"
-                    style={styles.dropdownCurrency}
-                    open={openCurrency}
-                    value={currency || null}
-                    items={[{ label: "EUR", value: "EUR" }]}
-                    setOpen={setOpenCurrency}
-                    setValue={setCurrency}
-                    listMode="SCROLLVIEW"
-                    dropDownContainerStyle={styles.dropdownContainer}
-                    zIndex={1}
-                  />
-                )}
-              </View>
-            )}
-
-            {!getCardSuccessResponse &&
-              !getCardErrorResponse &&
-              cardType === "P" && (
-                <View style={styles.physicalCardAddress}>
-                  <Address
-                    compact
-                    profileData={profile?.data}
-                    showChangeRequest={showChangeRequest}
-                  />
-                </View>
-              )}
-
-            {!getCardSuccessResponse &&
-              getCardErrorResponse &&
-              getCardSuccessResponse && <Text>Your card has been ordered</Text>}
-            {!getCardSuccessResponse && getCardErrorResponse && (
-              <Text>Something went wrong please try again</Text>
-            )}
+      <Modal
+        isOpen={isModalVisible}
+        onClose={handleCloseGetCardModal}
+        onRequestClose={handleCloseGetCardModal}
+        footer={
+          <View style={styles.buttonContainer}>
+            <Button
+              leftIcon={
+                <AntDesign name="pluscircleo" size={18} color={vars['accent-blue']} />
+              }
+              style={{ width: '100%' }}
+              disabled={loading}
+              loading={loading}
+              color="light-blue"
+              onPress={() => {
+                initiateOrderCard();
+              }}
+            >
+              Create now
+            </Button>
           </View>
-        </Modal>
-      )}
-    </View>
+        }
+        renderHeader={() => (
+          <View style={styles.headerTitleBox}>
+            <Text style={styles.headerTitle}>
+            <CardIcon size={18} color="pink" />
+              {" "}
+              My Card</Text>
+          </View>
+        )}
+      >
+      <ImageBackground
+        resizeMode="contain"
+        imageStyle={{ borderRadius: 8, height: 225, width: 340 }}
+        source={ZazooVirualCard}
+        style={
+          {
+            height: 225,
+            width: 340,
+            borderRadius: 70,
+            justifyContent: "center",
+            alignItems: "center",
+          }
+        }
+        >
+          <Text style={{color: '#fff', fontSize: 17, lineHeight: 22}}>
+            This could be your virtual card
+          </Text>
+      </ImageBackground>
+      </Modal>
+
   );
 };
 
@@ -430,7 +242,7 @@ const styles = StyleSheet.create<any>({
     display: "flex",
     alignItems: "center",
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "center",
   },
   headerTitleBox: {
     backgroundColor: "white",

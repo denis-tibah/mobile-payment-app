@@ -33,13 +33,14 @@ export const CardView = ({
   cardDetails,
 }: CardViewProps) => {
   if (pin) return <PinCard card={card} pin={pin} timer={timer} />;
-  if (card?.frozenYN === "Y")
+  if (card?.frozenYN === "Y") {
     return (
       <FreezeCard
         card={card}
         loading={freezeLoading}
       />
     );
+  }
 
   if (cardDetails.cardImage) {
     return <TimerCard timer={timer} card={cardDetails.cardImage} />;

@@ -69,28 +69,18 @@ export const BottomSheet: React.FC<Props> = ({
   };
 
   return (
-    <Animatable.View
-      ref={bottomSheetRef}
-      style={[
-        styles.bottomSheet,
-        hasNoHeaderPadding && styles.hasNoHeaderPadding,
-        { display: isVisible ? "flex" : "none" },
-      ]}
-      animation={isVisible ? "slideInUp" : "slideOutDown"}
-      duration={300}
-      onAnimationEnd={handleAnimationEnd}
-      {...panResponder.panHandlers}
-    >
-      <View style={styles.contentContainer}>
-        <View style={{}} />
-        {children}
-        {/* <TouchableOpacity onPress={handleClose}
-            style={styles.closeButton}
-          >
-            <Text>Close</Text>
-          </TouchableOpacity> */}
-      </View>
-    </Animatable.View>
+      <Animatable.View
+        ref={bottomSheetRef}
+        style={[styles.bottomSheet, { display: isVisible ? 'flex' : 'none' }]}
+        animation={isVisible ? 'slideInUp' : 'slideOutDown'}
+        duration={300}
+        onAnimationEnd={handleAnimationEnd}
+        {...panResponder.panHandlers}
+      >
+        <View style={styles.contentContainer}>
+          {children}
+        </View>
+      </Animatable.View>
   );
 };
 

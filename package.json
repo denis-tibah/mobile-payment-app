@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@expo/webpack-config": "^18.0.3",
-    "@gorhom/bottom-sheet": "^4",
     "@react-native-async-storage/async-storage": "1.17.11",
     "@react-native-community/checkbox": "^0.5.16",
     "@react-native-community/datetimepicker": "6.7.3",
@@ -98,5 +97,9 @@
     "react-native-dotenv": "^3.4.8",
     "typescript": "^4.9.4"
   },
-  "private": true
+  "private": true,
+  "resolutions": {
+    "@types/react": "18.0.6",
+    "@types/react-native": "0.72.2"
+  }
 }

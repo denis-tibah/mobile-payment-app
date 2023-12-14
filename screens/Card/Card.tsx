@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   Pressable,
   RefreshControl,
@@ -6,34 +6,24 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  Text,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { AntDesign, Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
 import Button from "../../components/Button";
 import { styles } from "./styles";
-// import TransactionItem from "../../components/TransactionItem";
 import Typography from "../../components/Typography";
 import CardIcon from "../../assets/icons/Card";
-import AddIcon from "../../assets/icons/Add";
 import FreezeIcon from "../../assets/icons/Freeze";
-/* import PinIcon from "../../assets/icons/Pin"; */
 import EyeIcon from "../../assets/icons/Eye";
-import LostCardIcon from "../../assets/icons/LostCard";
-import TransactionIcon from "../../assets/icons/Transaction";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
-import Box from "../../components/Box";
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
 import {
   getCardTransactions,
   getCards,
   sendSmsShowCardVerification,
   setCardAsFrozen,
   showCardDetails,
-  showCardPinNumber,
   terminateCard,
   orderCard,
   enrollforCardScheme,
@@ -42,12 +32,8 @@ import {
 import { getTodaysDate } from "../../utils/dates";
 import {
   getUserActiveCards,
-  getCurrency,
-  /* convertImageToBase64, */
-  getPendingAmount,
 } from "../../utils/helpers";
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
-import { getAccountDetails } from "../../redux/account/accountSlice";
 import { CardView } from "../../components/Card/CardView";
 import { GetCardModal } from "./GetCardModal";
 import { RootState } from "../../store";
@@ -56,29 +42,19 @@ import { delayCode } from "../../utils/delay";
 import Carousel from "react-native-snap-carousel";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { ICardDetails } from "../../models/interface";
-/* import * as FileSystem from "expo-file-system";
-import { getTransactionsWithFilters } from "../../redux/transaction/transactionSlice"; */
-import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
-import ArrowDown from "../../assets/icons/ArrowDown";
 import { useDebounce } from "usehooks-ts";
-// import { TRANSACTIONS_STATUS } from "../../utils/constants";
-// import LoadingScreen from "../../components/Loader/LoadingScreen";
-// import ArrowRight from "../../assets/icons/ArrowRight";
 import { CardTransaction } from "../../models/Transactions";
-/* import moment from "moment"; */
-import TransactionItem from "../../components/TransactionItem";
-import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { arrayChecker } from "../../utils/helpers";
 import TerminatingCardModal from "./TerminatingCardModal";
 import { Divider } from "react-native-paper";
 import ArrowRight from "../../assets/icons/ArrowRight";
 import { ArrowSwitch } from "../../assets/icons/ArrowSwitch";
-import { FontAwesome } from '@expo/vector-icons'; 
 import { PinNumberCode } from "../../assets/icons/PinNumber";
 import { BugIcon } from "../../assets/icons/BugIcon";
+import BottomSheet from "../../components/BottomSheet";
+import ManagePaymentMethod from "./Components/ManagePayment";
 
-/* import { Circle } from "react-native-svg"; */
 const DEFAULT_CARD_ENROLLMENT_STATUS = {
   title: "",
   text: "",
@@ -87,8 +63,6 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
 
 export function Card({ navigation }: any) {
   const dispatch = useDispatch();
-  const accountDetails = useSelector((state: RootState) => state.account?.details);
-  const bottomSheetRef = useRef<BottomSheet>(null);
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
   const profile = useSelector((state: any) => state.profile?.profile);
@@ -96,9 +70,7 @@ export function Card({ navigation }: any) {
   const [cardPin, setCardPin] = useState<string>("");
   const [remainingTime, setRemainingTime] = useState(30);
   const cardData = useSelector((state: RootState) => state?.card?.data);
-  const isCardHaveVirtual = arrayChecker(cardData) ? cardData?.some((card) => card.type === "V") : false;
   const cardsActiveList = getUserActiveCards(cardData);
-
   const [isTerminatedCardShown, setIsTerminatedCardShown] = useState<boolean>(false);
   const [terminatedCardModal, setTerminatedCardModal] = useState<boolean>(false);
   const [cardDetails, setCardDetails] = useState<ICardDetails>({});
@@ -114,6 +86,7 @@ export function Card({ navigation }: any) {
   >([]);
   const [selectedCard, setSelectedCard] = useState<any>(null);
   const [isLoading, setIsloading] = useState<boolean>(false);
+  const [isManagePaymentMethod, setIsManagePaymentMethod] = useState<boolean>(false);
   const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
   const [isEnrollingCard, setIsEnrollingCard] = useState<boolean>(false);
   const [enrollmentCardStatus, setEnrollmentCardStatus] = useState<{
@@ -123,7 +96,6 @@ export function Card({ navigation }: any) {
   }>(DEFAULT_CARD_ENROLLMENT_STATUS);
   const shownCardsOnCarousel = isTerminatedCardShown ? cardsActiveList ? [...cardsActiveList, ...cardData] : [] : cardsActiveList ? cardsActiveList : [];
   const isShowingCardDetails = !!cardDetails?.cardImage;
-
   const handleGetCards = async () => {
     try {
       await dispatch(getCards() as any);
@@ -231,7 +203,6 @@ export function Card({ navigation }: any) {
       .unwrap()
       .catch((error: any) => {
         console.log("error in order card upon enrollment:", error);
-        
       })
       .finally(() => {
         setIsEnrollingCard(false);
@@ -322,22 +293,22 @@ export function Card({ navigation }: any) {
   };
 
   const enrollCard = async () => {
-    try {
-      await dispatch(sendSmsShowCardVerification({
-        type: "trusted",
-      }) as any);
+    // try {
+    //   await dispatch(sendSmsShowCardVerification({
+    //     type: "trusted",
+    //   }) as any);
       setIsEnrollingCard(true);
       setShowCardOtpModal(true);
-    } catch (error: any) {
-      console.log("Something went wrong with otp: ", error);
-      setEnrollmentCardStatus({
-        title: "Card Enrollment",
-        text: `${error?.code}: ${error?.message}`,
-        isError: true,
-      });
-    } finally {
-      setIsloading(false);
-    }
+    // } catch (error: any) {
+    //   console.log("Something went wrong with otp: ", error);
+    //   setEnrollmentCardStatus({
+    //     title: "Card Enrollment",
+    //     text: `${error?.code}: ${error?.message}`,
+    //     isError: true,
+    //   });
+    // } finally {
+    //   setIsloading(false);
+    // }
   };
 
   // TODO: target each card when doing action on each card, right now it only targets the first card
@@ -438,33 +409,28 @@ export function Card({ navigation }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      {showGetCardModal && (
-        <GetCardModal
-          onClose={() => setShowGetCardModal(false)}
-          hasPhysicalCard={false}
-          hasVirtualCard={false}
-          onGetVirtualCard={() => {
-            setShowGetCardModal(false);
-            setIsloading(true);
-            enrollCard();
-            }
+      <GetCardModal
+        onClose={() => setShowGetCardModal(false)}
+        isModalVisible={showGetCardModal}
+        onGetVirtualCard={() => {
+          setShowGetCardModal(false);
+          // setIsloading(true);
+          enrollCard();
           }
-        />
-      )}
-      {!!showCardOtpModal && (
-        <CodeModal
-          confirmButtonText={isEnrollingCard ? "Submit" : "Show Card"}
-          title={isEnrollingCard ? "Card Enrollment" : "Show Card"}
-          subtitle="Since your account doesnt have any card. You will receive an sms to your mobile device. Please enter this code below."
-          isOpen
-          loading={showCardOtpLoading}
-          onSubmit={handlePinCode}
-          onCancel={() => {
-            setShowCardOtpModal(false);
-            setIsloading(false);
-          }}
-        />
-      )}
+        }
+      />
+      <CodeModal
+        confirmButtonText={isEnrollingCard ? "Submit" : "Show Card"}
+        title={isEnrollingCard ? "Card Enrollment" : "Show Card"}
+        subtitle="Since your account doesnt have any card. You will receive an sms to your mobile device. Please enter this code below."
+        isOpen={showCardOtpModal}
+        loading={showCardOtpLoading}
+        onSubmit={handlePinCode}
+        onCancel={() => {
+          setShowCardOtpModal(false);
+          setIsloading(false);
+        }}
+      />
       { terminatedCardModal && (
         <TerminatingCardModal
           isOpen={terminatedCardModal}
@@ -495,7 +461,7 @@ export function Card({ navigation }: any) {
                   <Button
                     onPress={() => {
                       console.log("get card");
-                      // setShowGetCardModal(true);
+                      setShowGetCardModal(true);
                     }}
                     color={"light-pink"}
                     leftIcon={<MaterialCommunityIcons name="credit-card-plus-outline" size={14} color={vars['accent-pink']} />}
@@ -507,361 +473,150 @@ export function Card({ navigation }: any) {
               />
             </View>
           </Pressable>
-            <View style={styles.cardSection}>
-              <View style={styles.cardImages}>
-                <Carousel
-                  data={cardDetails?.cardImage ? [cardDetails] : shownCardsOnCarousel}
-                  renderItem={_renderItem}
-                  refreshing={isLoading}
-                  sliderWidth={400}
-                  itemWidth={303}
-                  layout="default"
-                  lockScrollWhileSnapping={false}
-                  // swipeThreshold={10}
-                  onSnapToItem={(index) => {
-                    handleGetCardsTransactions(shownCardsOnCarousel[index]);
-                    setSelectedCard(shownCardsOnCarousel[index]);
-                  }}
-                />
-                {cardDetails?.cardNumber ? (
-                  <TouchableOpacity onPress={handleCopyToClipboard}>
-                    <View style={styles.clipboardContainer}>
-                      <CopyClipboard color="light-pink" size={18} />
-                    </View>
-                  </TouchableOpacity>
-                ) : null}
-              </View>
-              {/* <View style={styles.incomeBox}>
-                <Pressable>
-                  <View style={styles.incomeBox__group}>
-                    <Typography
-                      fontFamily="Nunito-SemiBold"
-                      color="accent-blue"
-                      style={styles.imcome__groupTypography} 
-                    >
-                      Total Balance:
-                    </Typography>
-                    <Box sx={{ marginLeft: "auto", marginBottom: 16 }}>
-                      <Typography fontFamily="Mukta-Regular">
-                        {getCurrency(accountDetails?.currency)}
-                        {accountDetails?.curbal || "0.00"}
-                      </Typography>
-                    </Box>
-                  </View>
-                </Pressable>
-                <Pressable>
-                  <View style={styles.incomeBox__group}>
-                    <Typography
-                      fontFamily="Nunito-SemiBold"
-                      color="accent-blue"
-                      style={styles.imcome__groupTypography}
-                    >
-                      Pending:
-                    </Typography>
-                    <Box sx={{ marginLeft: "auto", marginBottom: 16 }}>
-                      <Typography fontFamily="Mukta-Regular">
-                        {getCurrency(accountDetails?.currency)}
-                        {getPendingAmount(
-                          accountDetails?.avlbal || "0.00",
-                          accountDetails?.curbal || "0.00"
-                        ) || "0.00"}
-                      </Typography>
-                    </Box>
-                  </View>
-                </Pressable>
-              </View> */}
-              <View style={styles.cardActions}>
-                  <View style={styles.cardActionsButtonMargin}>
-                    <Pressable>
-                      <Button
-                        color="light-blue"
-                        onPress={requestShowCard}
-                        leftIcon={<EyeIcon color="blue" size={14} />}
-                      >
-                        Show Card
-                      </Button>
-                    </Pressable>
-                  </View>
-                  <View style={styles.cardActionsButtonMargin}>
-                    <Pressable>
-                      <Button
-                        color={selectedCard?.frozenYN === "Y" ? "blue" : "light-blue"}
-                        leftIcon={
-                          <FreezeIcon
-                            color={selectedCard?.frozenYN === "Y" ? "white" : "blue"}
-                            size={14}
-                          />
-                        }
-                        onPress={() => {
-                          setFreezeLoading(true);
-                          setIsloading(prev => true);
-                          freezeCard(selectedCard?.frozenYN === "Y" ? false : true);
-                        }}
-                        disabled={freezeLoading}
-                      >
-                        {selectedCard?.frozenYN === "Y" ? "Unfreeze Card" : "Freeze Card"}
-                      </Button>
-                    </Pressable>
-                  </View>
-                  </View>
-                </View>
-                <Divider style={{marginVertical: 10, paddingHorizontal: 15}} />
-                  <View style={styles.cardActionsListContainer}>
-                    <View style={styles.cardActionItem}>
-                      <View style={{display: 'flex', flexDirection: 'row'}}>
-                        <View style={{paddingRight: 8, marginTop: 5}}>
-                          <ArrowSwitch color="heavy-blue" size={18}/>
-                        </View>
-                        <Typography fontSize={16} fontWeight={600}>
-                          See Card Transactions
-                        </Typography>
-                      </View>
-                      <TouchableOpacity style={{marginTop: 7}}>
-                        <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
-                  <View style={styles.cardActionsListContainer}>
-                    <View style={styles.cardActionItem}>
-                      <View style={{display: 'flex', flexDirection: 'row'}}>
-                        <View style={{paddingRight: 8, marginTop: 5}}>
-                          <FontAwesome name="cog" size={18} color={vars['accent-blue']} />
-                        </View>
-                        <Typography fontSize={16} fontWeight={600}>
-                          Manage Payment Method
-                        </Typography>
-                      </View>
-                      <TouchableOpacity style={{marginTop: 7}}>
-                        <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
-                  <View style={styles.cardActionsListContainer}>
-                    <View style={styles.cardActionItem}>
-                      <View style={{display: 'flex', flexDirection: 'row'}}>
-                        <View style={{paddingRight: 8, marginTop: 5}}>
-                          <PinNumberCode color="heavy-blue" size={18} />
-                        </View>
-                        <Typography fontSize={16} fontWeight={600}>
-                          Show Pin
-                        </Typography>
-                      </View>
-                      <TouchableOpacity style={{marginTop: 7}}>
-                        <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
-                  <View style={styles.cardActionsListContainer}>
-                    <View style={styles.cardActionItem}>
-                      <View style={{display: 'flex', flexDirection: 'row'}}>
-                        <View style={{paddingRight: 8, marginTop: 5}}>
-                          <BugIcon size={18} color={vars['accent-blue']} />
-                        </View>
-                        <Typography fontSize={16} fontWeight={600}>
-                          Lost card
-                        </Typography>
-                      </View>
-                      <TouchableOpacity style={{marginTop: 7}}>
-                        <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
-
-                  {/* <View style={styles.cardActionsButtonMargin}> -- https://paymentworld.atlassian.net/browse/ZAZ-532 --
-                    <Pressable>
-                      <Button
-                        color={cardPin ? "blue" : "light-blue"}
-                        leftIcon={
-                          <PinIcon color={cardPin ? "white" : "blue"} size={14} />
-                        }
-                        onPress={!cardPin ? showPin : resetCard}
-                        disabled={loading}
-                      >
-                        Show pin
-                      </Button>
-                    </Pressable>
-                  </View> */}
-                  {/* <View style={styles.cardActionsButtonMargin}>
-                    <Pressable>
-                      <Button
-                        color="light-pink"
-                        rightIcon={<LostCardIcon color="pink" size={14} />}
-                        onPress={() => {
-                          setTerminatedCardModal(!terminatedCardModal);
-                        }}
-                        disabled={selectedCard?.lostYN === "Y" || !selectedCard?.lostYN}
-                      >
-                        Lost Card
-                      </Button>
-                    </Pressable>
-                  </View> */}
-                  {/* <View style={styles.cardActionsButtonMargin}>
-                    <Pressable>
-                      <Button
-                        color="light-pink"
-                        rightIcon={<LostCardIcon color="pink" size={14} />}
-                        onPress={() => {
-                          setIsTerminatedCardShown(!isTerminatedCardShown);
-                          setIsloading(prev => true);
-                          handleSetSelectedCard(!isTerminatedCardShown ? cardData[0] : cardsActiveList[0]);
-                          const getActiveCardOnly 
-                          setSelectedCard(cardsActiveList[0]);
-                          setIsloading(prev => false);
-                        }}
-                        disabled={cardDetails?.cardImage ? true : false}
-                      >
-                        {!isTerminatedCardShown ? "Show All Cards" : "Hide Lost Cards"}
-                      </Button>
-                    </Pressable>
-                  </View> */}
-
-          {/* <View style={styles.cardTransactions}>
-            <View>
-              <Heading
-                icon={<TransactionIcon color="pink" size={18} />}
-                title={"Latest Transactions"}
-                rightAction={
-                  <Button
-                    onPress={handleGetCardsTransactions}
-                    color={"light-blue"}
-                    leftIcon={
-                      <Ionicons name="refresh" size={24} color="black" />
-                    }
-                  >
-                    Refresh
-                  </Button>
-                }
+          <View style={styles.cardSection}>
+            <View style={styles.cardImages}>
+              <Carousel
+                data={cardDetails?.cardImage ? [cardDetails] : shownCardsOnCarousel}
+                renderItem={_renderItem}
+                refreshing={isLoading}
+                sliderWidth={400}
+                itemWidth={303}
+                layout="default"
+                lockScrollWhileSnapping={false}
+                // swipeThreshold={10}
+                onSnapToItem={(index) => {
+                  handleGetCardsTransactions(shownCardsOnCarousel[index]);
+                  setSelectedCard(shownCardsOnCarousel[index]);
+                }}
               />
-            </View>
-            <View>
-              <Seperator backgroundColor={vars["grey"]} />
-              <View>
-                {!!cardTransactionsData?.length ? (
-                  <>
-                    <View style={styles.listHeadCardTransactions}>
-                      <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
-                        Name
-                      </Typography>
-                      <View
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          width: 60,
-                        }}
-                      >
-                        <Typography
-                          fontFamily="Nunito-SemiBold"
-                          color="accent-blue"
-                          fontSize={16}
-                        >
-                          Date
-                        </Typography>
-                        <TouchableOpacity
-                          onPress={() => {
-                            setIsloading(!isLoading);
-                            setSortByDate(!sortByDate);
-                          }}
-                        >
-                          {sortByDate ? (
-                            <ArrowDown color="blue" style={{ marginTop: 5 }} />
-                          ) : (
-                            <AntDesign
-                              name="up"
-                              size={16}
-                              color="blue"
-                              style={{ marginTop: 5 }}
-                            />
-                          )}
-                        </TouchableOpacity>
-                      </View>
-                      <Typography fontFamily="Nunito-SemiBold" fontSize={16}>
-                        Amount
-                      </Typography>
-                    </View>
-                    <View style={{ backgroundColor: "white" }}>
-                      {cardTransactionsData?.map((transaction, index) => (
-                        <View key={index} style={styles.listCardTransactions}>
-                          <TransactionItem
-                            data={{
-                              ...transaction,
-                              id: Number(transaction.id),
-                              amount: transaction.amount.toString(),
-                              name: transaction.purpose,
-                              // balance: "0.00",
-                              // closing_balance: "",
-                              // running_balance: "",
-                              // opening_balance: "",
-                              currency: transaction.transactionCurrency,
-                              description: transaction.purposeDetailed,
-                              reference_no:
-                                transaction.processingAllMessagesId.toString(),
-                              transaction_datetime: transaction?.receiptDate,
-                              isCardTx: true,
-                            }}
-                            key={index}
-                          />
-                        </View>
-                      ))}
-                    </View>
-                  </>
-                ) : (
-                  <View style={{ backgroundColor: "#fff", padding: 24 }}>
-                    <Typography
-                      fontFamily="Nunito-Regular"
-                      fontSize={16}
-                      style={{
-                        textAlign: "center",
-                        marginTop: 20,
-                        backgroundColor: "#fff",
-                      }}
-                    >
-                      You don't have any transactions yet, why not add some
-                      money to your account to get started!
-                    </Typography>
+              {cardDetails?.cardNumber ? (
+                <TouchableOpacity onPress={handleCopyToClipboard}>
+                  <View style={styles.clipboardContainer}>
+                    <CopyClipboard color="light-pink" size={18} />
                   </View>
-                )}
-              </View>
-              {/* {isEnrollmentSuccess && (
-                <SuccessModal
-                  title={"Card enrollment"}
-                  text={"Card Registered"}
-                  isOpen
-                  onClose={() => {
-                    setIsloading(false);
-                    setEnrollmentStatus(false);
-                  }}
-                />
-              )}
-              {isEnrollmentSuccess && (
-                <SuccessModal
-                  isError={enrollmentCardStatus.isError}
-                  title={enrollmentCardStatus.title}
-                  text={enrollmentCardStatus.text}
-                  isOpen
-                  onClose={() => {
-                    setIsloading(false);
-                    setEnrollmentStatus(false);
-                    setEnrollmentCardStatus(DEFAULT_CARD_ENROLLMENT_STATUS);
-                  }}
-                />
-              )}
+                </TouchableOpacity>
+              ) : null}
             </View>
-          </View> */}
+            <View style={styles.cardActions}>
+              <View style={styles.cardActionsButtonMargin}>
+                <Pressable>
+                  <Button
+                    color="light-blue"
+                    onPress={requestShowCard}
+                    leftIcon={<EyeIcon color="blue" size={14} />}
+                  >
+                    Show Card
+                  </Button>
+                </Pressable>
+              </View>
+              <View style={styles.cardActionsButtonMargin}>
+                <Pressable>
+                  <Button
+                    color={selectedCard?.frozenYN === "Y" ? "blue" : "light-blue"}
+                    leftIcon={
+                      <FreezeIcon
+                        color={selectedCard?.frozenYN === "Y" ? "white" : "blue"}
+                        size={14}
+                      />
+                    }
+                    onPress={() => {
+                      setFreezeLoading(true);
+                      setIsloading(prev => true);
+                      freezeCard(selectedCard?.frozenYN === "Y" ? false : true);
+                    }}
+                    disabled={freezeLoading}
+                  >
+                    {selectedCard?.frozenYN === "Y" ? "Unfreeze Card" : "Freeze Card"}
+                  </Button>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+          <Divider style={{marginVertical: 10, paddingHorizontal: 15}} />
+            <View style={styles.cardActionsListContainer}>
+              <View style={styles.cardActionItem}>
+                <View style={{display: 'flex', flexDirection: 'row'}}>
+                  <View style={{paddingRight: 8, marginTop: 5}}>
+                    <ArrowSwitch color="heavy-blue" size={18}/>
+                  </View>
+                  <Typography fontSize={16} fontWeight={600}>
+                    See Card Transactions
+                  </Typography>
+                </View>
+                <TouchableOpacity style={{marginTop: 7}} onPress={() => console.log('press')}>
+                  <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
+                </TouchableOpacity>
+              </View>
+            </View>
+          <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
+            <View style={styles.cardActionsListContainer}>
+              <View style={styles.cardActionItem}>
+                <View style={{display: 'flex', flexDirection: 'row'}}>
+                  <View style={{paddingRight: 8, marginTop: 5}}>
+                    <MaterialCommunityIcons name="cog-outline" size={18} color={vars['accent-blue']} />
+                  </View>
+                  <Typography fontSize={16} fontWeight={600}>
+                    Manage Payment Method
+                  </Typography>
+                </View>
+                <TouchableOpacity 
+                  style={{marginTop: 7}} 
+                  onPress={() => setIsManagePaymentMethod(!isManagePaymentMethod)}
+                >
+                  <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
+                </TouchableOpacity>
+              </View>
+            </View>
+          <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
+            <View style={styles.cardActionsListContainer}>
+              <View style={styles.cardActionItem}>
+                <View style={{display: 'flex', flexDirection: 'row'}}>
+                  <View style={{paddingRight: 8, marginTop: 5}}>
+                    <PinNumberCode color="heavy-blue" size={18} />
+                  </View>
+                  <Typography fontSize={16} fontWeight={600}>
+                    Show Pin
+                  </Typography>
+                </View>
+                <TouchableOpacity style={{marginTop: 7}}>
+                  <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
+                </TouchableOpacity>
+              </View>
+            </View>
+          <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
+            <View style={styles.cardActionsListContainer}>
+              <View style={styles.cardActionItem}>
+                <View style={{display: 'flex', flexDirection: 'row'}}>
+                  <View style={{paddingRight: 8, marginTop: 5}}>
+                    <BugIcon size={18} color={vars['accent-blue']} />
+                  </View>
+                  <Typography fontSize={16} fontWeight={600}>
+                    Lost card
+                  </Typography>
+                </View>
+                <TouchableOpacity style={{marginTop: 7}}>
+                  <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
+                </TouchableOpacity>
+              </View>
+            </View>
+          <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
           <BottomSheet
-            ref={bottomSheetRef}
-            snapPoints={['60%']}
-            enablePanDownToClose={true}
+            isVisible={isManagePaymentMethod}
+            onClose={() => setIsManagePaymentMethod(false)}
           >
-            <BottomSheetView>
-              <Text>
-                Hello
-              </Text>
-            </BottomSheetView>
+            <Typography fontSize={16} fontWeight={600}>
+              <MaterialCommunityIcons name="cog-outline" size={18} color={vars['accent-blue']} />
+              Manage Payment Method
+            </Typography>
+            <Divider style={{marginVertical: 8, paddingHorizontal: 15}} />
+            <ManagePaymentMethod />
+            <Button 
+              onPress={() => setIsManagePaymentMethod(false)}
+              style={{color: '#fff'}}
+              color="light-blue"
+            >
+              Close
+            </Button>
           </BottomSheet>
           <Spinner visible={isLoading} />
         </ScrollView>

@@ -53,6 +53,7 @@ import { BugIcon } from "../../assets/icons/BugIcon";
 import BottomSheet from "../../components/BottomSheet";
 import ManagePaymentMethod from "./Components/ManagePayment";
 import { PinCodeInputBoxes } from "../../components/FormGroup/FormGroup";
+import { useLazyOrderCardQuery } from "../../redux/card/cardSliceV2";
 
 const DEFAULT_CARD_ENROLLMENT_STATUS = {
   title: "",
@@ -83,6 +84,7 @@ export function Card({ navigation }: any) {
   const [isShowPinActionPressed, setIsShowPinActionPressed] = useState<boolean>(false);
   const [isLostPinActionPressed, setIsLostPinActionPressed] = useState<boolean>(false);
   const [showCardDetailOTP, setShowCardDetailOTP] = useState<number>(0);
+  const [chosenCurrency, setChosenCurrency] = useState<string>("");
   const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
   const [isEnrollingCard, setIsEnrollingCard] = useState<boolean>(false);
   const [enrollmentCardStatus, setEnrollmentCardStatus] = useState<{
@@ -90,8 +92,12 @@ export function Card({ navigation }: any) {
     text: string;
     isError: boolean;
   }>(DEFAULT_CARD_ENROLLMENT_STATUS);
+  const [orderCard, {
+    isLoading: orderCardIsLoading, 
+    isSuccess: orderCardIsSuccess,
+    isError: orderCardIsError,
+  }] = useLazyOrderCardQuery();
   const shownCardsOnCarousel = isTerminatedCardShown ? cardsActiveList ? [...cardsActiveList, ...cardData] : [] : cardsActiveList ? cardsActiveList : [];
-  const isShowingCardDetails = !!cardDetails?.cardImage;
 
   const handleGetCards = async () => {
     try {
@@ -130,30 +136,29 @@ export function Card({ navigation }: any) {
     setCardPin("");
     setCardDetails({});
     setRemainingTime(30);
-    // clearInterval(storedIntervalId);
   };
 
   const requestShowCard = async () => {
     setIsEnrollingCard(false);
-    setIsloading(prev => true);
+    setIsloading(prev => prev = true);
     const payload = await dispatch(
       sendSmsShowCardVerification({
         type: "trusted",
       }) as any
     ).unwrap()
     .finally(() => {
-      setIsloading(prev => false);
+      setIsloading(prev => prev = false);
     });
     if (payload?.status !== "success") return;
     setShowCardOtpModal(true);
   };
 
-  const handlePinCode = async ({ code }: { code: string }) => {
+  const handleEnrollWithPinCode = async ({ code }: { code: string }) => {
     if (isEnrollingCard) {
       const orderCardPayload = {
         cardType: "V",
         accountUuid: userID,
-        currency: "EUR",
+        currency: chosenCurrency,
         email: userEmail,
         otp: code,
       };
@@ -161,62 +166,8 @@ export function Card({ navigation }: any) {
         "🚀 ~ file: Card.tsx:267 ~ handlePinCode ~ orderCardPayload:",
         orderCardPayload
       );
-      const payloadOrderCard = await dispatch(
-        orderCard(orderCardPayload) as any
-      )
-      .unwrap()
-      .catch((error: any) => {
-        console.log("error in order card upon enrollment:", error);
-      })
-      .finally(() => {
-        setIsEnrollingCard(false);
-        setIsloading(false);
-        setShowCardOtpModal(false);
-      });
-      console.log(
-        "🚀 ~ file: Card.tsx:270 ~ handlePinCode ~ payloadOrderCard:",
-        payloadOrderCard
-      );
-      if (payloadOrderCard?.status && payloadOrderCard?.status === "success") {
-        await dispatch(
-          enrollforCardScheme({ account_id: userID }) as any
-        )
-          .unwrap()
-          .then((res: any) => {
-            setEnrollmentStatus(true);
-            setEnrollmentCardStatus({
-              title: "Card Enrollment",
-              text: `Card Status: Success`,
-              isError: false,
-            });
-            setIsloading(false);
-            setShowCardOtpModal(false);
-          })
-          .catch((error: any) => {
-            setIsloading(false);
-            setEnrollmentStatus(true);
-            setEnrollmentCardStatus({
-              title: "Card Enrollment",
-              text: `Card Status: Pending. Check back later.`,
-              isError: true,
-            });
-            setShowCardOtpModal(false);
-          })
-          .finally(() => {
-            dispatch<any>(getCards());
-            setIsEnrollingCard(false);
-          });
-      } else {
-        setIsloading(false);
-        setIsEnrollingCard(false);
-        setShowCardOtpModal(false);
-        setEnrollmentStatus(true);
-        setEnrollmentCardStatus({
-          title: "Card Enrollment",
-          text: `${payloadOrderCard?.code}: Error while ordering card`,
-          isError: true,
-        });
-      }
+      orderCard(orderCardPayload); // order a card
+      return;
     } else {
       setShowCardOtpLoading(true);
       setIsTerminatedCardShown(false);
@@ -241,7 +192,6 @@ export function Card({ navigation }: any) {
       }
       setShowCardOtpLoading(false);
       setShowCardOtpModal(false);
-      await delayCode(100);
     }
   };
 
@@ -291,19 +241,29 @@ export function Card({ navigation }: any) {
     await Clipboard.setStringAsync(cardDetails?.cardNumber || "");
   };
 
-  // const sortCardTransactionsByDate = (sortState: boolean) => {
-  //   const sortedTransactions = [...cardTransactionsData].sort(
-  //     (a: CardTransaction, b: CardTransaction) => {
-  //       const dateA = new Date(a.receiptDate);
-  //       const dateB = new Date(b.receiptDate);
-  //       return sortState
-  //         ? dateA.getTime() - dateB.getTime()
-  //         : dateB.getTime() - dateA.getTime();
-  //     }
-  //   );
-  //   setCardTransactionsData(sortedTransactions);
-  //   setIsloading(false);
-  // };
+  useEffect( () => {
+    if (orderCardIsSuccess) {
+      setEnrollmentStatus(true);
+      setEnrollmentCardStatus({
+        title: "Card Enrollment",
+        text: `Card Status: Success`,
+        isError: false,
+      });
+      setIsloading(false);
+      setShowCardOtpModal(false);
+    }
+    if (orderCardIsError) {
+      setIsloading(false);
+      setIsEnrollingCard(false);
+      setShowCardOtpModal(false);
+      setEnrollmentStatus(true);
+      setEnrollmentCardStatus({
+        title: "Card Enrollment",
+        text: `Error while ordering card`,
+        isError: true,
+      });
+    }
+  }, [orderCardIsSuccess, orderCardIsError]);
 
   useEffect(() => {
     (async () => {
@@ -327,6 +287,7 @@ export function Card({ navigation }: any) {
     })();
   }, [cardData]);
 
+  // triggered when cardDetails image is truthy
   useEffect(() => {
     let interval: any;
     if (cardDetails?.cardImage) {
@@ -354,7 +315,7 @@ export function Card({ navigation }: any) {
           setShowGetCardModal(false);
           setIsEnrollingCard(true);
           setShowCardOtpModal(true);
-  
+          setChosenCurrency(currency);
           }
         }
       />
@@ -364,7 +325,7 @@ export function Card({ navigation }: any) {
         subtitle="Since your account doesnt have any card. You will receive an sms to your mobile device. Please enter this code below."
         isOpen={showCardOtpModal}
         loading={showCardOtpLoading}
-        onSubmit={handlePinCode}
+        onSubmit={handleEnrollWithPinCode}
         onCancel={() => {
           setShowCardOtpModal(false);
           setIsloading(false);
@@ -399,7 +360,6 @@ export function Card({ navigation }: any) {
                 rightAction={
                   <Button
                     onPress={() => {
-                      console.log("get card");
                       setShowGetCardModal(true);
                     }}
                     color={"light-pink"}
@@ -542,9 +502,9 @@ export function Card({ navigation }: any) {
             isVisible={isManagePaymentMethod}
             onClose={() => setIsManagePaymentMethod(false)}
           >
-            <Typography fontSize={16} fontWeight={600}>
+            <Typography fontSize={18} fontWeight={600}>
               <MaterialCommunityIcons name="cog-outline" size={18} color={vars['accent-blue']} />
-              Manage Payment Method
+              {" "}Manage Payment Method
             </Typography>
             <Divider style={{marginVertical: 8, paddingHorizontal: 15}} />
             <ManagePaymentMethod />
@@ -636,6 +596,7 @@ export function Card({ navigation }: any) {
             </View>
           </BottomSheet>
           <Spinner visible={isLoading} />
+          <Spinner visible={orderCardIsLoading} />
         </ScrollView>
       </View>
     </MainLayout>

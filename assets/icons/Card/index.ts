@@ -1,3 +1,3 @@
-import { Card } from "./Card";
+import { CardIcon } from "./Card";
 
-export default Card;
+export default CardIcon;

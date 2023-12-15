@@ -30,10 +30,7 @@ export const GetCardModal = ({
   const [isUserConfirmedToCreateCard, setIsUserConfirmedToCreateCard] = useState<boolean>(false);
   const userData = useSelector((state: any) => state.auth.userData);
   const [loading, setLoading] = useState(false);
-  const [currency, setCurrency] = useState<any>({
-    label: "Euro €",
-    value: "EUR",
-  });
+  const [currency, setCurrency] = useState<string>("");
   const [openCurrency, setOpenCurrency] = useState(false);
 
   useEffect(() => {
@@ -84,7 +81,12 @@ export const GetCardModal = ({
               loading={loading}
               color="light-pink"
               onPress={() => {
-                initiateOrderCard(currency);
+                console.log({currency});
+                if(currency) {
+                  initiateOrderCard(currency);
+                } else {
+                  alert('Please select currency');
+                }
               }}
             >
               Submit

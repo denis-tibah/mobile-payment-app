@@ -1,11 +1,10 @@
-import { ATMWithdraw } from "../assets/icons/ATMWithdraw";
+import ATMWithdraw from "../assets/icons/ATMWithdraw";
 import ChipPinTransaction from "../assets/icons/ChipPinTransaction";
 import ContactlessTransaction from "../assets/icons/ContactlessTransaction";
 import Globe from "../assets/icons/Globe";
+import CardIcon from "../assets/icons/Card";
 import { MobileWalletIcon } from "../assets/icons/MobileWallets/MobileWallets";
-import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import vars from "../styles/vars";
-import { Card } from "../assets/icons/Card/Card";
 
 export const countries = [
     {label: "Argentina", value: "ARG"},
@@ -41,7 +40,7 @@ export const managePaymentMethods = [
     { label: "Contactless Transactions", value: "contactless_transactions",
     icon: ContactlessTransaction({size: 18, color: vars['accent-blue']}) },
     { label: "Magnetic Stripe Transactions", value: "magnetic_stripe_transactions",
-    icon: Card({size: 18, color: vars['accent-blue']}) },
+    icon: CardIcon({size: 18, color: 'blue'}) },
 ];
 export const searchOptions = [
     // { label: "BIC", value: 'bic' },

@@ -2,6 +2,12 @@ import { StyleSheet } from "react-native";
 import vars from "../../styles/vars";
 
 export const styles: any = StyleSheet.create<any>({
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 6,
+  },
   container: {
     marginTop: 26,
     zIndex: 1,

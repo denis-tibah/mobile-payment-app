@@ -12,10 +12,14 @@ const ManagePaymentMethod: React.FC = () => {
         const checkIfThisIsChecked = listOfChecks.find((check) => check === item.label);
         return (
           <View style={styles.row} key={index}>
-            <Text>
+            <View style={{display: 'flex', flexDirection:'row'}}>
+              <Text style={{paddingHorizontal: 5, fontSize: 16}}>
               {item.icon}
-              {item.label}
-            </Text>
+              </Text>
+              <Text style={{fontSize: 16}}>
+                {item.label}
+              </Text>
+            </View>
             <Switch
               trackColor={{ false: "#767577", true: "#81b0ff" }}
               thumbColor={checkIfThisIsChecked ? vars['accent-blue'] : "#f4f3f4"}

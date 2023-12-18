@@ -44,4 +44,38 @@ export const styles: any = StyleSheet.create<any>({
   footer: {
     marginTop: 40,
   },
+  headerContainer: {
+    backgroundColor: "#0DCA9D",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 0,
+    width: "100%",
+    height: 75,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  headerWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  buttonOK: {
+    height: 30,
+    width: 90,
+    marginTop: 14,
+  },
+  imageWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  image: {
+    height: 200,
+    width: 180,
+    marginTop: 24,
+    marginLeft: 90,
+  },
 });

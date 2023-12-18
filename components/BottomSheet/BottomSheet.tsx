@@ -1,21 +1,37 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, PanResponder, Animated } from 'react-native';
-import * as Animatable from 'react-native-animatable';
+import React, { useRef, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Modal,
+  PanResponder,
+  Animated,
+} from "react-native";
+import * as Animatable from "react-native-animatable";
 type Props = {
   isVisible: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  hasNoHeaderPadding?: boolean;
 };
-export const BottomSheet: React.FC<Props> = ({ isVisible, onClose, children }) => {
-
+export const BottomSheet: React.FC<Props> = ({
+  isVisible,
+  onClose,
+  children,
+  hasNoHeaderPadding,
+}) => {
   const bottomSheetRef = useRef(null);
 
   const [panResponder] = useState(
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, gestureState) => gestureState.dy > 5,
-      onPanResponderMove: Animated.event([null, { dy: new Animated.Value(0) }], {
-        useNativeDriver: false,
-      }),
+      onPanResponderMove: Animated.event(
+        [null, { dy: new Animated.Value(0) }],
+        {
+          useNativeDriver: false,
+        }
+      ),
       onPanResponderRelease: (_, gestureState) => {
         if (gestureState.dy > 50) {
           Animated.timing(bottomSheetTranslateY, {
@@ -53,45 +69,52 @@ export const BottomSheet: React.FC<Props> = ({ isVisible, onClose, children }) =
   };
 
   return (
-      <Animatable.View
-        ref={bottomSheetRef}
-        style={[styles.bottomSheet, { display: isVisible ? 'flex' : 'none' }]}
-        animation={isVisible ? 'slideInUp' : 'slideOutDown'}
-        duration={300}
-        onAnimationEnd={handleAnimationEnd}
-        {...panResponder.panHandlers}
-      >
-        <View style={styles.contentContainer}>
-          <View style={{ }} />
-          {children}
-          {/* <TouchableOpacity onPress={handleClose}
+    <Animatable.View
+      ref={bottomSheetRef}
+      style={[
+        styles.bottomSheet,
+        hasNoHeaderPadding && styles.hasNoHeaderPadding,
+        { display: isVisible ? "flex" : "none" },
+      ]}
+      animation={isVisible ? "slideInUp" : "slideOutDown"}
+      duration={300}
+      onAnimationEnd={handleAnimationEnd}
+      {...panResponder.panHandlers}
+    >
+      <View style={styles.contentContainer}>
+        <View style={{}} />
+        {children}
+        {/* <TouchableOpacity onPress={handleClose}
             style={styles.closeButton}
           >
             <Text>Close</Text>
           </TouchableOpacity> */}
-        </View>
-      </Animatable.View>
+      </View>
+    </Animatable.View>
   );
 };
 
 const styles = StyleSheet.create({
   bottomSheet: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: -3 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
   },
+  hasNoHeaderPadding: {
+    padding: 0,
+  },
   contentContainer: {
-    display: 'flex',
+    display: "flex",
   },
   closeButton: {
     marginTop: 16,

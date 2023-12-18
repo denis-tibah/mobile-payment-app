@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   ImageBackground,
+  Image,
 } from "react-native";
 
 import Button from "../../components/Button";
@@ -23,6 +24,7 @@ import EmailIcon from "../../assets/icons/Email";
 import LockIcon from "../../assets/icons/Lock";
 import PhoneIcon from "../../assets/icons/Phone";
 import MapIcon from "../../assets/icons/Map";
+import CheckIcon from "../../assets/icons/Check";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { validateLoginCredentials } from "../../utils/validation";
@@ -39,10 +41,12 @@ import VerificationLast from "../../components/SignupComponents/VerificationLast
 import Sumsub from "../../components/SignupComponents/Sumsub";
 /* import SumsubProcess from "../../components/SignupComponents/SumsubProcess"; */
 // import EmailVerifiedScreen from "../EmailVerifiedMessage";
-
+import ModalBottomSheet from "../../components/ModalBottomSheet/ModalBottomSheet";
 
 export function SignupScreen({ navigation, route }: any) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+
   const { navigate }: any = useNavigation();
   const [selectedNavIndex, setNavIndex] = useState<number>(0);
   const scrollViewRef = useRef(null);
@@ -64,12 +68,20 @@ export function SignupScreen({ navigation, route }: any) {
   // to navigate on profile details after user has been verified
   useEffect(() => {
     if (route?.params?.stepIndex === 1) {
+      setIsOpenModal(false);
       setNavIndex(route?.params?.stepIndex);
     }
   }, [route?.params]);
 
+  const handleOpenModal = () => {
+    setIsOpenModal(true);
+  };
+
   const steps = [
-    <LoginDetails handleNextStep={handleNextStep} />,
+    <LoginDetails
+      handleNextStep={handleNextStep}
+      handleOpenModal={handleOpenModal}
+    />,
     <ProfileDetails
       handleNextStep={handleNextStep}
       handlePrevStep={handlePrevStep}
@@ -282,6 +294,54 @@ export function SignupScreen({ navigation, route }: any) {
       </TouchableWithoutFeedback>
     </MainLayout> */}
       </ImageBackground>
+      {isOpenModal ? (
+        <ModalBottomSheet
+          isOpen={isOpenModal}
+          hasNoHeaderPadding
+          contentHeight={450}
+        >
+          <View style={styles.headerContainer}>
+            <View style={styles.headerWrapper}>
+              <CheckIcon color="white" size={18} />
+              <Typography
+                color="#FFFF"
+                fontSize={18}
+                marginLeft={6}
+                fontWeight={600}
+              >
+                Email address verified
+              </Typography>
+            </View>
+          </View>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-around",
+              marginTop: 12,
+            }}
+          >
+            <Typography color="#0DCA9D" fontSize={14} fontWeight={600}>
+              We have send you a verification link to your email
+            </Typography>
+          </View>
+          <View style={styles.headerWrapper}>
+            <Button
+              color={"green"}
+              onPress={() => setIsOpenModal(false)}
+              style={styles.buttonOK}
+            >
+              <Text>OK</Text>
+            </Button>
+          </View>
+          <View style={styles.imageWrapper}>
+            <Image
+              source={require('("../../../assets/images/verified.png')}
+              style={styles.image}
+            />
+          </View>
+        </ModalBottomSheet>
+      ) : null}
     </Fragment>
   );
 }

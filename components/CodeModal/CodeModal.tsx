@@ -7,6 +7,17 @@ import { Modal } from "../Modal/Modal";
 import Button from "../Button";
 import { PinCodeInputBoxes } from "../FormGroup/FormGroup";
 
+type CodeModalProps = {
+  isOpen: boolean;
+  title: string;
+  subtitle?: string;
+  confirmButtonText?: string;
+  onSubmit: (data: { code: string }) => void;
+  onCancel: () => void;
+  loading?: boolean;
+  handleResendSMSVerificationCode?: () => void;
+};
+
 export const CodeModal = ({
   isOpen,
   title,
@@ -16,16 +27,7 @@ export const CodeModal = ({
   confirmButtonText,
   loading,
   handleResendSMSVerificationCode,
-}: {
-  isOpen: boolean;
-  title: string;
-  subtitle?: string;
-  confirmButtonText?: string;
-  onSubmit: (data: { code: string }) => void;
-  onCancel: () => void;
-  loading?: boolean;
-  handleResendSMSVerificationCode?: () => void;
-}) => {
+}: CodeModalProps ) => {
   const [code, setCode] = useState("");
   const [timeRemaining, setTimeRemaining] = useState<number>(60);
   const [isTimeToCountDown, setIsTimeToCountDown] = useState<boolean>(false);

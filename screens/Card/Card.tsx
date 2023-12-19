@@ -528,7 +528,7 @@ export function Card({ navigation }: any) {
                     <BugIcon size={18} color={vars['accent-blue']} />
                   </View>
                   <Typography fontSize={16} fontWeight={600}>
-                    Lost card
+                    Show Terminated Cards
                   </Typography>
                 </View>
                 <TouchableOpacity style={{marginTop: 7}} onPress={() => setIsLostPinActionPressed(true)}>

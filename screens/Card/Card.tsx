@@ -512,7 +512,7 @@ export function Card({ navigation }: any) {
                     <PinNumberCode color="heavy-blue" size={18} />
                   </View>
                   <Typography fontSize={16} fontWeight={600}>
-                    Show Pin
+                    Lost Card
                   </Typography>
                 </View>
                 <TouchableOpacity style={{marginTop: 7}} onPress={() => setIsShowPinActionPressed(true)}>

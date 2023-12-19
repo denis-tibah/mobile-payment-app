@@ -127,22 +127,19 @@ export function MyAccount({ navigation }: any) {
               }`}
             </Typography>
           </Box>
-          { isOneTransactionOpen ? null : (
-              <Box
-                style={{ ...styles.totalBalance, ...styles.pendingBalanceShadow }}
-              >
-                <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
-                  Pending
-                </Typography>
-                <Typography color={"accent-orange"} fontWeight={600} fontSize={16}>
-                  {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${Number(userAccountInformation?.data?.blocked_amount) < 0 ? `` : `0`}${
-                    userAccountInformation?.data?.blocked_amount || 0
-                  }`}
-                </Typography>
-              </Box>
-            )
-          }
-          { isOneTransactionOpen ? null : (
+
+            <Box
+              style={{ ...styles.totalBalance, ...styles.pendingBalanceShadow }}
+            >
+              <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
+                Pending
+              </Typography>
+              <Typography color={"accent-orange"} fontWeight={600} fontSize={16}>
+                {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${Number(userAccountInformation?.data?.blocked_amount) < 0 ? `` : `0`}${
+                  userAccountInformation?.data?.blocked_amount || 0
+                }`}
+              </Typography>
+            </Box>
           <Box
             style={{ ...styles.totalBalance, ...styles.availableBalanceShadow }}
           >
@@ -155,8 +152,6 @@ export function MyAccount({ navigation }: any) {
               }`}
             </Typography>
           </Box>
-          ) }
-          
         </View>
         <View>
           <View style={styles.base}>

@@ -32,7 +32,8 @@ export const CardView = ({
   timer,
   cardDetails,
 }: CardViewProps) => {
-  if (pin) return <PinCard card={card} pin={pin} timer={timer} />;
+  // if (pin) return <PinCard card={card} pin={pin} timer={timer} />; showing pin is disabled
+
   if (card?.frozenYN === "Y") {
     return (
       <FreezeCard

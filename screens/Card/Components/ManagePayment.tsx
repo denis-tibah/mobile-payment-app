@@ -5,7 +5,8 @@ import vars from "../../../styles/vars";
 import { managePaymentMethods } from "../../../utils/constants";
 
 const ManagePaymentMethod: React.FC = () => {
-  const [ listOfChecks, setListOfChecks ] = useState<string[]>([]);
+  const [listOfChecks, setListOfChecks] = useState<string[]>([]);
+
   return (
     <View style={styles.container}>
       {managePaymentMethods.map((item, index) => {

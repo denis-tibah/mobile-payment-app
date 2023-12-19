@@ -53,7 +53,7 @@ import { BugIcon } from "../../assets/icons/BugIcon";
 import BottomSheet from "../../components/BottomSheet";
 import ManagePaymentMethod from "./Components/ManagePayment";
 import { PinCodeInputBoxes } from "../../components/FormGroup/FormGroup";
-import { useLazyOrderCardQuery } from "../../redux/card/cardSliceV2";
+import { useLazyOrderCardQuery, useLazyShowCardDetailsQuery } from "../../redux/card/cardSliceV2";
 
 const DEFAULT_CARD_ENROLLMENT_STATUS = {
   title: "",
@@ -85,7 +85,7 @@ export function Card({ navigation }: any) {
   const [isLostPinActionPressed, setIsLostPinActionPressed] = useState<boolean>(false);
   const [showCardDetailOTP, setShowCardDetailOTP] = useState<number>(0);
   const [chosenCurrency, setChosenCurrency] = useState<string>("");
-  const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
+  // const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
   const [isEnrollingCard, setIsEnrollingCard] = useState<boolean>(false);
   const [enrollmentCardStatus, setEnrollmentCardStatus] = useState<{
     title: string;
@@ -97,7 +97,15 @@ export function Card({ navigation }: any) {
     isSuccess: orderCardIsSuccess,
     isError: orderCardIsError,
   }] = useLazyOrderCardQuery();
+  const [showCardDetails, {
+    isLoading: showCardDetailsIsLoading,
+    isSuccess: showCardDetailsIsSuccess,
+    data: showCardDetailsData,
+    isError: showCardDetailsIsError,
+  }] = useLazyShowCardDetailsQuery();
+
   const shownCardsOnCarousel = isTerminatedCardShown ? cardsActiveList ? [...cardsActiveList, ...cardData] : [] : cardsActiveList ? cardsActiveList : [];
+
 
   const handleGetCards = async () => {
     try {
@@ -141,19 +149,28 @@ export function Card({ navigation }: any) {
   const requestShowCard = async () => {
     setIsEnrollingCard(false);
     setIsloading(prev => prev = true);
-    const payload = await dispatch(
+    dispatch(
       sendSmsShowCardVerification({
         type: "trusted",
       }) as any
     ).unwrap()
+    .then((res: any) => {
+      console.log({ res });
+      setShowCardOtpModal(true);
+    })
+    .catch((error: any) => {
+      console.log({ error });
+    })
     .finally(() => {
       setIsloading(prev => prev = false);
     });
-    if (payload?.status !== "success") return;
-    setShowCardOtpModal(true);
+    // if (payload?.status !== "success") {
+    //   setShowCardOtpModal(true);
+    //   return;
+    // }
   };
 
-  const handleEnrollWithPinCode = async ({ code }: { code: string }) => {
+  const processEnrollmentAndShowPinCard = async ({ code }: { code: string }) => {
     if (isEnrollingCard) {
       const orderCardPayload = {
         cardType: "V",
@@ -170,26 +187,27 @@ export function Card({ navigation }: any) {
       return;
     } else {
       setShowCardOtpLoading(true);
-      setIsTerminatedCardShown(false);
+      console.log({ account_id: userID, otp: code, card_id: selectedCard?.cardreferenceId });
+      showCardDetails({ account_id: userID, otp: code, card_id: selectedCard?.cardreferenceId });
 
-      const payload = await dispatch(
-        showCardDetails({
-          account_id: userID,
-          otp: code,
-          card_id: selectedCard?.cardreferenceId,
-        }) as any
-      ).unwrap();
-      setIsloading(false);
-      if (payload) {
-        setCardPin("");
-        setRemainingTime(30);
-        setCardDetails({
-          cardreferenceId: cardsActiveList[0]?.cardreferenceId,
-          card: cardsActiveList[0],
-          cardImage: payload.cardImageBase64,
-          cardNumber: payload?.cardNumber,
-        });
-      }
+      // const payload = await dispatch(
+      //   showCardDetails({
+      //     account_id: userID,
+      //     otp: code,
+      //     card_id: selectedCard?.cardreferenceId,
+      //   }) as any
+      // ).unwrap();
+      // setIsloading(false);
+      // if (payload) {
+      //   setCardPin("");
+      //   setRemainingTime(30);
+      //   setCardDetails({
+      //     cardreferenceId: cardsActiveList[0]?.cardreferenceId,
+      //     card: cardsActiveList[0],
+      //     cardImage: payload.cardImageBase64,
+      //     cardNumber: payload?.cardNumber,
+      //   });
+      // }
       setShowCardOtpLoading(false);
       setShowCardOtpModal(false);
     }
@@ -241,9 +259,27 @@ export function Card({ navigation }: any) {
     await Clipboard.setStringAsync(cardDetails?.cardNumber || "");
   };
 
+  useEffect(() => {
+    console.log("showCardDetailsData",showCardDetailsData);
+    console.log("showCardDetailsIsSuccess",showCardDetailsIsSuccess);
+    if (showCardDetailsIsSuccess) {
+      setCardPin(showCardDetailsData?.cardPin);
+      setRemainingTime(30);
+      setCardDetails({
+        cardreferenceId: cardsActiveList[0]?.cardreferenceId,
+        card: cardsActiveList[0],
+        cardImage: showCardDetailsData?.cardImageBase64,
+        cardNumber: showCardDetailsData?.cardNumber,
+      });
+    }
+    if (showCardDetailsIsError) {
+      Alert.alert("Error", "Something went wrong");
+    }
+  }, [showCardDetailsIsSuccess, showCardDetailsIsError]);
+
   useEffect( () => {
     if (orderCardIsSuccess) {
-      setEnrollmentStatus(true);
+      // setEnrollmentStatus(true);
       setEnrollmentCardStatus({
         title: "Card Enrollment",
         text: `Card Status: Success`,
@@ -256,7 +292,7 @@ export function Card({ navigation }: any) {
       setIsloading(false);
       setIsEnrollingCard(false);
       setShowCardOtpModal(false);
-      setEnrollmentStatus(true);
+      // setEnrollmentStatus(true);
       setEnrollmentCardStatus({
         title: "Card Enrollment",
         text: `Error while ordering card`,
@@ -322,10 +358,13 @@ export function Card({ navigation }: any) {
       <CodeModal
         confirmButtonText={isEnrollingCard ? "Submit" : "Show Card"}
         title={isEnrollingCard ? "Card Enrollment" : "Show Card"}
-        subtitle="Since your account doesnt have any card. You will receive an sms to your mobile device. Please enter this code below."
+        subtitle={ isEnrollingCard ?
+          "Since your account doesnt have any card. You will receive an sms to your mobile device. Please enter this code below." :
+          "You will receive an sms to your mobile device. Please enter this code below."
+        }
         isOpen={showCardOtpModal}
         loading={showCardOtpLoading}
-        onSubmit={handleEnrollWithPinCode}
+        onSubmit={processEnrollmentAndShowPinCard}
         onCancel={() => {
           setShowCardOtpModal(false);
           setIsloading(false);

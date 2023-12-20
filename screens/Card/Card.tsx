@@ -182,30 +182,12 @@ export function Card({ navigation }: any) {
         "🚀 ~ file: Card.tsx:267 ~ handlePinCode ~ orderCardPayload:",
         orderCardPayload
       );
-      orderCard(orderCardPayload)
-      .unwrap()
-      .then((res: any) => 
-      console.log(res)
-      )
-      .catch((error: any) => {
-        console.log({ error });
-      })
-      .finally(() => {
-        setIsloading(false);
-      });
-      ; // order a card
+      orderCard(orderCardPayload);
       return;
     } else {
       setShowCardOtpLoading(true);
       console.log({ account_id: userID, otp: code, card_id: selectedCard?.cardreferenceId });
-      showCardDetails({ account_id: userID, otp: code, card_id: selectedCard?.cardreferenceId })
-      .unwrap()
-      .then((res: any) => {
-        console.log(res);
-      })
-      .catch((error: any) => {
-        console.log({ error });
-      });
+      showCardDetails({ account_id: userID, otp: code, card_id: selectedCard?.cardreferenceId });
 
       // const payload = await dispatch(
       //   showCardDetails({

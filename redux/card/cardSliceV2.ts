@@ -58,7 +58,7 @@ export const cardsV2 = createApi({
           email,
           cardType,
           currency,
-          code: otp,
+          otp,
         },
       }),
     }),
@@ -72,23 +72,6 @@ export const cardsV2 = createApi({
           otp,
         },
       }),
-    }),
-    orderCardTwo: builder.mutation({
-      query: ({ accountUuid, email, cardType, currency, otp }) => {
-        console.log("card enrollll");
-        return {
-          url: "/OrdercardfinxpV2",
-          method: METHODS.POST,
-          body: {
-            cardType,
-            accountUuid,
-            currency,
-            email,
-            code: otp,
-          },
-          invalidatesTags: ["cardsV2"],
-        };
-      },
     }),
     sendSmsLostCardVerification: builder.query({
       query: ({ accountId, cardId }) => ({
@@ -157,7 +140,6 @@ export const {
   useLazySendSmsShowPinVerificationQuery,
   useSendSmsShowPinVerificationTwoMutation,
   useLazyOrderCardQuery,
-  useOrderCardTwoMutation,
   useSendSmsLostCardVerificationQuery,
   useLazySendSmsLostCardVerificationQuery,
   useShowCardDetailsQuery,

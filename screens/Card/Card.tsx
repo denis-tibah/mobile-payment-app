@@ -53,7 +53,7 @@ import { BugIcon } from "../../assets/icons/BugIcon";
 import BottomSheet from "../../components/BottomSheet";
 import ManagePaymentMethod from "./Components/ManagePayment";
 import { PinCodeInputBoxes } from "../../components/FormGroup/FormGroup";
-import { useLazyOrderCardQuery, useLazyShowCardDetailsQuery } from "../../redux/card/cardSliceV2";
+import { useLazyOrderCardQuery, useLazySendSmsLostCardVerificationQuery, useLazyShowCardDetailsQuery } from "../../redux/card/cardSliceV2";
 
 const DEFAULT_CARD_ENROLLMENT_STATUS = {
   title: "",
@@ -103,9 +103,8 @@ export function Card({ navigation }: any) {
     data: showCardDetailsData,
     isError: showCardDetailsIsError,
   }] = useLazyShowCardDetailsQuery();
-
+  const [terminatedThisCard] = useLazySendSmsLostCardVerificationQuery();
   const shownCardsOnCarousel = isTerminatedCardShown ? cardsActiveList ? [...cardsActiveList, ...cardData] : [] : cardsActiveList ? cardsActiveList : [];
-
 
   const handleGetCards = async () => {
     try {
@@ -183,7 +182,7 @@ export function Card({ navigation }: any) {
         "🚀 ~ file: Card.tsx:267 ~ handlePinCode ~ orderCardPayload:",
         orderCardPayload
       );
-      orderCard(orderCardPayload); // order a card
+      orderCard(orderCardPayload);
       return;
     } else {
       setShowCardOtpLoading(true);
@@ -301,27 +300,28 @@ export function Card({ navigation }: any) {
     }
   }, [orderCardIsSuccess, orderCardIsError]);
 
-  useEffect(() => {
-    (async () => {
-      if (!selectedCard && cardsActiveList.length > 0) {
-        setPrimaryCardID(cardsActiveList[0]?.cardreferenceId);
-        setSelectedCard(shownCardsOnCarousel[0]);
-      }
-      if (cardsActiveList.length === 0 && cardData.length > 0) {
-        try {
-          await dispatch<any>(
-            sendSmsShowCardVerification({
-              type: "trusted",
-            }))
-          setIsEnrollingCard(true);
-          setShowCardOtpModal(true);
-        } catch(error) {
-          console.log({error});
-        }
-      }
-      setSelectedCard(shownCardsOnCarousel[0]);
-    })();
-  }, [cardData]);
+  // this lifecycle auto order
+  // useEffect(() => {
+  //   (async () => {
+  //     if (!selectedCard && cardsActiveList.length > 0) {
+  //       setPrimaryCardID(cardsActiveList[0]?.cardreferenceId);
+  //       setSelectedCard(shownCardsOnCarousel[0]);
+  //     }
+  //     if (cardsActiveList.length === 0 && cardData.length > 0) {
+  //       try {
+  //         await dispatch<any>(
+  //           sendSmsShowCardVerification({
+  //             type: "trusted",
+  //           }))
+  //         setIsEnrollingCard(true);
+  //         setShowCardOtpModal(true);
+  //       } catch(error) {
+  //         console.log({error});
+  //       }
+  //     }
+  //     setSelectedCard(shownCardsOnCarousel[0]);
+  //   })();
+  // }, [cardData]);
 
   // triggered when cardDetails image is truthy
   useEffect(() => {
@@ -351,6 +351,7 @@ export function Card({ navigation }: any) {
           setShowGetCardModal(false);
           setIsEnrollingCard(true);
           setShowCardOtpModal(true);
+          console.log('here', currency);
           setChosenCurrency(currency);
           }
         }
@@ -515,7 +516,7 @@ export function Card({ navigation }: any) {
                     Lost Card
                   </Typography>
                 </View>
-                <TouchableOpacity style={{marginTop: 7}} onPress={() => setIsShowPinActionPressed(true)}>
+                <TouchableOpacity style={{marginTop: 7}} onPress={() => setIsLostPinActionPressed(true)}>
                   <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
                 </TouchableOpacity>
               </View>
@@ -531,7 +532,7 @@ export function Card({ navigation }: any) {
                     Show Terminated Cards
                   </Typography>
                 </View>
-                <TouchableOpacity style={{marginTop: 7}} onPress={() => setIsLostPinActionPressed(true)}>
+                <TouchableOpacity style={{marginTop: 7}} onPress={() => setIsShowPinActionPressed(true)}>
                   <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
                 </TouchableOpacity>
               </View>
@@ -560,44 +561,42 @@ export function Card({ navigation }: any) {
             onClose={() => setIsShowPinActionPressed(false)}
           >
             <Typography fontSize={16} fontWeight={600}>
-              Show Card Pin Number
-            </Typography>
-            <Typography fontSize={12} fontWeight={400} color={"#696F7A"}>
-              You will receive an sms to your mobile device. 
-              Please enter this code below.
+              Show Terminated Cards
             </Typography>
             <Divider style={{marginVertical: 15, paddingHorizontal: 15}} />
             <View style={{
                 width: "100%",
-                justifyContent: "center",
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: "space-between",
                 alignItems: "center",
                 paddingVertical: 10,
                 marginBottom: 20,
               }}>
-              <PinCodeInputBoxes
-                fieldCount={6}
-                onChange={(otp: number) => setShowCardDetailOTP(otp)}
-              />
-              <TouchableOpacity >
-                <Text style={{
-                  color: vars['accent-pink'],
-                  fontSize: 14,
-                  fontWeight: 500,
-                  marginTop: 10,
-                } as any}>
-                  Did not get a verification code?
-                </Text>
-              </TouchableOpacity>
+              {/* Yes and no button */}
+              <Button
+                onPress={() => {
+                  setIsTerminatedCardShown(!isTerminatedCardShown);
+                  setIsShowPinActionPressed(false);
+                }}
+                style={{color: '#fff', width: 140}}
+                color="light-pink"
+                leftIcon={<EyeIcon color="pink" size={14} />}
+              >
+                Yes
+              </Button>
+              <Button
+                onPress={() => {
+                  setIsTerminatedCardShown(!isTerminatedCardShown);
+                  setIsShowPinActionPressed(false);
+                }}
+                style={{color: '#fff', width: 140}}
+                color="light-pink"
+                leftIcon={<EyeIcon color="pink" size={14} />}
+              >
+                No
+              </Button>
             </View>
-            <Divider style={{marginVertical: 15, paddingHorizontal: 15}} />
-            <Button 
-              onPress={() => setIsShowPinActionPressed(false)}
-              style={{color: '#fff'}}
-              color="light-pink"
-              leftIcon={<EyeIcon color="pink" size={14} />}
-            >
-              Show Pin Number
-            </Button>
           </BottomSheet>
           <BottomSheet
             isVisible={isLostPinActionPressed}
@@ -617,10 +616,21 @@ export function Card({ navigation }: any) {
             <Divider style={{marginVertical: 15, paddingHorizontal: 15}} />
             <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
               <Button 
-                onPress={() => setIsLostPinActionPressed(false)}
+                onPress={() => {
+                  setIsloading(true);
+                  terminatedThisCard({
+                    accountId: userID,
+                    cardId: selectedCard?.cardreferenceId,
+                  })
+                  .unwrap()
+                  .finally(() => {
+                    setIsloading(false);
+                  })
+                }}
                 style={{color: '#fff', width: 140}}
                 color="light-pink"
                 leftIcon={<EyeIcon color="pink" size={14} />}
+                disabled={isLoading}
               >
                 Yes
               </Button>

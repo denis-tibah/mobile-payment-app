@@ -45,7 +45,7 @@ export const GetCardModal = ({
     onClose();
   };
 
-  const initiateOrderCard = async ({currency}: any) => {
+  const initiateOrderCard = async (currency: any) => {
     try {
       setLoading(true);
       const payload = await dispatch(
@@ -53,8 +53,9 @@ export const GetCardModal = ({
           type: "trusted",
         }) as any
       ).unwrap();
+      console.log({ payload });
       if (payload?.status === "success") {
-        onGetVirtualCard && onGetVirtualCard({currency: currency.value});
+        onGetVirtualCard && onGetVirtualCard({currency});
       }
     } catch (error) {
       console.log({ error });
@@ -80,10 +81,9 @@ export const GetCardModal = ({
               disabled={loading}
               loading={loading}
               color="light-pink"
-              onPress={() => {
-                console.log({currency});
+              onPress={async () => {
                 if(currency) {
-                  initiateOrderCard(currency);
+                  await initiateOrderCard(currency);
                 } else {
                   alert('Please select currency');
                 }

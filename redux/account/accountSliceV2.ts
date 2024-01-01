@@ -13,7 +13,7 @@ export const accountV2 = createApi({
       query: ({
         tokenZiyl,
         accessToken,
-      } : {
+      }: {
         tokenZiyl: string;
         accessToken: string;
       }) => {

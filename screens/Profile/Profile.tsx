@@ -136,7 +136,10 @@ export function Profile({ route, navigation }: any) {
       setIsBiometricEnabled(false);
     }
     //set emailAlerts checkbox setting
-    if (profileData.UserProfile.EnableAlertsYN == "Y") {
+    if (
+      profileData?.UserProfile?.EnableAlertsYN &&
+      profileData?.UserProfile?.EnableAlertsYN === "Y"
+    ) {
       setIsEnabled(true);
     } else {
       setIsEnabled(false);

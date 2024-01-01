@@ -64,9 +64,9 @@ export function LoginScreen({ navigation }: any) {
 
   const {
     isLoading: isLoadingAccount,
-    /* isError: isErrorAccount, */
+    isError: isErrorAccount,
     isSuccess: isSuccessAccount,
-    /* error: errorAccount, */
+    error: errorAccount,
     data: dataAccount,
   } = useGetAccountQuery(
     { accessToken: dataLogin?.access_token, tokenZiyl: dataLogin?.token_ziyl },
@@ -82,6 +82,7 @@ export function LoginScreen({ navigation }: any) {
     const handleAuth = (data: any) => {
       dispatch<any>(signInViaRTK(data));
     };
+
     if (
       !isLoadingAccount &&
       isSuccessAccount &&
@@ -145,6 +146,17 @@ export function LoginScreen({ navigation }: any) {
       });
     }
   }, [isLoadingLogin, isErrorLogin, errorLogin]);
+
+  useEffect(() => {
+    if (!isLoadingLogin && isErrorAccount) {
+      setStatusMessage({
+        header: `${errorAccount?.data?.code} Error`,
+        body: errorAccount?.data?.message || errorAccount?.data?.status,
+        isOpen: true,
+        isError: true,
+      });
+    }
+  }, [isLoadingAccount, isErrorAccount, errorAccount]);
 
   const { handleSubmit, handleChange, values, touched, errors, handleBlur } =
     useFormik({

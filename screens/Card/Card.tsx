@@ -259,8 +259,8 @@ export function Card({ navigation }: any) {
   };
 
   useEffect(() => {
-    console.log("showCardDetailsData",showCardDetailsData);
-    console.log("showCardDetailsIsSuccess",showCardDetailsIsSuccess);
+    // console.log("showCardDetailsData",showCardDetailsData);
+    // console.log("showCardDetailsIsSuccess",showCardDetailsIsSuccess);
     if (showCardDetailsIsSuccess) {
       setCardPin(showCardDetailsData?.cardPin);
       setRemainingTime(30);

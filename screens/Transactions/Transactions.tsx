@@ -339,7 +339,7 @@ export function Transactions({ navigation }: any) {
           isSearchTextOpen && (
             <View style={styles.searchBar}>
               <FormGroup.Input
-                icon={<SearchIcon />}
+                icon={<SearchIcon color="blue" size={18}/>}
                 placeholder={"Search text ..."}
                 color={vars["black"]}
                 fontSize={14}

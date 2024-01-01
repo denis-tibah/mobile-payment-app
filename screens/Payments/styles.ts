@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const styles:any = StyleSheet.create<any>({
   container: {
-    marginTop: 26,
+    // marginTop: 26,
     zIndex:1,
   },
   headerContainer: {
@@ -12,7 +12,6 @@ export const styles:any = StyleSheet.create<any>({
   },
   content: {
     backgroundColor: "white",
-    paddingTop: 12,
   },
   dropdown: {
     height: 42,

@@ -12,7 +12,7 @@ import { Seperator } from "../../components/Seperator/Seperator";
 import EmailIcon from "../../assets/icons/Email";
 import PhoneIcon from "../../assets/icons/Phone";
 import ArrowRightLong from "../../assets/icons/ArrowRightLong";
-import CheckIcon from "../../assets/icons/Check";
+import SalutationIcon from "../../assets/icons/Salutation";
 import FormGroup from "../../components/FormGroup";
 import FixedBottomAction from "../../components/FixedBottomAction";
 import Button from "../../components/Button";
@@ -239,7 +239,7 @@ const LoginDetails: FC<ILoginDetails> = ({
                   placeholder="Email Address"
                   placeholderTextColor={vars["ios-default-text"]}
                   iconColor="blue"
-                  icon={<EmailIcon />}
+                  icon={<EmailIcon size={10} />}
                 />
               </FormGroup>
             </View>
@@ -251,30 +251,51 @@ const LoginDetails: FC<ILoginDetails> = ({
                   errors.countryCode
                 }
               >
-                <View>
-                  <DropDownPicker
-                    schema={{ label: "label", value: "value" }}
-                    onSelectItem={(value: any) => {
-                      const { value: countryCodeValue } = value;
-                      setValues({
-                        ...values,
-                        countryCode: countryCodeValue,
-                      });
+                <View style={styles.dropdownWrapper}>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignSelf: "flex-start",
+                      justifyContent: "flex-start",
+                      paddingLeft: 20,
+                      paddingTop: 18,
                     }}
-                    listMode="SCROLLVIEW"
-                    // setValue={setSelectedSalutation}
-                    items={registrationPhonePrefix}
-                    value={values?.countryCode}
-                    setOpen={setOpenListForCountryCode}
-                    open={openListForCountryCode}
-                    style={styles.dropdown}
-                    dropDownContainerStyle={styles.dropdownContainer}
-                    dropDownDirection="TOP"
-                    placeholder="Phone country code"
-                    scrollViewProps={{
+                  >
+                    <SalutationIcon size={16} />
+                  </View>
+                  <View>
+                    <DropDownPicker
+                      schema={{ label: "label", value: "value" }}
+                      onSelectItem={(value: any) => {
+                        const { value: countryCodeValue } = value;
+                        setValues({
+                          ...values,
+                          countryCode: countryCodeValue,
+                        });
+                      }}
+                      listMode="SCROLLVIEW"
+                      // setValue={setSelectedSalutation}
+                      items={registrationPhonePrefix}
+                      value={values?.countryCode}
+                      setOpen={setOpenListForCountryCode}
+                      open={openListForCountryCode}
+                      style={styles.dropdown}
+                      dropDownContainerStyle={styles.dropdownContainer}
+                      bottomOffset={100}
+                      placeholder="Phone country code"
+                      /* scrollViewProps={{
                       nestedScrollEnabled: true,
-                    }}
-                  />
+                    }} */
+                      arrowIconStyle={{
+                        width: 20,
+                        height: 20,
+                      }}
+                      placeholderStyle={{
+                        color: vars["medium-grey"],
+                      }}
+                    />
+                  </View>
                 </View>
               </FormGroup>
             </View>

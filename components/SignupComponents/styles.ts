@@ -141,25 +141,38 @@ export const styles = StyleSheet.create({
     marginBottom: 8,
   },
   dropdown: {
-    height: 0,
-    backgroundColor: "#f9f9f9",
-    /* borderRadius: 99, */
-    display: "flex",
-    flexDirection: "row",
-    paddingLeft: 12,
-    /* width: "95%", */
-    alignSelf: "center",
+    backgroundColor: "#fffff",
     borderColor: "transparent",
-    marginBottom: 40,
+    /* borderRadius: 99, */
+    /* display: "flex",
+    flexDirection: "row", */
+    /* paddingLeft: 12, */
+    /* width: "95%", */
+    /* alignSelf: "center", */
+    /* marginBottom: 40, */
+    overflow: "hidden",
   },
   dropdownContainer: {
-    /* width: "95%", */
-    alignSelf: "center",
-    backgroundColor: "#f9f9f9",
+    width: "100%",
+    /* backgroundColor: "#fffff", */
     borderColor: "transparent",
     marginBottom: 0,
-    /* zIndex: 1000, */
+    marginTop: 0,
+    paddingTop: 0,
+    top: 0,
+    left: 0,
+    borderRadius: 0,
     position: "relative",
-    /*  top: 0, */
+  },
+  dropdownWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    alignSelf: "center",
+    borderColor: vars["accent-blue"],
+
+    borderRadius: 10,
+    borderWidth: 1,
+    overflow: "hidden",
+    width: "100%",
   },
 });

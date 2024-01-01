@@ -222,7 +222,7 @@ export function Payment({ navigation }: any) {
   }, [debouncedBeneficiaryIban]);
 
   useEffect(() => {
-    if (!beneficiaryList.length) {
+    if (!beneficiaryList?.length) {
       fetchAllPayees();
     }
     setBeneficiaryOptions([

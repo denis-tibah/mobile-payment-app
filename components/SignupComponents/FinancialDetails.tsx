@@ -11,6 +11,7 @@ import { setRegistrationData } from "../../redux/registration/registrationSlice"
 import { financialDetailsSchema } from "../../utils/formikSchema";
 import ArrowRightLong from "../../assets/icons/ArrowRightLong";
 import ArrowLeft from "../../assets/icons/ArrowLeft";
+import ArrowRightIcon from "../../assets/icons/ArrowRight";
 import PigIcon from "../../assets/icons/Pig";
 import ProfileIcon from "../../assets/icons/Profile";
 import SalutationIcon from "../../assets/icons/Salutation";
@@ -127,7 +128,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 errors.sourceOfWealth
               }
             >
-              <View>
+              {/* <View>
                 <DropDownPicker
                   schema={{ label: "label", value: "value" }}
                   onSelectItem={(value: any) => {
@@ -152,6 +153,38 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                     nestedScrollEnabled: true,
                   }}
                 />
+              </View> */}
+              <View style={styles.dropdownWrapper}>
+                <View style={styles.dropDownIconContainerLeft}>
+                  <PigIcon size={16} color="blue" />
+                </View>
+                <View>
+                  <DropDownPicker
+                    schema={{ label: "label", value: "value" }}
+                    onSelectItem={(value: any) => {
+                      const { value: sourceOfWealthValue } = value;
+
+                      setValues({
+                        ...values,
+                        sourceOfWealth: sourceOfWealthValue,
+                      });
+                    }}
+                    listMode="MODAL"
+                    items={sourceOfWealth}
+                    value={values?.sourceOfWealth}
+                    setOpen={setOpenListForSourceOfDeposits}
+                    open={openListForSourceOfDeposits}
+                    style={styles.dropdown}
+                    dropDownContainerStyle={styles.dropdownContainer}
+                    placeholder="Source of wealth"
+                    placeholderStyle={{
+                      color: vars["medium-grey"],
+                    }}
+                  />
+                </View>
+                <View style={styles.dropDownIconContainerRight}>
+                  <ArrowRightIcon size={16} color="blue" />
+                </View>
               </View>
             </FormGroup>
           </View>
@@ -163,7 +196,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 errors.employmentStatus
               }
             >
-              <View>
+              {/* <View>
                 <DropDownPicker
                   schema={{ label: "label", value: "value" }}
                   onSelectItem={(value: any) => {
@@ -200,6 +233,52 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                     nestedScrollEnabled: true,
                   }}
                 />
+              </View> */}
+              <View style={styles.dropdownWrapper}>
+                <View style={styles.dropDownIconContainerLeft}>
+                  <PigIcon size={16} color="blue" />
+                </View>
+                <View>
+                  <DropDownPicker
+                    schema={{ label: "label", value: "value" }}
+                    onSelectItem={(value: any) => {
+                      const { value: employmentStatusValue } = value;
+
+                      setValues({
+                        ...values,
+                        employmentStatus: employmentStatusValue,
+                      });
+                      if (employmentStatusValue === "unemployed") {
+                        setFieldValue("occupation", "N/A");
+                        setFieldValue("employerName", "N/A");
+                        setFieldValue("positionHeld", "N/A");
+                        setFieldValue("lengthWithEmployer", "N/A");
+                        setFieldValue("natureOfBusiness", "N/A");
+                      } else {
+                        setFieldValue("occupation", "");
+                        setFieldValue("employerName", "");
+                        setFieldValue("positionHeld", "");
+                        setFieldValue("lengthWithEmployer", "");
+                        setFieldValue("natureOfBusiness", "");
+                      }
+                    }}
+                    listMode="MODAL"
+                    items={employmentStatus}
+                    value={values?.employmentStatus}
+                    setOpen={setOpenListForEmploymentStatus}
+                    open={openListForEmploymentStatus}
+                    style={styles.dropdown}
+                    dropDownContainerStyle={styles.dropdownContainerTwo}
+                    dropDownDirection="TOP"
+                    placeholder="Employment status"
+                    placeholderStyle={{
+                      color: vars["medium-grey"],
+                    }}
+                  />
+                </View>
+                <View style={styles.dropDownIconContainerRight}>
+                  <ArrowRightIcon size={16} color="blue" />
+                </View>
               </View>
             </FormGroup>
           </View>

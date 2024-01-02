@@ -13,6 +13,7 @@ import EmailIcon from "../../assets/icons/Email";
 import PhoneIcon from "../../assets/icons/Phone";
 import ArrowRightLong from "../../assets/icons/ArrowRightLong";
 import SalutationIcon from "../../assets/icons/Salutation";
+import ArrowRightIcon from "../../assets/icons/ArrowRight";
 import FormGroup from "../../components/FormGroup";
 import FixedBottomAction from "../../components/FixedBottomAction";
 import Button from "../../components/Button";
@@ -24,7 +25,6 @@ import { AppDispatch } from "../../store";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
 import { registerForPushNotificationsAsync } from "../PushNotification";
-import ModalBottomSheet from "../ModalBottomSheet/ModalBottomSheet";
 
 interface ILoginDetails {
   handleNextStep: () => void;
@@ -252,17 +252,8 @@ const LoginDetails: FC<ILoginDetails> = ({
                 }
               >
                 <View style={styles.dropdownWrapper}>
-                  <View
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignSelf: "flex-start",
-                      justifyContent: "flex-start",
-                      paddingLeft: 20,
-                      paddingTop: 18,
-                    }}
-                  >
-                    <SalutationIcon size={16} />
+                  <View style={styles.dropDownIconContainerLeft}>
+                    <SalutationIcon size={16} color="blue" />
                   </View>
                   <View>
                     <DropDownPicker
@@ -274,7 +265,7 @@ const LoginDetails: FC<ILoginDetails> = ({
                           countryCode: countryCodeValue,
                         });
                       }}
-                      listMode="SCROLLVIEW"
+                      listMode="MODAL"
                       // setValue={setSelectedSalutation}
                       items={registrationPhonePrefix}
                       value={values?.countryCode}
@@ -282,19 +273,19 @@ const LoginDetails: FC<ILoginDetails> = ({
                       open={openListForCountryCode}
                       style={styles.dropdown}
                       dropDownContainerStyle={styles.dropdownContainer}
+                      labelStyle={{ marginTop: 3 }}
                       bottomOffset={100}
                       placeholder="Phone country code"
                       /* scrollViewProps={{
-                      nestedScrollEnabled: true,
-                    }} */
-                      arrowIconStyle={{
-                        width: 20,
-                        height: 20,
-                      }}
+                        nestedScrollEnabled: true,
+                      }} */
                       placeholderStyle={{
                         color: vars["medium-grey"],
                       }}
                     />
+                  </View>
+                  <View style={styles.dropDownIconContainerRight}>
+                    <ArrowRightIcon size={16} color="blue" />
                   </View>
                 </View>
               </FormGroup>

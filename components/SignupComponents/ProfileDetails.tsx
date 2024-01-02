@@ -7,8 +7,11 @@ import DropDownPicker from "react-native-dropdown-picker";
 
 import ProfileIcon from "../../assets/icons/Profile";
 import DobIcon from "../../assets/icons/Birthday";
+import SalutationIcon from "../../assets/icons/Salutation";
 import ArrowRightLong from "../../assets/icons/ArrowRightLong";
 import ArrowLeft from "../../assets/icons/ArrowLeft";
+import ArrowRightIcon from "../../assets/icons/ArrowRight";
+import CityIcon from "../../assets/icons/City";
 import { salutations } from "../../data/options";
 import FormGroup from "../../components/FormGroup";
 import { profileDetailsSchema } from "../../utils/formikSchema";
@@ -138,7 +141,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                 errors.salutation && touched.salutation && errors.salutation
               }
             >
-              <View>
+              {/* <View>
                 <DropDownPicker
                   schema={{ label: "label", value: "value" }}
                   onSelectItem={(value: any) => {
@@ -162,6 +165,38 @@ const ProfileDetails: FC<IProfileDetails> = ({
                     nestedScrollEnabled: true,
                   }}
                 />
+              </View> */}
+              <View style={styles.dropdownWrapper}>
+                <View style={styles.dropDownIconContainerLeft}>
+                  <SalutationIcon size={16} color="blue" />
+                </View>
+                <View>
+                  <DropDownPicker
+                    schema={{ label: "label", value: "value" }}
+                    onSelectItem={(value: any) => {
+                      const { value: salutationValue } = value;
+                      setValues({
+                        ...values,
+                        salutation: salutationValue,
+                      });
+                    }}
+                    listMode="MODAL"
+                    // setValue={setSelectedSalutation}
+                    items={salutations}
+                    value={values?.salutation}
+                    setOpen={setOpenListForSalutation}
+                    open={openListForSalutation}
+                    style={styles.dropdown}
+                    dropDownContainerStyle={styles.dropdownContainer}
+                    placeholder="Salutation"
+                    placeholderStyle={{
+                      color: vars["medium-grey"],
+                    }}
+                  />
+                </View>
+                <View style={styles.dropDownIconContainerRight}>
+                  <ArrowRightIcon size={16} color="blue" />
+                </View>
               </View>
             </FormGroup>
           </View>
@@ -259,7 +294,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                 errors.countryOfBirth
               }
             >
-              <View>
+              {/* <View>
                 <DropDownPicker
                   schema={{
                     label: "name",
@@ -286,6 +321,40 @@ const ProfileDetails: FC<IProfileDetails> = ({
                     nestedScrollEnabled: true,
                   }}
                 />
+              </View> */}
+              <View style={styles.dropdownWrapper}>
+                <View style={styles.dropDownIconContainerLeft}>
+                  <CityIcon size={16} color="blue" />
+                </View>
+                <View>
+                  <DropDownPicker
+                    schema={{
+                      label: "name",
+                      value: "alpha3",
+                    }}
+                    onSelectItem={(value: any) => {
+                      const { alpha3: contryOfBirthValue } = value;
+                      setValues({
+                        ...values,
+                        countryOfBirth: contryOfBirthValue,
+                      });
+                    }}
+                    listMode="MODAL"
+                    items={countries}
+                    value={values?.countryOfBirth || ""}
+                    setOpen={setOpenListForCountryOfBirth}
+                    open={openListForCountryOfBirth}
+                    style={styles.dropdown}
+                    dropDownContainerStyle={styles.dropdownContainer}
+                    placeholder="Country of birth"
+                    placeholderStyle={{
+                      color: vars["medium-grey"],
+                    }}
+                  />
+                </View>
+                <View style={styles.dropDownIconContainerRight}>
+                  <ArrowRightIcon size={16} color="blue" />
+                </View>
               </View>
             </FormGroup>
           </View>
@@ -295,7 +364,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
                 errors.nationality && touched.nationality && errors.nationality
               }
             >
-              <View>
+              {/* <View>
                 <DropDownPicker
                   schema={{
                     label: "name",
@@ -321,6 +390,40 @@ const ProfileDetails: FC<IProfileDetails> = ({
                     nestedScrollEnabled: true,
                   }}
                 />
+              </View> */}
+              <View style={styles.dropdownWrapper}>
+                <View style={styles.dropDownIconContainerLeft}>
+                  <CityIcon size={16} color="blue" />
+                </View>
+                <View>
+                  <DropDownPicker
+                    schema={{
+                      label: "name",
+                      value: "alpha3",
+                    }}
+                    onSelectItem={(value: any) => {
+                      const { alpha3: nationalityValue } = value;
+                      setValues({
+                        ...values,
+                        nationality: nationalityValue,
+                      });
+                    }}
+                    listMode="MODAL"
+                    items={nationalities}
+                    value={values?.nationality || ""}
+                    setOpen={setOpenListForNationality}
+                    open={openListForNationality}
+                    style={styles.dropdown}
+                    dropDownContainerStyle={styles.dropdownContainer}
+                    placeholderStyle={{
+                      color: vars["medium-grey"],
+                    }}
+                    placeholder="Nationality"
+                  />
+                </View>
+                <View style={styles.dropDownIconContainerRight}>
+                  <ArrowRightIcon size={16} color="blue" />
+                </View>
               </View>
             </FormGroup>
           </View>

@@ -143,36 +143,46 @@ export const styles = StyleSheet.create({
   dropdown: {
     backgroundColor: "#fffff",
     borderColor: "transparent",
-    /* borderRadius: 99, */
-    /* display: "flex",
-    flexDirection: "row", */
-    /* paddingLeft: 12, */
-    /* width: "95%", */
-    /* alignSelf: "center", */
-    /* marginBottom: 40, */
     overflow: "hidden",
+    marginTop: -5,
   },
+  dropdownMonthYears: {},
   dropdownContainer: {
     width: "100%",
-    /* backgroundColor: "#fffff", */
     borderColor: "transparent",
     marginBottom: 0,
     marginTop: 0,
     paddingTop: 0,
     top: 0,
-    left: 0,
+    left: -25,
     borderRadius: 0,
     position: "relative",
+  },
+  dropdownContainerMonthYears: {
+    left: 0,
   },
   dropdownWrapper: {
     display: "flex",
     flexDirection: "row",
     alignSelf: "center",
     borderColor: vars["accent-blue"],
-
-    borderRadius: 10,
+    borderRadius: 50,
     borderWidth: 1,
     overflow: "hidden",
     width: "100%",
+    height: 45,
+  },
+  dropDownIconContainerLeft: {
+    display: "flex",
+    flexDirection: "row",
+    alignSelf: "flex-start",
+    justifyContent: "flex-start",
+    paddingLeft: 20,
+    paddingTop: 13,
+  },
+  dropDownIconContainerRight: {
+    position: "absolute",
+    right: 15,
+    top: 13,
   },
 });

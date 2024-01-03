@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from "react";
-import { StyleSheet, View, Text, Platform, ScrollView } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { useFormik } from "formik";
 import { useSelector, useDispatch } from "react-redux";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -15,7 +15,7 @@ import LocationIcon from "../../assets/icons/Location";
 import CityIcon from "../../assets/icons/City";
 import ArrowRightIcon from "../../assets/icons/ArrowRight";
 import Typography from "../../components/Typography";
-import { countries, nationalities } from "../../data/ISO3166";
+import { countries } from "../../data/ISO3166";
 import { noOfMonthsObj, noOfYearsObj } from "../../data/options";
 
 import { Seperator } from "../../components/Seperator/Seperator";
@@ -66,30 +66,6 @@ const AddressDetails: FC<IAddressDetails> = ({
     if (months === 12) years += 1;
     return years < 3 ? true : false;
   };
-
-  /* const countryValueFromLocalStorage = (
-    type: string,
-    value: string
-  ): {
-    label?: string | null;
-    value?: string | null;
-  } => {
-    const selectedDataCountryOfBirth = {};
-    if (value) {
-      const arrCountry = type === "country" ? countries : nationalities;
-      const countryObj = arrCountry.find((country) => country.alpha3 === value);
-      if (countryObj && Object.keys(countryObj).length > 0) {
-        Object.assign(selectedDataCountryOfBirth, {
-          label:
-            type === "country" ? countryObj?.name : countryObj?.nationality,
-          value: countryObj?.alpha3,
-        });
-      }
-    }
-    return Object.keys(selectedDataCountryOfBirth).length > 0
-      ? selectedDataCountryOfBirth
-      : { label: null, value: null };
-  }; */
 
   const {
     handleSubmit,

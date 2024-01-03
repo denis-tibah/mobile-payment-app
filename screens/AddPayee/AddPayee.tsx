@@ -160,20 +160,18 @@ export function AddPayee() {
         isError={statusMessage.isError}
         onClose={onCloseModal}
       />
+      <Heading
+        icon={<BeneficiaryIcon color="pink" size={18} />}
+        title="Payee"
+        leftAction={
+          <Button onPress={() => navigate(screenNames.payments)} color={"light-pink"} leftIcon={<ArrowLeft size={14} />}>
+            <Typography>
+              Back
+            </Typography>
+          </Button>
+        }
+      />
       <ScrollView bounces={false}>
-        <View style={styles.container}>
-          <Heading
-            icon={<BeneficiaryIcon color="pink" size={18} />}
-            title="Payee"
-            leftAction={
-              <Button onPress={() => navigate(screenNames.payeesList)} color={"light-pink"} leftIcon={<ArrowLeft size={14} />}>
-                <Typography>
-                  Back
-                </Typography>
-              </Button>
-            }
-          />
-        </View>
         <View style={styles.content}>
           <View>
             <FormGroup

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { Fragment, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -9,17 +9,27 @@ import {
   Animated,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
+import { Divider } from "react-native-paper";
+
 type Props = {
   isVisible: boolean;
   onClose: () => void;
   children: React.ReactNode;
   hasNoHeaderPadding?: boolean;
+  headerTitle?: string;
+  leftHeaderIcon?: React.ReactNode;
+  rightHeaderIcon?: React.ReactNode;
+  isBottomSheetHeaderShown?: boolean;
 };
 export const BottomSheet: React.FC<Props> = ({
   isVisible,
   onClose,
   children,
   hasNoHeaderPadding,
+  headerTitle,
+  leftHeaderIcon,
+  rightHeaderIcon,
+  isBottomSheetHeaderShown,
 }) => {
   const bottomSheetRef = useRef(null);
 
@@ -69,16 +79,33 @@ export const BottomSheet: React.FC<Props> = ({
   };
 
   return (
-    <Animatable.View
-      ref={bottomSheetRef}
-      style={[styles.bottomSheet, { display: isVisible ? "flex" : "none" }]}
-      animation={isVisible ? "slideInUp" : "slideOutDown"}
-      duration={300}
-      onAnimationEnd={handleAnimationEnd}
-      {...panResponder.panHandlers}
-    >
-      <View style={styles.contentContainer}>{children}</View>
-    </Animatable.View>
+      <Animatable.View
+        ref={bottomSheetRef}
+        style={[styles.bottomSheet, { display: isVisible ? 'flex' : 'none' }]}
+        animation={isVisible ? 'slideInUp' : 'slideOutDown'}
+        duration={300}
+        onAnimationEnd={handleAnimationEnd}
+        {...panResponder.panHandlers}
+      >
+        <TouchableOpacity onPress={handleClose} style={{height: 15}}><Text>{' '}</Text></TouchableOpacity>
+        { !!isBottomSheetHeaderShown &&
+          <Fragment>
+            <View style={styles.headerContainer}>
+              <View style={{display: 'flex', flexDirection: 'row'}}>
+                  {!! leftHeaderIcon && <View style={{paddingRight: 7}}>{!!leftHeaderIcon && leftHeaderIcon}</View>}
+                  <Text style={{fontSize: 16, top: -3}}>{headerTitle}</Text>
+                </View>
+                <View>
+                {!!rightHeaderIcon && rightHeaderIcon}
+              </View>
+            </View>
+            <Divider style={{marginVertical: 15}} />
+          </Fragment>
+        }
+        <View style={styles.contentContainer}>
+          {children}
+        </View>
+      </Animatable.View>
   );
 };
 
@@ -97,6 +124,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
+  },
+  headerContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   hasNoHeaderPadding: {
     padding: 0,

@@ -39,6 +39,10 @@ import { validationPaymentSchema } from "../../utils/validation";
 import { formatCurrencyToLocalEn } from "../../utils/helpers";
 import ArrowDown from "../../assets/icons/ArrowDown";
 import ArrowRight from "../../assets/icons/ArrowRight";
+import BottomSheet from "../../components/BottomSheet";
+import FaceIcon from "../../assets/icons/FaceIcon";
+import BuildingIcon from "../../assets/icons/Building";
+import PinGPS from "../../assets/icons/PinGPS";
 
 export function Payment({ navigation }: any) {
   const dispatch = useDispatch();
@@ -62,10 +66,10 @@ export function Payment({ navigation }: any) {
   const accountData = useSelector(
     (state: any) => state?.account?.details?.info
   );
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [bottomSheetOpen, setBottomSheetOpen] = useState<boolean>(false);
 
-  const toggleDrawer = () => {
-    setDrawerOpen(!isDrawerOpen);
+  const toggleBottomSheet = () => {
+    setBottomSheetOpen(!bottomSheetOpen);
   };
 
   const fetchAllPayees = async () => {
@@ -75,6 +79,22 @@ export function Payment({ navigation }: any) {
       console.log({ error });
     }
   };
+
+  const { handleChange, handleBlur, values, touched, errors } = useFormik({
+    initialValues: {
+      name: '',
+      iban: '',
+      bic: '',
+      address1: '',
+      address2: '',
+      city: '',
+      postcode: '',
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      console.log('values', values);
+    }
+  });
 
   useEffect(() => {
     if ( beneficiaryList?.length === 0) {
@@ -387,7 +407,7 @@ export function Payment({ navigation }: any) {
         rightAction={
           <View style={{ flexDirection: "row", display: "flex" }}>
             <Button
-              onPress={() => console.log('clicked')}
+              onPress={() =>setBottomSheetOpen(true)}
               color={"light-pink"}
               leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
               // disabled={isCardHaveVirtual}
@@ -454,6 +474,164 @@ export function Payment({ navigation }: any) {
           </View>
         </View>
       </ScrollView>
+      <BottomSheet
+        isVisible={bottomSheetOpen}
+        onClose={toggleBottomSheet}
+        headerTitle="Add Payee"
+        leftHeaderIcon={<AntDesign name="pluscircleo" size={16} color={vars['accent-pink']} />}
+        isBottomSheetHeaderShown={true}
+      >
+        <View>
+          <FormGroup
+            validationError={
+              errors.name && touched.name && errors.name
+            }
+          >
+            <FormGroup.Input
+              keyboardType="text"
+              name="name"
+              onChangeText={handleChange("email")}
+              onBlur={handleBlur("email")}
+              value={values.name}
+              placeholderTextColor={vars["ios-default-text"]}
+              placeholder="Name"
+              iconColor="blue"
+              icon={<FaceIcon />}
+            />
+          </FormGroup>
+        </View>
+        <Divider style={{marginVertical: 15}} />
+        <View>
+          <FormGroup
+            validationError={
+              errors.iban && touched.iban && errors.iban
+            }
+          >
+            <FormGroup.Input
+              keyboardType="text"
+              name="iban"
+              onChangeText={handleChange("iban")}
+              onBlur={handleBlur("iban")}
+              value={values.iban}
+              placeholderTextColor={vars["ios-default-text"]}
+              placeholder="IBAN"
+              iconColor="blue"
+              icon={<CodeIcon />}
+            />
+          </FormGroup>
+        </View>
+        <View>
+          <FormGroup
+            validationError={
+              errors.bic && touched.bic && errors.bic
+            }
+          >
+            <FormGroup.Input
+              keyboardType="text"
+              name="bic"
+              onChangeText={handleChange("bic")}
+              onBlur={handleBlur("bic")}
+              value={values.bic}
+              placeholderTextColor={vars["ios-default-text"]}
+              placeholder="BIC"
+              iconColor="blue"
+              icon={<CodeIcon />}
+            />
+          </FormGroup>
+        </View>
+        <Divider style={{marginVertical: 15}} />
+        {/* address 1 and address 2*/}
+        <View style={{display: 'flex', flexDirection: 'column'}}>
+          <View>
+            <FormGroup
+              validationError={
+                errors.address1 && touched.address1 && errors.address1
+              }
+            >
+              <FormGroup.Input
+                keyboardType="text"
+                name="address1"
+                onChangeText={handleChange("address1")}
+                onBlur={handleBlur("address1")}
+                value={values.address1}
+                placeholderTextColor={vars["ios-default-text"]}
+                placeholder="Address 1"
+                iconColor="blue"
+                icon={<BuildingIcon />}
+              />
+            </FormGroup>
+          </View>
+          <View>
+            <FormGroup
+              validationError={
+                errors.address2 && touched.address2 && errors.address2
+              }
+            >
+              <FormGroup.Input
+                keyboardType="text"
+                name="address2"
+                onChangeText={handleChange("address2")}
+                onBlur={handleBlur("address2")}
+                value={values.address2}
+                placeholderTextColor={vars["ios-default-text"]}
+                placeholder="Address 2"
+                iconColor="blue"
+                icon={<BuildingIcon />}
+              />
+            </FormGroup>
+          </View>
+          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+            <View style={{width: '50%'}}>
+              <FormGroup
+                validationError={
+                  errors.address2 && touched.address2 && errors.address2
+                }
+
+              >
+                <FormGroup.Input
+                  keyboardType="text"
+                  name="address2"
+                  onChangeText={handleChange("city")}
+                  onBlur={handleBlur("city")}
+
+                  value={values.city}
+                  placeholderTextColor={vars["ios-default-text"]}
+                  placeholder="City"
+                  iconColor="blue"
+                  icon={<PinGPS />}
+                />
+              </FormGroup>
+            </View>
+            <View style={{width: '50%'}}>
+              <FormGroup
+                validationError={
+                  errors.address2 && touched.address2 && errors.address2
+                }
+              >
+                <FormGroup.Input
+                  keyboardType="text"
+                  name="address2"
+                  onChangeText={handleChange("postcode")}
+                  onBlur={handleBlur("postcode")}
+                  value={values.postcode}
+                  placeholderTextColor={vars["ios-default-text"]}
+                  placeholder="Post code"
+                  iconColor="blue"
+                  icon={<CodeIcon />}
+                />
+              </FormGroup>
+            </View>
+          </View>
+        </View>
+        <Button
+          color={"light-pink"}
+          onPress={toggleBottomSheet}
+          style={{marginTop: 20}}
+          leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
+        >
+          Save Payee
+        </Button>
+      </BottomSheet>
     </MainLayout>
   )
 }

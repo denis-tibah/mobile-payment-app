@@ -1,6 +1,6 @@
 import { getColor } from "../color"
 import Svg, { Path } from "react-native-svg";
-export function Search({ size = 24, color = "pink" }) {
+export function Search({ size = 24, color = "blue" }) {
   return (
     <Svg
       width={size}

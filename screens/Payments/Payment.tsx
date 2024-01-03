@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { View, ScrollView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { useDebounce } from "usehooks-ts";
 import DropDownPicker from "react-native-dropdown-picker";
-import { Divider, Text } from "react-native-paper";
+import { Divider, Text, Drawer } from "react-native-paper";
 import CheckBox from "expo-checkbox";
 import { AntDesign } from '@expo/vector-icons';
-import SearchIcon from "../../assets/icons/Search";
+import Search from "../../assets/icons/Search";
 import Heading from "../../components/Heading";
 import { MainLayout } from "../../layout/Main/Main";
 import FormGroup from "../../components/FormGroup";
@@ -19,7 +19,7 @@ import EuroIcon from "../../assets/icons/Euro";
 import TransactionIcon from "../../assets/icons/Transaction";
 import CodeIcon from "../../assets/icons/Code";
 import ProfileIcon from "../../assets/icons/Profile";
-import { getCurrency } from "../../utils/helpers";
+import { formatDateDayMonthYear, getCurrency, getNameInitials } from "../../utils/helpers";
 import { CodeModal } from "../../components/CodeModal/CodeModal";
 import {
   initiatePayment,
@@ -37,6 +37,8 @@ import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
 import { validationPaymentSchema } from "../../utils/validation";
 import { formatCurrencyToLocalEn } from "../../utils/helpers";
+import ArrowDown from "../../assets/icons/ArrowDown";
+import ArrowRight from "../../assets/icons/ArrowRight";
 
 export function Payment({ navigation }: any) {
   const dispatch = useDispatch();
@@ -60,17 +62,27 @@ export function Payment({ navigation }: any) {
   const accountData = useSelector(
     (state: any) => state?.account?.details?.info
   );
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
 
-  const [isOtpValid, setIsOtpValid] = useState(false);
-  const [showPaymentStatusModal, setShowPaymentStatusModal] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [selectedPayee, setSelectedPayee] = useState(null);
-  const [beneficiaryOptions, setBeneficiaryOptions] = useState<any>([]);
-  const [toggledSavePayee, setToggledSavePayee] = useState<boolean>(false);
-  const [isAddNewPayee, setIsAddNewPayee] = useState<boolean>(false);
-  const [beneficiaryIban, setBeneficiaryIban] = useState("");
+  const toggleDrawer = () => {
+    setDrawerOpen(!isDrawerOpen);
+  };
 
+  const fetchAllPayees = async () => {
+    try {
+      await dispatch<any>(getAllBeneficiary());
+    } catch (error) {
+      console.log({ error });
+    }
+  };
 
+  useEffect(() => {
+    if ( beneficiaryList?.length === 0) {
+      fetchAllPayees();
+    }
+  }, [beneficiaryList?.length]);
+
+  console.log('beneficiaryList', beneficiaryList);
   // const debouncedBeneficiaryIban = useDebounce<string>(beneficiaryIban, 2000);
 
   // const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -234,13 +246,6 @@ export function Payment({ navigation }: any) {
   //   ]);
   // }, [beneficiaryList?.length]);
 
-  // const fetchAllPayees = async () => {
-  //   try {
-  //     await dispatch<any>(getAllBeneficiary());
-  //   } catch (error) {
-  //     console.log({ error });
-  //   }
-  // };
 
   // function getFirstAndLastName(str: string) {
   //   const firstSpace = str.indexOf(" ");
@@ -373,7 +378,7 @@ export function Payment({ navigation }: any) {
   //       });
   //   }
   // };
-  console.log('beneficiaryList', beneficiaryList)
+
   return (
     <MainLayout navigation={navigation}>
     <Heading
@@ -394,249 +399,61 @@ export function Payment({ navigation }: any) {
       />
       <ScrollView bounces={true}>
         <View style={styles.content}>
-        <Divider style={{ marginBottom: 10 }} />
-          <FormGroup.Input
-            icon={<SearchIcon color="blue" size={18}/>}
-            placeholder={"Search text ...."}
-            color={vars["black"]}
-            fontSize={14}
-            fontWeight={"400"}
-            style={{ width: "100%" }}
-            value={''}
-            onChangeText={(event: string) => console.log('text')}
-            onSubmitEditing={() => {
-              // fetchTransactionsWithFilters({
-              //   ...searchFieldData,
-              //   name: searchText,
-              // });
-            }}
-          />
-        <Divider style={{ marginBottom: 10 }} />
-        <View style={{display: 'flex', flexDirection: 'column'}}>
-            { beneficiaryList.length > 0 && beneficiaryList.map((item: any, index: number) => (
-              <View key={index} style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10}}>
-                <View>
-                  <Text style={{fontSize: 16}}>{item.name}</Text>
-                  <Text style={{fontSize: 12, color: vars['grey']}}>{item.iban}</Text>
-                </View>
-                <View>
-                  <Text style={{fontSize: 16}}>{item.bic}</Text>
-                </View>
-              </View>
-            ))}
-        </View>
+          <Divider style={{ marginBottom: 10 }} />
+            <FormGroup.Input
+              icon={<Search color={vars['accent-blue']} size={18}/>}
+              placeholder={"Search payee"}
+              color={vars["black"]}
+              fontSize={14}
+              fontWeight={"400"}
+              style={{ width: "90%", alignSelf: "center", marginTop: 10, marginBottom: 10 }}
+              value={''}
+              onChangeText={(event: string) => console.log('text')}
+              onSubmitEditing={() => {
+                // fetchTransactionsWithFilters({
+                //   ...searchFieldData,
+                //   name: searchText,
+                // });
+              }}
+            />
+          <Divider style={{ marginBottom: 10 }} />
+          <View style={{display: 'flex', flexDirection: 'column', borderTopColor: vars['grey'], borderTopWidth: 1}}>
+              { beneficiaryList?.length > 0 && beneficiaryList.map((item: any, index: number) => (
+                <Fragment>
+                  <View key={index} style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: 10,
+                      padding: 10,
+                      borderBottomColor: vars['grey'],
+                      borderBottomWidth: 1
+                    }}>
+                    <View style={{display: 'flex', flexDirection: 'row'}}>
+                      <View style={{padding: 10, borderRadius: 99, backgroundColor: '#F5F4F4', width: 40, height: 40}}>
+                        <Text style={{fontSize: 14}}>{getNameInitials(item.name)}</Text>
+                      </View>
+                      <View style={{paddingLeft: 10}}>
+                        <Text style={{fontSize: 14}}>{item.name}</Text>
+                        <Text style={{fontSize: 12, color: vars['shade-grey']}}>{item.iban}</Text>
+                      </View>
+                    </View>
+                    <View style={{display: 'flex', flexDirection: 'row'}}>
+                        <View>
+                          <Text style={{fontSize: 14}}>{formatDateDayMonthYear(item.created_at)}</Text>
+                          {/* <Text style={{fontSize: 12, color: vars['accent-green']}}>{`+ € 1200`}</Text> */}
+                        </View>
+                        <View style={{ paddingTop: 3, paddingLeft: 8 }}>
+                          <ArrowRight color="blue" />
+                        </View>
+                    </View>
+                  </View>
+                </Fragment>
+              ))}
+          </View>
         </View>
       </ScrollView>
     </MainLayout>
   )
-
-  return (
-    <MainLayout navigation={navigation}>
-      <Spinner visible={loading || isLoading} />
-      <ScrollView bounces={false}>
-        <View style={styles.container}>
-          <Heading
-            icon={<EuroIcon color="pink" size={25} />}
-            title="Payment"
-            rightAction={
-              <View style={{ flexDirection: "row", display: "flex" }}>
-                <Text style={{ paddingRight: 8 }}>Save this payee</Text>
-                <CheckBox
-                  disabled={false}
-                  value={toggledSavePayee}
-                  onValueChange={() =>
-                    toggledSavePayee
-                      ? setToggledSavePayee(false)
-                      : setToggledSavePayee(true)
-                  }
-                  style={styles.checkboxSavePayee}
-                />
-              </View>
-            }
-          />
-        </View>
-        <View style={styles.content}>
-          {displayOTPModal && (
-            <CodeModal
-              title={"Verify your payment"}
-              subtitle={
-                "You will receive an sms to your mobile device. Please enter this code below."
-              }
-              isOpen
-              onSubmit={handleProccessPayment}
-              handleResendSMSVerificationCode={handleResendSMSVerificationCode}
-              onCancel={() => setDisplayOTPModal(false)}
-            />
-          )}
-          {showPaymentStatusModal && (
-            <SuccessModal
-              isError={paymentModalContent.isError}
-              title={paymentModalContent.title}
-              text={paymentModalContent.text}
-              isOpen
-              onClose={() => setShowPaymentStatusModal(false)}
-            />
-          )}
-          <View style={{ zIndex: 1 }}>
-            <DropDownPicker
-              placeholder="Payee name"
-              style={styles.dropdown}
-              open={open}
-              value={selectedPayee}
-              items={beneficiaryOptions}
-              setOpen={setOpen}
-              setValue={setSelectedPayee}
-              onChangeValue={(v) => handleSelectPayee(v, values, setValues)}
-              listMode="SCROLLVIEW"
-              dropDownContainerStyle={styles.dropdownContainer}
-              zIndex={100}
-            />
-            <Seperator
-              backgroundColor={vars["light-grey"]}
-              marginBottom={18}
-              zIndex={-1}
-            />
-          </View>
-          {isAddNewPayee && (
-            <View>
-              <FormGroup
-                validationError={
-                  touched.recipientname ? errors.recipientname : null
-                }
-              >
-                <FormGroup.Input
-                  name="recipientname"
-                  onChangeText={handleChange("recipientname")}
-                  onBlur={handleBlur("recipientname")}
-                  value={values.recipientname}
-                  icon={<ProfileIcon />}
-                  placeholder="Payee name"
-                />
-              </FormGroup>
-            </View>
-          )}
-          <View>
-            <FormGroup validationError={touched.amount ? errors.amount : null}>
-              <FormGroup.Input
-                onChangeText={handleChange("amount")}
-                name="amount"
-                onBlur={handleBlur("amount")}
-                value={values.amount}
-                type="number"
-                keyboardType="numeric"
-                placeholder="Amount to send"
-                icon={<EuroIcon />}
-              />
-            </FormGroup>
-          </View>
-          <View>
-            <FormGroup>
-              <View style={{ display: "flex", flexDirection: "row" }}>
-                <Text style={{ color: "#808080", lineHeight: 36 }}>
-                  {" "}
-                  Available balance:{" "}
-                </Text>
-                <FormGroup.Input
-                  editable={false}
-                  value={`${getCurrency(infoData?.currency)} ${
-                    (formatCurrencyToLocalEn(infoData?.avlbal) || 0)
-                      // (Number(infoData?.curbal) || 0)
-                      .toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }) || 0
-                  }`}
-                  def
-                  icon={<EuroIcon />}
-                />
-              </View>
-            </FormGroup>
-          </View>
-          <View>
-            <FormGroup
-              validationError={
-                touched.creditor_iban ? errors.creditor_iban : null
-              }
-            >
-              <FormGroup.Input
-                name="creditor_iban"
-                editable={!selectedPayee || isAddNewPayee}
-                /* onChangeText={handleChange("creditor_iban")} */
-                onChangeText={(value: string) => {
-                  setBeneficiaryIban(value);
-                  setFieldValue("creditor_iban", value);
-                }}
-                onBlur={handleBlur("creditor_iban")}
-                value={values.creditor_iban}
-                placeholder="IBAN"
-                icon={<CodeIcon />}
-              />
-            </FormGroup>
-          </View>
-          <View>
-            <FormGroup validationError={touched.bic ? errors.bic : null}>
-              <FormGroup.Input
-                name="bic"
-                editable={!selectedPayee || isAddNewPayee}
-                onChangeText={handleChange("bic")}
-                onBlur={handleBlur("bic")}
-                value={values.bic}
-                placeholder="BIC"
-                icon={<CodeIcon />}
-              />
-            </FormGroup>
-            <Seperator marginBottom={18} backgroundColor={vars["light-grey"]} />
-          </View>
-          <View>
-            <FormGroup validationError={touched.reason ? errors.reason : null}>
-              <FormGroup.Input
-                name="reason"
-                onChangeText={handleChange("reason")}
-                onBlur={handleBlur("reason")}
-                value={values.reason}
-                placeholder="Reference"
-                icon={<CodeIcon />}
-              />
-            </FormGroup>
-          </View>
-
-          {/* start: date:03-08-23: temp disabled by Aristos */}
-
-          {/* <View style={styles.externalPayment__switch}>
-                <View style={styles.externalPayment__switch__text}>
-                  <PaymentsIcon color="blue" size={18} />
-                  <Text>External Payment Y/N</Text>
-                </View>
-                <View style={{ marginLeft: "auto" }}>
-                  <Switch
-                    trackColor={{ false: "#767577", true: "#81b0ff" }}
-                    thumbColor={
-                      isExternalPayment ? "white" : vars["light-blue"]
-                    }
-                    ios_backgroundColor="#3e3e3e"
-                    onValueChange={(e) => toggleExternalPayment(e)}
-                    value={isExternalPayment}
-                  />
-                </View>
-              </View> */}
-          {/* end: date:03-08-23: temp disabled by Aristos */}
-
-          <View style={{ display: "flex", flexDirection: "row" }}>
-            <Button color="blue-only" withLine={true} onPress={gotoLimitsPage}>
-              VIEW CURRENT LIMIT
-            </Button>
-          </View>
-          <FixedBottomAction>
-            <Button
-              onPress={handleSubmit}
-              color="light-pink"
-              leftIcon={<TransactionIcon color="pink" size={16} />}
-            >
-              Submit payment
-            </Button>
-          </FixedBottomAction>
-        </View>
-      </ScrollView>
-    </MainLayout>
-  );
 }

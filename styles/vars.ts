@@ -27,6 +27,7 @@ const vars: any = {
   "soft-pink": "#ffc9e9",
   "lg-breakpoint": "1440px",
   "ios-default-text": "#a2a2a2",
+  "shade-grey" : '#808080'
 };
 
 export default vars;

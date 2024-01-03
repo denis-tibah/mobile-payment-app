@@ -7,7 +7,7 @@ import { setApiStore } from "../../api";
 import { store } from "../../store";
 import { signout } from "../../redux/auth/authSlice";
 import { MenuProvider } from "react-native-popup-menu";
-import BaseScreen from "../../components/BaseScreen";
+// import BaseScreen from "../../components/BaseScreen";
 
 export function MainLayout({ children, navigation, showHeader = true }: any) {
   const screenContentRef: any = useRef();

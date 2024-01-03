@@ -144,6 +144,11 @@ const chechIfResponseIsError = (response: any) => {
   return false;
 };
 
+export const getNameInitials = (name: string) => {
+  const initials = name.match(/\b\w/g) || [];
+  return ((initials.shift() || "") + (initials.pop() || "")).toUpperCase();
+}
+
 export const getUserActiveCards = (cards: any) => {
   if (!cards || chechIfResponseIsError(cards) || typeof cards === undefined) return [];
   return cards.filter((card: any) => card.lostYN === "N");

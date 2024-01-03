@@ -1,3 +1,4 @@
+import { Path } from "react-native-svg";
 import { StyleSheet } from "react-native";
 import vars from "../../styles/vars";
 
@@ -76,7 +77,6 @@ export const styles = StyleSheet.create({
   },
   textSeparatorContainer: {
     marginTop: 10,
-    marginBottom: 30,
   },
   termsHeaderText: {
     color: vars["medium-grey"],
@@ -123,10 +123,10 @@ export const styles = StyleSheet.create({
     /* backgroundColor: "#0dca9d", */
   },
   textmonthYearAdditionalText: {
-    position: "absolute",
-    top: 14,
-    left: 12,
-    color: "black",
+    textAlign: "center",
+    marginTop: 20,
+    width: "100%",
+    color: vars["medium-grey2"],
   },
   smsResentInnerContainer: {
     flexDirection: "column",
@@ -150,7 +150,7 @@ export const styles = StyleSheet.create({
   dropdownContainer: {
     width: "100%",
     borderColor: "transparent",
-    marginBottom: 0,
+
     marginTop: 0,
     paddingTop: 0,
     top: 0,
@@ -160,6 +160,9 @@ export const styles = StyleSheet.create({
   },
   dropdownContainerMonthYears: {
     left: 0,
+    top: -35,
+    height: 130,
+    marginBottom: -40,
   },
   dropdownWrapper: {
     display: "flex",
@@ -184,5 +187,31 @@ export const styles = StyleSheet.create({
     position: "absolute",
     right: 15,
     top: 13,
+  },
+  bottomButtonContainer: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingRight: 20,
+  },
+  listItemLabelStyle: {
+    textAlign: "center",
+    color: "#086AFB",
+    paddingTop: 8,
+    paddingBottom: 8,
+    marginTop: 0,
+    marginBottom: 0,
+  },
+  selectedItemLabelStyle: {
+    color: "#fff",
+    backgroundColor: "#086AFB",
+    borderRadius: 50,
+  },
+  allContainerMonthsYears: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
   },
 });

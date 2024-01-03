@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from "react";
-import { StyleSheet, View, Text, Platform } from "react-native";
+import { StyleSheet, View, Text, Platform, ScrollView } from "react-native";
 import { useFormik } from "formik";
 import { useSelector, useDispatch } from "react-redux";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -23,7 +23,6 @@ import { setRegistrationData } from "../../redux/registration/registrationSlice"
 import { addressDetailsSchema } from "../../utils/formikSchema";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 interface IAddressDetails {
   handlePrevStep: () => void;
@@ -68,7 +67,7 @@ const AddressDetails: FC<IAddressDetails> = ({
     return years < 3 ? true : false;
   };
 
-  const countryValueFromLocalStorage = (
+  /* const countryValueFromLocalStorage = (
     type: string,
     value: string
   ): {
@@ -90,7 +89,7 @@ const AddressDetails: FC<IAddressDetails> = ({
     return Object.keys(selectedDataCountryOfBirth).length > 0
       ? selectedDataCountryOfBirth
       : { label: null, value: null };
-  };
+  }; */
 
   const {
     handleSubmit,
@@ -102,6 +101,7 @@ const AddressDetails: FC<IAddressDetails> = ({
     submitCount,
     setFieldTouched,
     setValues,
+    setFieldValue,
   } = useFormik({
     validationSchema: addressDetailsSchema,
     initialValues: {
@@ -347,32 +347,6 @@ const AddressDetails: FC<IAddressDetails> = ({
                 errors.country && touched.country && errors.country
               }
             >
-              {/* <View>
-                <DropDownPicker
-                  schema={{ label: "name", value: "alpha3" }}
-                  onSelectItem={(value: any) => {
-                    const { alpha3: countryValue } = value;
-
-                    setValues({
-                      ...values,
-                      country: countryValue,
-                    });
-                  }}
-                  listMode="SCROLLVIEW"
-                  // setValue={setSelectedSalutation}
-                  items={countries}
-                  value={values?.country}
-                  setOpen={setOpenListForCountry}
-                  open={openListForCountry}
-                  style={styles.dropdown}
-                  dropDownContainerStyle={styles.dropdownContainer}
-                  dropDownDirection="TOP"
-                  placeholder="Country"
-                  scrollViewProps={{
-                    nestedScrollEnabled: true,
-                  }}
-                />
-              </View> */}
               <View style={styles.dropdownWrapper}>
                 <View style={styles.dropDownIconContainerLeft}>
                   <CityIcon size={16} color="blue" />
@@ -382,7 +356,6 @@ const AddressDetails: FC<IAddressDetails> = ({
                     schema={{ label: "name", value: "alpha3" }}
                     onSelectItem={(value: any) => {
                       const { alpha3: countryValue } = value;
-
                       setValues({
                         ...values,
                         country: countryValue,
@@ -412,14 +385,7 @@ const AddressDetails: FC<IAddressDetails> = ({
               How long have you lived here?
             </Text>
           </View>
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "flex-start",
-              width: "100%",
-            }}
-          >
+          <View style={styles.allContainerMonthsYears}>
             <View style={{ width: "50%" }}>
               <FormGroup
                 validationError={
@@ -427,43 +393,40 @@ const AddressDetails: FC<IAddressDetails> = ({
                 }
               >
                 <View style={{ position: "relative" }}>
-                  <View>
-                    <DropDownPicker
-                      schema={{ label: "label", value: "value" }}
-                      onSelectItem={(value: any) => {
-                        const { value: noOfMonthValue } = value;
-                        setValues({
-                          ...values,
-                          noOfMonths: noOfMonthValue,
-                        });
-                      }}
-                      listMode="SCROLLVIEW"
-                      items={noOfMonthsObj}
-                      value={values?.noOfMonths}
-                      /* setOpen={setOpenListForNoOfMonths}
-                    open={openListForNoOfMonths} */
-                      open
-                      style={[styles.dropdown, styles.dropdownMonthYears]}
-                      dropDownContainerStyle={[
-                        styles.dropdownContainer,
-                        styles.dropdownContainerMonthYears,
-                      ]}
-                      dropDownDirection="TOP"
-                      placeholder="Number of months"
-                      scrollViewProps={{
-                        nestedScrollEnabled: true,
-                      }}
-                      labelStyle={{
-                        color: "transparent",
-                      }}
-                    />
-                  </View>
-                  {values?.noOfMonths || values?.noOfMonths === 0 ? (
-                    <Text style={styles.textmonthYearAdditionalText}>
-                      {values?.noOfMonths}{" "}
-                      {values?.noOfMonths > 1 ? "Months" : "Month"}
-                    </Text>
-                  ) : null}
+                  <Text style={styles.textmonthYearAdditionalText}>
+                    Number of months
+                  </Text>
+                  <DropDownPicker
+                    schema={{ label: "label", value: "value" }}
+                    onSelectItem={(value: any) => {
+                      const { value: noOfMonthValue } = value;
+                      setFieldValue("noOfMonths", noOfMonthValue);
+                    }}
+                    listMode="SCROLLVIEW"
+                    items={noOfMonthsObj}
+                    value={values?.noOfMonths}
+                    setOpen={setOpenListForNoOfMonths}
+                    open
+                    style={[styles.dropdown, styles.dropdownMonthYears]}
+                    dropDownContainerStyle={[
+                      styles.dropdownContainer,
+                      styles.dropdownContainerMonthYears,
+                    ]}
+                    placeholder="Number of months"
+                    scrollViewProps={{
+                      nestedScrollEnabled: true,
+                    }}
+                    labelStyle={{
+                      color: "transparent",
+                    }}
+                    placeholderStyle={{
+                      display: "none",
+                    }}
+                    arrowIconStyle={{ display: "none" }}
+                    listItemLabelStyle={styles.listItemLabelStyle}
+                    selectedItemLabelStyle={styles.selectedItemLabelStyle}
+                    showTickIcon={false}
+                  />
                 </View>
               </FormGroup>
             </View>
@@ -475,99 +438,44 @@ const AddressDetails: FC<IAddressDetails> = ({
               >
                 <View style={{ position: "relative" }}>
                   <View>
+                    <Text style={styles.textmonthYearAdditionalText}>
+                      Number of years
+                    </Text>
                     <DropDownPicker
                       schema={{ label: "label", value: "value" }}
                       onSelectItem={(value: any) => {
                         const { value: noOfYearsValue } = value;
-
-                        setValues({
-                          ...values,
-                          noOfYears: noOfYearsValue,
-                        });
+                        setFieldValue("noOfYears", noOfYearsValue);
                       }}
                       listMode="SCROLLVIEW"
-                      // setValue={setSelectedSalutation}
                       items={noOfYearsObj}
                       value={values?.noOfYears}
-                      /* setOpen={setOpenListForNoOfYears}
-                    open={openListForNoOfYears} */
+                      setOpen={setOpenListForNoOfYears}
                       open
-                      /* style={styles.dropdown}
-                    dropDownContainerStyle={styles.dropdownContainer} */
                       style={[styles.dropdown, styles.dropdownMonthYears]}
                       dropDownContainerStyle={[
                         styles.dropdownContainer,
                         styles.dropdownContainerMonthYears,
                       ]}
-                      dropDownDirection="TOP"
-                      placeholder="Number of years"
                       scrollViewProps={{
                         nestedScrollEnabled: true,
                       }}
                       labelStyle={{
                         color: "transparent",
                       }}
+                      placeholderStyle={{
+                        display: "none",
+                      }}
+                      arrowIconStyle={{ display: "none" }}
+                      listItemLabelStyle={styles.listItemLabelStyle}
+                      selectedItemLabelStyle={styles.selectedItemLabelStyle}
+                      showTickIcon={false}
                     />
                   </View>
-                  {values?.noOfYears ? (
-                    <Text style={styles.textmonthYearAdditionalText}>
-                      {values?.noOfYears}
-                      {parseInt(values?.noOfYears, 10) <= 1 && " year"}
-                      {parseInt(values?.noOfYears, 10) === 2 && " years"}
-                      {parseInt(values?.noOfYears, 10) === 3 && "+ years"}
-                    </Text>
-                  ) : null}
                 </View>
               </FormGroup>
             </View>
           </View>
-          {/* <View>
-            <FormGroup
-              validationError={
-                errors.noOfYears && touched.noOfYears && errors.noOfYears
-              }
-            >
-              <View style={{ position: "relative" }}>
-                <View>
-                  <DropDownPicker
-                    schema={{ label: "label", value: "value" }}
-                    onSelectItem={(value: any) => {
-                      const { value: noOfYearsValue } = value;
-
-                      setValues({
-                        ...values,
-                        noOfYears: noOfYearsValue,
-                      });
-                    }}
-                    listMode="SCROLLVIEW"
-                    // setValue={setSelectedSalutation}
-                    items={noOfYearsObj}
-                    value={values?.noOfYears}
-                    setOpen={setOpenListForNoOfYears}
-                    open={openListForNoOfYears}
-                    style={styles.dropdown}
-                    dropDownContainerStyle={styles.dropdownContainer}
-                    dropDownDirection="TOP"
-                    placeholder="Number of years"
-                    scrollViewProps={{
-                      nestedScrollEnabled: true,
-                    }}
-                    labelStyle={{
-                      color: "transparent",
-                    }}
-                  />
-                </View>
-                {values?.noOfYears ? (
-                  <Text style={styles.textmonthYearAdditionalText}>
-                    {values?.noOfYears}
-                    {parseInt(values?.noOfYears, 10) <= 1 && " year"}
-                    {parseInt(values?.noOfYears, 10) === 2 && " years"}
-                    {parseInt(values?.noOfYears, 10) === 3 && "+ years"}
-                  </Text>
-                ) : null}
-              </View>
-            </FormGroup>
-          </View> */}
           {isYearsRequiredForAdditionalField({
             noOfMonths: values?.noOfMonths,
             noOfYears: values?.noOfYears,
@@ -700,32 +608,6 @@ const AddressDetails: FC<IAddressDetails> = ({
                       errors.additionalCountry
                     }
                   >
-                    {/* <View>
-                      <DropDownPicker
-                        schema={{ label: "name", value: "alpha3" }}
-                        onSelectItem={(value: any) => {
-                          const { alpha3: additionalCountryValue } = value;
-
-                          setValues({
-                            ...values,
-                            additionalCountry: additionalCountryValue,
-                          });
-                        }}
-                        listMode="SCROLLVIEW"
-                        // setValue={setSelectedSalutation}
-                        items={countries}
-                        value={values?.additionalCountry}
-                        setOpen={setOpenListForAdditionalCountry}
-                        open={openListForAdditionalCountry}
-                        style={styles.dropdown}
-                        dropDownContainerStyle={styles.dropdownContainer}
-                        dropDownDirection="TOP"
-                        placeholder="Country"
-                        scrollViewProps={{
-                          nestedScrollEnabled: true,
-                        }}
-                      />
-                    </View> */}
                     <View style={styles.dropdownWrapper}>
                       <View style={styles.dropDownIconContainerLeft}>
                         <CityIcon size={16} color="blue" />
@@ -748,6 +630,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                           open={openListForAdditionalCountry}
                           style={styles.dropdown}
                           dropDownContainerStyle={styles.dropdownContainer}
+                          dropDownDirection="TOP"
                           placeholder="Country"
                           placeholderStyle={{
                             color: vars["medium-grey"],
@@ -760,122 +643,120 @@ const AddressDetails: FC<IAddressDetails> = ({
                     </View>
                   </FormGroup>
                 </View>
-                <View>
-                  <FormGroup
-                    validationError={
-                      errors.additionalNoofmonths &&
-                      touched.additionalNoofmonths &&
-                      errors.additionalNoofmonths
-                    }
-                  >
-                    <View style={{ position: "relative" }}>
-                      <View>
-                        <DropDownPicker
-                          schema={{ label: "label", value: "value" }}
-                          onSelectItem={(value: any) => {
-                            const {
-                              value: additionalNoOfAdditionalMonthValue,
-                            } = value;
-
-                            setValues({
-                              ...values,
-                              additionalNoofmonths:
-                                additionalNoOfAdditionalMonthValue,
-                            });
-                          }}
-                          listMode="SCROLLVIEW"
-                          items={noOfMonthsObj}
-                          value={values?.additionalNoofmonths}
-                          setOpen={setOpenListForAdditinalNoOfMonths}
-                          open={openListForAdditionalNoOfMonths}
-                          style={styles.dropdownTwo}
-                          dropDownContainerStyle={styles.dropdownContainerTwo}
-                          dropDownDirection="TOP"
-                          placeholder="Number of months"
-                          scrollViewProps={{
-                            nestedScrollEnabled: true,
-                          }}
-                          labelStyle={{ color: "transparent" }}
-                          listItemContainer={{
-                            height: 40,
-                          }}
-                        />
-                      </View>
-                      {values?.additionalNoofmonths ||
-                      parseInt(values?.additionalNoofmonths, 10) === 0 ? (
-                        <Text style={styles.textmonthYearAdditionalText}>
-                          {values?.additionalNoofmonths}{" "}
-                          {parseInt(values?.additionalNoofmonths, 10) > 1
-                            ? "Months"
-                            : "Month"}
-                        </Text>
-                      ) : null}
-                    </View>
-                  </FormGroup>
-                </View>
-                <View>
-                  <FormGroup
-                    validationError={
-                      errors.additionalNoofyears &&
-                      touched.additionalNoofyears &&
-                      errors.additionalNoofyears
-                    }
-                  >
-                    <View>
+                <View style={styles.allContainerMonthsYears}>
+                  <View style={{ width: "50%" }}>
+                    <FormGroup
+                      validationError={
+                        errors.additionalNoofmonths &&
+                        touched.additionalNoofmonths &&
+                        errors.additionalNoofmonths
+                      }
+                    >
                       <View style={{ position: "relative" }}>
-                        <DropDownPicker
-                          schema={{ label: "label", value: "value" }}
-                          onSelectItem={(value: any) => {
-                            const { value: additionalNoofyearsValue } = value;
-
-                            setValues({
-                              ...values,
-                              additionalNoofyears: additionalNoofyearsValue,
-                            });
-                          }}
-                          listMode="SCROLLVIEW"
-                          // setValue={setSelectedSalutation}
-                          items={noOfYearsObj}
-                          value={values?.additionalNoofyears}
-                          setOpen={setOpenListForAdditionalNoOfYears}
-                          open={openListForAdditionalNoOfYears}
-                          style={styles.dropdown}
-                          dropDownContainerStyle={styles.dropdownContainer}
-                          dropDownDirection="TOP"
-                          placeholder="Number of years"
-                          scrollViewProps={{
-                            nestedScrollEnabled: true,
-                          }}
-                          labelStyle={{ color: "transparent" }}
-                        />
+                        <View>
+                          <Text style={styles.textmonthYearAdditionalText}>
+                            Number of months
+                          </Text>
+                          <DropDownPicker
+                            schema={{ label: "label", value: "value" }}
+                            onSelectItem={(value: any) => {
+                              const {
+                                value: additionalNoOfAdditionalMonthValue,
+                              } = value;
+                              setFieldValue(
+                                "additionalNoofmonths",
+                                additionalNoOfAdditionalMonthValue
+                              );
+                            }}
+                            listMode="SCROLLVIEW"
+                            items={noOfMonthsObj}
+                            value={values?.additionalNoofmonths}
+                            setOpen={setOpenListForNoOfMonths}
+                            open
+                            style={[styles.dropdown, styles.dropdownMonthYears]}
+                            dropDownContainerStyle={[
+                              styles.dropdownContainer,
+                              styles.dropdownContainerMonthYears,
+                            ]}
+                            placeholder="Number of months"
+                            scrollViewProps={{
+                              nestedScrollEnabled: true,
+                            }}
+                            labelStyle={{
+                              color: "transparent",
+                            }}
+                            placeholderStyle={{
+                              display: "none",
+                            }}
+                            arrowIconStyle={{ display: "none" }}
+                            listItemLabelStyle={styles.listItemLabelStyle}
+                            selectedItemLabelStyle={
+                              styles.selectedItemLabelStyle
+                            }
+                            showTickIcon={false}
+                          />
+                        </View>
                       </View>
-                      {values?.additionalNoofyears ? (
-                        <Text style={styles.textmonthYearAdditionalText}>
-                          {values?.additionalNoofyears}
-                          {parseInt(values?.additionalNoofyears, 10) <= 1 &&
-                            " year"}
-                          {parseInt(values?.additionalNoofyears, 10) === 2 &&
-                            " years"}
-                          {parseInt(values?.additionalNoofyears, 10) === 3 &&
-                            "+ years"}
-                        </Text>
-                      ) : null}
-                    </View>
-                  </FormGroup>
+                    </FormGroup>
+                  </View>
+                  <View style={{ width: "50%" }}>
+                    <FormGroup
+                      validationError={
+                        errors.additionalNoofyears &&
+                        touched.additionalNoofyears &&
+                        errors.additionalNoofyears
+                      }
+                    >
+                      <View style={{ position: "relative" }}>
+                        <View>
+                          <Text style={styles.textmonthYearAdditionalText}>
+                            Number of years
+                          </Text>
+                          <DropDownPicker
+                            schema={{ label: "label", value: "value" }}
+                            onSelectItem={(value: any) => {
+                              const { value: additionalNoofyearsValue } = value;
+                              setFieldValue(
+                                "additionalNoofyears",
+                                additionalNoofyearsValue
+                              );
+                            }}
+                            listMode="SCROLLVIEW"
+                            items={noOfYearsObj}
+                            value={values?.additionalNoofyears}
+                            setOpen={setOpenListForNoOfMonths}
+                            open
+                            style={[styles.dropdown, styles.dropdownMonthYears]}
+                            dropDownContainerStyle={[
+                              styles.dropdownContainer,
+                              styles.dropdownContainerMonthYears,
+                            ]}
+                            placeholder="Number of years"
+                            scrollViewProps={{
+                              nestedScrollEnabled: true,
+                            }}
+                            labelStyle={{
+                              color: "transparent",
+                            }}
+                            placeholderStyle={{
+                              display: "none",
+                            }}
+                            arrowIconStyle={{ display: "none" }}
+                            listItemLabelStyle={styles.listItemLabelStyle}
+                            selectedItemLabelStyle={
+                              styles.selectedItemLabelStyle
+                            }
+                            showTickIcon={false}
+                          />
+                        </View>
+                      </View>
+                    </FormGroup>
+                  </View>
                 </View>
               </View>
             )}
-          <FixedBottomAction rounded>
-            <View
-              style={{
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                paddingRight: 20,
-              }}
-            >
+          <FixedBottomAction rounded isNoTopMargin>
+            <View style={styles.bottomButtonContainer}>
               <ButtonSubmit
                 color="light-pink"
                 onPress={handlePrevStep}

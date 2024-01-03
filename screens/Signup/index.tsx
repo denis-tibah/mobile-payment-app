@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   ImageBackground,
   Image,
+  SafeAreaView,
 } from "react-native";
 
 import Button from "../../components/Button";
@@ -131,8 +132,13 @@ export function SignupScreen({ navigation, route }: any) {
           handleSelecNavIndex={handleSelecNavIndex}
         />
 
-        <TouchableWithoutFeedback onPress={keyboardDismiss}>
-          <ScrollView keyboardDismissMode="on-drag">
+        {/* <TouchableWithoutFeedback onPress={keyboardDismiss}> */}
+        <SafeAreaView style={{ flex: 1 }}>
+          <ScrollView
+            keyboardDismissMode="on-drag"
+            style={{ flex: 1 }}
+            contentContainerStyle={{ flexGrow: 1 }}
+          >
             <View style={styles.container}>
               <View
                 style={styles.innerContainer}
@@ -144,7 +150,8 @@ export function SignupScreen({ navigation, route }: any) {
               </View>
             </View>
           </ScrollView>
-        </TouchableWithoutFeedback>
+        </SafeAreaView>
+        {/* </TouchableWithoutFeedback> */}
 
         {/* <MainLayout navigation={navigation}>
       <TouchableWithoutFeedback onPress={keyboardDismiss}>

@@ -134,6 +134,7 @@ export const screenNames: any = {
   profileDetails: " profileDetails",
   forgottenPassword: "forgottenPassword",
   resetPassword: "Reset Password",
+  payeeSendFunds: "payee_send_funds",
 };
 
 const chechIfResponseIsError = (response: any) => {

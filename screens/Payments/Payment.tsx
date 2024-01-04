@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { useDebounce } from "usehooks-ts";
@@ -19,7 +19,7 @@ import EuroIcon from "../../assets/icons/Euro";
 import TransactionIcon from "../../assets/icons/Transaction";
 import CodeIcon from "../../assets/icons/Code";
 import ProfileIcon from "../../assets/icons/Profile";
-import { formatDateDayMonthYear, getCurrency, getNameInitials } from "../../utils/helpers";
+import { formatDateDayMonthYear, getCurrency, getNameInitials, screenNames } from "../../utils/helpers";
 import { CodeModal } from "../../components/CodeModal/CodeModal";
 import {
   initiatePayment,
@@ -66,7 +66,9 @@ export function Payment({ navigation }: any) {
   const accountData = useSelector(
     (state: any) => state?.account?.details?.info
   );
+  // states
   const [bottomSheetOpen, setBottomSheetOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const toggleBottomSheet = () => {
     setBottomSheetOpen(!bottomSheetOpen);
@@ -77,6 +79,8 @@ export function Payment({ navigation }: any) {
       await dispatch<any>(getAllBeneficiary());
     } catch (error) {
       console.log({ error });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -98,11 +102,11 @@ export function Payment({ navigation }: any) {
 
   useEffect(() => {
     if ( beneficiaryList?.length === 0) {
+      setIsLoading(true);
       fetchAllPayees();
     }
   }, [beneficiaryList?.length]);
 
-  console.log('beneficiaryList', beneficiaryList);
   // const debouncedBeneficiaryIban = useDebounce<string>(beneficiaryIban, 2000);
 
   // const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -401,22 +405,22 @@ export function Payment({ navigation }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-    <Heading
-        icon={<EuroIcon color="pink" size={25} />}
-        title="Make Payment"
-        rightAction={
-          <View style={{ flexDirection: "row", display: "flex" }}>
-            <Button
-              onPress={() =>setBottomSheetOpen(true)}
-              color={"light-pink"}
-              leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
-              // disabled={isCardHaveVirtual}
-            >
-              Add Payee
-            </Button>
-          </View>
-        }
-      />
+      <Spinner visible={isLoading} />
+      <Heading
+          icon={<EuroIcon color="pink" size={25} />}
+          title="Make Payment"
+          rightAction={
+            <View style={{ flexDirection: "row", display: "flex" }}>
+              <Button
+                onPress={() => setBottomSheetOpen(true)}
+                color={"light-pink"}
+                leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
+              >
+                Add Payee
+              </Button>
+            </View>
+          }
+        />
       <ScrollView bounces={true}>
         <View style={styles.content}>
           <Divider style={{ marginBottom: 10 }} />
@@ -465,7 +469,14 @@ export function Payment({ navigation }: any) {
                           {/* <Text style={{fontSize: 12, color: vars['accent-green']}}>{`+ € 1200`}</Text> */}
                         </View>
                         <View style={{ paddingTop: 3, paddingLeft: 8 }}>
-                          <ArrowRight color="blue" />
+                          <TouchableOpacity onPress={() => {
+                            console.log('item', item);
+                            navigation.navigate(screenNames.payeeSendFunds, {
+                              item,
+                            });
+                          }}>
+                            <ArrowRight color="blue" />
+                          </TouchableOpacity>
                         </View>
                     </View>
                   </View>

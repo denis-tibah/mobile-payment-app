@@ -157,6 +157,7 @@ export const checkbox: any = StyleSheet.create({
     justifyContent: "center",
   },
   checkboxContainer: {
+    display: 'flex',
     flexDirection: "row",
     marginLeft: 14,
   },

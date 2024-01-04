@@ -36,6 +36,7 @@ import { Divider } from "react-native-paper";
 import { useLazyGetCardV2Query } from "../../redux/card/cardSliceV2";
 import { useLazyGetTransactionsQuery } from "../../redux/transaction/transactionV2Slice";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import Spinner from "react-native-loading-spinner-overlay/lib";
 
 interface DateRangeType {
   dateTo: {
@@ -73,7 +74,10 @@ export function Transactions({ navigation }: any) {
   const dispatch = useDispatch();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
-  const [getTransactionsWithFilter, { data: transactionsWithFilter }] = useLazyGetTransactionsQuery();
+  const [getTransactionsWithFilter, { 
+    data: transactionsWithFilter, 
+    isLoading: isLoadingTransations,
+  }] = useLazyGetTransactionsQuery();
   const currentPage = transactionsWithFilter?.current_page;
   const lastPage = transactionsWithFilter?.last_page;
   const transactionsList = transactionsWithFilter?.transactions;
@@ -82,7 +86,6 @@ export function Transactions({ navigation }: any) {
   const [isSheetFilterOpen, setIsSheetFilterOpen] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchFieldData, setSearchFieldData] = useState<SearchFilter>(
     initialSearchFieldData
   );
@@ -91,7 +94,6 @@ export function Transactions({ navigation }: any) {
     const [
       getCardDetails,
       {
-        isLoading: isLoadingCardInfo,
         data: userCardsList,
       },
     ] = useLazyGetCardV2Query();
@@ -107,9 +109,6 @@ export function Transactions({ navigation }: any) {
   };
 
   const fetchTransactionsWithFilters = async (value?: SearchFilter) => {
-    try {
-      setIsLoading(true);
-    
       if (userData && userData?.id) {
         let search: SearchFilter = {
           ...(value ? value : initialSearchFieldData),
@@ -117,9 +116,6 @@ export function Transactions({ navigation }: any) {
           accessToken: userTokens?.access_token,
           tokenZiyl: userTokens?.token_ziyl,
         };
-
-        // console.log("date search", initialSearchFieldData)
-        
         getTransactionsWithFilter(search)
         .then((res) => {
           if (res.data) {
@@ -130,14 +126,12 @@ export function Transactions({ navigation }: any) {
         ).catch((err) => {
           console.log('error')
           console.log({ err });
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
         setSearchFieldData(search);
       }
-    } catch (error) {
-      console.log({ error });
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   // const filterFromToDate = async (fromDate: string, toDate: string) => {
@@ -188,7 +182,7 @@ export function Transactions({ navigation }: any) {
   //   fetchTransactionsWithFilters({
   //     ..._searchFieldData,
   //   });
-  // };
+  // }
 
   const handleBackgroundChangeActiveInactive = (card: any) : string => {
     if (card.cardreferenceId === searchFieldData.card_id) {
@@ -299,6 +293,7 @@ export function Transactions({ navigation }: any) {
   // };
 
   useEffect(() => {
+    setIsLoading(true);
     fetchTransactionsWithFilters();
     return () => {
       clearFilter();
@@ -308,6 +303,7 @@ export function Transactions({ navigation }: any) {
 
   return (
     <MainLayout navigation={navigation}>
+      {/* <Spinner visible={isLoading} /> */}
       <ScrollView bounces={false}>
         <View style={styles.container}>
           <Heading
@@ -397,7 +393,6 @@ export function Transactions({ navigation }: any) {
             />
           </View>
         </View>
-        <LoadingScreen isLoading={isLoading} />
       </ScrollView>
       <BottomSheet isVisible={isSheetFilterOpen} onClose={() => setIsSheetFilterOpen(!isSheetFilterOpen)}>
         <View style={styles.containerBottomSheetHeader}>
@@ -427,7 +422,7 @@ export function Transactions({ navigation }: any) {
                 }}
                 color="black-only"
                 onPress={() => {
-                   setShowPickerDateFilter({
+                  setShowPickerDateFilter({
                     dateTo: {
                       state: false,
                       value: showPickerDateFilter.dateTo.value,
@@ -629,13 +624,13 @@ export function Transactions({ navigation }: any) {
               width: 151,
               height: 40,
               }}
-               onPress={() => {
+                onPress={() => {
                 setSearchFieldData({
                   ...searchFieldData,
                   card_id: card.cardreferenceId,
                 });
                 }
-               }
+              }
               >
             <Typography fontSize={14} color={ searchFieldData.card_id  === card.cardreferenceId ? '#fff' :
               card.cardStatus === CardStatus.INACTIVE ? vars['accent-yellow'] : 
@@ -659,14 +654,16 @@ export function Transactions({ navigation }: any) {
           color="light-pink"
           leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
           onPress={() => {
-           setIsSheetFilterOpen(!isSheetFilterOpen)
-           fetchTransactionsWithFilters(searchFieldData);
+            setIsLoading(true);
+            setIsSheetFilterOpen(!isSheetFilterOpen)
+            fetchTransactionsWithFilters(searchFieldData);
           }}
         >
           Submit
         </Button>
         <Divider style={{marginVertical: 15}} />
       </BottomSheet>
+      <LoadingScreen isLoading={isLoading} />
     </MainLayout>
   );
 }

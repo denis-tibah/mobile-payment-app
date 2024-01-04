@@ -26,10 +26,8 @@ import { styles } from "./styles";
 import Typography from "../../components/Typography";
 import { ArrowLeft } from "../../assets/icons/ArrowLeft/ArrowLeft";
 
-export function AddPayee() {
+export function AddPayee({navigate, route}: any) {
   const dispatch = useDispatch();
-  const { navigate }: any = useNavigation();
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [beneficiaryIban, setBeneficiaryIban] = useState("");
   const [statusMessage, setStatusMessage] = useState<{

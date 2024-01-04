@@ -20,8 +20,9 @@ import CardScreen from "../screens/Card";
 import PaymentScreen from "../screens/Payments";
 import StatementScreen from "../screens/Statements";
 import PayeeScreen from "../screens/Payees";
-import AddPayeeScreen from "../screens/AddPayee";
+import AddPayeeScreen from "../screens/AddPayee"; // not used anymore, can be deleted - arjay
 import ProfileScreen from "../screens/Profile";
+import PayeeSendFunds from "../screens/Payees/PayeeSendFunds";
 
 import TabNavigation from "./TabNavigation";
 import { registerForPushNotificationsAsync } from "../components/PushNotification";
@@ -82,7 +83,7 @@ function DashboardStack() {
       <Tab.Screen name={screenNames.card} component={CardScreen} />
       <Tab.Screen name={screenNames.payments} component={PaymentScreen} />
       <Tab.Screen name={screenNames.statements} component={StatementScreen} />
-      <Tab.Screen name={screenNames.payees} component={PayeeStack} />
+      <Tab.Screen name={screenNames.payees} component={PayeeScreen} />
       <Tab.Screen name="profile" component={ProfileScreen} />
     </TabNavigation>
   );
@@ -327,8 +328,8 @@ export default function AppNavigationWrapper() {
             />
             <Root.Screen
               options={{ headerShown: false }}
-              name={screenNames.addPayee}
-              component={AddPayeeScreen}
+              name={screenNames.payeeSendFunds}
+              component={PayeeSendFunds}
             />
             <Root.Screen
               options={{ headerShown: false }}

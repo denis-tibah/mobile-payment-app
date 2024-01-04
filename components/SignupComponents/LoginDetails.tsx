@@ -29,11 +29,19 @@ import { registerForPushNotificationsAsync } from "../PushNotification";
 interface ILoginDetails {
   handleNextStep: () => void;
   handleOpenModal: () => void;
+  handleModalContent: ({
+    header,
+    body,
+  }: {
+    header: string;
+    body: string;
+  }) => void;
 }
 
 const LoginDetails: FC<ILoginDetails> = ({
   handleNextStep,
   handleOpenModal,
+  handleModalContent,
 }) => {
   const [isValidEmail, setIsValidEmail] = useState<boolean>(false);
   const [isChangeEmail, setIsChangeEmail] = useState<boolean>(false);
@@ -113,8 +121,11 @@ const LoginDetails: FC<ILoginDetails> = ({
     if (!isLoadingLogin && isSuccessLogin) {
       if (dataLoginCredentials?.code === 200) {
         setIsValidEmail(true);
-        // setIsOpenModal(true);
         handleOpenModal();
+        handleModalContent({
+          header: "Email  verified",
+          body: "We have sent a verification link to your email",
+        });
         dispatch(
           setRegistrationData({
             email: values?.alternateEmail

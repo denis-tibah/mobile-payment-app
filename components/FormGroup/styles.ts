@@ -99,6 +99,9 @@ export const pinCode = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 24,
   },
+  newPinCodeWrapper: {
+    width: "85%",
+  },
   input: {
     width: 36,
     height: 48,
@@ -112,6 +115,13 @@ export const pinCode = StyleSheet.create({
     alignContent: "center",
     textAlign: "center",
     borderWidth: 1,
+  },
+  newPinCodeStyle: {
+    borderRadius: 0,
+    borderTopWidth: 0,
+    borderRightWidth: 0,
+    borderLeftWidth: 0,
+    borderColor: "#000000",
   },
 });
 

@@ -47,6 +47,10 @@ import ModalBottomSheet from "../../components/ModalBottomSheet/ModalBottomSheet
 export function SignupScreen({ navigation, route }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+  const [modalContent, setModalContent] = useState<{
+    header: string;
+    body: string;
+  }>({ header: "", body: "" });
 
   const { navigate }: any = useNavigation();
   const [selectedNavIndex, setNavIndex] = useState<number>(0);
@@ -78,10 +82,21 @@ export function SignupScreen({ navigation, route }: any) {
     setIsOpenModal(true);
   };
 
+  const handleModalContent = ({
+    header,
+    body,
+  }: {
+    header: string;
+    body: string;
+  }) => {
+    setModalContent({ header, body });
+  };
+
   const steps = [
     <LoginDetails
       handleNextStep={handleNextStep}
       handleOpenModal={handleOpenModal}
+      handleModalContent={handleModalContent}
     />,
     <ProfileDetails
       handleNextStep={handleNextStep}
@@ -102,6 +117,8 @@ export function SignupScreen({ navigation, route }: any) {
     <Verifications
       handleNextStep={handleNextStep}
       handlePrevStep={handlePrevStep}
+      handleOpenModal={handleOpenModal}
+      handleModalContent={handleModalContent}
     />,
     <VerificationLast
       handleNextStep={handleNextStep}
@@ -316,7 +333,7 @@ export function SignupScreen({ navigation, route }: any) {
                 marginLeft={6}
                 fontWeight={600}
               >
-                Email address verified
+                {modalContent.header}
               </Typography>
             </View>
           </View>
@@ -329,13 +346,16 @@ export function SignupScreen({ navigation, route }: any) {
             }}
           >
             <Typography color="#0DCA9D" fontSize={14} fontWeight={600}>
-              We have send you a verification link to your email
+              {modalContent.body}
             </Typography>
           </View>
           <View style={styles.headerWrapper}>
             <Button
               color={"green"}
-              onPress={() => setIsOpenModal(false)}
+              onPress={() => {
+                setIsOpenModal(false);
+                setModalContent({ header: "", body: "" });
+              }}
               style={styles.buttonOK}
             >
               <Text>OK</Text>

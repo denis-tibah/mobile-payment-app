@@ -175,6 +175,7 @@ export function Password({
 export const PinCodeInputBoxes = ({
   fieldCount = 4,
   onChange,
+  isNewPinCodeStyle = false,
   ...props
 }: any) => {
   const inputs = useRef<any>([]);
@@ -209,13 +210,18 @@ export const PinCodeInputBoxes = ({
   };
 
   return (
-    <View style={pinCode.wrapper}>
+    <View
+      style={[pinCode.wrapper, isNewPinCodeStyle && pinCode.newPinCodeWrapper]}
+    >
       {[...Array(fieldCount)].map((item, i) => (
         <TextInput
           key={i}
           ref={(ref) => (inputs.current[i] = ref)}
           maxLength={1}
-          style={pinCode.input}
+          style={[
+            pinCode.input,
+            isNewPinCodeStyle ? pinCode.newPinCodeStyle : "",
+          ]}
           returnKeyType="done"
           keyboardType="numeric"
           onChangeText={(text) => handleTextChange(text, i)}

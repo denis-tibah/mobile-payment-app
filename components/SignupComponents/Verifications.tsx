@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "react-native-loading-spinner-overlay/lib";
@@ -11,6 +11,8 @@ import PhoneIcon from "../../assets/icons/Phone";
 import ArrowDownIcon from "../../assets/icons/ArrowDown";
 import ArrowLeft from "../../assets/icons/ArrowLeft";
 import TickIcon from "../../assets/icons/TickWithoutCircle";
+import SalutationIcon from "../../assets/icons/Salutation";
+import ArrowRightIcon from "../../assets/icons/ArrowRight";
 import { Seperator } from "../../components/Seperator/Seperator";
 import { PinCodeInputBoxes } from "../FormGroup/FormGroup";
 import FixedBottomAction from "../../components/FixedBottomAction";
@@ -29,11 +31,21 @@ import { styles } from "./styles";
 interface IVerifications {
   handlePrevStep: () => void;
   handleNextStep: () => void;
+  handleOpenModal: () => void;
+  handleModalContent: ({
+    header,
+    body,
+  }: {
+    header: string;
+    body: string;
+  }) => void;
 }
 
 const Verifications: FC<IVerifications> = ({
   handlePrevStep,
   handleNextStep,
+  handleOpenModal,
+  handleModalContent,
 }) => {
   const dispatch = useDispatch();
   const registration = useSelector((state: any) => state.registration);
@@ -100,7 +112,7 @@ const Verifications: FC<IVerifications> = ({
     )
       .then((payload: any) => {
         setIsLoading(false);
-        setSMSResent(true);
+        /* setSMSResent(true);
         if (payload?.payload?.status === "success") {
           setResentMessage({
             message:
@@ -116,7 +128,26 @@ const Verifications: FC<IVerifications> = ({
             message: payload?.payload?.message || "Something went wrong",
             status: payload?.payload?.status,
           });
-        }
+        } */
+        handleOpenModal();
+        setTimeout(() => {
+          if (payload?.payload?.status === "success") {
+            handleModalContent({
+              header: "Updated phone number",
+              body:
+                payload?.payload?.message ||
+                "We resent verification code to your number",
+            });
+          } else if (
+            payload?.payload?.status === "failed" ||
+            payload?.payload?.code === 400
+          ) {
+            handleModalContent({
+              header: "Error updating phone number",
+              body: payload?.payload?.message || "Something went wrong",
+            });
+          }
+        }, 2000);
       })
       .catch((error: any) => {
         setIsLoading(false);
@@ -281,35 +312,53 @@ const Verifications: FC<IVerifications> = ({
               <PinCodeInputBoxes
                 fieldCount={6}
                 onChange={handlePinCodeChange}
+                isNewPinCodeStyle
               />
               <TouchableOpacity onPress={handleGetanotherVerificationcode}>
-                <Text style={styles.noCode}>
-                  Did not get a verification code?
-                </Text>
+                <View>
+                  <Text style={styles.noCode}>
+                    Did not get a verification code?
+                  </Text>
+                </View>
               </TouchableOpacity>
             </View>
+            <View
+              style={{
+                borderBottomColor: vars["medium-grey"],
+                borderBottomWidth: StyleSheet.hairlineWidth,
+                paddingTop: 36,
+                marginBottom: 10,
+              }}
+            />
             <View style={styles.phoneNumberContainer}>
               <View>
                 {registration?.data?.identifier ? (
-                  <View style={styles.phoneNumberInnerContainer}>
-                    <PhoneIcon size={14} />
-                    <Text>
-                      {registration?.data?.identifier &&
-                      typeof registration?.data?.identifier === "string"
-                        ? registration?.data?.identifier.toString()
-                        : ""}
+                  <View>
+                    <Text
+                      style={{ color: vars["medium-grey2"], marginBottom: 10 }}
+                    >
+                      Your phone number
                     </Text>
+                    <View style={styles.phoneNumberInnerContainer}>
+                      <PhoneIcon color="blue" size={18} />
+                      <Text style={{ marginLeft: 2, marginTop: 4 }}>
+                        {registration?.data?.identifier &&
+                        typeof registration?.data?.identifier === "string"
+                          ? registration?.data?.identifier.toString()
+                          : ""}
+                      </Text>
+                    </View>
                   </View>
                 ) : null}
               </View>
+
               <TouchableOpacity
                 onPress={handleChangePhoneNumber}
-                style={styles.phoneNumberInnerContainer}
+                style={[styles.phoneNumberInnerContainer]}
               >
-                <Text>Not your number</Text>
-                <View style={{ marginTop: 4 }}>
-                  <ArrowDownIcon color={vars["accent-pink"]} size={16} />
-                </View>
+                <Text style={styles.accentPinkText}>
+                  Change your phone number
+                </Text>
               </TouchableOpacity>
             </View>
             {isUpdatePhoneNumber && (
@@ -323,30 +372,37 @@ const Verifications: FC<IVerifications> = ({
                         errors.countryCode
                       }
                     >
-                      <View>
-                        <DropDownPicker
-                          schema={{ label: "label", value: "value" }}
-                          onSelectItem={(value: any) => {
-                            const { value: countryCodeValue } = value;
-                            setValues({
-                              ...values,
-                              countryCode: countryCodeValue,
-                            });
-                          }}
-                          listMode="SCROLLVIEW"
-                          // setValue={setSelectedSalutation}
-                          items={registrationPhonePrefix}
-                          value={values?.countryCode}
-                          setOpen={setOpenListForCountryCode}
-                          open={openListForCountryCode}
-                          style={styles.dropdown}
-                          dropDownContainerStyle={styles.dropdownContainer}
-                          dropDownDirection="TOP"
-                          placeholder="Phone country code"
-                          scrollViewProps={{
-                            nestedScrollEnabled: true,
-                          }}
-                        />
+                      <View style={styles.dropdownWrapper}>
+                        <View style={styles.dropDownIconContainerLeft}>
+                          <SalutationIcon size={16} color="blue" />
+                        </View>
+                        <View>
+                          <DropDownPicker
+                            schema={{ label: "label", value: "value" }}
+                            onSelectItem={(value: any) => {
+                              const { value: countryCodeValue } = value;
+                              setValues({
+                                ...values,
+                                countryCode: countryCodeValue,
+                              });
+                            }}
+                            listMode="MODAL"
+                            items={registrationPhonePrefix}
+                            value={values?.countryCode}
+                            setOpen={setOpenListForCountryCode}
+                            open={openListForCountryCode}
+                            style={styles.dropdown}
+                            dropDownContainerStyle={styles.dropdownContainer}
+                            dropDownDirection="TOP"
+                            placeholder="Phone country code"
+                            placeholderStyle={{
+                              color: vars["medium-grey"],
+                            }}
+                          />
+                        </View>
+                        <View style={styles.dropDownIconContainerRight}>
+                          <ArrowRightIcon size={16} color="blue" />
+                        </View>
                       </View>
                     </FormGroup>
                     <View>
@@ -365,6 +421,7 @@ const Verifications: FC<IVerifications> = ({
                           value={values.phoneNumber}
                           placeholderTextColor={vars["ios-default-text"]}
                           placeholder="Phone Number"
+                          iconColor="blue"
                           icon={<PhoneIcon />}
                         />
                       </FormGroup>
@@ -384,7 +441,7 @@ const Verifications: FC<IVerifications> = ({
                 </View>
               </View>
             )}
-            {SMSResent ? (
+            {/* {SMSResent ? (
               <View
                 style={[
                   styles.smsResentContainer,
@@ -408,7 +465,7 @@ const Verifications: FC<IVerifications> = ({
                   </Text>
                 </View>
               </View>
-            ) : null}
+            ) : null} */}
           </View>
           <FixedBottomAction rounded>
             <View

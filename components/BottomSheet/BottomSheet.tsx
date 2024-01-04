@@ -69,18 +69,16 @@ export const BottomSheet: React.FC<Props> = ({
   };
 
   return (
-      <Animatable.View
-        ref={bottomSheetRef}
-        style={[styles.bottomSheet, { display: isVisible ? 'flex' : 'none' }]}
-        animation={isVisible ? 'slideInUp' : 'slideOutDown'}
-        duration={300}
-        onAnimationEnd={handleAnimationEnd}
-        {...panResponder.panHandlers}
-      >
-        <View style={styles.contentContainer}>
-          {children}
-        </View>
-      </Animatable.View>
+    <Animatable.View
+      ref={bottomSheetRef}
+      style={[styles.bottomSheet, { display: isVisible ? "flex" : "none" }]}
+      animation={isVisible ? "slideInUp" : "slideOutDown"}
+      duration={300}
+      onAnimationEnd={handleAnimationEnd}
+      {...panResponder.panHandlers}
+    >
+      <View style={styles.contentContainer}>{children}</View>
+    </Animatable.View>
   );
 };
 
@@ -93,7 +91,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 16,
+    /* padding: 16, */
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -3 },
     shadowOpacity: 0.1,

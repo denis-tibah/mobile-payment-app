@@ -100,11 +100,11 @@ export const styles = StyleSheet.create({
     marginTop: 24,
   },
   phoneNumberContainer: {
-    display: "flex",
+    /* display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-between", */
     paddingTop: 10,
-    paddingBottom: 24,
+    paddingBottom: 10,
     paddingLeft: 24,
     padding: 24,
   },
@@ -112,6 +112,8 @@ export const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+
+    justifyContent: "flex-start",
   },
   alternatePhoneNumberContainer: {
     paddingTop: 0,
@@ -213,5 +215,8 @@ export const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "flex-start",
+  },
+  accentPinkText: {
+    color: vars["accent-pink"],
   },
 });

@@ -375,7 +375,6 @@ export function Payment({ navigation }: any) {
               >
                 Add Payee
               </Button>
-              <Text style={{color: vars['accent-pink']}}>Change your phone</Text>
             </View>
           }
         />
@@ -444,6 +443,10 @@ export function Payment({ navigation }: any) {
         leftHeaderIcon={<AntDesign name="pluscircleo" size={16} color={vars['accent-pink']} />}
         isBottomSheetHeaderShown={true}
       >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Adjust the behavior based on platform
+          style={styles.container}
+        >
         <View>
           <FormGroup
             validationError={
@@ -594,6 +597,7 @@ export function Payment({ navigation }: any) {
         >
           Save Payee
         </Button>
+        </KeyboardAvoidingView>
       </BottomSheet>
     </MainLayout>
   )

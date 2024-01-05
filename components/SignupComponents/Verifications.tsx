@@ -315,10 +315,32 @@ const Verifications: FC<IVerifications> = ({
                 isNewPinCodeStyle
               />
               <TouchableOpacity onPress={handleGetanotherVerificationcode}>
-                <View>
-                  <Text style={styles.noCode}>
-                    Did not get a verification code?
-                  </Text>
+                <Text style={styles.noCode}>
+                  Did not get a verification code? 
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.phoneNumberContainer}>
+              <View>
+                {registration?.data?.identifier ? (
+                  <View style={styles.phoneNumberInnerContainer}>
+                    <PhoneIcon size={14} />
+                    <Text>
+                      {registration?.data?.identifier &&
+                      typeof registration?.data?.identifier === "string"
+                        ? registration?.data?.identifier.toString()
+                        : ""}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+              <TouchableOpacity
+                onPress={handleChangePhoneNumber}
+                style={styles.phoneNumberInnerContainer}
+              >
+                <Text style={{color: 'blue'}}>Not your phone number</Text>
+                <View style={{ marginTop: 4 }}>
+                  <ArrowDownIcon color={vars["accent-pink"]} size={16} />
                 </View>
               </TouchableOpacity>
             </View>

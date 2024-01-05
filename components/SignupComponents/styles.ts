@@ -93,6 +93,9 @@ export const styles = StyleSheet.create({
     paddingVertical: 10,
     textAlign: "center",
   },
+  accentPinkText: {
+    color: vars["accent-pink"],
+  },
   noCode: {
     color: vars["accent-pink"],
     fontSize: 14,
@@ -100,9 +103,6 @@ export const styles = StyleSheet.create({
     marginTop: 24,
   },
   phoneNumberContainer: {
-    /* display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between", */
     paddingTop: 10,
     paddingBottom: 10,
     paddingLeft: 24,
@@ -121,9 +121,7 @@ export const styles = StyleSheet.create({
     paddingLeft: 24,
     padding: 24,
   },
-  smsResentContainer: {
-    /* backgroundColor: "#0dca9d", */
-  },
+  smsResentContainer: {},
   textmonthYearAdditionalText: {
     textAlign: "center",
     marginTop: 20,
@@ -215,8 +213,5 @@ export const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "flex-start",
-  },
-  accentPinkText: {
-    color: vars["accent-pink"],
   },
 });

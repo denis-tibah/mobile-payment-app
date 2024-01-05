@@ -351,16 +351,13 @@ const Verifications: FC<IVerifications> = ({
                   </View>
                 ) : null}
               </View>
-
-              <TouchableOpacity
-                onPress={handleChangePhoneNumber}
-                style={[styles.phoneNumberInnerContainer]}
-              >
-                <Text style={styles.accentPinkText}>
+              <TouchableOpacity onPress={handleChangePhoneNumber}>
+                <Text style={{ color: vars["accent-pink"] }}>
                   Change your phone number
                 </Text>
               </TouchableOpacity>
             </View>
+
             {isUpdatePhoneNumber && (
               <View style={styles.alternatePhoneNumberContainer}>
                 <View style={styles.phoneNumberInnerContainer}>

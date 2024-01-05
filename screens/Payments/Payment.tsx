@@ -1,43 +1,23 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { View, ScrollView, TouchableOpacity } from "react-native";
+import { View, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "react-native-loading-spinner-overlay/lib";
-import { useDebounce } from "usehooks-ts";
-import DropDownPicker from "react-native-dropdown-picker";
-import { Divider, Text, Drawer } from "react-native-paper";
-import CheckBox from "expo-checkbox";
+import { RootState } from "../../store";
+import { useGetPayeesQuery } from "../../redux/payee/payeeSlice";
+import { Divider, Text } from "react-native-paper";
 import { AntDesign } from '@expo/vector-icons';
 import Search from "../../assets/icons/Search";
 import Heading from "../../components/Heading";
 import { MainLayout } from "../../layout/Main/Main";
 import FormGroup from "../../components/FormGroup";
-import FixedBottomAction from "../../components/FixedBottomAction";
 import Button from "../../components/Button";
 import { styles } from "./styles";
 import { useFormik } from "formik";
 import EuroIcon from "../../assets/icons/Euro";
-import TransactionIcon from "../../assets/icons/Transaction";
 import CodeIcon from "../../assets/icons/Code";
-import ProfileIcon from "../../assets/icons/Profile";
 import { formatDateDayMonthYear, getCurrency, getNameInitials, screenNames } from "../../utils/helpers";
-import { CodeModal } from "../../components/CodeModal/CodeModal";
-import {
-  initiatePayment,
-  processPayment,
-  sendSmsPaymentVerification,
-  setInitiatePaymentData,
-  ibanCheck,
-} from "../../redux/payment/paymentSlice";
-import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
-import {
-  addNewBeneficiary,
-  getAllBeneficiary,
-} from "../../redux/beneficiary/beneficiarySlice";
-import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
 import { validationPaymentSchema } from "../../utils/validation";
-import { formatCurrencyToLocalEn } from "../../utils/helpers";
-import ArrowDown from "../../assets/icons/ArrowDown";
 import ArrowRight from "../../assets/icons/ArrowRight";
 import BottomSheet from "../../components/BottomSheet";
 import FaceIcon from "../../assets/icons/FaceIcon";
@@ -46,42 +26,25 @@ import PinGPS from "../../assets/icons/PinGPS";
 
 export function Payment({ navigation }: any) {
   const dispatch = useDispatch();
-  const {
-    transactionId,
-    debtor_iban,
-    creditor_iban,
-    amount,
-    currency,
-    reason,
-    account,
-    recipientFirstname,
-    recipientLastname,
-    bic,
-    savePayee,
-  } = useSelector((state: any) => state.payment.initiatePaymentData);
-
   const infoData = useSelector((state: any) => state.account.details);
   const validationSchema = validationPaymentSchema(infoData?.avlbal || 0);
-  const beneficiaryList = useSelector((state: any) => state?.beneficiary?.data);
-  const accountData = useSelector(
-    (state: any) => state?.account?.details?.info
-  );
-  // states
   const [bottomSheetOpen, setBottomSheetOpen] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [searchName, setSearchName] = useState<string>("");
+  const userTokens = useSelector((state: RootState) => state?.auth?.data);
+  const { access_token, token_ziyl } = userTokens || {};
+
+  const { data: payeesList,
+  isLoading: isPayeesListLoading } = useGetPayeesQuery({
+    accessToken: access_token,
+    tokenZiyl: token_ziyl,
+  });
+
+  const filteredPayeesList = payeesList?.filter((item: any) => {
+    return item.name.toLowerCase().includes(searchName.toLowerCase());
+  });
 
   const toggleBottomSheet = () => {
     setBottomSheetOpen(!bottomSheetOpen);
-  };
-
-  const fetchAllPayees = async () => {
-    try {
-      await dispatch<any>(getAllBeneficiary());
-    } catch (error) {
-      console.log({ error });
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   const { handleChange, handleBlur, values, touched, errors } = useFormik({
@@ -100,12 +63,6 @@ export function Payment({ navigation }: any) {
     }
   });
 
-  useEffect(() => {
-    if ( beneficiaryList?.length === 0) {
-      setIsLoading(true);
-      fetchAllPayees();
-    }
-  }, [beneficiaryList?.length]);
 
   // const debouncedBeneficiaryIban = useDebounce<string>(beneficiaryIban, 2000);
 
@@ -405,7 +362,7 @@ export function Payment({ navigation }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      <Spinner visible={isLoading} />
+      <Spinner visible={isPayeesListLoading} />
       <Heading
           icon={<EuroIcon color="pink" size={25} />}
           title="Make Payment"
@@ -418,6 +375,7 @@ export function Payment({ navigation }: any) {
               >
                 Add Payee
               </Button>
+              <Text style={{color: vars['accent-pink']}}>Change your phone</Text>
             </View>
           }
         />
@@ -431,19 +389,13 @@ export function Payment({ navigation }: any) {
               fontSize={14}
               fontWeight={"400"}
               style={{ width: "90%", alignSelf: "center", marginTop: 10, marginBottom: 10 }}
-              value={''}
-              onChangeText={(event: string) => console.log('text')}
-              onSubmitEditing={() => {
-                // fetchTransactionsWithFilters({
-                //   ...searchFieldData,
-                //   name: searchText,
-                // });
-              }}
+              value={searchName}
+              onChangeText={(event: string) => setSearchName(event)}
             />
           <Divider style={{ marginBottom: 10 }} />
           <View style={{display: 'flex', flexDirection: 'column', borderTopColor: vars['grey'], borderTopWidth: 1}}>
-              { beneficiaryList?.length > 0 && beneficiaryList.map((item: any, index: number) => (
-                <Fragment>
+              { filteredPayeesList?.length > 0 && filteredPayeesList.map((item: any, index: number) => (
+                <Fragment key={index}>
                   <View key={index} style={{
                       display: 'flex',
                       flexDirection: 'row',
@@ -501,8 +453,8 @@ export function Payment({ navigation }: any) {
             <FormGroup.Input
               keyboardType="text"
               name="name"
-              onChangeText={handleChange("email")}
-              onBlur={handleBlur("email")}
+              onChangeText={handleChange("name")}
+              onBlur={handleBlur("name")}
               value={values.name}
               placeholderTextColor={vars["ios-default-text"]}
               placeholder="Name"

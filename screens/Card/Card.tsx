@@ -23,11 +23,7 @@ import {
   getCards,
   sendSmsShowCardVerification,
   setCardAsFrozen,
-  showCardDetails,
   terminateCard,
-  orderCard,
-  enrollforCardScheme,
-  setPrimaryCardID,
 } from "../../redux/card/cardSlice";
 import {
   getUserActiveCards,
@@ -404,7 +400,7 @@ export function Card({ navigation }: any) {
                     }}
                     color={"light-pink"}
                     leftIcon={<MaterialCommunityIcons name="credit-card-plus-outline" size={14} color={vars['accent-pink']} />}
-                    // disabled={isCardHaveVirtual}
+                    disabled={cardsActiveList.length === 0 ? false : true}
                   >
                     Create
                   </Button>

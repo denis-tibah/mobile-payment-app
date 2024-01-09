@@ -132,7 +132,7 @@ export function MyAccount({ navigation }: any) {
               Pending
             </Typography>
             <Typography color={"accent-orange"} fontWeight={600} fontSize={16}>
-              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${Number(userAccountInformation?.data?.blocked_amount) < 0 ? `` : `0`}${
+              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
                 userAccountInformation?.data?.blocked_amount || 0
               }`}
             </Typography>

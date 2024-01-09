@@ -82,7 +82,7 @@ export const validationPaymentSchema = (maxAmount: number) => {
     amount: Yup.number()
       .required("This is a required field*")
       .max(maxAmount, `Amount cannot be greater than ${maxAmount}`),
-    reason: Yup.string().required("This is a required field*"),
+    // reason: Yup.string().required("This is a required field*"),
     creditor_iban: Yup.string().required("This is a required field *"),
   });
 };

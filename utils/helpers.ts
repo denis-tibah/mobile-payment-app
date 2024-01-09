@@ -134,6 +134,7 @@ export const screenNames: any = {
   profileDetails: " profileDetails",
   forgottenPassword: "forgottenPassword",
   resetPassword: "Reset Password",
+  payeeSendFunds: "payee_send_funds",
 };
 
 const chechIfResponseIsError = (response: any) => {
@@ -143,6 +144,11 @@ const chechIfResponseIsError = (response: any) => {
   }
   return false;
 };
+
+export const getNameInitials = (name: string) => {
+  const initials = name.match(/\b\w/g) || [];
+  return ((initials.shift() || "") + (initials.pop() || "")).toUpperCase();
+}
 
 export const getUserActiveCards = (cards: any) => {
   if (!cards || chechIfResponseIsError(cards) || typeof cards === undefined) return [];
@@ -180,6 +186,16 @@ export function getFormattedDate(dateToFormat: any) {
 
   return formattedDate;
 }
+
+  export function getFirstAndLastName(str: string) {
+    const firstSpace = str.indexOf(" ");
+    let data = str.slice(firstSpace + 1);
+    data.slice(0, data?.indexOf(" "));
+    return {
+      firstname: str.slice(0, firstSpace),
+      lastname: str.slice(firstSpace + 1),
+    };
+  }
 
 export function getFormattedDateAndTime(dateToFormat: any) {
   const date = new Date(dateToFormat);

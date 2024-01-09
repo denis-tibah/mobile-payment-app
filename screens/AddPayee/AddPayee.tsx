@@ -26,10 +26,8 @@ import { styles } from "./styles";
 import Typography from "../../components/Typography";
 import { ArrowLeft } from "../../assets/icons/ArrowLeft/ArrowLeft";
 
-export function AddPayee() {
+export function AddPayee({navigate, route}: any) {
   const dispatch = useDispatch();
-  const { navigate }: any = useNavigation();
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [beneficiaryIban, setBeneficiaryIban] = useState("");
   const [statusMessage, setStatusMessage] = useState<{
@@ -160,20 +158,18 @@ export function AddPayee() {
         isError={statusMessage.isError}
         onClose={onCloseModal}
       />
+      <Heading
+        icon={<BeneficiaryIcon color="pink" size={18} />}
+        title="Payee"
+        leftAction={
+          <Button onPress={() => navigate(screenNames.payments)} color={"light-pink"} leftIcon={<ArrowLeft size={14} />}>
+            <Typography>
+              Back
+            </Typography>
+          </Button>
+        }
+      />
       <ScrollView bounces={false}>
-        <View style={styles.container}>
-          <Heading
-            icon={<BeneficiaryIcon color="pink" size={18} />}
-            title="Payee"
-            leftAction={
-              <Button onPress={() => navigate(screenNames.payeesList)} color={"light-pink"} leftIcon={<ArrowLeft size={14} />}>
-                <Typography>
-                  Back
-                </Typography>
-              </Button>
-            }
-          />
-        </View>
         <View style={styles.content}>
           <View>
             <FormGroup

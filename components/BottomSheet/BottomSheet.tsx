@@ -88,7 +88,7 @@ export const BottomSheet: React.FC<Props> = ({
   return (
       <Animatable.View
         ref={bottomSheetRef}
-        style={[styles.bottomSheet, { 
+        style={[styles.bottomSheet, {
           display: isVisible ? 'flex' : 'none',
           ...(headerResponse?.isShown && {
             borderColor: headerResponse?.isSuccessful ? vars["accent-green"] : vars["heavy-red"],
@@ -140,6 +140,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    paddingHorizontal: 16,
     /* padding: 16, */
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -3 },

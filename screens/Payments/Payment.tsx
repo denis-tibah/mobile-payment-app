@@ -3,7 +3,7 @@ import { View, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } fr
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { RootState } from "../../store";
-import { useGetPayeesQuery } from "../../redux/payee/payeeSlice";
+import { useAddPayeeMutation, useGetPayeesQuery } from "../../redux/payee/payeeSlice";
 import { Divider, Text } from "react-native-paper";
 import { AntDesign } from '@expo/vector-icons';
 import Search from "../../assets/icons/Search";
@@ -17,21 +17,28 @@ import EuroIcon from "../../assets/icons/Euro";
 import CodeIcon from "../../assets/icons/Code";
 import { formatDateDayMonthYear, getCurrency, getNameInitials, screenNames } from "../../utils/helpers";
 import vars from "../../styles/vars";
-import { validationPaymentSchema } from "../../utils/validation";
+import { validationAddingPayeeSchema, validationPaymentSchema } from "../../utils/validation";
 import ArrowRight from "../../assets/icons/ArrowRight";
 import BottomSheet from "../../components/BottomSheet";
 import FaceIcon from "../../assets/icons/FaceIcon";
 import BuildingIcon from "../../assets/icons/Building";
 import PinGPS from "../../assets/icons/PinGPS";
+import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 
 export function Payment({ navigation }: any) {
   const dispatch = useDispatch();
   const infoData = useSelector((state: any) => state.account.details);
-  const validationSchema = validationPaymentSchema(infoData?.avlbal || 0);
-  const [bottomSheetOpen, setBottomSheetOpen] = useState<boolean>(false);
+  const validationSchema = validationAddingPayeeSchema();
+  const [isAddingPayeeShown, setIsAddingPayeeShown] = useState<boolean>(false);
+  const [isModalSuccessOpen, setIsModalSuccessOpen] = useState<boolean>(false);
   const [searchName, setSearchName] = useState<string>("");
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const { access_token, token_ziyl } = userTokens || {};
+  const [ addNewPayee, {
+    isError: isAddPayeeError,
+    isSuccess: isAddPayeeSuccess,
+    isLoading: isAddPayeeLoading,
+  }] = useAddPayeeMutation();
 
   const { data: payeesList,
   isLoading: isPayeesListLoading } = useGetPayeesQuery({
@@ -44,332 +51,57 @@ export function Payment({ navigation }: any) {
   });
 
   const toggleBottomSheet = () => {
-    setBottomSheetOpen(!bottomSheetOpen);
+    setIsAddingPayeeShown(!isAddingPayeeShown);
   };
 
-  const { handleChange, handleBlur, values, touched, errors } = useFormik({
+  const { handleChange, handleBlur, values, touched, errors, handleSubmit } = useFormik({
     initialValues: {
-      name: '',
-      iban: '',
-      bic: '',
-      address1: '',
-      address2: '',
-      city: '',
-      postcode: '',
+      beneficiaryName: "",
+      beneficiaryIban: "",
+      beneficiaryBic: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log('values', values);
+      addNewPayee({
+        beneficiary_name: values.beneficiaryName,
+        beneficiary_iban: values.beneficiaryIban,
+        beneficiary_bic: values.beneficiaryBic,
+        access_token,
+        token_ziyl,
+      })
+      .unwrap()
+      .finally(() => {
+        setIsModalSuccessOpen(true);
+      });
     }
   });
 
-
-  // const debouncedBeneficiaryIban = useDebounce<string>(beneficiaryIban, 2000);
-
-  // const [isLoading, setIsLoading] = useState<boolean>(false);
-  // const [isExternalPayment, setIsExternalPayment] = useState(false);
-  // const [paymentRequest, setPaymentRequest] = useState<any>({});
-  // const paymentContentDefault = {
-  //   title: "Payment Failed",
-  //   text: "Your payment was not successful",
-  //   isError: true,
-  // };
-  // const [paymentModalContent, setPaymentModalContent] = useState<{
-  //   title: string;
-  //   text: string;
-  //   isError: boolean;
-  // }>(paymentContentDefault);
-  // const [externalPayment, setExternalPayment] = useState("");
-  // const [displayOTPModal, setDisplayOTPModal] = useState<boolean>(false);
-
-  // const {
-  //   handleSubmit,
-  //   handleChange,
-  //   handleBlur,
-  //   values,
-
-  //   touched,
-  //   errors,
-  //   setFieldValue,
-  //   setValues,
-  // } = useFormik({
-  //   validationSchema: validationSchema,
-  //   validateOnChange: true,
-  //   initialValues: {
-  //     recipientname: "",
-  //     recipientFirstname: "",
-  //     recipientLastname: "",
-  //     creditor_iban: "",
-  //     bic: "",
-  //     balance: infoData?.avlbal || 0,
-  //     amount: 0,
-  //     currency: "EUR",
-  //     reason: "",
-  //   },
-  //   onSubmit: (values) => {
-  //     setIsLoading(true);
-
-  //     dispatch(
-  //       initiatePayment({
-  //         recipientFirstname: getFirstAndLastName(values.recipientname)
-  //           .firstname,
-  //         recipientLastname: getFirstAndLastName(values.recipientname).lastname,
-  //         debtor_iban: accountData?.iban,
-  //         creditor_iban: values.creditor_iban,
-  //         creditor_name: values.recipientname,
-  //         bic: values.bic,
-  //         account: accountData?.account_number,
-  //         amount: values.amount,
-  //         currency: "EUR",
-  //         reason: values.reason,
-  //         type: externalPayment,
-  //       }) as any
-  //     )
-  //       .unwrap()
-  //       .then((payload: { transaction_id: string }) => {
-  //         if (payload.transaction_id) {
-  //           dispatch(
-  //             setInitiatePaymentData({
-  //               recipientFirstname: getFirstAndLastName(values.recipientname)
-  //                 .firstname,
-  //               recipientLastname: getFirstAndLastName(values.recipientname)
-  //                 .lastname,
-  //               debtor_iban: accountData?.iban,
-  //               creditor_iban: values.creditor_iban,
-  //               creditor_name: values.recipientname,
-  //               bic: values.bic,
-  //               account: accountData?.account_number,
-  //               amount: values.amount,
-  //               currency: "EUR",
-  //               reason: values.reason,
-  //               transactionId: payload.transaction_id,
-  //               savePayee,
-  //               type: externalPayment,
-  //             })
-  //           );
-  //           let _paymentRequest = {
-  //             identifier: payload.transaction_id,
-  //             type: "transfer",
-  //             amount: values.amount,
-  //             currency: values.currency,
-  //           };
-  //           setPaymentRequest(_paymentRequest);
-  //           dispatch(sendSmsPaymentVerification(_paymentRequest) as any)
-  //             .unwrap()
-  //             .then((payload: { message: string; status: string }) => {
-  //               const { status } = payload;
-  //               if (status === "success") {
-  //                 setIsOtpValid(true);
-  //                 setDisplayOTPModal(true);
-  //               }
-  //             })
-  //             .catch((error: any) => {
-  //               console.error(error);
-  //               setIsOtpValid(false);
-  //             });
-  //         }
-  //       })
-  //       .catch((error: any) => {
-  //         console.error(error);
-  //         setIsLoading(false);
-  //       })
-  //       .finally(() => {
-  //         setIsLoading(false);
-  //       });
-  //   },
-  // });
-  // const fetchBicDetails = async (iban?: string) => {
-  //   setIsLoading(true);
-  //   try {
-  //     let search: any = {
-  //       creditor_iban: `${iban}`,
-  //     };
-  //     const payload = await dispatch<any>(ibanCheck(search));
-  //     console.log(
-  //       "🚀 ~ file: Payment.tsx:201 ~ fetchBicDetails ~ payload:",
-  //       payload
-  //     );
-  //     if (payload) {
-  //       if (
-  //         (payload?.payload?.result === 200 ||
-  //           payload?.payload?.result === "200") &&
-  //         payload?.payload?.data?.bank?.bic
-  //       ) {
-  //         setIsLoading(false);
-  //         setFieldValue("bic", payload?.payload?.data?.bank?.bic);
-  //       } else {
-  //         setFieldValue("bic", "");
-  //         setIsLoading(false);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.log({ error });
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (debouncedBeneficiaryIban && debouncedBeneficiaryIban.length) {
-  //     fetchBicDetails(debouncedBeneficiaryIban);
-  //   }
-  // }, [debouncedBeneficiaryIban]);
-
-  // useEffect(() => {
-  //   if (!beneficiaryList.length) {
-  //     fetchAllPayees();
-  //   }
-  //   setBeneficiaryOptions([
-  //     ...beneficiaryList.map((beneficiary: any) => ({
-  //       label: beneficiary.name,
-  //       value: beneficiary.uuid,
-  //     })),
-  //     { label: "Add New", value: "none" },
-  //   ]);
-  // }, [beneficiaryList?.length]);
-
-
-  // function getFirstAndLastName(str: string) {
-  //   const firstSpace = str.indexOf(" ");
-  //   let data = str.slice(firstSpace + 1);
-  //   data.slice(0, data?.indexOf(" "));
-  //   return {
-  //     firstname: str.slice(0, firstSpace),
-  //     lastname: str.slice(firstSpace + 1),
-  //   };
-  // }
-
-  // const handleResendSMSVerificationCode = () => {
-  //   setIsLoading(true);
-  //   dispatch(sendSmsPaymentVerification(paymentRequest) as any)
-  //     .unwrap()
-  //     .then((payload: { message: string; status: string }) => {
-  //       const { status } = payload;
-  //       if (status === "success") {
-  //         setIsLoading(false);
-  //       }
-  //     })
-  //     .catch((error: any) => {
-  //       console.error(error);
-  //       setIsOtpValid(false);
-  //     });
-  // };
-
-  // const handleSelectPayee = (item: any, values: any, setValues: any) => {
-  //   if (item === "none") {
-  //     setIsAddNewPayee(true);
-  //   } else {
-  //     setIsAddNewPayee(false);
-  //   }
-  //   if (item === "none" || !item) {
-  //     setValues({
-  //       ...values,
-  //       recipientname: "",
-  //       bic: "",
-  //       creditor_iban: "",
-  //     });
-  //     return;
-  //   }
-  //   const beneficiarySelected = beneficiaryList.find(
-  //     (beneficiary: any) => beneficiary.uuid === item
-  //   );
-  //   setValues({
-  //     ...values,
-  //     recipientname: beneficiarySelected.name,
-  //     bic: beneficiarySelected.bic,
-  //     creditor_iban: beneficiarySelected?.iban,
-  //   });
-  // };
-
-  // function gotoLimitsPage() {
-  //   navigation.navigate("profile", {
-  //     screen: "Limits",
-  //   });
-  // }
-
-  // //Enable or Disable if its external payment
-  // function toggleExternalPayment(value: boolean) {
-  //   setIsExternalPayment(value);
-  // }
-
-  // useEffect(() => {
-  //   if (isExternalPayment) {
-  //     setExternalPayment("SEPACT");
-  //   } else {
-  //     setExternalPayment("");
-  //   }
-  // }, [isExternalPayment]);
-
-  // const handleProccessPayment = async ({ code }: { code: string }) => {
-  //   if (!isOtpValid) {
-  //     return;
-  //   }
-  //   if (isOtpValid) {
-  //     setIsLoading(true);
-  //     console.log(
-  //       "*****creditor_name:***********",
-  //       recipientFirstname + " " + recipientLastname
-  //     );
-  //     await dispatch(
-  //       processPayment({
-  //         identifier: transactionId,
-  //         code: code,
-  //         debtor_iban,
-  //         creditor_iban,
-  //         creditor_name: recipientFirstname + " " + recipientLastname,
-  //         amount: amount.toString(),
-  //         currency,
-  //         // remarks: `${reason}, ${remarks}`,
-  //         remarks: `${reason}`,
-  //         account,
-  //         type: externalPayment,
-  //       }) as any
-  //     )
-  //       .unwrap()
-  //       .then((payload: any) => {
-  //         if (payload.code === 200) {
-  //           setPaymentModalContent({
-  //             title: "Payment Successful",
-  //             text: "Your payment was successful",
-  //             isError: false,
-  //           });
-  //           // if the user chose to save as a beneficiary
-  //           if (toggledSavePayee) {
-  //             dispatch(
-  //               addNewBeneficiary({
-  //                 beneficiary_name: `${recipientFirstname} ${recipientLastname}`,
-  //                 beneficiary_iban: creditor_iban,
-  //                 beneficiary_bic: bic,
-  //               }) as any
-  //             );
-  //           }
-  //           setDisplayOTPModal(false);
-  //         }
-  //       })
-  //       .catch((error: any) => {
-  //         console.error(error);
-  //         setPaymentModalContent({
-  //           title: "Payment Failed",
-  //           text: "Your payment was not successful. OTP is invalid.",
-  //           isError: true,
-  //         });
-  //       })
-  //       .finally(() => {
-  //         setShowPaymentStatusModal(true);
-  //         setIsLoading(false);
-  //       });
-  //   }
-  // };
+  useEffect(() => {
+    if (isAddPayeeSuccess) {
+      setIsAddingPayeeShown(false);
+    }
+    if (isAddPayeeError) {
+      setIsAddingPayeeShown(false);
+    }
+  }, [isAddPayeeSuccess, isAddPayeeError]);
 
   return (
     <MainLayout navigation={navigation}>
-      <Spinner visible={isPayeesListLoading} />
+      <SuccessModal
+        isError={isAddPayeeError}
+        isOpen={isModalSuccessOpen}
+        title={isAddPayeeError ? "Error" : "Success"}
+        text={isAddPayeeError ? "Something went wrong" : "Payee added successfully"}
+        onClose={() => setIsModalSuccessOpen(false)}
+      />
+      <Spinner visible={isPayeesListLoading || isAddPayeeLoading} />
       <Heading
           icon={<EuroIcon color="pink" size={25} />}
           title="Make Payment"
           rightAction={
             <View style={{ flexDirection: "row", display: "flex" }}>
               <Button
-                onPress={() => setBottomSheetOpen(true)}
+                onPress={() => setIsAddingPayeeShown(true)}
                 color={"light-pink"}
                 leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
               >
@@ -378,7 +110,7 @@ export function Payment({ navigation }: any) {
             </View>
           }
         />
-      <ScrollView bounces={true}>
+      <ScrollView bounces={true} style={{backgroundColor: '#fff'}}>
         <View style={styles.content}>
           <Divider style={{ marginBottom: 10 }} />
             <FormGroup.Input
@@ -391,7 +123,7 @@ export function Payment({ navigation }: any) {
               value={searchName}
               onChangeText={(event: string) => setSearchName(event)}
             />
-          <Divider style={{ marginBottom: 10 }} />
+          {/* <Divider style={{ marginBottom: 10 }} /> */}
           <View style={{display: 'flex', flexDirection: 'column', borderTopColor: vars['grey'], borderTopWidth: 1}}>
               { filteredPayeesList?.length > 0 && filteredPayeesList.map((item: any, index: number) => (
                 <Fragment key={index}>
@@ -421,7 +153,6 @@ export function Payment({ navigation }: any) {
                         </View>
                         <View style={{ paddingTop: 3, paddingLeft: 8 }}>
                           <TouchableOpacity onPress={() => {
-                            console.log('item', item);
                             navigation.navigate(screenNames.payeeSendFunds, {
                               item,
                             });
@@ -437,7 +168,7 @@ export function Payment({ navigation }: any) {
         </View>
       </ScrollView>
       <BottomSheet
-        isVisible={bottomSheetOpen}
+        isVisible={isAddingPayeeShown}
         onClose={toggleBottomSheet}
         headerTitle="Add Payee"
         leftHeaderIcon={<AntDesign name="pluscircleo" size={16} color={vars['accent-pink']} />}
@@ -450,15 +181,15 @@ export function Payment({ navigation }: any) {
         <View>
           <FormGroup
             validationError={
-              errors.name && touched.name && errors.name
+              errors.beneficiaryName && touched.beneficiaryName && errors.beneficiaryName
             }
           >
             <FormGroup.Input
               keyboardType="text"
-              name="name"
-              onChangeText={handleChange("name")}
-              onBlur={handleBlur("name")}
-              value={values.name}
+              name="beneficiaryName"
+              onChangeText={handleChange("beneficiaryName")}
+              onBlur={handleBlur("beneficiaryName")}
+              value={values.beneficiaryName}
               placeholderTextColor={vars["ios-default-text"]}
               placeholder="Name"
               iconColor="blue"
@@ -470,15 +201,15 @@ export function Payment({ navigation }: any) {
         <View>
           <FormGroup
             validationError={
-              errors.iban && touched.iban && errors.iban
+              errors.beneficiaryIban && touched.beneficiaryIban && errors.beneficiaryIban
             }
           >
             <FormGroup.Input
               keyboardType="text"
-              name="iban"
-              onChangeText={handleChange("iban")}
-              onBlur={handleBlur("iban")}
-              value={values.iban}
+              name="beneficiaryIban"
+              onChangeText={handleChange("beneficiaryIban")}
+              onBlur={handleBlur("beneficiaryIban")}
+              value={values.beneficiaryIban}
               placeholderTextColor={vars["ios-default-text"]}
               placeholder="IBAN"
               iconColor="blue"
@@ -489,15 +220,15 @@ export function Payment({ navigation }: any) {
         <View>
           <FormGroup
             validationError={
-              errors.bic && touched.bic && errors.bic
+              errors.beneficiaryBic && touched.beneficiaryBic && errors.beneficiaryBic
             }
           >
             <FormGroup.Input
               keyboardType="text"
-              name="bic"
-              onChangeText={handleChange("bic")}
-              onBlur={handleBlur("bic")}
-              value={values.bic}
+              name="beneficiaryBic"
+              onChangeText={handleChange("beneficiaryBic")}
+              onBlur={handleBlur("beneficiaryBic")}
+              value={values.beneficiaryBic}
               placeholderTextColor={vars["ios-default-text"]}
               placeholder="BIC"
               iconColor="blue"
@@ -506,7 +237,7 @@ export function Payment({ navigation }: any) {
           </FormGroup>
         </View>
         <Divider style={{marginVertical: 15}} />
-        {/* address 1 and address 2*/}
+        {/*
         <View style={{display: 'flex', flexDirection: 'column'}}>
           <View>
             <FormGroup
@@ -588,10 +319,16 @@ export function Payment({ navigation }: any) {
               </FormGroup>
             </View>
           </View>
-        </View>
+        </View> */}
         <Button
           color={"light-pink"}
-          onPress={toggleBottomSheet}
+            onPress={() => {
+              handleSubmit(
+                // @ts-ignore
+                values
+              )
+          }
+          }
           style={{marginTop: 20}}
           leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
         >

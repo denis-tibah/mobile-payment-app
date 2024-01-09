@@ -3,11 +3,13 @@ import vars from "../../styles/vars";
 export const textarea: any = StyleSheet.create({
   wrapper: {
     width: "100%",
-    height: 160,
+    height: 120,
     backgroundColor: "#f9f9f9",
     borderRadius: 7,
     display: "flex",
     alignItems: "center",
+    borderColor: vars["accent-blue"],
+    borderWidth: 1,
   },
   input: {
     width: "100%",

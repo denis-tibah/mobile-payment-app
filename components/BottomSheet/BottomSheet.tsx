@@ -4,12 +4,13 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Modal,
   PanResponder,
   Animated,
 } from "react-native";
+
 import * as Animatable from "react-native-animatable";
 import { Divider } from "react-native-paper";
+import vars from "../../styles/vars";
 
 type Props = {
   isVisible: boolean;
@@ -20,6 +21,11 @@ type Props = {
   leftHeaderIcon?: React.ReactNode;
   rightHeaderIcon?: React.ReactNode;
   isBottomSheetHeaderShown?: boolean;
+  headerResponse?: {
+    isShown: boolean;
+    isSuccessful: boolean;
+    message: string;
+  };
 };
 export const BottomSheet: React.FC<Props> = ({
   isVisible,
@@ -30,6 +36,7 @@ export const BottomSheet: React.FC<Props> = ({
   leftHeaderIcon,
   rightHeaderIcon,
   isBottomSheetHeaderShown,
+  headerResponse,
 }) => {
   const bottomSheetRef = useRef(null);
 
@@ -81,13 +88,28 @@ export const BottomSheet: React.FC<Props> = ({
   return (
       <Animatable.View
         ref={bottomSheetRef}
-        style={[styles.bottomSheet, { display: isVisible ? 'flex' : 'none' }]}
+        style={[styles.bottomSheet, { 
+          display: isVisible ? 'flex' : 'none',
+          ...(headerResponse?.isShown && {
+            borderColor: headerResponse?.isSuccessful ? vars["accent-green"] : vars["heavy-red"],
+            borderTopWidth: 60
+          }),
+        }]}
         animation={isVisible ? 'slideInUp' : 'slideOutDown'}
         duration={300}
         onAnimationEnd={handleAnimationEnd}
         {...panResponder.panHandlers}
       >
-        <TouchableOpacity onPress={handleClose} style={{height: 15}}><Text>{' '}</Text></TouchableOpacity>
+        <TouchableOpacity onPress={handleClose} style={{
+          width: '100%',
+          alignSelf: 'center',
+          }}>
+            <Text style={{color: 'white', alignSelf: 'center', top: -55, fontSize: 18}}>{
+              headerResponse?.isShown ?
+              headerResponse?.message : ' '
+            }</Text>
+          </TouchableOpacity>
+
         { !!isBottomSheetHeaderShown &&
           <Fragment>
             <View style={styles.headerContainer}>

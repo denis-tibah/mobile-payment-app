@@ -187,6 +187,16 @@ export function getFormattedDate(dateToFormat: any) {
   return formattedDate;
 }
 
+  export function getFirstAndLastName(str: string) {
+    const firstSpace = str.indexOf(" ");
+    let data = str.slice(firstSpace + 1);
+    data.slice(0, data?.indexOf(" "));
+    return {
+      firstname: str.slice(0, firstSpace),
+      lastname: str.slice(firstSpace + 1),
+    };
+  }
+
 export function getFormattedDateAndTime(dateToFormat: any) {
   const date = new Date(dateToFormat);
 

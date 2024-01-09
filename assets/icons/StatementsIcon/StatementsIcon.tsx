@@ -1,10 +1,10 @@
 import { getColor } from "../color";
 import Svg, { Path } from "react-native-svg";
-export function StatementsIcon({ size = 24, color = "pink" }) {
+export function StatementsIcon({ size = 18, color = "blue" }) {
   return (
     <Svg
-     width="22" 
-     height="22" 
+     width="22"
+     height="22"
      viewBox="0 0 22 22"
       fill={getColor(color) || color}
     >

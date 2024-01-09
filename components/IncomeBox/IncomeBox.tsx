@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View,TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { styles } from "./styles";
 import Typography from "../Typography";
@@ -12,8 +12,6 @@ import { getPendingAmount } from "../../utils/helpers";
 import * as Clipboard from "expo-clipboard";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
 
-
-
 export function IncomeBox() {
   const userData = useSelector((state: RootState) => state.auth.userData);
   const infoData = useSelector((state: RootState) => state.account.details);
@@ -25,8 +23,6 @@ export function IncomeBox() {
 
   const handleCopyToClipboard = async () => {
     await Clipboard.setStringAsync(infoData?.info?.iban || "");
-
-
   };
 
   useEffect(() => {
@@ -38,116 +34,109 @@ export function IncomeBox() {
   return (
     <View style={styles.incomeBox}>
       <Box style={styles.incomeBox__box}>
-            <Box style={styles.incomeBox__box__title1}>
-              <Typography
-                fontFamily="Nunito-SemiBold"
-                color="accent-blue"
-                fontSize={13}
-                style={styles.imcome__groupTypography}
-              >
-                Current
-              </Typography>
-           
-            </Box>
-            <Box style={styles.incomeBox__box__title1}>
-              <Typography
-                fontFamily="Nunito-SemiBold"
-                color="accent-blue"
-                fontSize={13}
-                style={styles.imcome__groupTypography}
-              >
-              </Typography>
-            </Box>
-            <Box style={styles.incomeBox__box__title1}>
-              <Typography
-                fontFamily="Nunito-SemiBold"
-                color="accent-blue"
-                fontSize={13}
-                style={styles.imcome__groupTypography}
-              >
-                Available
-              </Typography>
-            
-            </Box>
+        <Box style={styles.incomeBox__box__title1}>
+          <Typography
+            fontFamily="Nunito-SemiBold"
+            color="accent-blue"
+            fontSize={13}
+            style={styles.imcome__groupTypography}
+          >
+            Current
+          </Typography>
+        </Box>
+        <Box style={styles.incomeBox__box__title1}>
+          <Typography
+            fontFamily="Nunito-SemiBold"
+            color="accent-blue"
+            fontSize={13}
+            style={styles.imcome__groupTypography}
+          ></Typography>
+        </Box>
+        <Box style={styles.incomeBox__box__title1}>
+          <Typography
+            fontFamily="Nunito-SemiBold"
+            color="accent-blue"
+            fontSize={13}
+            style={styles.imcome__groupTypography}
+          >
+            Available
+          </Typography>
+        </Box>
       </Box>
 
       <Box style={styles.incomeBox__box}>
-            <Box style={styles.incomeBox__box__title2}>
-              <Typography
-                fontFamily="Nunito-SemiBold"
-                color="accent-blue"
-                fontSize={16}
-                style={styles.imcome__groupTypography}
-              >
-                Balance:
-              </Typography>
-           
-            </Box>
-            <Box style={styles.incomeBox__box__title2}>
-              <Typography
-                fontFamily="Nunito-SemiBold"
-                color="accent-blue"
-                fontSize={16}
-                style={styles.imcome__groupTypography}
-              >
-                Pending:
-              </Typography>
-            
-            </Box>
-            <Box style={styles.incomeBox__box__title2}>
-              <Typography
-                fontFamily="Nunito-SemiBold"
-                color="accent-blue"
-                fontSize={16}
-                style={styles.imcome__groupTypography}
-              >
-                Balance:
-              </Typography>
-            
-            </Box>
+        <Box style={styles.incomeBox__box__title2}>
+          <Typography
+            fontFamily="Nunito-SemiBold"
+            color="accent-blue"
+            fontSize={16}
+            style={styles.imcome__groupTypography}
+          >
+            Balance:
+          </Typography>
+        </Box>
+        <Box style={styles.incomeBox__box__title2}>
+          <Typography
+            fontFamily="Nunito-SemiBold"
+            color="accent-blue"
+            fontSize={16}
+            style={styles.imcome__groupTypography}
+          >
+            Pending:
+          </Typography>
+        </Box>
+        <Box style={styles.incomeBox__box__title2}>
+          <Typography
+            fontFamily="Nunito-SemiBold"
+            color="accent-blue"
+            fontSize={16}
+            style={styles.imcome__groupTypography}
+          >
+            Balance:
+          </Typography>
+        </Box>
       </Box>
 
       <Box style={styles.incomeBox__box}>
-            <Box style={styles.incomeBox__box__balances}>
-            
-              <Typography fontFamily="Mukta-Regular" fontSize={16}>
-                {getCurrency(infoData?.currency)}
-                {infoData?.curbal || "0.00"}
-              </Typography>
-            </Box>
-            <Box style={styles.incomeBox__box__balances}>
-          
-              <Typography color="#E53CA9" fontFamily="Mukta-Regular" fontSize={16}>
-                {getCurrency(infoData?.currency)}
-                {getPendingAmount(infoData?.avlbal ||"0.00",infoData?.curbal ||"0.00") || "0.00"}
-              
-              </Typography>
-            </Box>
-            <Box style={styles.incomeBox__box__balances}>
-          
-              <Typography fontFamily="Mukta-Regular" fontSize={16}>
-                {getCurrency(infoData?.currency)}
-                {infoData?.avlbal || "0.00"}
-              </Typography>
-            </Box>
+        <Box style={styles.incomeBox__box__balances}>
+          <Typography fontFamily="Mukta-Regular" fontSize={16}>
+            {getCurrency(infoData?.currency)}
+            {infoData?.curbal || "0.00"}
+          </Typography>
+        </Box>
+        <Box style={styles.incomeBox__box__balances}>
+          <Typography color="#E53CA9" fontFamily="Mukta-Regular" fontSize={16}>
+            {getCurrency(infoData?.currency)}
+            {getPendingAmount(
+              infoData?.avlbal || "0.00",
+              infoData?.curbal || "0.00"
+            ) || "0.00"}
+          </Typography>
+        </Box>
+        <Box style={styles.incomeBox__box__balances}>
+          <Typography fontFamily="Mukta-Regular" fontSize={16}>
+            {getCurrency(infoData?.currency)}
+            {infoData?.avlbal || "0.00"}
+          </Typography>
+        </Box>
       </Box>
 
       <Box style={styles.incomeBox__box}>
         <Box style={styles.incomeBox__box__bic}>
-            <Typography
-              fontFamily="Nunito-SemiBold"
-              color="accent-blue"
-              style={styles.imcome__groupTypography}
-            >
-              BIC:
+          <Typography
+            fontFamily="Nunito-SemiBold"
+            color="accent-blue"
+            style={styles.imcome__groupTypography}
+          >
+            BIC:
+          </Typography>
+          <Box>
+            <Typography fontFamily="Mukta-Regular" fontSize={14}>
+              {infoData?.info?.bic}
             </Typography>
-            <Box>
-              <Typography fontFamily="Mukta-Regular" fontSize={14}>
-                {infoData?.info?.bic}
-              </Typography>
-            </Box>
           </Box>
         </Box>
+      </Box>
       <Box style={styles.incomeBox__box}>
         <Box style={styles.incomeBox__box__iban}>
           <Typography
@@ -160,14 +149,12 @@ export function IncomeBox() {
           <Box>
             <Typography fontFamily="Mukta-Regular" fontSize={14}>
               {infoData?.info?.iban}
-                
             </Typography>
-              <TouchableOpacity onPress={handleCopyToClipboard}>
-                <View style={styles.clipboardContainer}>
-                  <CopyClipboard color="blue" size={18} />
-                </View>
-              </TouchableOpacity>
-           
+            <TouchableOpacity onPress={handleCopyToClipboard}>
+              <View style={styles.clipboardContainer}>
+                <CopyClipboard color="blue" size={18} />
+              </View>
+            </TouchableOpacity>
           </Box>
         </Box>
       </Box>

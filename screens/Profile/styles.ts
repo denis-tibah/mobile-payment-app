@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const styles:any = StyleSheet.create<any>({
+export const styles: any = StyleSheet.create<any>({
   incomeBox: {
     paddingTop: 24,
     paddingBottom: 24,
@@ -33,12 +33,12 @@ export const styles:any = StyleSheet.create<any>({
   },
   tabDropDown: {
     paddingLeft: 24,
-    paddingRight:24, 
+    paddingRight: 24,
     paddingBottom: 24,
     flexDirection: "row",
     flex: 1,
     justifyContent: "space-between",
-    alignItems: "center"
+    alignItems: "center",
   },
   notification__switch: {
     flexDirection: "row",
@@ -48,7 +48,7 @@ export const styles:any = StyleSheet.create<any>({
   },
   notification__switch__text: {
     flexDirection: "row",
-    gap:8,
+    gap: 8,
     alignItems: "center",
   },
   biometric__switch: {
@@ -56,12 +56,12 @@ export const styles:any = StyleSheet.create<any>({
     alignItems: "center",
     paddingLeft: 12,
     paddingRight: 12,
-    paddingBottom:30,
+    paddingBottom: 30,
     // paddingTop: -10,
   },
   biometric__switch__text: {
     flexDirection: "row",
-    gap:8,
+    gap: 8,
     alignItems: "center",
   },
   notification__action: {
@@ -77,20 +77,20 @@ export const styles:any = StyleSheet.create<any>({
   buttonBox: {
     flexDirection: "row",
     marginTop: 18,
-    gap:13,
-    marginLeft:23
+    gap: 13,
+    marginLeft: 23,
   },
   wrapper: {
-      width: "100%",
-      height: 42,
-      backgroundColor: "#f9f9f9",
-      borderRadius: 999,
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      paddingLeft: 12,
-      paddingRight: 12,
+    width: "100%",
+    height: 42,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 999,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingLeft: 12,
+    paddingRight: 12,
   },
   picker: {
     width: "100%",
@@ -99,7 +99,7 @@ export const styles:any = StyleSheet.create<any>({
     fontWeight: "400",
     lineHeight: 18,
     height: "100%",
-    color: "#000"
+    color: "#000",
   },
   /*
   dropdown: {
@@ -125,32 +125,32 @@ export const styles:any = StyleSheet.create<any>({
   txtArea: {
     // marginTop:90,
     width: "95%",
-    height:"58%",
+    height: "58%",
     paddingTop: 20,
-    paddingBottom:10,
-    marginLeft:10,
-    borderRadius:30,
+    paddingBottom: 10,
+    marginLeft: 10,
+    borderRadius: 30,
     backgroundColor: "#f9f9f9",
-    zIndex: -1, // 1 for stacking the element on top of the previous element and -1 
-               // for stacking the element under the above previous element.
+    zIndex: -1, // 1 for stacking the element on top of the previous element and -1
+    // for stacking the element under the above previous element.
     elevation: -1,
   },
   box: {
-      borderWidth: 4,
-      borderColor: 'rgba(0,0,0,0.2)',
-      height: 48,
-      width: 48,
-      borderRadius: 8,
+    borderWidth: 4,
+    borderColor: "rgba(0,0,0,0.2)",
+    height: 48,
+    width: 48,
+    borderRadius: 8,
   },
   overlay: {
     borderWidth: 4,
-      borderColor: 'rgba(0,0,0,0.2)',
-      height: 48,
-      width: 48,
-      borderRadius: 8,
-      zIndex: -1, // 1 for stacking the element on top of the previous element and -1 
-                  // for stacking the element under the above previous element.
-      elevation: -1,
+    borderColor: "rgba(0,0,0,0.2)",
+    height: 48,
+    width: 48,
+    borderRadius: 8,
+    zIndex: -1, // 1 for stacking the element on top of the previous element and -1
+    // for stacking the element under the above previous element.
+    elevation: -1,
   },
   dropdown: {
     height: 42,
@@ -163,18 +163,86 @@ export const styles:any = StyleSheet.create<any>({
     alignSelf: "center",
     borderColor: "transparent",
     marginBottom: 18,
-    zIndex: 1000
+    zIndex: 1000,
   },
   dropdownContainer: {
     width: "95%",
     alignSelf: "center",
     backgroundColor: "#f9f9f9",
     borderColor: "transparent",
-    zIndex: 1000
+    zIndex: 1000,
   },
   titleTag: {
     fontSize: 12,
-    color: '#808080',
+    color: "#808080",
     paddingLeft: 12,
-  }
+  },
+  borderRadiusBox: {
+    borderRadius: 12,
+  },
+  headerProfile: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    paddingTop: 14,
+    paddingBottom: 14,
+    paddingLeft: 8,
+    paddingRight: 8,
+    margin: 10,
+    borderBottomColor: "#086AFB",
+    borderBottomWidth: 4,
+  },
+  headerProfileLeft: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    width: "50%",
+  },
+  headerProfileRight: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    width: "50%",
+  },
+  boxIncomeDetails: {
+    backgroundColor: "#fff",
+    paddingTop: 4,
+    paddingBottom: 4,
+    paddingLeft: 8,
+  },
+  textIbanBicCurrencyContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  currencyContainer: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 2,
+  },
+  containerTab: {
+    paddingTop: 16,
+    paddingBottom: 16,
+    paddingLeft: 20,
+  },
+  containerBackBtn: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  btnBack: {
+    width: 35,
+    height: 35,
+    backgroundColor: "#F5F9FF",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 100,
+  },
 });

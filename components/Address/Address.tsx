@@ -140,16 +140,18 @@ export const Address = ({
               dropDownContainerStyle={styles.dropdownContainer}
               dropDownDirection="TOP"
             />
-            {showChangeRequest == 'Y' ? 
-            <View style={{ flexDirection: "row", paddingLeft: 12 }}>
-              <Button
-                leftIcon={<Transaction color="pink" />}
-                color="light-pink"
-              >
-                Change request
-              </Button>
-            </View>
-            : '' }
+            {showChangeRequest == "Y" ? (
+              <View style={{ flexDirection: "row", paddingLeft: 12 }}>
+                <Button
+                  leftIcon={<Transaction color="pink" />}
+                  color="light-pink"
+                >
+                  Change request
+                </Button>
+              </View>
+            ) : (
+              ""
+            )}
           </View>
         </View>
       )}

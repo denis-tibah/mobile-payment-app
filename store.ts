@@ -20,6 +20,7 @@ import { cardsV2 } from "./redux/card/cardSliceV2";
 import { transactionV2 } from "./redux/transaction/transactionV2Slice";
 import { registrationV2 } from "./redux/registration/registrationSliceV2";
 import { payeeSlice } from "./redux/payee/payeeSlice";
+import { profileV2 } from "./redux/profile/profileSliceV2";
 
 export const reducers = combineReducers({
   auth: authSlice,
@@ -38,6 +39,7 @@ export const reducers = combineReducers({
   [transactionV2.reducerPath]: transactionV2.reducer,
   [registrationV2.reducerPath]: registrationV2.reducer,
   [payeeSlice.reducerPath]: payeeSlice.reducer,
+  [profileV2.reducerPath]: profileV2.reducer,
 });
 
 export interface RootState {
@@ -57,6 +59,7 @@ export interface RootState {
   transactionV2: any;
   registrationV2: any;
   payee: any;
+  profileV2: any;
 }
 
 const rootReducer = (state: RootState | undefined, action: any) => {
@@ -106,7 +109,8 @@ export const store = configureStore({
       cardsV2.middleware,
       transactionV2.middleware,
       registrationV2.middleware,
-      payeeSlice.middleware
+      payeeSlice.middleware,
+      profileV2.middleware
     ),
 });
 

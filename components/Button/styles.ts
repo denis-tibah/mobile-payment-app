@@ -87,20 +87,20 @@ export const styles: any = StyleSheet.create({
 
   // only text - blue
   "blue-only": {
-    backgroundColor: 'none'
+    backgroundColor: "none",
   },
   "text-blue-only": {
-    color: vars["accent-blue"]
+    color: vars["accent-blue"],
   },
   withLineText: {
-    borderBottomColor: vars['accent-blue']
+    borderBottomColor: vars["accent-blue"],
   },
 
   // only text - black
   "black-only": {
-    backgroundColor: 'aliceblue',
+    backgroundColor: "aliceblue",
   },
   "text-black-only": {
-    color: "#000000"
-  }
+    color: "#000000",
+  },
 });

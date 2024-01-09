@@ -1,18 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import {
-  StyleSheet,
   Text,
   View,
   ScrollView,
   Switch,
   Pressable,
+  SafeAreaView,
 } from "react-native";
+import { Formik } from "formik";
+import { useDispatch, useSelector } from "react-redux";
+import { Picker } from "@react-native-picker/picker";
+import Spinner from "react-native-loading-spinner-overlay/lib";
+import * as Clipboard from "expo-clipboard";
+import Toast from "react-native-root-toast";
+import DropDownPicker from "react-native-dropdown-picker";
+
 import { Tabs } from "../../components/Tabs/Tabs";
 import MainLayout from "../../layout/Main";
 import FormGroup from "../../components/FormGroup";
 import Button from "../../components/Button";
 import { styles } from "./styles";
-import { Formik } from "formik";
 import { Avatar } from "../../components/Avatar/Avatar";
 import {
   checkNumber,
@@ -28,17 +35,17 @@ import HelpIcon from "../../assets/icons/Help";
 import IncomeBox from "../../components/IncomeBox";
 import Box from "../../components/Box";
 import vars from "../../styles/vars";
-import StatusIcon from "../../assets/icons/Status";
 import PigIcon from "../../assets/icons/Pig";
 import LockIcon from "../../assets/icons/Lock";
-import { useDispatch, useSelector } from "react-redux";
+import CopyClipboard from "../../assets/icons/CopyClipboard";
+import ArrowBackIcon from "../../assets/icons/ArrowBack";
 import {
   createTicket,
   getProfile,
   updateSecurity,
 } from "../../redux/profile/profileSlice";
+import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
 import { Address } from "../../components/Address/Address";
-import KeyboardDismiss from "../../components/KeyboardDismiss";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { signout } from "../../redux/auth/authSlice";
 import { Seperator } from "../../components/Seperator/Seperator";
@@ -51,26 +58,23 @@ import {
   updateLimits,
 } from "../../redux/setting/settingSlice";
 import { RootState } from "../../store";
-import * as SecureStore from "expo-secure-store";
 import Camera from "../../assets/icons/Camera";
 import Ticket from "../../assets/icons/Ticket";
 import ArrowDown from "../../assets/icons/ArrowDown";
 import { TouchableOpacity } from "react-native";
 import Globe from "../../assets/icons/Globe";
-import { Picker } from "@react-native-picker/picker";
-import Spinner from "react-native-loading-spinner-overlay/lib";
 import Email from "../../assets/icons/Email";
 import Biometric from "../../assets/icons/Biometric";
+import { getCurrency } from "../../utils/helpers";
+import ProfileTab from "../../components/ProfileComponents/ProfileTab";
 
 import {
   updateNotifications,
   updateBiometric,
 } from "../../redux/profile/profileSlice";
-import Toast from "react-native-root-toast";
-import DropDownPicker from "react-native-dropdown-picker";
-import { getPendingAmount } from "../../utils/helpers";
-import { ToggleButton } from "react-native-paper";
+
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
+import Typography from "../../components/Typography";
 
 export interface SelectOption {
   label: string;
@@ -112,20 +116,27 @@ export function Profile({ route, navigation }: any) {
   }>({});
   const [limitTypes, setLimitTypes] = useState<string>("");
   const [dropDownOpen, setDropDownOpen] = useState(false);
-  const userData = useSelector((state: RootState) => state.auth?.userData);
   const [helpTopicOpen, setHelpTopicOpen] = useState(false);
   const [openListForSalutation, setOpenListForSalutation] =
     useState<boolean>(false);
-  // const [selectedSalutation, setSelectedSalutation] = useState(null);
   const [openListForSourceOfWealth, setOpenListForSourceOfWealth] =
     useState<boolean>(false);
   const [selectedSourceOfWealth, setSelectedSourceOfWealth] = useState(null);
+  const [tabSelection, setTabSelection] = useState<string>("");
+  const [selectedTicketType, setSelectedTicketType] = useState(null);
 
   const loadingUserProfileData = useSelector(
     (state: RootState) => state.profile.profile.loading
   );
+  const userData = useSelector((state: RootState) => state?.auth?.userData);
+  const userTokens = useSelector((state: RootState) => state?.auth?.data);
 
-  const [selectedTicketType, setSelectedTicketType] = useState(null);
+  const { data: userAccountDetails, isLoading: isloadingAccountDetails } =
+    useGetAccountDetailsQuery({
+      accountId: userData?.id || 0,
+      accessToken: userTokens?.access_token,
+      tokenZiyl: userTokens?.token_ziyl,
+    });
 
   useEffect(() => {
     dispatch<any>(getProfile());
@@ -238,10 +249,29 @@ export function Profile({ route, navigation }: any) {
     }
   };
 
+  const handleShowTab = (tab: string): void => {
+    setTabSelection(tab);
+  };
+
+  const handleCopyToClipboard = async (textData: string) => {
+    await Clipboard.setStringAsync(textData || "");
+  };
+
+  const displayTabSelection = () => {
+    switch (tabSelection) {
+      case "Edit profile": {
+        return <ProfileTab />;
+      }
+      default:
+        return null;
+    }
+  };
+
   return (
     <MainLayout navigation={navigation}>
-      <Spinner visible={loadingUserProfileData} />
-      <Spinner visible={isLoading} />
+      <Spinner
+        visible={isLoading || loadingUserProfileData || isloadingAccountDetails}
+      />
       <SuccessModal
         isOpen={isUpdateLimitSuccess.isModalOpen}
         isError={!isUpdateLimitSuccess.state}
@@ -258,14 +288,13 @@ export function Profile({ route, navigation }: any) {
           })
         }
       />
-      <ScrollView bounces={false}>
-        <IncomeBox />
-        {/* content */}
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView bounces={false}>
+          {/* <IncomeBox />
         <View style={styles.content}>
           <Tabs screen={getRedirectScreen}>
             <Tabs.Panel text="Profile" icon={<ProfileIcon />}>
               <Formik
-                // enableReinitialize
                 initialValues={{
                   salutation: profileData?.salutation,
                   first_name: profileData?.first_name,
@@ -302,7 +331,6 @@ export function Profile({ route, navigation }: any) {
                         </FormGroup>
                       </View>
                       <View style={{ flex: 0.7 }}>
-                        {/* a title with 14px fontsie and grey text */}
                         <Text style={styles.titleTag}>{`Salutation`}</Text>
                         <DropDownPicker
                           schema={{ label: "label", value: "value" }}
@@ -314,7 +342,6 @@ export function Profile({ route, navigation }: any) {
                             });
                           }}
                           listMode="SCROLLVIEW"
-                          // setValue={setSelectedSalutation}
                           items={salutationOptions}
                           value={values.salutation}
                           setOpen={setOpenListForSalutation}
@@ -409,18 +436,13 @@ export function Profile({ route, navigation }: any) {
 
             <Tabs.Panel text="Security" icon={<SecurityIcon />}>
               <Formik
-                // enableReinitialize
                 initialValues={{
                   first_name: profileData?.first_name,
                   last_name: profileData?.last_name,
                   password: "",
                   old_password: "",
                   password_confirmation: "",
-                  // first_name: "",
-                  // last_name: "",
-                  // password: "",
-                  // old_password: "",
-                  // password_confirmation: "",
+
                 }}
                 validate={(values) => {
                   let errors: any = {};
@@ -441,7 +463,6 @@ export function Profile({ route, navigation }: any) {
                 }}
                 onSubmit={(values) => {
                   dispatch(updateSecurity(values) as any);
-                  // dispatch(createTicket(values));
                 }}
               >
                 {({
@@ -572,27 +593,11 @@ export function Profile({ route, navigation }: any) {
                     />
                   </View>
                 </View>
-                {/* <View style={styles.notification__switch}>
-                  <View style={styles.notification__switch__text}>
-                    <BellIcon color="blue" size={18} />
-                    <Text>Notifications when limit is reached</Text>
-                  </View>
-                  <View style={{ marginLeft: "auto" }}>
-                    <Switch
-                      trackColor={{ false: "#767577", true: "#81b0ff" }}
-                      thumbColor={isEnabled ? "white" : vars["light-blue"]}
-                      ios_backgroundColor="#3e3e3e"
-                      onValueChange={(e) => toggleLimitIsEnabled(e)}
-                      value={limitIsEnabled}
-                    />
-                  </View>
-                </View> */}
               </View>
             </Tabs.Panel>
 
             <Tabs.Panel text="Limits" icon={<SettingsIcon color={undefined} />}>
               <Formik
-                // enableReinitialize
                 initialValues={{}}
                 validate={() => {}}
                 onSubmit={() => {}}
@@ -614,7 +619,6 @@ export function Profile({ route, navigation }: any) {
                               }}
                             >
                               <FormGroup.Label>
-                                {" "}
                                 {`${limitType}`} limit
                               </FormGroup.Label>
                               <Switch
@@ -639,7 +643,7 @@ export function Profile({ route, navigation }: any) {
                               />
                             </View>
                             <FormGroup.Input
-                              editable={
+                              editable={ 
                                 updateLimitToggles[type]
                                   ? updateLimitToggles[type]
                                   : false
@@ -663,7 +667,7 @@ export function Profile({ route, navigation }: any) {
                             setIsLoading(true);
                             updateLimitRequest();
                           }}
-                          // disabled
+
                         >
                           Change request
                         </Button>
@@ -703,7 +707,6 @@ export function Profile({ route, navigation }: any) {
                 </View>
                 {dropDownOpen && (
                   <Formik
-                    // enableReinitialize
                     initialValues={{
                       type: "",
                       dateSubmitted: new Date().toISOString(),
@@ -712,7 +715,6 @@ export function Profile({ route, navigation }: any) {
                     }}
                     validate={(values) => {
                       let errors: any = {};
-                      // if (!values.type) errors.type = "Required";
                       if (!values.ticketValue) errors.ticketValue = "Required";
                       return errors;
                     }}
@@ -743,48 +745,17 @@ export function Profile({ route, navigation }: any) {
                       handleChange,
                       handleBlur,
                       handleSubmit,
-                      // setFieldValue,
                       values,
                       errors,
-                      // setValues,
                     }) => (
                       <View>
                         <FormGroup validationError={errors.type}>
-                          {/* <View style={[styles.wrapper, {zIndex: 1}]}> */}
                           <View style={styles.dropdownContainer}>
-                            {/* <View>  */}
-                            {/* style={[{ backgroundColor: '#6638f0' }]} > */}
                             <Globe color={"blue"} />
-                            {/* <DropDownPicker
-                              placeholder="Subject of the issue"
-                              style={styles.dropdown}
-                              open={helpTopicOpen}
-                              value={values.type}
-                              items={[
-                                { label: "Techincal", value: "technical" },
-                                { label: "Access", value: "access" },
-                                { label: "Payment", value: "payment" },
-                                { label: "Beneficiary", value: "beneficiary" },
-                                { label: "Card", value: "card" },
-                                { label: "Profile", value: "profile" },
-                                {
-                                  label: "Transactions",
-                                  value: "transactions",
-                                },
-                              ]}
-                              setOpen={setHelpTopicOpen}
-                              setValue={(v) => setFieldValue("type", v)}
-                              onChangeValue={(v) => setFieldValue("type", v)}
-                              listMode="SCROLLVIEW"
-                              dropDownContainerStyle={styles.dropdownContainer}
-                              zIndex={100}
-                            /> */}
-
                             <DropDownPicker
                               placeholder="Subject of the issue"
                               style={styles.dropdown}
                               open={helpTopicOpen}
-                              // value={values.type}
                               value={selectedTicketType}
                               items={[
                                 { label: "Techincal", value: "technical" },
@@ -799,55 +770,15 @@ export function Profile({ route, navigation }: any) {
                                 },
                               ]}
                               setValue={setSelectedTicketType}
-                              // setItems={setItems}
                               setOpen={setHelpTopicOpen}
-                              // onChangeValue={(v) => setFieldValue("type", v)}
-                              // onChangeValue={(value) => {
-                              //   console.log(value);
-                              //   // setSelectedTicketValue('value');
-                              // }}
                               listMode="SCROLLVIEW"
                             />
-
-                            {/* <DropDownPicker
-     placeholder="Aristos test"
-      open={open}
-      value={value}
-      items={items}
-      setOpen={setOpen}
-      setValue={setValue}
-      setItems={setItems}
-    /> */}
-                            {/* </View> */}
-
-                            {/* <Picker
-                              selectedValue={values.type}
-                              onValueChange={handleChange("type")}
-                              style={styles.picker}
-                            >
-                              <FormGroup.Option
-                                label="Subject of the issue "
-                                value="testing"
-                              />
-
-                              <FormGroup.Option
-                                label="option 1"
-                                value="value option1"
-                              />
-                              <FormGroup.Option
-                                label={"option 2"}
-                                value={"value option 2"}
-                              />
-                            </Picker> */}
                           </View>
                         </FormGroup>
 
                         <View style={styles.txtArea}>
                           <FormGroup
                             validationError={errors.ticketValue}
-                            // style={{ justifyContent: "start"}}
-                            // zIndex={0}
-                            // style={styles.txtArea}
                           >
                             <FormGroup.TextArea
                               onChangeText={handleChange("ticketValue")}
@@ -903,38 +834,183 @@ export function Profile({ route, navigation }: any) {
               text="Log Out"
               icon={<Ionicons name={"ios-exit-outline"} />}
               onPress={async () => {
-                /* await SecureStore.deleteItemAsync("email");
-                await SecureStore.deleteItemAsync("password"); */
                 dispatch(signout());
               }}
             />
           </Tabs>
-        </View>
-      </ScrollView>
+        </View> */}
+          <View style={{ backgroundColor: vars["light-grey"] }}>
+            <Pressable>
+              {tabSelection === "" && (
+                <Fragment>
+                  <View style={[styles.headerProfile, styles.borderRadiusBox]}>
+                    <View style={styles.headerProfileLeft}>
+                      {profileData?.UserProfile?.profileimage ? (
+                        <Avatar
+                          isBase64Image
+                          src={profileData?.UserProfile?.profileimage}
+                          fileUpload
+                          size="medium"
+                          icon={false}
+                        />
+                      ) : null}
+                      <View style={{ marginLeft: 8 }}>
+                        <Typography color="#086AFB" fontSize={14}>
+                          Hello
+                        </Typography>
+                        <Typography
+                          color="#000000"
+                          fontSize={20}
+                          fontWeight="bold"
+                          padding={0}
+                          marginTop={-6}
+                        >
+                          {profileData?.first_name}
+                        </Typography>
+                      </View>
+                    </View>
+                    <View style={styles.headerProfileRight}>
+                      <Button
+                        leftIcon={<ProfileIcon color="pink" size={14} />}
+                        color="light-pink"
+                        onPress={() => handleShowTab("Edit profile")}
+                      >
+                        Edit profile
+                      </Button>
+                    </View>
+                  </View>
+                  <View style={{ margin: 10 }}>
+                    {userAccountDetails?.data?.info?.iban ? (
+                      <View
+                        style={[
+                          styles.boxIncomeDetails,
+                          styles.borderRadiusBox,
+                        ]}
+                      >
+                        <Typography fontSize={12} color="medium-grey2">
+                          IBAN
+                        </Typography>
+                        <View style={styles.textIbanBicCurrencyContainer}>
+                          <Typography fontSize={16} color="#000000">
+                            {userAccountDetails?.data?.info?.iban}
+                          </Typography>
+                          <TouchableOpacity
+                            onPress={() =>
+                              handleCopyToClipboard(
+                                userAccountDetails?.data?.info?.iban
+                              )
+                            }
+                          >
+                            <View>
+                              <CopyClipboard color="blue" size={16} />
+                            </View>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    ) : null}
+
+                    <View style={{ marginTop: 10 }}>
+                      <View
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          gap: 8,
+                        }}
+                      >
+                        {userAccountDetails?.data?.info?.bic ? (
+                          <View
+                            style={[
+                              styles.boxIncomeDetails,
+                              {
+                                flexGrow: 1,
+                              },
+                              styles.borderRadiusBox,
+                            ]}
+                          >
+                            <Typography fontSize={12} color="medium-grey2">
+                              BIC
+                            </Typography>
+                            <View style={styles.textIbanBicCurrencyContainer}>
+                              <Typography fontSize={16} color="#000000">
+                                {userAccountDetails?.data?.info?.bic}
+                              </Typography>
+                              <TouchableOpacity
+                                onPress={() =>
+                                  handleCopyToClipboard(
+                                    userAccountDetails?.data?.info?.bic
+                                  )
+                                }
+                              >
+                                <View>
+                                  <CopyClipboard color="blue" size={16} />
+                                </View>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        ) : null}
+                        {userAccountDetails?.data?.curbal ? (
+                          <View
+                            style={[
+                              styles.boxIncomeDetails,
+                              {
+                                flexGrow: 4,
+                              },
+                              styles.borderRadiusBox,
+                            ]}
+                          >
+                            <Typography fontSize={12} color="medium-grey2">
+                              Amount:
+                            </Typography>
+                            <View style={styles.textIbanBicCurrencyContainer}>
+                              <View style={styles.currencyContainer}>
+                                <Typography fontSize={16} color="#000000">
+                                  {getCurrency(
+                                    userAccountDetails?.data?.currency
+                                  )}
+                                </Typography>
+                                <Typography fontSize={16} color="#000000">
+                                  {userAccountDetails?.data?.curbal}
+                                </Typography>
+                              </View>
+                              <TouchableOpacity
+                                onPress={() =>
+                                  handleCopyToClipboard(
+                                    userAccountDetails?.data?.curbal
+                                  )
+                                }
+                              >
+                                <View>
+                                  <CopyClipboard color="blue" size={16} />
+                                </View>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        ) : null}
+                      </View>
+                    </View>
+                  </View>
+                </Fragment>
+              )}
+
+              {tabSelection !== "" ? (
+                <Fragment>
+                  <View style={styles.containerTab}>
+                    <TouchableOpacity onPress={() => setTabSelection("")}>
+                      <View style={styles.containerBackBtn}>
+                        <View style={styles.btnBack}>
+                          <ArrowBackIcon color="blue" size={14} />
+                        </View>
+                        <Typography fontSize={16}>{tabSelection}</Typography>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                </Fragment>
+              ) : null}
+              {displayTabSelection()}
+            </Pressable>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     </MainLayout>
   );
 }
-
-// const styles = StyleSheet.create<any>({
-//   root: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-//   container: {
-//     height: 200,
-//     width: 200,
-//     borderRadius: 16,
-//     padding: 16,
-//     borderWidth: 8,
-//     borderColor: 'rgba(0,0,0,0.2)',
-//   },
-//   item: {
-//     borderWidth: 4,
-//     borderColor: 'rgba(0,0,0,0.2)',
-//     height: 48,
-//     width: 48,
-//     borderRadius: 8,
-//   },
-// });

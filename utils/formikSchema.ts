@@ -323,6 +323,20 @@ const forgottenPasswordSchema = Yup.object({
     .required("Email is required"),
 });
 
+const editProfileSchema = Yup.object({
+  salutation: Yup.string().required("Required"),
+  firstName: Yup.string().required("Required"),
+  lastName: Yup.string().required("Required"),
+  annualSalary: Yup.string().required("Required"),
+  sourceOfWealth: Yup.string().required("Required"),
+  street: Yup.string().notRequired(),
+  subStreet: Yup.string().notRequired(),
+  town: Yup.string().notRequired(),
+  state: Yup.string().notRequired(),
+  postCode: Yup.string().notRequired(),
+  country: Yup.string().notRequired(),
+});
+
 export {
   addressDetailsSchema,
   financialDetailsSchema,
@@ -331,4 +345,5 @@ export {
   termsAndConditionSchema,
   verifyPhoneNumberSchema,
   forgottenPasswordSchema,
+  editProfileSchema,
 };

@@ -337,6 +337,37 @@ const editProfileSchema = Yup.object({
   country: Yup.string().notRequired(),
 });
 
+const securityTabSchema = Yup.object({
+  password: Yup.string()
+    .required("Required")
+    .min(8, "Minimum of 8 characters")
+    .matches(/^(?=.*[A-Z])/, "Must Contain at least one uppercase character")
+    .matches(/^(?=.*[0-9])/, "Must Contain at least one Number")
+    .matches(
+      /^(?=.*[!@#\$%\^&\*])/,
+      "Must contain at least one special character"
+    ),
+  oldPassword: Yup.string()
+    .required("Required")
+    .min(8, "Minimum of 8 characters")
+    .matches(/^(?=.*[A-Z])/, "Must Contain at least one uppercase character")
+    .matches(/^(?=.*[0-9])/, "Must Contain at least one Number")
+    .matches(
+      /^(?=.*[!@#\$%\^&\*])/,
+      "Must contain at least one special character"
+    ),
+  passwordConfirmation: Yup.string()
+    .required("Required")
+    .min(8, "Minimum of 8 characters")
+    .matches(/^(?=.*[A-Z])/, "Must Contain at least one uppercase character")
+    .matches(/^(?=.*[0-9])/, "Must Contain at least one Number")
+    .matches(
+      /^(?=.*[!@#\$%\^&\*])/,
+      "Must contain at least one special character"
+    )
+    .oneOf([Yup.ref("password")], "Passwords do not match"),
+});
+
 export {
   addressDetailsSchema,
   financialDetailsSchema,
@@ -346,4 +377,5 @@ export {
   verifyPhoneNumberSchema,
   forgottenPasswordSchema,
   editProfileSchema,
+  securityTabSchema,
 };

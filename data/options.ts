@@ -1,20 +1,20 @@
 export const registrationPhonePrefix = [
   /* null, */
-  { label: "+44", value: "+44" }, // UK
-  { label: "+353", value: "+353" }, // Ireland
-  { label: "+34", value: "+34" }, //  Spain
-  { label: "+357", value: "+357" }, //  Cyprus
-  { label: "+49", value: "+49" }, // Germany
-  { label: "+33", value: "+33" }, // France
-  { label: "+356", value: "+356" }, // Malta
-  { label: "+370", value: "+370" }, // Lithuania
-  { label: "+372", value: "+372" }, //  Estonia
-  { label: "+39", value: "+39" }, // Italy
-  { label: "+30", value: "+30" }, // Greece
-  { label: "+90", value: "+90" }, // Turkey
-  { label: "+32", value: "+32" }, // Belguim
-  { label: "+54", value: "+54" }, // Argentina
-  { label: "+63", value: "+63" }, // Philippines
+  { label: "+44 UK", value: "+44" }, // UK
+  { label: "+353 IRE", value: "+353" }, // Ireland
+  { label: "+34 SPN", value: "+34" }, //  Spain
+  { label: "+357 CYPR", value: "+357" }, //  Cyprus
+  { label: "+49 GER", value: "+49" }, // Germany
+  { label: "+33 FRAN", value: "+33" }, // France
+  { label: "+356 MLTA", value: "+356" }, // Malta
+  { label: "+370 LITH", value: "+370" }, // Lithuania
+  { label: "+372 EST", value: "+372" }, //  Estonia
+  { label: "+39 ITLY", value: "+39" }, // Italy
+  { label: "+30 GRC", value: "+30" }, // Greece
+  { label: "+90 TRKY", value: "+90" }, // Turkey
+  { label: "+32 BELG", value: "+32" }, // Belgium
+  { label: "+54 ARG", value: "+54" }, // Argentina
+  { label: "+63 PHIL", value: "+63" }, // Philippines
 ];
 
 export const salutations = [

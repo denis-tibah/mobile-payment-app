@@ -39,6 +39,7 @@ import PigIcon from "../../assets/icons/Pig";
 import LockIcon from "../../assets/icons/Lock";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
 import ArrowBackIcon from "../../assets/icons/ArrowBack";
+import ArrowRightIcon from "../../assets/icons/ArrowRight";
 import {
   createTicket,
   getProfile,
@@ -46,7 +47,7 @@ import {
 } from "../../redux/profile/profileSlice";
 import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
 import { Address } from "../../components/Address/Address";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { signout } from "../../redux/auth/authSlice";
 import { Seperator } from "../../components/Seperator/Seperator";
 import TransactionIcon from "../../assets/icons/Transaction";
@@ -67,6 +68,7 @@ import Email from "../../assets/icons/Email";
 import Biometric from "../../assets/icons/Biometric";
 import { getCurrency } from "../../utils/helpers";
 import ProfileTab from "../../components/ProfileComponents/ProfileTab";
+import SecurityTab from "../../components/ProfileComponents/SecurityTab";
 
 import {
   updateNotifications,
@@ -261,6 +263,9 @@ export function Profile({ route, navigation }: any) {
     switch (tabSelection) {
       case "Edit profile": {
         return <ProfileTab />;
+      }
+      case "Security": {
+        return <SecurityTab />;
       }
       default:
         return null;
@@ -840,174 +845,225 @@ export function Profile({ route, navigation }: any) {
           </Tabs>
         </View> */}
           <View style={{ backgroundColor: vars["light-grey"] }}>
-            <Pressable>
-              {tabSelection === "" && (
-                <Fragment>
-                  <View style={[styles.headerProfile, styles.borderRadiusBox]}>
-                    <View style={styles.headerProfileLeft}>
-                      {profileData?.UserProfile?.profileimage ? (
-                        <Avatar
-                          isBase64Image
-                          src={profileData?.UserProfile?.profileimage}
-                          fileUpload
-                          size="medium"
-                          icon={false}
-                        />
-                      ) : null}
-                      <View style={{ marginLeft: 8 }}>
-                        <Typography color="#086AFB" fontSize={14}>
-                          Hello
-                        </Typography>
-                        <Typography
-                          color="#000000"
-                          fontSize={20}
-                          fontWeight="bold"
-                          padding={0}
-                          marginTop={-6}
-                        >
-                          {profileData?.first_name}
-                        </Typography>
-                      </View>
-                    </View>
-                    <View style={styles.headerProfileRight}>
-                      <Button
-                        leftIcon={<ProfileIcon color="pink" size={14} />}
-                        color="light-pink"
-                        onPress={() => handleShowTab("Edit profile")}
-                      >
-                        Edit profile
-                      </Button>
-                    </View>
-                  </View>
-                  <View style={{ margin: 10 }}>
-                    {userAccountDetails?.data?.info?.iban ? (
-                      <View
-                        style={[
-                          styles.boxIncomeDetails,
-                          styles.borderRadiusBox,
-                        ]}
-                      >
-                        <Typography fontSize={12} color="medium-grey2">
-                          IBAN
-                        </Typography>
-                        <View style={styles.textIbanBicCurrencyContainer}>
-                          <Typography fontSize={16} color="#000000">
-                            {userAccountDetails?.data?.info?.iban}
-                          </Typography>
-                          <TouchableOpacity
-                            onPress={() =>
-                              handleCopyToClipboard(
-                                userAccountDetails?.data?.info?.iban
-                              )
-                            }
-                          >
-                            <View>
-                              <CopyClipboard color="blue" size={16} />
-                            </View>
-                          </TouchableOpacity>
-                        </View>
-                      </View>
+            {tabSelection === "" && (
+              <Fragment>
+                <View style={[styles.headerProfile, styles.borderRadiusBox]}>
+                  <View style={styles.headerProfileLeft}>
+                    {profileData?.UserProfile?.profileimage ? (
+                      <Avatar
+                        isBase64Image
+                        src={profileData?.UserProfile?.profileimage}
+                        fileUpload
+                        size="medium"
+                        icon={false}
+                      />
                     ) : null}
-
-                    <View style={{ marginTop: 10 }}>
-                      <View
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          gap: 8,
-                        }}
+                    <View style={{ marginLeft: 8 }}>
+                      <Typography color="#086AFB" fontSize={14}>
+                        Hello
+                      </Typography>
+                      <Typography
+                        color="#000000"
+                        fontSize={20}
+                        fontWeight="bold"
+                        padding={0}
+                        marginTop={-6}
                       >
-                        {userAccountDetails?.data?.info?.bic ? (
-                          <View
-                            style={[
-                              styles.boxIncomeDetails,
-                              {
-                                flexGrow: 1,
-                              },
-                              styles.borderRadiusBox,
-                            ]}
-                          >
-                            <Typography fontSize={12} color="medium-grey2">
-                              BIC
-                            </Typography>
-                            <View style={styles.textIbanBicCurrencyContainer}>
-                              <Typography fontSize={16} color="#000000">
-                                {userAccountDetails?.data?.info?.bic}
-                              </Typography>
-                              <TouchableOpacity
-                                onPress={() =>
-                                  handleCopyToClipboard(
-                                    userAccountDetails?.data?.info?.bic
-                                  )
-                                }
-                              >
-                                <View>
-                                  <CopyClipboard color="blue" size={16} />
-                                </View>
-                              </TouchableOpacity>
-                            </View>
-                          </View>
-                        ) : null}
-                        {userAccountDetails?.data?.curbal ? (
-                          <View
-                            style={[
-                              styles.boxIncomeDetails,
-                              {
-                                flexGrow: 4,
-                              },
-                              styles.borderRadiusBox,
-                            ]}
-                          >
-                            <Typography fontSize={12} color="medium-grey2">
-                              Amount:
-                            </Typography>
-                            <View style={styles.textIbanBicCurrencyContainer}>
-                              <View style={styles.currencyContainer}>
-                                <Typography fontSize={16} color="#000000">
-                                  {getCurrency(
-                                    userAccountDetails?.data?.currency
-                                  )}
-                                </Typography>
-                                <Typography fontSize={16} color="#000000">
-                                  {userAccountDetails?.data?.curbal}
-                                </Typography>
-                              </View>
-                              <TouchableOpacity
-                                onPress={() =>
-                                  handleCopyToClipboard(
-                                    userAccountDetails?.data?.curbal
-                                  )
-                                }
-                              >
-                                <View>
-                                  <CopyClipboard color="blue" size={16} />
-                                </View>
-                              </TouchableOpacity>
-                            </View>
-                          </View>
-                        ) : null}
-                      </View>
+                        {profileData?.first_name}
+                      </Typography>
                     </View>
                   </View>
-                </Fragment>
-              )}
+                  <View style={styles.headerProfileRight}>
+                    <Button
+                      leftIcon={<ProfileIcon color="pink" size={14} />}
+                      color="light-pink"
+                      onPress={() => handleShowTab("Edit profile")}
+                    >
+                      Edit profile
+                    </Button>
+                  </View>
+                </View>
+                <View style={{ margin: 10 }}>
+                  {userAccountDetails?.data?.info?.iban ? (
+                    <View
+                      style={[styles.boxIncomeDetails, styles.borderRadiusBox]}
+                    >
+                      <Typography fontSize={12} color="medium-grey2">
+                        IBAN
+                      </Typography>
+                      <View style={styles.textIbanBicCurrencyContainer}>
+                        <Typography fontSize={16} color="#000000">
+                          {userAccountDetails?.data?.info?.iban}
+                        </Typography>
+                        <TouchableOpacity
+                          onPress={() =>
+                            handleCopyToClipboard(
+                              userAccountDetails?.data?.info?.iban
+                            )
+                          }
+                        >
+                          <View>
+                            <CopyClipboard color="blue" size={16} />
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  ) : null}
 
-              {tabSelection !== "" ? (
-                <Fragment>
-                  <View style={styles.containerTab}>
-                    <TouchableOpacity onPress={() => setTabSelection("")}>
-                      <View style={styles.containerBackBtn}>
-                        <View style={styles.btnBack}>
-                          <ArrowBackIcon color="blue" size={14} />
+                  <View style={{ marginTop: 10 }}>
+                    <View
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        gap: 8,
+                      }}
+                    >
+                      {userAccountDetails?.data?.info?.bic ? (
+                        <View
+                          style={[
+                            styles.boxIncomeDetails,
+                            {
+                              flexGrow: 1,
+                            },
+                            styles.borderRadiusBox,
+                          ]}
+                        >
+                          <Typography fontSize={12} color="medium-grey2">
+                            BIC
+                          </Typography>
+                          <View style={styles.textIbanBicCurrencyContainer}>
+                            <Typography fontSize={16} color="#000000">
+                              {userAccountDetails?.data?.info?.bic}
+                            </Typography>
+                            <TouchableOpacity
+                              onPress={() =>
+                                handleCopyToClipboard(
+                                  userAccountDetails?.data?.info?.bic
+                                )
+                              }
+                            >
+                              <View>
+                                <CopyClipboard color="blue" size={16} />
+                              </View>
+                            </TouchableOpacity>
+                          </View>
                         </View>
-                        <Typography fontSize={16}>{tabSelection}</Typography>
+                      ) : null}
+                      {userAccountDetails?.data?.curbal ? (
+                        <View
+                          style={[
+                            styles.boxIncomeDetails,
+                            {
+                              flexGrow: 4,
+                            },
+                            styles.borderRadiusBox,
+                          ]}
+                        >
+                          <Typography fontSize={12} color="medium-grey2">
+                            Amount:
+                          </Typography>
+                          <View style={styles.textIbanBicCurrencyContainer}>
+                            <View style={styles.currencyContainer}>
+                              <Typography fontSize={16} color="#000000">
+                                {getCurrency(
+                                  userAccountDetails?.data?.currency
+                                )}
+                              </Typography>
+                              <Typography fontSize={16} color="#000000">
+                                {userAccountDetails?.data?.curbal}
+                              </Typography>
+                            </View>
+                            <TouchableOpacity
+                              onPress={() =>
+                                handleCopyToClipboard(
+                                  userAccountDetails?.data?.curbal
+                                )
+                              }
+                            >
+                              <View>
+                                <CopyClipboard color="blue" size={16} />
+                              </View>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      ) : null}
+                    </View>
+                  </View>
+                </View>
+                <Pressable>
+                  <View style={{ marginTop: 12 }}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        handleShowTab("Security");
+                      }}
+                    >
+                      <View style={styles.buttonNavigationContainer}>
+                        <View style={styles.buttonNavigation}>
+                          <View>
+                            <MaterialIcons
+                              color="#086afb"
+                              size={20}
+                              name={"lock-outline"}
+                            />
+                          </View>
+                          <Typography fontSize={18} marginLeft={8}>
+                            Security
+                          </Typography>
+                        </View>
+                        <View style={{ paddingRight: 12 }}>
+                          <ArrowRightIcon color="#086afb" size={16} />
+                        </View>
                       </View>
                     </TouchableOpacity>
                   </View>
-                </Fragment>
-              ) : null}
-              {displayTabSelection()}
-            </Pressable>
+                  <Seperator backgroundColor={vars["grey"]} width="100%" />
+                  <View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        dispatch(signout());
+                      }}
+                    >
+                      <View>
+                        <View style={styles.buttonNavigation}>
+                          <View>
+                            <MaterialIcons
+                              color="#e7038e"
+                              size={20}
+                              name={"logout"}
+                            />
+                          </View>
+                          <Typography fontSize={18} marginLeft={8}>
+                            Logout
+                          </Typography>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                  <Seperator backgroundColor={vars["grey"]} width="100%" />
+                </Pressable>
+              </Fragment>
+            )}
+
+            {tabSelection !== "" ? (
+              <Fragment>
+                <View style={styles.containerTab}>
+                  <TouchableOpacity onPress={() => setTabSelection("")}>
+                    <View style={styles.containerBackBtn}>
+                      <View style={styles.btnBack}>
+                        <ArrowBackIcon color="blue" size={14} />
+                      </View>
+                      <Typography fontSize={16}>{tabSelection}</Typography>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+                <Seperator
+                  backgroundColor={vars["medium-grey"]}
+                  marginBottom={16}
+                  width="100%"
+                />
+              </Fragment>
+            ) : null}
+            {displayTabSelection()}
           </View>
         </ScrollView>
       </SafeAreaView>

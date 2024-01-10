@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Pressable } from "react-native";
 import { useSelector } from "react-redux";
 import { useFormik } from "formik";
+import Spinner from "react-native-loading-spinner-overlay/lib";
 import DropDownPicker from "react-native-dropdown-picker";
 
 import { salutations } from "../../data/options";
@@ -17,11 +18,10 @@ import ChangeRequestIcon from "../../assets/icons/ChangeRequest";
 import KeyIcon from "../../assets/icons/Key";
 import LocationIcon from "../../assets/icons/Location";
 import MapIcon from "../../assets/icons/Map";
+import FormGroup from "../FormGroup";
 import CityIcon from "../../assets/icons/City";
 import { countries } from "../../data/ISO3166";
-import FormGroup from "../FormGroup";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
-import Spinner from "react-native-loading-spinner-overlay/lib";
 import { Avatar } from "../../components/Avatar/Avatar";
 import Button from "../Button";
 import { editProfileSchema } from "../../utils/formikSchema";
@@ -174,7 +174,7 @@ const ProfileTab = () => {
   };
 
   return (
-    <ScrollView style={{ paddingHorizontal: 22, paddingBottom: 12 }}>
+    <ScrollView style={{}}>
       <View>
         <Spinner visible={isLoadingCreateTicketReq} />
         <SuccessModal
@@ -184,306 +184,312 @@ const ProfileTab = () => {
           isError={statusMessage.isError}
           onClose={onCloseModal}
         />
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            width: "100%",
-            marginBottom: 12,
-          }}
-        >
-          <View style={{ flexGrow: 1 }}>
-            {profileData?.UserProfile?.profileimage ? (
-              <Avatar
-                isBase64Image
-                src={profileData?.UserProfile?.profileimage}
-                fileUpload
-                size="medium"
-                icon={<Camera color="blue" size={34} />}
-              />
-            ) : null}
-          </View>
-          <View
-            style={{
-              flexGrow: 4,
-              width: "80%",
-            }}
-          >
-            <FormGroup
-              validationError={
-                errors.salutation && touched.salutation && errors.salutation
-              }
+        <Pressable>
+          <View style={{ paddingHorizontal: 22, paddingBottom: 12 }}>
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                width: "100%",
+                marginBottom: 12,
+              }}
             >
-              <View style={styles.dropdownWrapper}>
-                <View style={styles.dropDownIconContainerLeft}>
-                  <SalutationIcon size={16} color="blue" />
-                </View>
-                <View>
-                  <DropDownPicker
-                    schema={{ label: "label", value: "value" }}
-                    onSelectItem={(value: any) => {
-                      const { value: salutationValue } = value;
-                      setValues({
-                        ...values,
-                        salutation: salutationValue,
-                      });
-                    }}
-                    listMode="MODAL"
-                    // setValue={setSelectedSalutation}
-                    items={salutations}
-                    value={values?.salutation}
-                    setOpen={setOpenListForSalutation}
-                    open={openListForSalutation}
-                    style={styles.dropdown}
-                    dropDownContainerStyle={styles.dropdownContainer}
-                    placeholder="Salutation"
-                    placeholderStyle={{
-                      color: vars["medium-grey"],
-                    }}
+              <View style={{ flexGrow: 1 }}>
+                {profileData?.UserProfile?.profileimage ? (
+                  <Avatar
+                    isBase64Image
+                    src={profileData?.UserProfile?.profileimage}
+                    fileUpload
+                    size="medium"
+                    icon={<Camera color="blue" size={34} />}
                   />
-                </View>
-                <View style={styles.dropDownIconContainerRight}>
-                  <ArrowRightIcon size={16} color="blue" />
-                </View>
+                ) : null}
               </View>
-            </FormGroup>
-          </View>
-        </View>
-        <View style={styles.formContainer}>
-          <FormGroup
-            validationError={
-              errors.firstName && touched.firstName && errors.firstName
-            }
-          >
-            <FormGroup.Input
-              keyboardType="default"
-              returnKeyType={"done"}
-              onChangeText={handleChange("firstName")}
-              onBlur={handleBlur("firstName")}
-              value={values.firstName}
-              placeholder="First Name"
-              placeholderTextColor={vars["ios-default-text"]}
-              iconColor="blue"
-              icon={<ProfileIcon size={10} />}
-            />
-          </FormGroup>
-        </View>
-        <View style={styles.formContainer}>
-          <FormGroup
-            validationError={
-              errors.lastName && touched.lastName && errors.lastName
-            }
-          >
-            <FormGroup.Input
-              keyboardType="default"
-              returnKeyType={"done"}
-              onChangeText={handleChange("lastName")}
-              onBlur={handleBlur("lastName")}
-              value={values.lastName}
-              placeholder="Last Name"
-              placeholderTextColor={vars["ios-default-text"]}
-              iconColor="blue"
-              icon={<ProfileIcon size={10} />}
-            />
-          </FormGroup>
-        </View>
-        <View style={styles.formContainer}>
-          <FormGroup
-            validationError={
-              errors.annualSalary && touched.annualSalary && errors.annualSalary
-            }
-          >
-            <FormGroup.Input
-              keyboardType="numeric"
-              returnKeyType={"done"}
-              onChangeText={handleChange("annualSalary")}
-              onBlur={handleBlur("annualSalary")}
-              value={values.annualSalary}
-              placeholder="Annual salary"
-              placeholderTextColor={vars["ios-default-text"]}
-              iconColor="blue"
-              icon={<PigIcon size={10} />}
-            />
-          </FormGroup>
-        </View>
-        <View style={styles.formContainer}>
-          <FormGroup
-            validationError={
-              errors.sourceOfWealth &&
-              touched.sourceOfWealth &&
-              errors.sourceOfWealth
-            }
-          >
-            <View style={styles.dropdownWrapper}>
-              <View style={styles.dropDownIconContainerLeft}>
-                <PigIcon size={16} color="blue" />
+              <View
+                style={{
+                  flexGrow: 4,
+                  width: "80%",
+                }}
+              >
+                <FormGroup
+                  validationError={
+                    errors.salutation && touched.salutation && errors.salutation
+                  }
+                >
+                  <View style={styles.dropdownWrapper}>
+                    <View style={styles.dropDownIconContainerLeft}>
+                      <SalutationIcon size={16} color="blue" />
+                    </View>
+                    <View>
+                      <DropDownPicker
+                        schema={{ label: "label", value: "value" }}
+                        onSelectItem={(value: any) => {
+                          const { value: salutationValue } = value;
+                          setValues({
+                            ...values,
+                            salutation: salutationValue,
+                          });
+                        }}
+                        listMode="MODAL"
+                        // setValue={setSelectedSalutation}
+                        items={salutations}
+                        value={values?.salutation}
+                        setOpen={setOpenListForSalutation}
+                        open={openListForSalutation}
+                        style={styles.dropdown}
+                        dropDownContainerStyle={styles.dropdownContainer}
+                        placeholder="Salutation"
+                        placeholderStyle={{
+                          color: vars["medium-grey"],
+                        }}
+                      />
+                    </View>
+                    <View style={styles.dropDownIconContainerRight}>
+                      <ArrowRightIcon size={16} color="blue" />
+                    </View>
+                  </View>
+                </FormGroup>
               </View>
-              <View>
-                <DropDownPicker
-                  schema={{ label: "label", value: "value" }}
-                  onSelectItem={(value: any) => {
-                    const { value: sourceOfWealthValue } = value;
+            </View>
+            <View style={styles.formContainer}>
+              <FormGroup
+                validationError={
+                  errors.firstName && touched.firstName && errors.firstName
+                }
+              >
+                <FormGroup.Input
+                  keyboardType="default"
+                  returnKeyType={"done"}
+                  onChangeText={handleChange("firstName")}
+                  onBlur={handleBlur("firstName")}
+                  value={values.firstName}
+                  placeholder="First Name"
+                  placeholderTextColor={vars["ios-default-text"]}
+                  iconColor="blue"
+                  icon={<ProfileIcon size={10} />}
+                />
+              </FormGroup>
+            </View>
+            <View style={styles.formContainer}>
+              <FormGroup
+                validationError={
+                  errors.lastName && touched.lastName && errors.lastName
+                }
+              >
+                <FormGroup.Input
+                  keyboardType="default"
+                  returnKeyType={"done"}
+                  onChangeText={handleChange("lastName")}
+                  onBlur={handleBlur("lastName")}
+                  value={values.lastName}
+                  placeholder="Last Name"
+                  placeholderTextColor={vars["ios-default-text"]}
+                  iconColor="blue"
+                  icon={<ProfileIcon size={10} />}
+                />
+              </FormGroup>
+            </View>
+            <View style={styles.formContainer}>
+              <FormGroup
+                validationError={
+                  errors.annualSalary &&
+                  touched.annualSalary &&
+                  errors.annualSalary
+                }
+              >
+                <FormGroup.Input
+                  keyboardType="numeric"
+                  returnKeyType={"done"}
+                  onChangeText={handleChange("annualSalary")}
+                  onBlur={handleBlur("annualSalary")}
+                  value={values.annualSalary}
+                  placeholder="Annual salary"
+                  placeholderTextColor={vars["ios-default-text"]}
+                  iconColor="blue"
+                  icon={<PigIcon size={10} />}
+                />
+              </FormGroup>
+            </View>
+            <View style={styles.formContainer}>
+              <FormGroup
+                validationError={
+                  errors.sourceOfWealth &&
+                  touched.sourceOfWealth &&
+                  errors.sourceOfWealth
+                }
+              >
+                <View style={styles.dropdownWrapper}>
+                  <View style={styles.dropDownIconContainerLeft}>
+                    <PigIcon size={16} color="blue" />
+                  </View>
+                  <View>
+                    <DropDownPicker
+                      schema={{ label: "label", value: "value" }}
+                      onSelectItem={(value: any) => {
+                        const { value: sourceOfWealthValue } = value;
 
-                    setValues({
-                      ...values,
-                      sourceOfWealth: sourceOfWealthValue,
-                    });
-                  }}
-                  listMode="MODAL"
-                  items={sourceOfWealth}
-                  value={values?.sourceOfWealth}
-                  setOpen={setOpenListForSourceOfDeposits}
-                  open={openListForSourceOfDeposits}
-                  style={styles.dropdown}
-                  dropDownContainerStyle={styles.dropdownContainer}
-                  placeholder="Source of wealth"
-                  placeholderStyle={{
-                    color: vars["medium-grey"],
-                  }}
-                />
-              </View>
-              <View style={styles.dropDownIconContainerRight}>
-                <ArrowRightIcon size={16} color="blue" />
-              </View>
+                        setValues({
+                          ...values,
+                          sourceOfWealth: sourceOfWealthValue,
+                        });
+                      }}
+                      listMode="MODAL"
+                      items={sourceOfWealth}
+                      value={values?.sourceOfWealth}
+                      setOpen={setOpenListForSourceOfDeposits}
+                      open={openListForSourceOfDeposits}
+                      style={styles.dropdown}
+                      dropDownContainerStyle={styles.dropdownContainer}
+                      placeholder="Source of wealth"
+                      placeholderStyle={{
+                        color: vars["medium-grey"],
+                      }}
+                    />
+                  </View>
+                  <View style={styles.dropDownIconContainerRight}>
+                    <ArrowRightIcon size={16} color="blue" />
+                  </View>
+                </View>
+              </FormGroup>
             </View>
-          </FormGroup>
-        </View>
-        <View style={styles.separatorContainer}>
-          <Seperator
-            backgroundColor={vars["medium-grey"]}
-            marginTop={18}
-            marginBottom={16}
-            width="94%"
-          />
-        </View>
-        <View style={[styles.formContainer, styles.addressHeader]}>
-          <CompassIcon color="blue" size={18} />
-          <Typography fontSize={16} marginLeft={4}>
-            Address
-          </Typography>
-        </View>
-        <View style={styles.formContainer}>
-          <FormGroup>
-            <FormGroup.Input
-              keyboardType="default"
-              returnKeyType={"done"}
-              onChangeText={handleChange("street")}
-              onBlur={handleBlur("street")}
-              value={values.street}
-              placeholderTextColor={vars["ios-default-text"]}
-              placeholder="Address"
-              iconColor="blue"
-              icon={<KeyIcon />}
-            />
-          </FormGroup>
-        </View>
-        <View style={styles.formContainer}>
-          <FormGroup>
-            <FormGroup.Input
-              keyboardType="default"
-              returnKeyType={"done"}
-              onChangeText={handleChange("subStreet")}
-              onBlur={handleBlur("subStreet")}
-              value={values.subStreet}
-              placeholderTextColor={vars["ios-default-text"]}
-              placeholder="Address 2"
-              iconColor="blue"
-              icon={<KeyIcon />}
-            />
-          </FormGroup>
-        </View>
-        <View style={styles.formContainer}>
-          <FormGroup>
-            <FormGroup.Input
-              keyboardType="default"
-              returnKeyType={"done"}
-              onChangeText={handleChange("town")}
-              onBlur={handleBlur("town")}
-              value={values.town}
-              placeholderTextColor={vars["ios-default-text"]}
-              placeholder="Town"
-              iconColor="blue"
-              icon={<LocationIcon />}
-            />
-          </FormGroup>
-        </View>
-        <View style={styles.formContainer}>
-          <FormGroup>
-            <FormGroup.Input
-              keyboardType="default"
-              returnKeyType={"done"}
-              onChangeText={handleChange("state")}
-              onBlur={handleBlur("state")}
-              value={values.state}
-              placeholderTextColor={vars["ios-default-text"]}
-              placeholder="State"
-              iconColor="blue"
-              icon={<MapIcon />}
-            />
-          </FormGroup>
-        </View>
-        <View style={styles.formContainer}>
-          <FormGroup>
-            <FormGroup.Input
-              keyboardType="default"
-              returnKeyType={"done"}
-              onChangeText={handleChange("postCode")}
-              onBlur={handleBlur("postCode")}
-              value={values.postCode}
-              placeholderTextColor={vars["ios-default-text"]}
-              placeholder="Post code"
-              iconColor="blue"
-              icon={<MapIcon />}
-            />
-          </FormGroup>
-        </View>
-        <View>
-          <FormGroup>
-            <View style={styles.dropdownWrapper}>
-              <View style={styles.dropDownIconContainerLeft}>
-                <CityIcon size={16} color="blue" />
-              </View>
-              <View>
-                <DropDownPicker
-                  schema={{ label: "name", value: "alpha3" }}
-                  onSelectItem={(value: any) => {
-                    const { alpha3: countryValue } = value;
-                    setValues({
-                      ...values,
-                      country: countryValue,
-                    });
-                  }}
-                  listMode="MODAL"
-                  items={countries}
-                  value={values?.country}
-                  setOpen={setOpenListForCountry}
-                  open={openListForCountry}
-                  style={styles.dropdown}
-                  dropDownContainerStyle={styles.dropdownContainer}
-                  placeholder="Country"
-                  placeholderStyle={{
-                    color: vars["medium-grey"],
-                  }}
-                />
-              </View>
-              <View style={styles.dropDownIconContainerRight}>
-                <ArrowRightIcon size={16} color="blue" />
-              </View>
+            <View style={styles.separatorContainer}>
+              <Seperator
+                backgroundColor={vars["medium-grey"]}
+                marginTop={18}
+                marginBottom={16}
+                width="94%"
+              />
             </View>
-          </FormGroup>
-        </View>
-        <View style={styles.footerContent}>
-          <View style={styles.downloadBtnMain}>
-            <Button
-              color="light-pink"
-              leftIcon={<ChangeRequestIcon color="pink" />}
-              onPress={handleSubmit}
-            >
-              Change request
-            </Button>
+            <View style={[styles.formContainer, styles.addressHeader]}>
+              <CompassIcon color="blue" size={18} />
+              <Typography fontSize={16} marginLeft={4}>
+                Address
+              </Typography>
+            </View>
+            <View style={styles.formContainer}>
+              <FormGroup>
+                <FormGroup.Input
+                  keyboardType="default"
+                  returnKeyType={"done"}
+                  onChangeText={handleChange("street")}
+                  onBlur={handleBlur("street")}
+                  value={values.street}
+                  placeholderTextColor={vars["ios-default-text"]}
+                  placeholder="Address"
+                  iconColor="blue"
+                  icon={<KeyIcon />}
+                />
+              </FormGroup>
+            </View>
+            <View style={styles.formContainer}>
+              <FormGroup>
+                <FormGroup.Input
+                  keyboardType="default"
+                  returnKeyType={"done"}
+                  onChangeText={handleChange("subStreet")}
+                  onBlur={handleBlur("subStreet")}
+                  value={values.subStreet}
+                  placeholderTextColor={vars["ios-default-text"]}
+                  placeholder="Address 2"
+                  iconColor="blue"
+                  icon={<KeyIcon />}
+                />
+              </FormGroup>
+            </View>
+            <View style={styles.formContainer}>
+              <FormGroup>
+                <FormGroup.Input
+                  keyboardType="default"
+                  returnKeyType={"done"}
+                  onChangeText={handleChange("town")}
+                  onBlur={handleBlur("town")}
+                  value={values.town}
+                  placeholderTextColor={vars["ios-default-text"]}
+                  placeholder="Town"
+                  iconColor="blue"
+                  icon={<LocationIcon />}
+                />
+              </FormGroup>
+            </View>
+            <View style={styles.formContainer}>
+              <FormGroup>
+                <FormGroup.Input
+                  keyboardType="default"
+                  returnKeyType={"done"}
+                  onChangeText={handleChange("state")}
+                  onBlur={handleBlur("state")}
+                  value={values.state}
+                  placeholderTextColor={vars["ios-default-text"]}
+                  placeholder="State"
+                  iconColor="blue"
+                  icon={<MapIcon />}
+                />
+              </FormGroup>
+            </View>
+            <View style={styles.formContainer}>
+              <FormGroup>
+                <FormGroup.Input
+                  keyboardType="default"
+                  returnKeyType={"done"}
+                  onChangeText={handleChange("postCode")}
+                  onBlur={handleBlur("postCode")}
+                  value={values.postCode}
+                  placeholderTextColor={vars["ios-default-text"]}
+                  placeholder="Post code"
+                  iconColor="blue"
+                  icon={<MapIcon />}
+                />
+              </FormGroup>
+            </View>
+            <View>
+              <FormGroup>
+                <View style={styles.dropdownWrapper}>
+                  <View style={styles.dropDownIconContainerLeft}>
+                    <CityIcon size={16} color="blue" />
+                  </View>
+                  <View>
+                    <DropDownPicker
+                      schema={{ label: "name", value: "alpha3" }}
+                      onSelectItem={(value: any) => {
+                        const { alpha3: countryValue } = value;
+                        setValues({
+                          ...values,
+                          country: countryValue,
+                        });
+                      }}
+                      listMode="MODAL"
+                      items={countries}
+                      value={values?.country}
+                      setOpen={setOpenListForCountry}
+                      open={openListForCountry}
+                      style={styles.dropdown}
+                      dropDownContainerStyle={styles.dropdownContainer}
+                      placeholder="Country"
+                      placeholderStyle={{
+                        color: vars["medium-grey"],
+                      }}
+                    />
+                  </View>
+                  <View style={styles.dropDownIconContainerRight}>
+                    <ArrowRightIcon size={16} color="blue" />
+                  </View>
+                </View>
+              </FormGroup>
+            </View>
           </View>
-        </View>
+          <View style={styles.footerContent}>
+            <View style={styles.downloadBtnMain}>
+              <Button
+                color="light-pink"
+                leftIcon={<ChangeRequestIcon color="pink" />}
+                onPress={handleSubmit}
+              >
+                Change request
+              </Button>
+            </View>
+          </View>
+        </Pressable>
       </View>
     </ScrollView>
   );

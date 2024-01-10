@@ -245,4 +245,18 @@ export const styles: any = StyleSheet.create<any>({
     justifyContent: "center",
     borderRadius: 100,
   },
+  buttonNavigation: {
+    display: "flex",
+    flexDirection: "row",
+    paddingLeft: 12,
+    paddingTop: 12,
+    paddingBottom: 12,
+    alignItems: "center",
+  },
+  buttonNavigationContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
 });

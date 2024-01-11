@@ -24,6 +24,9 @@ import FaceIcon from "../../assets/icons/FaceIcon";
 import BuildingIcon from "../../assets/icons/Building";
 import PinGPS from "../../assets/icons/PinGPS";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
+import IconQr from "../../assets/icons/IconsQr";
+import ArrowDownDotted from "../../assets/icons/ArrowDownDotted";
+import DropdownComponent from "../../components/CustomDropDown/CustomDropDown";
 
 export function Payment({ navigation }: any) {
   const dispatch = useDispatch();
@@ -32,6 +35,11 @@ export function Payment({ navigation }: any) {
   const [isAddingPayeeShown, setIsAddingPayeeShown] = useState<boolean>(false);
   const [isModalSuccessOpen, setIsModalSuccessOpen] = useState<boolean>(false);
   const [searchName, setSearchName] = useState<string>("");
+  const [isPayeeListShown, setIsPayeeListShown] = useState<boolean>(true);
+  // const [isPayeeDetailsShown, setIsPayeeDetailsShown] = useState<boolean>(false);
+  const [selectedPayeeId, setSelectedPayeeId] = useState<number>(0);
+  const [isFilterForPayeeShown, setIsFilterForPayeeShown] = useState<boolean>(false);
+  const [selectedFilterForPayees, setSelectedFilterForPayees] = useState<string>("1");
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const { access_token, token_ziyl } = userTokens || {};
   const [ addNewPayee, {
@@ -97,7 +105,7 @@ export function Payment({ navigation }: any) {
       <Spinner visible={isPayeesListLoading || isAddPayeeLoading} />
       <Heading
           icon={<EuroIcon color="pink" size={25} />}
-          title="Make Payment"
+          title={!isPayeeListShown ? "Make Payment" : "Payees"}
           rightAction={
             <View style={{ flexDirection: "row", display: "flex" }}>
               <Button
@@ -112,22 +120,67 @@ export function Payment({ navigation }: any) {
         />
       <ScrollView bounces={true} style={{backgroundColor: '#fff'}}>
         <View style={styles.content}>
-          <Divider style={{ marginBottom: 10 }} />
+          <Divider style={{ marginBottom: 1 }} />
+          <View style={{display: 'flex', flexDirection: 'row', padding: 10}}>
             <FormGroup.Input
               icon={<Search color={vars['accent-blue']} size={18}/>}
               placeholder={"Search payee"}
               color={vars["black"]}
               fontSize={14}
               fontWeight={"400"}
-              style={{ width: "90%", alignSelf: "center", marginTop: 10, marginBottom: 10 }}
+              style={{ alignSelf: "center", marginTop: 10, marginBottom: 10, width: '70%'}}
               value={searchName}
               onChangeText={(event: string) => setSearchName(event)}
             />
+            <TouchableOpacity onPress={() => setIsPayeeListShown(!isPayeeListShown)}
+              style={{
+                marginTop: 10, 
+                marginLeft: 10, 
+                backgroundColor: '#F5F9FF', 
+                height: 45,
+                width: 45,
+                padding: 14,
+                borderRadius: 99,
+              }}
+            >
+              <IconQr color={vars['accent-blue']} size={18} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setIsFilterForPayeeShown(!isFilterForPayeeShown)}
+              style={{
+                marginTop: 10, 
+                marginLeft: 10, 
+                backgroundColor: '#F5F9FF', 
+                height: 45,
+                width: 45,
+                padding: 14,
+                borderRadius: 99,
+              }}
+            >
+              <ArrowDownDotted color={vars['accent-blue']} size={18} />
+            </TouchableOpacity>
+          </View>
+          {/* <Divider style={{ marginVertical: 20 }} />
+          <DropdownComponent />
+          <Divider style={{ marginVertical: 20 }} /> */}
           {/* <Divider style={{ marginBottom: 10 }} /> */}
           <View style={{display: 'flex', flexDirection: 'column', borderTopColor: vars['grey'], borderTopWidth: 1}}>
-              { filteredPayeesList?.length > 0 && filteredPayeesList.map((item: any, index: number) => (
+              { filteredPayeesList?.length > 0 && filteredPayeesList
+              .sort((a: any, b: any) => {
+                if (selectedFilterForPayees === '1') {
+                  return a.name.localeCompare(b.name);
+                }
+                if (selectedFilterForPayees === '2') {
+                  return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                }
+                if (selectedFilterForPayees === '3') {
+                  return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+                }
+                return a.name.localeCompare(b.name);
+              })
+              .map((item: any, index: number) => (
                 <Fragment key={index}>
                   <View key={index} style={{
+                      // borderTopWidth: selectedPayeeId ? 0 : 1,
                       display: 'flex',
                       flexDirection: 'row',
                       justifyContent: 'space-between',
@@ -135,17 +188,25 @@ export function Payment({ navigation }: any) {
                       marginBottom: 10,
                       padding: 10,
                       borderBottomColor: vars['grey'],
-                      borderBottomWidth: 1
+                      borderBottomWidth: selectedPayeeId === index ? 0 : 1,
                     }}>
-                    <View style={{display: 'flex', flexDirection: 'row'}}>
-                      <View style={{padding: 10, borderRadius: 99, backgroundColor: '#F5F4F4', width: 40, height: 40}}>
-                        <Text style={{fontSize: 14}}>{getNameInitials(item.name)}</Text>
-                      </View>
-                      <View style={{paddingLeft: 10}}>
-                        <Text style={{fontSize: 14}}>{item.name}</Text>
-                        <Text style={{fontSize: 12, color: vars['shade-grey']}}>{item.iban}</Text>
-                      </View>
-                    </View>
+                      <TouchableOpacity onPress={() => {
+                        if (selectedPayeeId === index) {
+                          setSelectedPayeeId(-1);
+                          return;
+                        }
+                        setSelectedPayeeId(index);
+                      }}>
+                      <View style={{display: 'flex', flexDirection: 'row'}}>
+                          <View style={{padding: 10, borderRadius: 99, backgroundColor: '#F5F4F4', width: 40, height: 40}}>
+                            <Text style={{fontSize: 14}}>{getNameInitials(item.name)}</Text>
+                          </View>
+                          <View style={{paddingLeft: 10}}>
+                            <Text style={{fontSize: 14}}>{item.name}</Text>
+                            <Text style={{fontSize: 12, color: vars['shade-grey']}}>{item.iban}</Text>
+                          </View>
+                        </View>
+                    </TouchableOpacity>
                     <View style={{display: 'flex', flexDirection: 'row'}}>
                         <View>
                           <Text style={{fontSize: 14}}>{formatDateDayMonthYear(item.created_at)}</Text>
@@ -162,6 +223,48 @@ export function Payment({ navigation }: any) {
                         </View>
                     </View>
                   </View>
+                  { selectedPayeeId === index &&
+                    <View style={{display: 'flex', flexDirection: 'column', paddingHorizontal: 25}}>
+                      <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+                        <View style={{display: 'flex', flexDirection:'column'}}>
+                          <Text style={{color: vars['accent-blue']}}>
+                            IBAN
+                          </Text>
+                          <Text style={{color: '#000', fontSize: 12}}>
+                            {item.iban}
+                          </Text>
+                        </View>
+                        <View style={{display: 'flex', flexDirection:'column'}}>
+                          <Text style={{color: vars['accent-blue']}}>
+                            BIC
+                          </Text>
+                          <Text style={{color: '#000', fontSize: 12}}>
+                            {item.bic}
+                          </Text>
+                        </View>
+                      </View>
+                      <Divider style={{ marginVertical: 20 }} />
+                      <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+                        <View style={{display: 'flex', flexDirection:'column'}}>
+                          <Text style={{color: vars['accent-blue']}}>
+                            BANK
+                          </Text>
+                          <Text style={{color: '#000', fontSize: 12}}>
+                            ING Espana
+                          </Text>
+                        </View>
+                        <View style={{display: 'flex', flexDirection:'column'}}>
+                          <Text style={{color: vars['accent-blue']}}>
+                            Added
+                          </Text>
+                          <Text style={{color:'#000', fontSize: 12}}>
+                            {formatDateDayMonthYear(item.created_at)}
+                          </Text>
+                        </View>
+                      </View>
+                      <Divider style={{ marginVertical: 20 }} />
+                    </View>
+                  }
                 </Fragment>
               ))}
           </View>
@@ -237,89 +340,6 @@ export function Payment({ navigation }: any) {
           </FormGroup>
         </View>
         <Divider style={{marginVertical: 15}} />
-        {/*
-        <View style={{display: 'flex', flexDirection: 'column'}}>
-          <View>
-            <FormGroup
-              validationError={
-                errors.address1 && touched.address1 && errors.address1
-              }
-            >
-              <FormGroup.Input
-                keyboardType="text"
-                name="address1"
-                onChangeText={handleChange("address1")}
-                onBlur={handleBlur("address1")}
-                value={values.address1}
-                placeholderTextColor={vars["ios-default-text"]}
-                placeholder="Address 1"
-                iconColor="blue"
-                icon={<BuildingIcon />}
-              />
-            </FormGroup>
-          </View>
-          <View>
-            <FormGroup
-              validationError={
-                errors.address2 && touched.address2 && errors.address2
-              }
-            >
-              <FormGroup.Input
-                keyboardType="text"
-                name="address2"
-                onChangeText={handleChange("address2")}
-                onBlur={handleBlur("address2")}
-                value={values.address2}
-                placeholderTextColor={vars["ios-default-text"]}
-                placeholder="Address 2"
-                iconColor="blue"
-                icon={<BuildingIcon />}
-              />
-            </FormGroup>
-          </View>
-          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-            <View style={{width: '50%'}}>
-              <FormGroup
-                validationError={
-                  errors.address2 && touched.address2 && errors.address2
-                }
-
-              >
-                <FormGroup.Input
-                  keyboardType="text"
-                  name="address2"
-                  onChangeText={handleChange("city")}
-                  onBlur={handleBlur("city")}
-
-                  value={values.city}
-                  placeholderTextColor={vars["ios-default-text"]}
-                  placeholder="City"
-                  iconColor="blue"
-                  icon={<PinGPS />}
-                />
-              </FormGroup>
-            </View>
-            <View style={{width: '50%'}}>
-              <FormGroup
-                validationError={
-                  errors.address2 && touched.address2 && errors.address2
-                }
-              >
-                <FormGroup.Input
-                  keyboardType="text"
-                  name="address2"
-                  onChangeText={handleChange("postcode")}
-                  onBlur={handleBlur("postcode")}
-                  value={values.postcode}
-                  placeholderTextColor={vars["ios-default-text"]}
-                  placeholder="Post code"
-                  iconColor="blue"
-                  icon={<CodeIcon />}
-                />
-              </FormGroup>
-            </View>
-          </View>
-        </View> */}
         <Button
           color={"light-pink"}
             onPress={() => {
@@ -336,6 +356,39 @@ export function Payment({ navigation }: any) {
         </Button>
         </KeyboardAvoidingView>
       </BottomSheet>
+      <BottomSheet
+        isVisible={isFilterForPayeeShown}
+        onClose={() => setIsPayeeListShown(false)}
+        headerTitle="Payees"
+        >
+          <ScrollView 
+            style={{height: 140}}
+            decelerationRate={"fast"}
+            snapToInterval={50}
+            >
+              {[{ label: 'Aplabetic', value: '1' },
+                { label: 'Latest transaction first', value: '2' },
+                { label: 'Oldest transaction first', value: '3' }
+              ]
+                .map((item, index) => (
+                  <Button
+                    key={index}
+                    color={ selectedFilterForPayees === item.value ? "blue" : "light-blue" }
+                    style={{marginBottom: 10}}
+                    onPress={() => {
+                      setSelectedFilterForPayees(item.value);
+                      setTimeout(() => {
+                        setIsFilterForPayeeShown(false);
+                      }, 400);
+                    }}
+                    //leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
+                  >
+                    {item.label}
+                  </Button>
+                ))
+                }
+          </ScrollView>
+        </BottomSheet>
     </MainLayout>
   )
 }

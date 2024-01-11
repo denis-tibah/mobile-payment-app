@@ -51,18 +51,18 @@ export default function TabNavigation({ children }: any) {
                 />
               );
             }
-            if (
-              route.name === screenNames.payees ||
-              route.name === screenNames.addPayee
-            ) {
-              return (
-                <PayeeIcon size={size} color={focused ? "pink" : "soft-pink"} />
-              );
-            }
+            // if (
+            //   route.name === screenNames.payees ||
+            //   route.name === screenNames.addPayee
+            // ) {
+            //   return (
+            //     <PayeeIcon size={size} color={focused ? "pink" : "soft-pink"} />
+            //   );
+            // }
           },
 
           tabBarStyle: {
-            width: "120%",
+            width: "138%",
             alignItems: "center",
             backgroundColor: "white",
             height: (Platform.OS === "ios" && 94) || 64,

@@ -178,7 +178,16 @@ export function Card({ navigation }: any) {
         "🚀 ~ file: Card.tsx:267 ~ handlePinCode ~ orderCardPayload:",
         orderCardPayload
       );
-      orderCard(orderCardPayload);
+      orderCard(orderCardPayload)
+      .unwrap()
+      .then((res: any) => {
+        console.log({ res });
+        setShowCardOtpModal(false);
+        setIsloading(false);
+      })
+      .catch((error: any) => {
+        console.log({ error });
+      })
       return;
     } else {
       setShowCardOtpLoading(true);
@@ -335,6 +344,7 @@ export function Card({ navigation }: any) {
   }, [cardDetails, remainingTime]);
 
   useEffect(() => {
+    setIsloading(true);
     handleGetCards();
   }, []);
 

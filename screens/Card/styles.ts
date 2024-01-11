@@ -9,7 +9,7 @@ export const styles: any = StyleSheet.create<any>({
     paddingVertical: 6,
   },
   container: {
-    marginTop: 26,
+    // marginTop: 26,
     zIndex: 1,
   },
   // listHead: {

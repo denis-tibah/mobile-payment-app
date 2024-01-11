@@ -62,7 +62,6 @@ export const payeeSlice = createApi({
         url: `/initiatepaymentfinxp`,
         method: "POST",
         body: {
-          // recipientName: `${recipientFirstname} ${recipientLastname}`,
           debtor_iban,
           creditor_iban,
           amount,

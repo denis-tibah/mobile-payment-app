@@ -36,7 +36,11 @@ export function MyAccount({ navigation }: any) {
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userId = userData?.id;
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
-  const [getTransactionsWithFilter, { data: transactionsWithFilter }] = useLazyGetTransactionsQuery();
+  const [
+    getTransactionsWithFilter, {
+      data: transactionsWithFilter,
+    }
+  ] = useLazyGetTransactionsQuery();
   const transactionsList = transactionsWithFilter?.transactions;
   const _groupedByDateTransactions = groupedByDateTransactions(transactionsList);
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -54,10 +58,7 @@ export function MyAccount({ navigation }: any) {
     pageNumber?: number;
     status?: string;
   }) => {
-    try {
-      setPaginateRefresh(true);
       if (userData && userData?.id) {
-        setIsLoading((prev) => !prev);
         let search: SearchFilter = {
           accountId: `${userData?.id}`,
           direction: "desc",
@@ -67,18 +68,25 @@ export function MyAccount({ navigation }: any) {
           accessToken: userTokens?.access_token,
           tokenZiyl: userTokens?.token_ziyl,
         };
-        getTransactionsWithFilter(search);
+        setIsLoading(prev => !prev);
+        getTransactionsWithFilter(search)
+        .unwrap()
+        .then((res) => {
+          setRefreshing(false);
+          setPaginateRefresh(false);
+        })
+        .catch((error) => {
+          console.log({ error });
+          setRefreshing(false);
+          setPaginateRefresh(false);
+        })
+        .finally(() => {
+          setRefreshing(false);
+          setPaginateRefresh(false);
+          setIsLoading(false);
+        });
         setPaginateRefresh(false);
       }
-    } catch (error) {
-      console.log({ error });
-      setRefreshing(false);
-      setPaginateRefresh(false);
-    } finally {
-      setRefreshing(false);
-      setPaginateRefresh(false);
-      setIsLoading(false);
-    }
   };
 
   const handlePreviousPage = () => {
@@ -96,9 +104,7 @@ export function MyAccount({ navigation }: any) {
   };
 
   useEffect(() => {
-    if (!!userId) {
-      fetchTransactions();
-    }
+    fetchTransactions();
   }, [userId]);
 
   return (
@@ -120,9 +126,7 @@ export function MyAccount({ navigation }: any) {
               Current Balance
             </Typography>
             <Typography color={"accent-pink"} fontWeight={600} fontSize={16}>
-              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
-                userAccountInformation?.data?.curbal || 0
-              }`}
+              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${userAccountInformation?.data?.curbal || 0}`}
             </Typography>
           </Box>
           <Box

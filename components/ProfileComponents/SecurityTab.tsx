@@ -1,68 +1,34 @@
-import { useState } from "react";
-import { View, ScrollView, Pressable, Switch, Text } from "react-native";
+import { useState, useEffect, FC, useCallback } from "react";
+import { View, ScrollView, Pressable, Switch } from "react-native";
 import { useSelector } from "react-redux";
 import { useFormik } from "formik";
-import DropDownPicker from "react-native-dropdown-picker";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
-import { salutations } from "../../data/options";
-import Typography from "../Typography";
-import { Seperator } from "../Seperator/Seperator";
-import Camera from "../../assets/icons/Camera";
-import SalutationIcon from "../../assets/icons/Salutation";
-import ArrowRightIcon from "../../assets/icons/ArrowRight";
-import ProfileIcon from "../../assets/icons/Profile";
-import PigIcon from "../../assets/icons/Pig";
-import CompassIcon from "../../assets/icons/Compass";
-import ChangeRequestIcon from "../../assets/icons/ChangeRequest";
-import KeyIcon from "../../assets/icons/Key";
-import LocationIcon from "../../assets/icons/Location";
-import MapIcon from "../../assets/icons/Map";
-import CityIcon from "../../assets/icons/City";
-import TwoFactorAuthenticationIcon from "../../assets/icons/TwoFactorAuthentication";
-import { countries } from "../../data/ISO3166";
-import FixedBottomAction from "../../components/FixedBottomAction";
-import LockIcon from "../../assets/icons/Lock";
-import FormGroup from "../FormGroup";
-import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import Spinner from "react-native-loading-spinner-overlay/lib";
-import { Avatar } from "../../components/Avatar/Avatar";
+import { useFocusEffect } from "@react-navigation/native";
+
+import Typography from "../Typography";
+import FixedBottomAction from "../../components/FixedBottomAction";
+import FormGroup from "../FormGroup";
 import Button from "../Button";
+import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
+import { Seperator } from "../Seperator/Seperator";
+import TwoFactorAuthenticationIcon from "../../assets/icons/TwoFactorAuthentication";
 import { securityTabSchema } from "../../utils/formikSchema";
-import { sourceOfWealth } from "../../data/options";
-import {
-  useCreateTicketRequestMutation,
-  useUpdatePasswordMutation,
-} from "../../redux/profile/profileSliceV2";
+import { useUpdatePasswordMutation } from "../../redux/profile/profileSliceV2";
 import { RootState } from "../../store";
 import vars from "../../styles/vars";
-import { styles } from "./styles";
-import TwoFactorAuthentication from "../../assets/icons/TwoFactorAuthentication";
 
-/* interface ILoginDetails {
-  handleNextStep: () => void;
-  handleOpenModal: () => void;
-  handleModalContent: ({
-    header,
-    body,
-  }: {
-    header: string;
-    body: string;
-  }) => void;
+interface ISecurityTab {
+  cleanUpTabSelection: () => void;
 }
- */
-const SecurityTab = () => {
+
+const SecurityTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
   const profileData = useSelector(
     (state: RootState) => state?.profile?.profile
   )?.data;
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
 
-  const [openListForSalutation, setOpenListForSalutation] =
-    useState<boolean>(false);
-  const [openListForSourceOfDeposits, setOpenListForSourceOfDeposits] =
-    useState<boolean>(false);
-  const [openListForCountry, setOpenListForCountry] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<{
     header: string;
     body: string;
@@ -104,6 +70,7 @@ const SecurityTab = () => {
       validationSchema: securityTabSchema,
       onSubmit: async ({ password, oldPassword, passwordConfirmation }) => {
         const bodyParams = {
+          email: profileData?.email,
           password,
           old_password: oldPassword,
           password_confirmation: passwordConfirmation,
@@ -116,6 +83,37 @@ const SecurityTab = () => {
       },
     });
 
+  useEffect(() => {
+    if (!isLoadingUpdatePassword && isSuccessUpdatePassword) {
+      if (dataUpdatePassword?.code === 404) {
+        setStatusMessage({
+          header: "Error",
+          isOpen: true,
+          body: dataUpdatePassword?.message || "Something went wrong",
+          isError: true,
+        });
+      }
+      if (
+        dataUpdatePassword?.code === 200 ||
+        dataUpdatePassword?.code === "200"
+      ) {
+        setStatusMessage({
+          header: "Success",
+          isOpen: true,
+          body: dataUpdatePassword?.message || "Something went wrong",
+          isError: false,
+        });
+      } else {
+        setStatusMessage({
+          header: "Error",
+          isOpen: true,
+          body: "Something went wrong",
+          isError: true,
+        });
+      }
+    }
+  }, [isLoadingUpdatePassword, isSuccessUpdatePassword]);
+
   const onCloseModal = (): void => {
     setStatusMessage({
       header: "",
@@ -124,6 +122,14 @@ const SecurityTab = () => {
       isError: false,
     });
   };
+
+  /*   useFocusEffect(() => {
+    useCallback(() => {
+      return () => {
+        cleanUpTabSelection();
+      };
+    }, []);
+  }); */
 
   return (
     <ScrollView>

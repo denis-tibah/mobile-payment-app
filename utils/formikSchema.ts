@@ -327,8 +327,6 @@ const editProfileSchema = Yup.object({
   salutation: Yup.string().required("Required"),
   firstName: Yup.string().required("Required"),
   lastName: Yup.string().required("Required"),
-  annualSalary: Yup.string().required("Required"),
-  sourceOfWealth: Yup.string().required("Required"),
   street: Yup.string().notRequired(),
   subStreet: Yup.string().notRequired(),
   town: Yup.string().notRequired(),
@@ -368,6 +366,12 @@ const securityTabSchema = Yup.object({
     .oneOf([Yup.ref("password")], "Passwords do not match"),
 });
 
+const financialDataTabSchema = Yup.object({
+  annualSalary: Yup.string().required("Required"),
+  sourceOfDeposit: Yup.string().required("Required"),
+  employmentStatus: Yup.string().required("Required"),
+});
+
 export {
   addressDetailsSchema,
   financialDetailsSchema,
@@ -378,4 +382,5 @@ export {
   forgottenPasswordSchema,
   editProfileSchema,
   securityTabSchema,
+  financialDataTabSchema,
 };

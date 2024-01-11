@@ -75,4 +75,19 @@ export const styles = StyleSheet.create({
     marginLeft: 12,
     marginBottom: 20,
   },
+  toggleSliderContainer: {
+    marginLeft: 12,
+    marginRight: 12,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 18,
+    paddingBottom: 12,
+  },
+  toggleSliderContainerText: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
 });

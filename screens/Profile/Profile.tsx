@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState, Fragment, useCallback } from "react";
 import {
   Text,
   View,
@@ -14,6 +14,7 @@ import Spinner from "react-native-loading-spinner-overlay/lib";
 import * as Clipboard from "expo-clipboard";
 import Toast from "react-native-root-toast";
 import DropDownPicker from "react-native-dropdown-picker";
+import Feather from "react-native-vector-icons/Feather";
 
 import { Tabs } from "../../components/Tabs/Tabs";
 import MainLayout from "../../layout/Main";
@@ -40,6 +41,7 @@ import LockIcon from "../../assets/icons/Lock";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
 import ArrowBackIcon from "../../assets/icons/ArrowBack";
 import ArrowRightIcon from "../../assets/icons/ArrowRight";
+import FinancialDataGraphIcon from "../../assets/icons/FinancialDataGraph";
 import {
   createTicket,
   getProfile,
@@ -69,6 +71,8 @@ import Biometric from "../../assets/icons/Biometric";
 import { getCurrency } from "../../utils/helpers";
 import ProfileTab from "../../components/ProfileComponents/ProfileTab";
 import SecurityTab from "../../components/ProfileComponents/SecurityTab";
+import FinancialDetailsTab from "../../components/ProfileComponents/FinancialDetailsTab";
+import NotificationsTab from "../../components/ProfileComponents/NotificationsTab";
 
 import {
   updateNotifications,
@@ -77,6 +81,7 @@ import {
 
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import Typography from "../../components/Typography";
+import FinancialDataGraph from "../../assets/icons/FinancialDataGraph";
 
 export interface SelectOption {
   label: string;
@@ -259,13 +264,23 @@ export function Profile({ route, navigation }: any) {
     await Clipboard.setStringAsync(textData || "");
   };
 
+  const cleanUpTabSelection = () => setTabSelection("");
+
   const displayTabSelection = () => {
     switch (tabSelection) {
       case "Edit profile": {
-        return <ProfileTab />;
+        return <ProfileTab cleanUpTabSelection={cleanUpTabSelection} />;
       }
       case "Security": {
-        return <SecurityTab />;
+        return <SecurityTab cleanUpTabSelection={cleanUpTabSelection} />;
+      }
+      case "Financial data": {
+        return (
+          <FinancialDetailsTab cleanUpTabSelection={cleanUpTabSelection} />
+        );
+      }
+      case "Notifications": {
+        return <NotificationsTab cleanUpTabSelection={cleanUpTabSelection} />;
       }
       default:
         return null;
@@ -991,7 +1006,12 @@ export function Profile({ route, navigation }: any) {
                   </View>
                 </View>
                 <Pressable>
-                  <View style={{ marginTop: 12 }}>
+                  <Seperator
+                    backgroundColor={vars["grey"]}
+                    width="100%"
+                    marginTop={28}
+                  />
+                  <View>
                     <TouchableOpacity
                       onPress={() => {
                         handleShowTab("Security");
@@ -1017,6 +1037,52 @@ export function Profile({ route, navigation }: any) {
                     </TouchableOpacity>
                   </View>
                   <Seperator backgroundColor={vars["grey"]} width="100%" />
+                  <View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        handleShowTab("Financial data");
+                      }}
+                    >
+                      <View style={styles.buttonNavigationContainer}>
+                        <View style={styles.buttonNavigation}>
+                          <View>
+                            <FinancialDataGraphIcon color="#086afb" size={16} />
+                          </View>
+                          <Typography fontSize={18} marginLeft={8}>
+                            Financial data
+                          </Typography>
+                        </View>
+                        <View style={{ paddingRight: 12 }}>
+                          <ArrowRightIcon color="#086afb" size={16} />
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                  <Seperator backgroundColor={vars["grey"]} width="100%" />
+
+                  <View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        handleShowTab("Notifications");
+                      }}
+                    >
+                      <View style={styles.buttonNavigationContainer}>
+                        <View style={styles.buttonNavigation}>
+                          <View>
+                            <Feather color="#086afb" size={16} name="bell" />
+                          </View>
+                          <Typography fontSize={18} marginLeft={8}>
+                            Notifications
+                          </Typography>
+                        </View>
+                        <View style={{ paddingRight: 12 }}>
+                          <ArrowRightIcon color="#086afb" size={16} />
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                  <Seperator backgroundColor={vars["grey"]} width="100%" />
+
                   <View>
                     <TouchableOpacity
                       onPress={() => {

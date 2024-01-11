@@ -111,6 +111,7 @@ export function LoginScreen({ navigation }: any) {
           dispatch<any>(signInViaRTKFulfillByValue(dataLogin));
         }
         if (dataLogin?.biometricYN && dataLogin?.biometricYN === "Y") {
+          console.log("use biometric");
           await saveSecureCredetails(
             values?.email || storageData?.email,
             values?.password || storageData?.password

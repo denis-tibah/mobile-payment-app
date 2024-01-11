@@ -1,57 +1,45 @@
-import { useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { View, ScrollView, Pressable } from "react-native";
 import { useSelector } from "react-redux";
 import { useFormik } from "formik";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import DropDownPicker from "react-native-dropdown-picker";
 
-import { salutations } from "../../data/options";
+import Button from "../Button";
+import FormGroup from "../FormGroup";
 import Typography from "../Typography";
+import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { Seperator } from "../Seperator/Seperator";
 import Camera from "../../assets/icons/Camera";
 import SalutationIcon from "../../assets/icons/Salutation";
 import ArrowRightIcon from "../../assets/icons/ArrowRight";
 import ProfileIcon from "../../assets/icons/Profile";
-import PigIcon from "../../assets/icons/Pig";
 import CompassIcon from "../../assets/icons/Compass";
 import ChangeRequestIcon from "../../assets/icons/ChangeRequest";
 import KeyIcon from "../../assets/icons/Key";
 import LocationIcon from "../../assets/icons/Location";
+import { Avatar } from "../../components/Avatar/Avatar";
 import MapIcon from "../../assets/icons/Map";
-import FormGroup from "../FormGroup";
 import CityIcon from "../../assets/icons/City";
 import { countries } from "../../data/ISO3166";
-import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
-import { Avatar } from "../../components/Avatar/Avatar";
-import Button from "../Button";
+import { salutations } from "../../data/options";
 import { editProfileSchema } from "../../utils/formikSchema";
-import { sourceOfWealth } from "../../data/options";
 import { useCreateTicketRequestMutation } from "../../redux/profile/profileSliceV2";
 import { RootState } from "../../store";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
 
-/* interface ILoginDetails {
-  handleNextStep: () => void;
-  handleOpenModal: () => void;
-  handleModalContent: ({
-    header,
-    body,
-  }: {
-    header: string;
-    body: string;
-  }) => void;
+interface IProfileTab {
+  cleanUpTabSelection: () => void;
 }
- */
-const ProfileTab = () => {
+
+const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
   const profileData = useSelector(
     (state: RootState) => state?.profile?.profile
   )?.data;
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
 
   const [openListForSalutation, setOpenListForSalutation] =
-    useState<boolean>(false);
-  const [openListForSourceOfDeposits, setOpenListForSourceOfDeposits] =
     useState<boolean>(false);
   const [openListForCountry, setOpenListForCountry] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<{
@@ -72,6 +60,16 @@ const ProfileTab = () => {
       data: dataCreateTicketReq,
     },
   ] = useCreateTicketRequestMutation();
+  console.log(
+    "🚀 ~ ProfileTab ~ isErrorCreateTicketReq:",
+    isErrorCreateTicketReq
+  );
+  console.log(
+    "🚀 ~ ProfileTab ~ isSuccessCreateTicketReq:",
+    isSuccessCreateTicketReq
+  );
+  console.log("🚀 ~ ProfileTab ~ errorCreateTicketReq:", errorCreateTicketReq);
+  console.log("🚀 ~ ProfileTab ~ dataCreateTicketReq:", dataCreateTicketReq);
 
   const {
     handleSubmit,
@@ -86,8 +84,6 @@ const ProfileTab = () => {
       salutation: profileData?.salutation || "",
       firstName: profileData?.first_name || "",
       lastName: profileData?.last_name || "",
-      annualSalary: profileData?.annual_salary || "",
-      sourceOfWealth: profileData?.source_of_wealth || "",
       street: profileData?.address_line_1 || "",
       subStreet: profileData?.address_line_2 || "",
       town: profileData?.town || "",
@@ -100,8 +96,6 @@ const ProfileTab = () => {
       salutation,
       firstName,
       lastName,
-      annualSalary,
-      sourceOfWealth,
       street,
       subStreet,
       town,
@@ -120,21 +114,19 @@ const ProfileTab = () => {
           ticketValue: [
             {
               profile: {
-                salutation,
-                first_name: firstName,
-                last_name: lastName,
-                annual_salary: annualSalary,
-                source_of_wealth: sourceOfWealth,
+                salutation: salutation || "",
+                first_name: firstName || "",
+                last_name: lastName || "",
               },
             },
             {
               address: {
-                street,
-                subStreet,
-                town,
-                state,
-                postCode,
-                country,
+                street: street || "",
+                subStreet: subStreet || "",
+                town: town || "",
+                state: state || "",
+                postCode: postCode || "",
+                country: country || "",
               },
             },
           ],
@@ -148,8 +140,6 @@ const ProfileTab = () => {
                 salutation,
                 first_name: firstName,
                 last_name: lastName,
-                annual_salary: annualSalary,
-                source_of_wealth: sourceOfWealth,
               },
             },
           ],
@@ -288,69 +278,6 @@ const ProfileTab = () => {
                   iconColor="blue"
                   icon={<ProfileIcon size={10} />}
                 />
-              </FormGroup>
-            </View>
-            <View style={styles.formContainer}>
-              <FormGroup
-                validationError={
-                  errors.annualSalary &&
-                  touched.annualSalary &&
-                  errors.annualSalary
-                }
-              >
-                <FormGroup.Input
-                  keyboardType="numeric"
-                  returnKeyType={"done"}
-                  onChangeText={handleChange("annualSalary")}
-                  onBlur={handleBlur("annualSalary")}
-                  value={values.annualSalary}
-                  placeholder="Annual salary"
-                  placeholderTextColor={vars["ios-default-text"]}
-                  iconColor="blue"
-                  icon={<PigIcon size={10} />}
-                />
-              </FormGroup>
-            </View>
-            <View style={styles.formContainer}>
-              <FormGroup
-                validationError={
-                  errors.sourceOfWealth &&
-                  touched.sourceOfWealth &&
-                  errors.sourceOfWealth
-                }
-              >
-                <View style={styles.dropdownWrapper}>
-                  <View style={styles.dropDownIconContainerLeft}>
-                    <PigIcon size={16} color="blue" />
-                  </View>
-                  <View>
-                    <DropDownPicker
-                      schema={{ label: "label", value: "value" }}
-                      onSelectItem={(value: any) => {
-                        const { value: sourceOfWealthValue } = value;
-
-                        setValues({
-                          ...values,
-                          sourceOfWealth: sourceOfWealthValue,
-                        });
-                      }}
-                      listMode="MODAL"
-                      items={sourceOfWealth}
-                      value={values?.sourceOfWealth}
-                      setOpen={setOpenListForSourceOfDeposits}
-                      open={openListForSourceOfDeposits}
-                      style={styles.dropdown}
-                      dropDownContainerStyle={styles.dropdownContainer}
-                      placeholder="Source of wealth"
-                      placeholderStyle={{
-                        color: vars["medium-grey"],
-                      }}
-                    />
-                  </View>
-                  <View style={styles.dropDownIconContainerRight}>
-                    <ArrowRightIcon size={16} color="blue" />
-                  </View>
-                </View>
               </FormGroup>
             </View>
             <View style={styles.separatorContainer}>

@@ -14,8 +14,14 @@ export const profileV2 = createApi({
   tagTypes: ["profileV2"],
   endpoints: (builder) => ({
     getProfile: builder.query({
-      query: () => ({
-        url: `/ziyl/profilefinxp`,
+      query: ({ accessToken, tokenZiyl }) => ({
+        url: `/profilefinxp`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          AuthorizationFinxp: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${tokenZiyl}`,
+        },
       }),
       invalidatesTags: ["profileV2"],
     }),
@@ -29,6 +35,7 @@ export const profileV2 = createApi({
         accessToken: any;
         tokenZiyl: any;
       }) => {
+        console.log("🚀 ~ bodyParams:", bodyParams);
         return {
           url: "/createticketfinxp",
           method: "POST",
@@ -51,11 +58,34 @@ export const profileV2 = createApi({
         accessToken: any;
         tokenZiyl: any;
       }) => {
+        console.log("🚀 ~ bodyParams:", bodyParams);
+        return {
+          url: "/updatePasswordfinxp",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            AuthorizationFinxp: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${tokenZiyl}`,
+          },
+          body: bodyParams,
+        };
+      },
+    }),
+    updateNotifications: builder.mutation({
+      query: ({
+        bodyParams,
+        accessToken,
+        tokenZiyl,
+      }: {
+        bodyParams: any;
+        accessToken: any;
+        tokenZiyl: any;
+      }) => {
         console.log("🚀 ~ tokenZiyl:", tokenZiyl);
         console.log("🚀 ~ accessToken:", accessToken);
         console.log("🚀 ~ bodyParams:", bodyParams);
         return {
-          url: "/updatePasswordfinxp",
+          url: "/enablenotifications",
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -73,4 +103,5 @@ export const {
   useGetProfileQuery,
   useCreateTicketRequestMutation,
   useUpdatePasswordMutation,
+  useUpdateNotificationsMutation,
 } = profileV2;

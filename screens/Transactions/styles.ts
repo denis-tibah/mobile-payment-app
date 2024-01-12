@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native"
 
 export const styles:any = StyleSheet.create<any>({
   container: {
-    marginTop: 26,
+    // marginTop: 26,
     zIndex:1,
   },
   containerBottomSheetHeader: {

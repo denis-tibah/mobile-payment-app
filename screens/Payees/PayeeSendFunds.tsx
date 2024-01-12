@@ -33,13 +33,12 @@ const currencyOptions = [
 const PayeeSendFunds = ({navigation, route}: any) => {
   const { params }: any = route || { params: {} };
   const accountData = useSelector(
-    (state: any) => state?.account?.details?.info
+    (state: any) => state?.account?.details
   );
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
-
-  const accountIban = accountData?.iban || '';
-  const accountName = accountData?.name || '';
+  const accountIban = userData?.iban || '';
+  const accountName = `${userData?.first_name} ${userData?.last_name}` || '';
   const receiverName: string = params?.item.name || '';
   const receiverIban: string = params?.item.iban || '';
   const windowHeight = Dimensions.get('window').height;
@@ -92,21 +91,38 @@ const PayeeSendFunds = ({navigation, route}: any) => {
       setIsPaymentResultBottomSheetOpen(true);
       setIsPaymentSuccessful(false);
     })
+    .finally(() => {
+      setIsLoading(false);
+    });
   }
 
   const handleResendSMSVerificationCode = () => {
     smsRequestVerification(smsPaymentRequest);
   }
 
-  const handleInitiatepayment = async (paymentValues: any) => {
-    await initiatePayment({
+  const handleInitiatepayment = (paymentValues: any) => {
+    // console.log(paymentValues);
+
+    // return;
+    console.log({
+      amount: paymentValues.amount,
+      currency: paymentValues.currency,
+      debtor_iban: accountIban,
+      creditor_iban: receiverIban,
+      creditor_name: receiverName,
+      reason: paymentValues.reason,
+      access_token: userTokens?.access_token,
+      token_ziyl: userTokens?.token_ziyl,});
+    initiatePayment({
       // isManualProcessing: paymentValues.isManualProcessing,
       amount: paymentValues.amount,
       currency: paymentValues.currency,
       debtor_iban: accountIban,
       creditor_iban: receiverIban,
       creditor_name: receiverName,
-      reason: paymentValues.reason
+      reason: paymentValues.reason,
+      access_token: userTokens?.access_token,
+      token_ziyl: userTokens?.token_ziyl,
     })
     .unwrap()
     .then((res) => {
@@ -151,7 +167,11 @@ const PayeeSendFunds = ({navigation, route}: any) => {
       reason: ''
     },
     onSubmit: (values: any) => {
-      handleInitiatepayment(values);
+      const { currency } = values;
+      handleInitiatepayment({
+        ...values,
+        currency: currency ? currency : selectedCurrency,
+      });
     },
     validationSchema: validationSchema,
   });
@@ -216,10 +236,9 @@ const PayeeSendFunds = ({navigation, route}: any) => {
                 schema={{ label: "label", value: "value" }}
                 onSelectItem={(value: any) => {
                   const { value: currency } = value;
-                  console.log(values)
                   setValues({
                     ...values,
-                    curreny: currency,
+                    currency: currency,
                   });
                 }}
                 listMode="SCROLLVIEW"

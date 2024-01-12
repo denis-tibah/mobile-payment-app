@@ -1,5 +1,5 @@
 import { useState } from "react";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import { Text } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { printAsync } from "expo-print";
 import Spinner from "react-native-loading-spinner-overlay/lib";
@@ -23,6 +23,9 @@ import TransactionIcon from "../../assets/icons/Transaction";
 import Pdf from "../../assets/icons/Pdf";
 import Button from "../../components/Button";
 import { RootState } from "../../store";
+import ScrollingButtons from "./ScrollingButtons";
+import { format } from "path";
+
 
 interface DateRangeType {
   dateTo: {
@@ -52,7 +55,7 @@ export function Statements({ navigation }: any) {
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const dispatch = useDispatch();
 
-  const [selectedPrint, setSelectedPrint] = useState<string>("");
+  const [selectedPrint, setSelectedPrint] = useState<string>("pdf");
   const [
     showStatementPickerDateToAndFrom,
     setShowStatementPickerDateToAndFrom,
@@ -135,12 +138,8 @@ export function Statements({ navigation }: any) {
         alert("Please select from and to date");
       }
     }
-    if (selectedPrint === "excel") {
-    }
-    if (selectedPrint === "") {
-      alert("Please select printing type");
-    }
   };
+
   return (
     <MainLayout navigation={navigation}>
       <Spinner visible={isLoading} />
@@ -190,14 +189,44 @@ export function Statements({ navigation }: any) {
         <Typography
           fontSize={16}
           fontFamily="Nunito-SemiBold"
-          color="accent-blue"
+          color="shade-grey"
         >
-          Export Data
+          From
         </Typography>
-        <Typography fontSize={14} fontFamily="Nunito-Regular" color="black">
+        <ScrollingButtons
+          onScrollOptions={(formattedDate) => {
+            const _formattedDate = new Date(formattedDate).toISOString().split("T")[0];
+            handleOnChangeShowPickerDate(
+              _formattedDate,
+              setShowStatementPickerDateToAndFrom,
+              showStatementPickerDateToAndFrom,
+              "dateFrom"
+              )
+            }
+          }
+        />
+        <Typography
+          fontSize={16}
+          fontFamily="Nunito-SemiBold"
+          color="shade-grey"
+        >
+          To
+        </Typography>
+        <ScrollingButtons 
+          onScrollOptions={(formattedDate) => {
+            const _formattedDate = new Date(formattedDate).toISOString().split("T")[0];
+            handleOnChangeShowPickerDate(
+              _formattedDate,
+              setShowStatementPickerDateToAndFrom,
+              showStatementPickerDateToAndFrom,
+              "dateTo"
+              )
+          }}
+        />
+        {/* <Typography fontSize={14} fontFamily="Nunito-Regular" color="black">
           Please select the date range you want to export
-        </Typography>
-        <View style={styles.buttonContainer}>
+        </Typography> */}
+        {/* <View style={styles.buttonContainer}>
           <Button
             style={styles.buttonDate}
             color="black-only"
@@ -284,7 +313,7 @@ export function Statements({ navigation }: any) {
               style={styles.datePicker}
             />
           )}
-        </View>
+        </View> */}
       </Box>
       <View style={styles.footerContent}>
         <View style={styles.downloadBtnMain}>

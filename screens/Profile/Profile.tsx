@@ -15,6 +15,7 @@ import * as Clipboard from "expo-clipboard";
 import Toast from "react-native-root-toast";
 import DropDownPicker from "react-native-dropdown-picker";
 import Feather from "react-native-vector-icons/Feather";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 import { Tabs } from "../../components/Tabs/Tabs";
 import MainLayout from "../../layout/Main";
@@ -42,6 +43,7 @@ import CopyClipboard from "../../assets/icons/CopyClipboard";
 import ArrowBackIcon from "../../assets/icons/ArrowBack";
 import ArrowRightIcon from "../../assets/icons/ArrowRight";
 import FinancialDataGraphIcon from "../../assets/icons/FinancialDataGraph";
+import LimitIcon from "../../assets/icons/Limit";
 import {
   createTicket,
   getProfile,
@@ -73,6 +75,7 @@ import ProfileTab from "../../components/ProfileComponents/ProfileTab";
 import SecurityTab from "../../components/ProfileComponents/SecurityTab";
 import FinancialDetailsTab from "../../components/ProfileComponents/FinancialDetailsTab";
 import NotificationsTab from "../../components/ProfileComponents/NotificationsTab";
+import LimitsTab from "../../components/ProfileComponents/LimitsTab";
 
 import {
   updateNotifications,
@@ -101,6 +104,7 @@ export function Profile({ route, navigation }: any) {
     { label: "Self employed", value: "self-employed" },
   ];
   const settings = useSelector((state: RootState) => state.setting.limits);
+  // console.log("🚀 ~ Profile ~ settings:", settings)
   const profileData = useSelector(
     (state: any) => state?.profile?.profile
   )?.data;
@@ -282,6 +286,9 @@ export function Profile({ route, navigation }: any) {
       case "Notifications": {
         return <NotificationsTab cleanUpTabSelection={cleanUpTabSelection} />;
       }
+      case "Set you limits": {
+        return <LimitsTab cleanUpTabSelection={cleanUpTabSelection} />;
+      }
       default:
         return null;
     }
@@ -311,554 +318,572 @@ export function Profile({ route, navigation }: any) {
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView bounces={false}>
           {/* <IncomeBox />
-        <View style={styles.content}>
-          <Tabs screen={getRedirectScreen}>
-            <Tabs.Panel text="Profile" icon={<ProfileIcon />}>
-              <Formik
-                initialValues={{
-                  salutation: profileData?.salutation,
-                  first_name: profileData?.first_name,
-                  last_name: profileData?.last_name,
-                  annual_salary: profileData?.UserProfile?.annualSalary,
-                  source_of_wealth: profileData?.source_of_wealth,
-                }}
-                validate={(values) => {
-                  let errors: any = {};
-                  if (!values.salutation) errors.salutation = "Required";
-                  if (!values.first_name) errors.first_name = "Required";
-                  if (!values.last_name) errors.last_name = "Required";
-                  if (!values.annual_salary) errors.annual_salary = "Required";
-                  if (!values.source_of_wealth)
-                    errors.source_of_wealth = "Required";
-                  return errors;
-                }}
-                onSubmit={(values) => {
-                  console.log({ values });
-                }}
-              >
-                {({ handleBlur, handleChange, values, errors, setValues }) => (
-                  <View style={styles.tabContent}>
-                    <View style={styles.row}>
-                      <View style={{ flex: 0.3 }}>
-                        <FormGroup validationError={errors.salutation}>
-                          <Avatar
-                            isBase64Image
-                            src={profileData?.UserProfile?.profileimage}
-                            fileUpload
-                            size="large"
-                            icon={<Camera color="blue" size={34} />}
+          <View style={styles.content}>
+            <Tabs screen={getRedirectScreen}>
+              <Tabs.Panel text="Profile" icon={<ProfileIcon />}>
+                <Formik
+                  initialValues={{
+                    salutation: profileData?.salutation,
+                    first_name: profileData?.first_name,
+                    last_name: profileData?.last_name,
+                    annual_salary: profileData?.UserProfile?.annualSalary,
+                    source_of_wealth: profileData?.source_of_wealth,
+                  }}
+                  validate={(values) => {
+                    let errors: any = {};
+                    if (!values.salutation) errors.salutation = "Required";
+                    if (!values.first_name) errors.first_name = "Required";
+                    if (!values.last_name) errors.last_name = "Required";
+                    if (!values.annual_salary)
+                      errors.annual_salary = "Required";
+                    if (!values.source_of_wealth)
+                      errors.source_of_wealth = "Required";
+                    return errors;
+                  }}
+                  onSubmit={(values) => {
+                    console.log({ values });
+                  }}
+                >
+                  {({
+                    handleBlur,
+                    handleChange,
+                    values,
+                    errors,
+                    setValues,
+                  }) => (
+                    <View style={styles.tabContent}>
+                      <View style={styles.row}>
+                        <View style={{ flex: 0.3 }}>
+                          <FormGroup validationError={errors.salutation}>
+                            <Avatar
+                              isBase64Image
+                              src={profileData?.UserProfile?.profileimage}
+                              fileUpload
+                              size="large"
+                              icon={<Camera color="blue" size={34} />}
+                            />
+                          </FormGroup>
+                        </View>
+                        <View style={{ flex: 0.7 }}>
+                          <Text style={styles.titleTag}>{`Salutation`}</Text>
+                          <DropDownPicker
+                            schema={{ label: "label", value: "value" }}
+                            onSelectItem={(value: any) => {
+                              const { value: salutationValue } = value;
+                              setValues({
+                                ...values,
+                                salutation: salutationValue,
+                              });
+                            }}
+                            listMode="SCROLLVIEW"
+                            items={salutationOptions}
+                            value={values.salutation}
+                            setOpen={setOpenListForSalutation}
+                            open={openListForSalutation}
+                            style={styles.dropdown}
+                            dropDownContainerStyle={styles.dropdownContainer}
+                            dropDownDirection="TOP"
+                          />
+                        </View>
+                      </View>
+                      <View style={{ flex: 0.7 }}>
+                        <FormGroup validationError={errors.first_name}>
+                          <Text style={styles.titleTag}>{`First name`}</Text>
+                          <FormGroup.Input
+                            icon={<ProfileIcon />}
+                            onChangeText={handleChange("first_name")}
+                            onBlur={handleBlur("first_name")}
+                            value={values.first_name}
+                            placeholder="First name"
                           />
                         </FormGroup>
                       </View>
-                      <View style={{ flex: 0.7 }}>
-                        <Text style={styles.titleTag}>{`Salutation`}</Text>
+                      <FormGroup validationError={errors.last_name}>
+                        <Text style={styles.titleTag}>{`Last name`}</Text>
+                        <FormGroup.Input
+                          icon={<ProfileIcon />}
+                          onChangeText={handleChange("last_name")}
+                          onBlur={handleBlur("last_name")}
+                          value={values.last_name}
+                          placeholder="Last name"
+                        />
+                        <Seperator
+                          backgroundColor={vars["light-grey"]}
+                          marginTop={18}
+                        />
+                      </FormGroup>
+                      <FormGroup validationError={errors.annual_salary}>
+                        <Text style={styles.titleTag}>{`Annual Salary`}</Text>
+
+                        <FormGroup.Input
+                          icon={<PigIcon />}
+                          onChangeText={handleChange("annual_salary")}
+                          onBlur={handleBlur("annual_salary")}
+                          value={values.annual_salary}
+                          placeholder="Annual salary"
+                        />
+                      </FormGroup>
+                      <FormGroup validationError={errors.source_of_wealth}>
+                        <Text
+                          style={styles.titleTag}
+                        >{`Source of income`}</Text>
+
                         <DropDownPicker
                           schema={{ label: "label", value: "value" }}
                           onSelectItem={(value: any) => {
-                            const { value: salutationValue } = value;
+                            const { value: sourceOfWealthValue } = value;
                             setValues({
                               ...values,
-                              salutation: salutationValue,
+                              source_of_wealth: sourceOfWealthValue,
                             });
                           }}
                           listMode="SCROLLVIEW"
-                          items={salutationOptions}
-                          value={values.salutation}
-                          setOpen={setOpenListForSalutation}
-                          open={openListForSalutation}
+                          setValue={(value: any) =>
+                            setSelectedSourceOfWealth(value)
+                          }
+                          items={sourceOfWelth}
+                          value={values.source_of_wealth}
+                          setOpen={setOpenListForSourceOfWealth}
+                          open={openListForSourceOfWealth}
                           style={styles.dropdown}
                           dropDownContainerStyle={styles.dropdownContainer}
                           dropDownDirection="TOP"
                         />
-                      </View>
-                    </View>
-                    <View style={{ flex: 0.7 }}>
-                      <FormGroup validationError={errors.first_name}>
-                        <Text style={styles.titleTag}>{`First name`}</Text>
-                        <FormGroup.Input
-                          icon={<ProfileIcon />}
-                          onChangeText={handleChange("first_name")}
-                          onBlur={handleBlur("first_name")}
-                          value={values.first_name}
-                          placeholder="First name"
-                        />
                       </FormGroup>
-                    </View>
-                    <FormGroup validationError={errors.last_name}>
-                      <Text style={styles.titleTag}>{`Last name`}</Text>
-                      <FormGroup.Input
-                        icon={<ProfileIcon />}
-                        onChangeText={handleChange("last_name")}
-                        onBlur={handleBlur("last_name")}
-                        value={values.last_name}
-                        placeholder="Last name"
-                      />
-                      <Seperator
-                        backgroundColor={vars["light-grey"]}
-                        marginTop={18}
-                      />
-                    </FormGroup>
-                    <FormGroup validationError={errors.annual_salary}>
-                      <Text style={styles.titleTag}>{`Annual Salary`}</Text>
-
-                      <FormGroup.Input
-                        icon={<PigIcon />}
-                        onChangeText={handleChange("annual_salary")}
-                        onBlur={handleBlur("annual_salary")}
-                        value={values.annual_salary}
-                        placeholder="Annual salary"
-                      />
-                    </FormGroup>
-                    <FormGroup validationError={errors.source_of_wealth}>
-                      <Text style={styles.titleTag}>{`Source of income`}</Text>
-
-                      <DropDownPicker
-                        schema={{ label: "label", value: "value" }}
-                        onSelectItem={(value: any) => {
-                          const { value: sourceOfWealthValue } = value;
-                          setValues({
-                            ...values,
-                            source_of_wealth: sourceOfWealthValue,
-                          });
-                        }}
-                        listMode="SCROLLVIEW"
-                        setValue={(value: any) =>
-                          setSelectedSourceOfWealth(value)
-                        }
-                        items={sourceOfWelth}
-                        value={values.source_of_wealth}
-                        setOpen={setOpenListForSourceOfWealth}
-                        open={openListForSourceOfWealth}
-                        style={styles.dropdown}
-                        dropDownContainerStyle={styles.dropdownContainer}
-                        dropDownDirection="TOP"
-                      />
-                    </FormGroup>
-                    <View style={{ flexDirection: "row", paddingLeft: 12 }}>
-                      <Button
-                        leftIcon={<TransactionIcon color="blue" />}
-                        color="light-blue"
-                      >
-                        Change request
-                      </Button>
-                    </View>
-                  </View>
-                )}
-              </Formik>
-            </Tabs.Panel>
-
-            <Tabs.Panel text="Address" icon={<CompassIcon />}>
-              <Address
-                profileData={profileData}
-                showChangeRequest={showChangeRequest}
-              />
-            </Tabs.Panel>
-
-            <Tabs.Panel text="Security" icon={<SecurityIcon />}>
-              <Formik
-                initialValues={{
-                  first_name: profileData?.first_name,
-                  last_name: profileData?.last_name,
-                  password: "",
-                  old_password: "",
-                  password_confirmation: "",
-
-                }}
-                validate={(values) => {
-                  let errors: any = {};
-                  if (!values.password) errors.password = "Required";
-                  if (!values.old_password) errors.old_password = "Required";
-                  if (!values.password_confirmation)
-                    errors.password_confirmation = "Required";
-                  if (values.password.length < 8)
-                    errors.notEnoughCharacters = true;
-                  if (values.password !== values.password_confirmation)
-                    errors.password_confirmation = "Passwords do not match";
-                  if (!checkUppercase(values.password))
-                    errors.hasUpperCase = true;
-                  if (!checkNumber(values.password)) errors.hasNumber = true;
-                  if (!checkSpecialCharacter(values.password))
-                    errors.hasSpecialCharacters = true;
-                  return errors;
-                }}
-                onSubmit={(values) => {
-                  dispatch(updateSecurity(values) as any);
-                }}
-              >
-                {({
-                  handleBlur,
-                  handleChange,
-                  values,
-                  errors,
-                  handleSubmit,
-                }: any) => (
-                  <View style={styles.tabContent}>
-                    <View style={styles.biometric__switch}>
-                      <View style={styles.biometric__switch__text}>
-                        <Biometric color="blue" size={18} />
-                        <Text>Enable Biometric Authentication</Text>
-                      </View>
-                      <View style={{ marginLeft: "auto" }}>
-                        <Switch
-                          trackColor={{ false: "#767577", true: "#81b0ff" }}
-                          thumbColor={
-                            isBiometricEnabled ? "white" : vars["light-blue"]
-                          }
-                          ios_backgroundColor="#3e3e3e"
-                          onValueChange={(e) => toggleBiometric(e)}
-                          value={isBiometricEnabled}
-                        />
-                      </View>
-                    </View>
-                    <FormGroup validationError={errors.old_password}>
-                      <FormGroup.Password
-                        icon={<LockIcon />}
-                        rightIcon
-                        onChangeText={handleChange("old_password")}
-                        onBlur={handleBlur("old_password")}
-                        value={values.old_password}
-                        placeholder="current password"
-                      />
-                    </FormGroup>
-                    <FormGroup validationError={errors.password}>
-                      <FormGroup.Password
-                        icon={<LockIcon />}
-                        rightIcon
-                        onChangeText={handleChange("password")}
-                        onBlur={handleBlur("password")}
-                        value={values.password}
-                        placeholder="new password"
-                      />
-                    </FormGroup>
-                    <FormGroup validationError={errors.password_confirmation}>
-                      <FormGroup.Password
-                        icon={<LockIcon />}
-                        rightIcon
-                        onChangeText={handleChange("password_confirmation")}
-                        onBlur={handleBlur("password_confirmation")}
-                        value={values.password_confirmation}
-                        placeholder="password confirmation"
-                      />
-                    </FormGroup>
-                    <Box
-                      sx={{
-                        flexDirection: "row",
-                        paddingLeft: 24,
-                        paddingBottom: 24,
-                        paddingTop: 12,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 10,
-                          color: errors.notEnoughCharacters
-                            ? vars.red
-                            : vars.green,
-                        }}
-                      >
-                        Minimum 8 character |{" "}
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 10,
-                          color: errors.hasUpperCase ? vars.red : vars.green,
-                        }}
-                      >
-                        upper case |{" "}
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 10,
-                          color: errors.hasNumber ? vars.red : vars.green,
-                        }}
-                      >
-                        number |{" "}
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 10,
-                          color: errors.hasSpecialCharacters
-                            ? vars.red
-                            : vars.green,
-                        }}
-                      >
-                        special character
-                      </Text>
-                    </Box>
-
-                    <View style={{ flexDirection: "row", paddingLeft: 12 }}>
-                      <Button onPress={handleSubmit} color="light-pink">
-                        Submit
-                      </Button>
-                    </View>
-                  </View>
-                )}
-              </Formik>
-            </Tabs.Panel>
-
-            <Tabs.Panel text="Notifications" icon={<BellIcon />}>
-              <View style={styles.tabContent}>
-                <View style={styles.notification__switch}>
-                  <View style={styles.notification__switch__text}>
-                    <Email color="blue" size={18} />
-                    <Text>Receive email Notifications</Text>
-                  </View>
-                  <View style={{ marginLeft: "auto" }}>
-                    <Switch
-                      trackColor={{ false: "#767577", true: "#81b0ff" }}
-                      thumbColor={isEnabled ? "white" : vars["light-blue"]}
-                      ios_backgroundColor="#3e3e3e"
-                      onValueChange={(e) => toggleSwitch(e)}
-                      value={isEnabled}
-                    />
-                  </View>
-                </View>
-              </View>
-            </Tabs.Panel>
-
-            <Tabs.Panel text="Limits" icon={<SettingsIcon color={undefined} />}>
-              <Formik
-                initialValues={{}}
-                validate={() => {}}
-                onSubmit={() => {}}
-              >
-                {({}) => (
-                  <Pressable>
-                    <View style={styles.tabContent}>
-                      {settings.map((setting: LimitsData, index: number) => {
-                        const { type } = setting;
-                        const limitType =
-                          type.charAt(0).toUpperCase() + type.slice(1);
-                        return (
-                          <FormGroup key={index}>
-                            <View
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <FormGroup.Label>
-                                {`${limitType}`} limit
-                              </FormGroup.Label>
-                              <Switch
-                                trackColor={{
-                                  false: "#767577",
-                                  true: "#81b0ff",
-                                }}
-                                thumbColor={
-                                  updateLimitToggles[type]
-                                    ? "white"
-                                    : vars["light-blue"]
-                                }
-                                style={{ marginTop: -17 }}
-                                ios_backgroundColor="#3e3e3e"
-                                onValueChange={(e) =>
-                                  setUpdateLimitToggles({
-                                    ...updateLimitToggles,
-                                    [type]: e,
-                                  })
-                                }
-                                value={updateLimitToggles[type]}
-                              />
-                            </View>
-                            <FormGroup.Input
-                              editable={ 
-                                updateLimitToggles[type]
-                                  ? updateLimitToggles[type]
-                                  : false
-                              }
-                              placeholder={`€${setting.limit_reached} / €${setting.limit}`}
-                              onChangeText={(value: string) => {
-                                setLimitValueToUpdate({
-                                  ...limitValueToUpdate,
-                                  [type]: value,
-                                });
-                              }}
-                            />
-                          </FormGroup>
-                        );
-                      })}
                       <View style={{ flexDirection: "row", paddingLeft: 12 }}>
                         <Button
                           leftIcon={<TransactionIcon color="blue" />}
                           color="light-blue"
-                          onPress={() => {
-                            setIsLoading(true);
-                            updateLimitRequest();
-                          }}
-
                         >
                           Change request
                         </Button>
                       </View>
                     </View>
-                  </Pressable>
-                )}
-              </Formik>
-            </Tabs.Panel>
+                  )}
+                </Formik>
+              </Tabs.Panel>
 
-            <Tabs.Panel text="Help" icon={<HelpIcon />}>
-              <View style={styles.tabContent}>
-                <View style={styles.tabDropDown}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 8,
-                    }}
-                  >
-                    <Ticket color={"blue"} size={18} />
-                    <Text style={{ fontWeight: "400", fontSize: 16 }}>
-                      Create ticket
-                    </Text>
-                  </View>
-                  <TouchableOpacity
-                    onPress={() => setDropDownOpen(!dropDownOpen)}
-                  >
-                    <ArrowDown
-                      style={
-                        dropDownOpen && { transform: [{ rotate: "180deg" }] }
-                      }
-                      size={18}
-                      color={"black"}
-                    />
-                  </TouchableOpacity>
-                </View>
-                {dropDownOpen && (
-                  <Formik
-                    initialValues={{
-                      type: "",
-                      dateSubmitted: new Date().toISOString(),
-                      ticketValue: "",
-                      receive_mail: profileData.email,
-                    }}
-                    validate={(values) => {
-                      let errors: any = {};
-                      if (!values.ticketValue) errors.ticketValue = "Required";
-                      return errors;
-                    }}
-                    onSubmit={async (values) => {
-                      var data = await dispatch<any>(
-                        createTicket({
-                          type: "helpdesk issue Request",
-                          dateSubmitted: values.dateSubmitted,
-                          ticketValue: [
-                            {
-                              help: {
-                                type: values.type,
-                                value: values.ticketValue,
-                              },
-                            },
-                          ],
-                          receive_mail: values.receive_mail,
-                        })
-                      );
-                      if (data) {
-                        Toast.show("Ticket created!", {
-                          duration: Toast.durations.SHORT,
-                        });
-                      }
-                    }}
-                  >
-                    {({
-                      handleChange,
-                      handleBlur,
-                      handleSubmit,
-                      values,
-                      errors,
-                    }) => (
-                      <View>
-                        <FormGroup validationError={errors.type}>
-                          <View style={styles.dropdownContainer}>
-                            <Globe color={"blue"} />
-                            <DropDownPicker
-                              placeholder="Subject of the issue"
-                              style={styles.dropdown}
-                              open={helpTopicOpen}
-                              value={selectedTicketType}
-                              items={[
-                                { label: "Techincal", value: "technical" },
-                                { label: "Access", value: "access" },
-                                { label: "Payment", value: "payment" },
-                                { label: "Beneficiary", value: "beneficiary" },
-                                { label: "Card", value: "card" },
-                                { label: "Profile", value: "profile" },
-                                {
-                                  label: "Transactions",
-                                  value: "transactions",
-                                },
-                              ]}
-                              setValue={setSelectedTicketType}
-                              setOpen={setHelpTopicOpen}
-                              listMode="SCROLLVIEW"
-                            />
-                          </View>
-                        </FormGroup>
+              <Tabs.Panel text="Address" icon={<CompassIcon />}>
+                <Address
+                  profileData={profileData}
+                  showChangeRequest={showChangeRequest}
+                />
+              </Tabs.Panel>
 
-                        <View style={styles.txtArea}>
-                          <FormGroup
-                            validationError={errors.ticketValue}
-                          >
-                            <FormGroup.TextArea
-                              onChangeText={handleChange("ticketValue")}
-                              onBlur={handleBlur("ticketValue")}
-                              value={values.ticketValue}
-                              backgroundColor={"#F9F9F9"}
-                              placeholder="Type here your issue"
-                            />
-                          </FormGroup>
-
-                          <Button
-                            onPress={handleSubmit}
-                            color="light-pink"
-                            leftIcon={
-                              <TransactionIcon color="pink" size={16} />
+              <Tabs.Panel text="Security" icon={<SecurityIcon />}>
+                <Formik
+                  initialValues={{
+                    first_name: profileData?.first_name,
+                    last_name: profileData?.last_name,
+                    password: "",
+                    old_password: "",
+                    password_confirmation: "",
+                  }}
+                  validate={(values) => {
+                    let errors: any = {};
+                    if (!values.password) errors.password = "Required";
+                    if (!values.old_password) errors.old_password = "Required";
+                    if (!values.password_confirmation)
+                      errors.password_confirmation = "Required";
+                    if (values.password.length < 8)
+                      errors.notEnoughCharacters = true;
+                    if (values.password !== values.password_confirmation)
+                      errors.password_confirmation = "Passwords do not match";
+                    if (!checkUppercase(values.password))
+                      errors.hasUpperCase = true;
+                    if (!checkNumber(values.password)) errors.hasNumber = true;
+                    if (!checkSpecialCharacter(values.password))
+                      errors.hasSpecialCharacters = true;
+                    return errors;
+                  }}
+                  onSubmit={(values) => {
+                    dispatch(updateSecurity(values) as any);
+                  }}
+                >
+                  {({
+                    handleBlur,
+                    handleChange,
+                    values,
+                    errors,
+                    handleSubmit,
+                  }: any) => (
+                    <View style={styles.tabContent}>
+                      <View style={styles.biometric__switch}>
+                        <View style={styles.biometric__switch__text}>
+                          <Biometric color="blue" size={18} />
+                          <Text>Enable Biometric Authentication</Text>
+                        </View>
+                        <View style={{ marginLeft: "auto" }}>
+                          <Switch
+                            trackColor={{ false: "#767577", true: "#81b0ff" }}
+                            thumbColor={
+                              isBiometricEnabled ? "white" : vars["light-blue"]
                             }
-                            style={{ width: 97, marginLeft: 18, marginTop: 20 }}
+                            ios_backgroundColor="#3e3e3e"
+                            onValueChange={(e) => toggleBiometric(e)}
+                            value={isBiometricEnabled}
+                          />
+                        </View>
+                      </View>
+                      <FormGroup validationError={errors.old_password}>
+                        <FormGroup.Password
+                          icon={<LockIcon />}
+                          rightIcon
+                          onChangeText={handleChange("old_password")}
+                          onBlur={handleBlur("old_password")}
+                          value={values.old_password}
+                          placeholder="current password"
+                        />
+                      </FormGroup>
+                      <FormGroup validationError={errors.password}>
+                        <FormGroup.Password
+                          icon={<LockIcon />}
+                          rightIcon
+                          onChangeText={handleChange("password")}
+                          onBlur={handleBlur("password")}
+                          value={values.password}
+                          placeholder="new password"
+                        />
+                      </FormGroup>
+                      <FormGroup validationError={errors.password_confirmation}>
+                        <FormGroup.Password
+                          icon={<LockIcon />}
+                          rightIcon
+                          onChangeText={handleChange("password_confirmation")}
+                          onBlur={handleBlur("password_confirmation")}
+                          value={values.password_confirmation}
+                          placeholder="password confirmation"
+                        />
+                      </FormGroup>
+                      <Box
+                        sx={{
+                          flexDirection: "row",
+                          paddingLeft: 24,
+                          paddingBottom: 24,
+                          paddingTop: 12,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 10,
+                            color: errors.notEnoughCharacters
+                              ? vars.red
+                              : vars.green,
+                          }}
+                        >
+                          Minimum 8 character |{" "}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 10,
+                            color: errors.hasUpperCase ? vars.red : vars.green,
+                          }}
+                        >
+                          upper case |{" "}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 10,
+                            color: errors.hasNumber ? vars.red : vars.green,
+                          }}
+                        >
+                          number |{" "}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 10,
+                            color: errors.hasSpecialCharacters
+                              ? vars.red
+                              : vars.green,
+                          }}
+                        >
+                          special character
+                        </Text>
+                      </Box>
+
+                      <View style={{ flexDirection: "row", paddingLeft: 12 }}>
+                        <Button onPress={handleSubmit} color="light-pink">
+                          Submit
+                        </Button>
+                      </View>
+                    </View>
+                  )}
+                </Formik>
+              </Tabs.Panel>
+
+              <Tabs.Panel text="Notifications" icon={<BellIcon />}>
+                <View style={styles.tabContent}>
+                  <View style={styles.notification__switch}>
+                    <View style={styles.notification__switch__text}>
+                      <Email color="blue" size={18} />
+                      <Text>Receive email Notifications</Text>
+                    </View>
+                    <View style={{ marginLeft: "auto" }}>
+                      <Switch
+                        trackColor={{ false: "#767577", true: "#81b0ff" }}
+                        thumbColor={isEnabled ? "white" : vars["light-blue"]}
+                        ios_backgroundColor="#3e3e3e"
+                        onValueChange={(e) => toggleSwitch(e)}
+                        value={isEnabled}
+                      />
+                    </View>
+                  </View>
+                </View>
+              </Tabs.Panel>
+
+              <Tabs.Panel
+                text="Limits"
+                icon={<SettingsIcon color={undefined} />}
+              >
+                <Formik
+                  initialValues={{}}
+                  validate={() => {}}
+                  onSubmit={() => {}}
+                >
+                  {({}) => (
+                    <Pressable>
+                      <View style={styles.tabContent}>
+                        {settings.map((setting: LimitsData, index: number) => {
+                          const { type } = setting;
+                          const limitType =
+                            type.charAt(0).toUpperCase() + type.slice(1);
+                          return (
+                            <FormGroup key={index}>
+                              <View
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <FormGroup.Label>
+                                  {`${limitType}`} limit
+                                </FormGroup.Label>
+                                <Switch
+                                  trackColor={{
+                                    false: "#767577",
+                                    true: "#81b0ff",
+                                  }}
+                                  thumbColor={
+                                    updateLimitToggles[type]
+                                      ? "white"
+                                      : vars["light-blue"]
+                                  }
+                                  style={{ marginTop: -17 }}
+                                  ios_backgroundColor="#3e3e3e"
+                                  onValueChange={(e) =>
+                                    setUpdateLimitToggles({
+                                      ...updateLimitToggles,
+                                      [type]: e,
+                                    })
+                                  }
+                                  value={updateLimitToggles[type]}
+                                />
+                              </View>
+                              <FormGroup.Input
+                                editable={
+                                  updateLimitToggles[type]
+                                    ? updateLimitToggles[type]
+                                    : false
+                                }
+                                placeholder={`€${setting.limit_reached} / €${setting.limit}`}
+                                onChangeText={(value: string) => {
+                                  setLimitValueToUpdate({
+                                    ...limitValueToUpdate,
+                                    [type]: value,
+                                  });
+                                }}
+                              />
+                            </FormGroup>
+                          );
+                        })}
+                        <View style={{ flexDirection: "row", paddingLeft: 12 }}>
+                          <Button
+                            leftIcon={<TransactionIcon color="blue" />}
+                            color="light-blue"
+                            onPress={() => {
+                              setIsLoading(true);
+                              updateLimitRequest();
+                            }}
                           >
-                            Submit
+                            Change request
                           </Button>
                         </View>
                       </View>
-                    )}
-                  </Formik>
-                )}
-                <Seperator
-                  backgroundColor={vars["input-light-grey"]}
-                  marginTop={24}
-                  width={"93%"}
-                  marginLeft={12}
-                />
-                <Text style={{ marginTop: -14, marginLeft: 23, fontSize: 16 }}>
-                  If you need help please visit one of our page
-                </Text>
-                <View style={styles.buttonBox}>
-                  <Button
-                    color="light-pink"
-                    leftIcon={<TransactionIcon color="pink" size={16} />}
-                    style={{ fontSize: 14 }}
+                    </Pressable>
+                  )}
+                </Formik>
+              </Tabs.Panel>
+
+              <Tabs.Panel text="Help" icon={<HelpIcon />}>
+                <View style={styles.tabContent}>
+                  <View style={styles.tabDropDown}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 8,
+                      }}
+                    >
+                      <Ticket color={"blue"} size={18} />
+                      <Text style={{ fontWeight: "400", fontSize: 16 }}>
+                        Create ticket
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => setDropDownOpen(!dropDownOpen)}
+                    >
+                      <ArrowDown
+                        style={
+                          dropDownOpen && { transform: [{ rotate: "180deg" }] }
+                        }
+                        size={18}
+                        color={"black"}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  {dropDownOpen && (
+                    <Formik
+                      initialValues={{
+                        type: "",
+                        dateSubmitted: new Date().toISOString(),
+                        ticketValue: "",
+                        receive_mail: profileData.email,
+                      }}
+                      validate={(values) => {
+                        let errors: any = {};
+                        if (!values.ticketValue)
+                          errors.ticketValue = "Required";
+                        return errors;
+                      }}
+                      onSubmit={async (values) => {
+                        var data = await dispatch<any>(
+                          createTicket({
+                            type: "helpdesk issue Request",
+                            dateSubmitted: values.dateSubmitted,
+                            ticketValue: [
+                              {
+                                help: {
+                                  type: values.type,
+                                  value: values.ticketValue,
+                                },
+                              },
+                            ],
+                            receive_mail: values.receive_mail,
+                          })
+                        );
+                        if (data) {
+                          Toast.show("Ticket created!", {
+                            duration: Toast.durations.SHORT,
+                          });
+                        }
+                      }}
+                    >
+                      {({
+                        handleChange,
+                        handleBlur,
+                        handleSubmit,
+                        values,
+                        errors,
+                      }) => (
+                        <View>
+                          <FormGroup validationError={errors.type}>
+                            <View style={styles.dropdownContainer}>
+                              <Globe color={"blue"} />
+                              <DropDownPicker
+                                placeholder="Subject of the issue"
+                                style={styles.dropdown}
+                                open={helpTopicOpen}
+                                value={selectedTicketType}
+                                items={[
+                                  { label: "Techincal", value: "technical" },
+                                  { label: "Access", value: "access" },
+                                  { label: "Payment", value: "payment" },
+                                  {
+                                    label: "Beneficiary",
+                                    value: "beneficiary",
+                                  },
+                                  { label: "Card", value: "card" },
+                                  { label: "Profile", value: "profile" },
+                                  {
+                                    label: "Transactions",
+                                    value: "transactions",
+                                  },
+                                ]}
+                                setValue={setSelectedTicketType}
+                                setOpen={setHelpTopicOpen}
+                                listMode="SCROLLVIEW"
+                              />
+                            </View>
+                          </FormGroup>
+
+                          <View style={styles.txtArea}>
+                            <FormGroup validationError={errors.ticketValue}>
+                              <FormGroup.TextArea
+                                onChangeText={handleChange("ticketValue")}
+                                onBlur={handleBlur("ticketValue")}
+                                value={values.ticketValue}
+                                backgroundColor={"#F9F9F9"}
+                                placeholder="Type here your issue"
+                              />
+                            </FormGroup>
+
+                            <Button
+                              onPress={handleSubmit}
+                              color="light-pink"
+                              leftIcon={
+                                <TransactionIcon color="pink" size={16} />
+                              }
+                              style={{
+                                width: 97,
+                                marginLeft: 18,
+                                marginTop: 20,
+                              }}
+                            >
+                              Submit
+                            </Button>
+                          </View>
+                        </View>
+                      )}
+                    </Formik>
+                  )}
+                  <Seperator
+                    backgroundColor={vars["input-light-grey"]}
+                    marginTop={24}
+                    width={"93%"}
+                    marginLeft={12}
+                  />
+                  <Text
+                    style={{ marginTop: -14, marginLeft: 23, fontSize: 16 }}
                   >
-                    FAQ
-                  </Button>
-                  <Button
-                    color="light-pink"
-                    leftIcon={<TransactionIcon color="pink" size={16} />}
-                  >
-                    Help
-                  </Button>
+                    If you need help please visit one of our page
+                  </Text>
+                  <View style={styles.buttonBox}>
+                    <Button
+                      color="light-pink"
+                      leftIcon={<TransactionIcon color="pink" size={16} />}
+                      style={{ fontSize: 14 }}
+                    >
+                      FAQ
+                    </Button>
+                    <Button
+                      color="light-pink"
+                      leftIcon={<TransactionIcon color="pink" size={16} />}
+                    >
+                      Help
+                    </Button>
+                  </View>
                 </View>
-              </View>
-            </Tabs.Panel>
-            <Tabs.Panel
-              text="Log Out"
-              icon={<Ionicons name={"ios-exit-outline"} />}
-              onPress={async () => {
-                dispatch(signout());
-              }}
-            />
-          </Tabs>
-        </View> */}
+              </Tabs.Panel>
+              <Tabs.Panel
+                text="Log Out"
+                icon={<Ionicons name={"ios-exit-outline"} />}
+                onPress={async () => {
+                  dispatch(signout());
+                }}
+              />
+            </Tabs>
+          </View> */}
           <View style={{ backgroundColor: vars["light-grey"] }}>
             {tabSelection === "" && (
               <Fragment>
@@ -1073,6 +1098,29 @@ export function Profile({ route, navigation }: any) {
                           </View>
                           <Typography fontSize={18} marginLeft={8}>
                             Notifications
+                          </Typography>
+                        </View>
+                        <View style={{ paddingRight: 12 }}>
+                          <ArrowRightIcon color="#086afb" size={16} />
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                  <Seperator backgroundColor={vars["grey"]} width="100%" />
+
+                  <View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        handleShowTab("Set you limits");
+                      }}
+                    >
+                      <View style={styles.buttonNavigationContainer}>
+                        <View style={styles.buttonNavigation}>
+                          <View>
+                            <LimitIcon color="#086afb" size={18} />
+                          </View>
+                          <Typography fontSize={18} marginLeft={8}>
+                            Limits
                           </Typography>
                         </View>
                         <View style={{ paddingRight: 12 }}>

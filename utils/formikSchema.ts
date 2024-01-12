@@ -372,6 +372,12 @@ const financialDataTabSchema = Yup.object({
   employmentStatus: Yup.string().required("Required"),
 });
 
+const limitsTabSchema = Yup.object({
+  transaction: Yup.string().notRequired(),
+  daily: Yup.string().notRequired(),
+  monthly: Yup.string().notRequired(),
+});
+
 export {
   addressDetailsSchema,
   financialDetailsSchema,
@@ -383,4 +389,5 @@ export {
   editProfileSchema,
   securityTabSchema,
   financialDataTabSchema,
+  limitsTabSchema,
 };

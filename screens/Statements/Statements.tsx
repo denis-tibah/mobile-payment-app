@@ -186,26 +186,34 @@ export function Statements({ navigation }: any) {
         </View> */}
       </View>
       <Box style={styles.dateContainer}>
-        <Typography
+        {/* <Typography
           fontSize={16}
           fontFamily="Nunito-SemiBold"
           color="shade-grey"
         >
           From
-        </Typography>
+        </Typography> */}
         <ScrollingButtons
           onScrollOptions={(formattedDate) => {
-            const _formattedDate = new Date(formattedDate).toISOString().split("T")[0];
-            handleOnChangeShowPickerDate(
-              _formattedDate,
-              setShowStatementPickerDateToAndFrom,
-              showStatementPickerDateToAndFrom,
-              "dateFrom"
-              )
+              const date = new Date(formattedDate);
+              const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toString();
+              const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).toString();
+              const _firstDay = new Date(firstDay).toISOString().split("T")[0];
+              const _lastDay = new Date(lastDay).toISOString().split("T")[0];
+              setShowStatementPickerDateToAndFrom({
+                dateTo: {
+                  state: false,
+                  value: _lastDay,
+                },
+                dateFrom: {
+                  state: false,
+                  value: _firstDay,
+                },
+              });
             }
           }
         />
-        <Typography
+        {/* <Typography
           fontSize={16}
           fontFamily="Nunito-SemiBold"
           color="shade-grey"
@@ -222,7 +230,7 @@ export function Statements({ navigation }: any) {
               "dateTo"
               )
           }}
-        />
+        /> */}
         {/* <Typography fontSize={14} fontFamily="Nunito-Regular" color="black">
           Please select the date range you want to export
         </Typography> */}

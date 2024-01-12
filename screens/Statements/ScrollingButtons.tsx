@@ -37,14 +37,14 @@ const ScrollingButtons: React.FC<ScrollingButtonsProps> = ({
     setScrollOffset(event.nativeEvent.contentOffset.y);
   };
 
-  // const handleScrollEnd = () => {
-  //   const centeredIndex = Math.round(scrollOffset / buttonHeight) + 1;
-  //   // scrollViewRef?.current.scrollTo({
-  //   //   y: buttonHeight * centeredIndex,
-  //   //   animated: true,
-  //   // });
-  //   //setSelectedButton(centeredIndex);
-  // };
+  const handleScrollEnd = () => {
+    const centeredIndex = Math.round(scrollOffset / buttonHeight) + 1;
+    // scrollViewRef?.current.scrollTo({
+    //   y: buttonHeight * centeredIndex,
+    //   animated: true,
+    // });
+    setSelectedButton(centeredIndex);
+  };
 
   const renderButtons = () => {
     const buttons = [];
@@ -76,7 +76,7 @@ const ScrollingButtons: React.FC<ScrollingButtonsProps> = ({
       snapToInterval={buttonHeight}
       decelerationRate="fast"
       onScroll={handleScroll}
-      // onScrollEndDrag={handleScrollEnd}
+      onScrollEndDrag={handleScrollEnd}
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.container}>{renderButtons()}</View>

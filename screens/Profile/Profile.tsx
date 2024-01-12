@@ -1159,7 +1159,7 @@ export function Profile({ route, navigation }: any) {
             )}
 
             {tabSelection !== "" ? (
-              <Fragment>
+              <View style={{ backgroundColor: "#fff" }}>
                 <View style={styles.containerTab}>
                   <TouchableOpacity onPress={() => setTabSelection("")}>
                     <View style={styles.containerBackBtn}>
@@ -1175,7 +1175,7 @@ export function Profile({ route, navigation }: any) {
                   marginBottom={16}
                   width="100%"
                 />
-              </Fragment>
+              </View>
             ) : null}
             {displayTabSelection()}
           </View>

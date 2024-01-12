@@ -87,11 +87,10 @@ const LoginDetails: FC<ILoginDetails> = ({
     },
     validationSchema: loginCredentialsSchema,
     onSubmit: async ({ email, alternateEmail, phoneNumber, countryCode }) => {
-      const expoToken = await registerForPushNotificationsAsync(
-        { email: alternateEmail ? alternateEmail : email,
+      const expoToken = await registerForPushNotificationsAsync({
+        email: alternateEmail ? alternateEmail : email,
         uuid: registration?.data?.uuid,
-      },
-      ).catch((error: any) => {
+      }).catch((error: any) => {
         setStatusMessage({
           header: "Error",
           body: "Something went wrong with youre token",
@@ -289,9 +288,9 @@ const LoginDetails: FC<ILoginDetails> = ({
                       labelStyle={{ marginTop: 3 }}
                       bottomOffset={100}
                       placeholder="Phone country code"
-                      /* scrollViewProps={{
+                      scrollViewProps={{
                         nestedScrollEnabled: true,
-                      }} */
+                      }}
                       placeholderStyle={{
                         color: vars["medium-grey"],
                       }}

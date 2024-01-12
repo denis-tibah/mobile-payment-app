@@ -122,7 +122,7 @@ const LimitsTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
 
   return (
     <ScrollView>
-      <View>
+      <View style={{ backgroundColor: "#ffff" }}>
         <Spinner visible={isLoadingGetLimits} />
         <SuccessModal
           isOpen={statusMessage?.isOpen}

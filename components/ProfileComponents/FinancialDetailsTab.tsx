@@ -132,7 +132,7 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = ({
 
   return (
     <ScrollView style={{}}>
-      <View>
+      <View style={{ backgroundColor: "#ffff" }}>
         <Spinner visible={isLoadingCreateTicketReq} />
         <SuccessModal
           isOpen={statusMessage?.isOpen}

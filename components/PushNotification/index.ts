@@ -83,7 +83,7 @@ export const registerForPushNotificationsAsync = async ({
   }
 
   if(!token) {
-    Alert.alert("Failed to get push token for push notification!");
+    // Alert.alert("Failed to get push token for push notification!");
     return;
   }
 

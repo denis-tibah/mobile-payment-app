@@ -81,5 +81,11 @@ export const registerForPushNotificationsAsync = async ({
   } else {
     alert("Must use physical device for Push Notifications");
   }
+
+  if(!token) {
+    Alert.alert("Failed to get push token for push notification!");
+    return;
+  }
+
   return token;
 };

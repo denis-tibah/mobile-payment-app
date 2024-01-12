@@ -88,7 +88,9 @@ const LoginDetails: FC<ILoginDetails> = ({
     validationSchema: loginCredentialsSchema,
     onSubmit: async ({ email, alternateEmail, phoneNumber, countryCode }) => {
       const expoToken = await registerForPushNotificationsAsync(
-        alternateEmail ? alternateEmail : email
+        { email: alternateEmail ? alternateEmail : email,
+        uuid: registration?.data?.uuid,
+      },
       ).catch((error: any) => {
         setStatusMessage({
           header: "Error",

@@ -106,7 +106,6 @@ export function LoginScreen({ navigation }: any) {
 
       const handleLogin = async (dataLogin: any) => {
         if (dataLogin?.token_ziyl && dataLogin?.access_token) {
-          console.log("use biometric");
           await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
           await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
           dispatch<any>(signInViaRTKFulfillByValue(dataLogin));
@@ -116,12 +115,12 @@ export function LoginScreen({ navigation }: any) {
             values?.email || storageData?.email,
             values?.password || storageData?.password
           );
-          if (dataLogin?.token_ziyl && dataLogin?.access_token) {
-            console.log("use biometric");
-            await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
-            await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
-            dispatch<any>(signInViaRTKFulfillByValue(dataLogin));
-          }
+          // if (dataLogin?.token_ziyl && dataLogin?.access_token) {
+          //   console.log("use biometric");
+          //   await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
+          //   await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
+          //   dispatch<any>(signInViaRTKFulfillByValue(dataLogin));
+          // }
         } else {
           console.log("do not use biometric");
           await SecureStore.deleteItemAsync("email");

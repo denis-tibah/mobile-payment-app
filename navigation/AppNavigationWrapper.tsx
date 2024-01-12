@@ -146,14 +146,15 @@ export default function AppNavigationWrapper() {
 
   useEffect(() => {
     if (userData?.id && auth?.data?.uuid && !expoPushToken) {
-      // console.log("*******expo going here********");
-      registerForPushNotificationsAsync(
-        userData.id,
-        auth?.data?.uuid,
-        auth?.data?.email
-      ).then((token) => {
+      console.log("*******expo going here********");
+      (async () => {
+        const token = await registerForPushNotificationsAsync({
+          email: auth?.data?.email,
+          uuid: auth?.data?.uuid,
+          userId: userData?.id,
+        });
         setExpoPushToken(token);
-      });
+      })();
     }
 
     notificationListener.current =

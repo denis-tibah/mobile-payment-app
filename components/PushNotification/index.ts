@@ -3,12 +3,17 @@ import { api } from "../../api";
 import { Alert, Platform } from "react-native";
 import * as Device from "expo-device";
 
+type Props = {
+  userId?: number;
+  uuid?: string;
+  email: string;
+};
 // Set up push notifications
-export const registerForPushNotificationsAsync = async (
-  userId: number,
-  uuid: string,
-  email: string
-) => {
+export const registerForPushNotificationsAsync = async ({
+  userId,
+  uuid,
+  email,
+}: Props) => {
   let token;
   let projectId = "7454c009-85fa-4eb0-ae8c-5834ded616c2";
 
@@ -59,6 +64,11 @@ export const registerForPushNotificationsAsync = async (
         uuid
       );
 
+      if (!token) {
+        alert("Failed to get push token for push notification!");
+        return;
+      }
+
       await api.post("/registerPushToken", {
         token,
         // userId,
@@ -71,6 +81,5 @@ export const registerForPushNotificationsAsync = async (
   } else {
     alert("Must use physical device for Push Notifications");
   }
-
   return token;
 };

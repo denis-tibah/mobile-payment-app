@@ -2,6 +2,7 @@ import { /* PayloadAction, */ createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../api";
 import { UserData } from "../../models/UserData";
+import { useLoginMutation } from "./authSliceV2";
 /* import {  getIpAddress,  getDeviceDetails } from "../../utils/getIpAddress"; */
 
 export const SIGNIN_SUCCESS_MESSAGES = {
@@ -164,14 +165,16 @@ export const authSlice = createSlice({
     signInViaRTK(state, action) {
       state.isAuthenticated = true;
       state.loading = false;
-      state.userData = action.payload;
+      state.data = action.payload.dataLogin;
+      state.userData = action.payload.dataAccount;
     },
-    signInViaRTKFulfillByValue(state, action) {
-      state.data = action.payload;
-    },
+    // signInViaRTKFulfillByValue(state, action) {
+    //   state.data = action.payload;
+    // },
   },
   extraReducers: (builder) => {
-    /* builder.addCase(signin.fulfilled, (state, action) => {
+    /* 
+    builder.addCase(signin.fulfilled, (state, action) => {
       state.isAuthenticated = true;
       state.data = action.payload;
       state.loading = false;
@@ -214,6 +217,6 @@ export const authSlice = createSlice({
 export const { resetAuth } = authSlice.actions;
 export const { signout } = authSlice.actions;
 export const { signInViaRTK } = authSlice.actions;
-export const { signInViaRTKFulfillByValue } = authSlice.actions;
+// export const { signInViaRTKFulfillByValue } = authSlice.actions;
 
 export default authSlice.reducer;

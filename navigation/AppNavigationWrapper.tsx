@@ -91,6 +91,7 @@ export default function AppNavigationWrapper() {
   const navigation: any = useNavigation();
   const dispatch = useDispatch();
   const auth = useSelector((state: RootState) => state.auth);
+  console.log('auth', auth?.isAuthenticated);
   const userData = useSelector((state: RootState) => state.auth.userData);
   const isUserInavtive = useSelector(
     (state: RootState) => state.account.inactivityState

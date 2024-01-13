@@ -8,7 +8,7 @@ import { Modal } from "../../components/Modal/Modal";
 import Button from "../../components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
-import { getTransactions } from "../../redux/transaction/transactionSlice";
+// import { getTransactions } from "../../redux/transaction/transactionSlice";
 import * as Notifications from "expo-notifications";
 
 export default function PaymentReceivedScreen({
@@ -48,33 +48,33 @@ export default function PaymentReceivedScreen({
   //   navigate(screenNames.myaccount);
   // };
 
-  useEffect(() => {
-      fetchTransactions();
-  }, []);
+  // useEffect(() => {
+  //     fetchTransactions();
+  // }, []);
 
 
-  const fetchTransactions = async () => {
-    try {
+  // const fetchTransactions = async () => {
+  //   try {
 
-      if (userData) {
-        let search= {     
-          account_id: userData?.id,
-          // sort: "id",
-          direction: "desc",
-          // status: "PROCESSING"
-          // status: "SUCCESS"
-      }
-        await dispatch<any>(getTransactions(search))
-      }
-    } catch (error) {
-      console.log({ error });
-    }
-      //  finally {
-      //     setShowReceivedPayment({ show: false, data: {} });
-      //   }
+  //     if (userData) {
+  //       let search= {     
+  //         account_id: userData?.id,
+  //         // sort: "id",
+  //         direction: "desc",
+  //         // status: "PROCESSING"
+  //         // status: "SUCCESS"
+  //     }
+  //       await dispatch<any>(getTransactions(search))
+  //     }
+  //   } catch (error) {
+  //     console.log({ error });
+  //   }
+  //     //  finally {
+  //     //     setShowReceivedPayment({ show: false, data: {} });
+  //     //   }
 
-    // navigate(screenNames.myaccount);
-  };
+  //   // navigate(screenNames.myaccount);
+  // };
 
   const closePopup= async () => {
     setShowReceivedPayment({ show: false, data: {} });

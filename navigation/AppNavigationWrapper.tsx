@@ -28,7 +28,7 @@ import TabNavigation from "./TabNavigation";
 import { registerForPushNotificationsAsync } from "../components/PushNotification";
 import { screenNames } from "../utils/helpers";
 import Header from "../components/Header";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { RootState } from "../store";
 import { AppState } from "react-native";
 import { signout } from "../redux/auth/authSlice";
@@ -78,26 +78,24 @@ function DashboardStack() {
       <Tab.Screen
         name={screenNames.transactions}
         component={TransactionsScreen}
-        // children={() => <TransactionsScreen initial={true} />}
       />
       <Tab.Screen name={screenNames.card} component={CardScreen} />
       <Tab.Screen name={screenNames.payments} component={PaymentScreen} />
       <Tab.Screen name={screenNames.statements} component={StatementScreen} />
-      <Tab.Screen name={screenNames.payees} component={PayeeScreen} />
       <Tab.Screen name="profile" component={ProfileScreen} />
     </TabNavigation>
   );
 }
 
 export default function AppNavigationWrapper() {
+  const navigation: any = useNavigation();
+  const dispatch = useDispatch();
   const auth = useSelector((state: RootState) => state.auth);
   const userData = useSelector((state: RootState) => state.auth.userData);
   const isUserInavtive = useSelector(
     (state: RootState) => state.account.inactivityState
   );
   const [lastNotification, setLastNotification] = useState("");
-  const navigation: any = useNavigation();
-  const dispatch = useDispatch();
   const [showApproval, setShowApproval] = useState({ show: false, data: {} });
   const [showReceivedPayment, setShowReceivedPayment] = useState({
     show: false,
@@ -143,39 +141,6 @@ export default function AppNavigationWrapper() {
         });
     }
   }, []); */
-
-  useEffect(() => {
-    if (userData?.id && auth?.data?.uuid && !expoPushToken) {
-      console.log("*******expo going here********");
-      (async () => {
-        const token = await registerForPushNotificationsAsync({
-          email: auth?.data?.email,
-          uuid: auth?.data?.uuid,
-          userId: userData?.id,
-        });
-        setExpoPushToken(token);
-      })();
-    }
-
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        handlePushNotification(notification);
-      });
-
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        handlePushNotification(response.notification);
-      });
-
-    return () => {
-      if (notificationListener.current)
-        Notifications.removeNotificationSubscription(
-          notificationListener.current
-        );
-      if (responseListener.current)
-        Notifications.removeNotificationSubscription(responseListener.current);
-    };
-  }, [userData?.id, expoPushToken, auth?.data?.uuid]);
 
   const handlePushNotification = (notification: any) => {
     if (notification?.request?.identifier === lastNotification) return;
@@ -238,49 +203,79 @@ export default function AppNavigationWrapper() {
     return false;
   };
 
-  useEffect(() => {
-    const handleAppStateChange = async (nextAppState: any) => {
-      const isBiometricAuth = await isBiometric();
-      if (nextAppState === "active") {
-        // if nextAppState is active clear/refresh the timer
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-          timerRef.current = null;
-        }
-      } else {
-        // if nextAppState is in other state run a timer and if the reach INACTIVE_TIMEOUT and isBiometricAuth, log out the user
-        timerRef.current = setTimeout(() => {
-          if (isBiometricAuth) {
-            dispatch(signout());
-            timerRef.current = null;
-          }
-        }, INACTIVE_TIMEOUT);
+  // useEffect(() => {
+  //   if (userData?.id && auth?.data?.uuid && !expoPushToken) {
+  //     registerForPushNotificationsAsync({
+  //       email: auth?.data?.email,
+  //       uuid: auth?.data?.uuid,
+  //       userId: userData?.id,
+  //     }).then((token) => setExpoPushToken(token));
+  //   }
 
-        return () => {
-          // Clear the timer if the component unmounts
-          if (timerRef.current) {
-            clearTimeout(timerRef.current);
-            timerRef.current = null;
-          }
-        };
-      }
-    };
+  //   notificationListener.current =
+  //     Notifications.addNotificationReceivedListener((notification) => {
+  //       handlePushNotification(notification);
+  //     });
 
-    // Add event listeners when the component mounts
-    const handleAppStateChangeEventListener = AppState.addEventListener(
-      "change",
-      handleAppStateChange
-    );
+  //   responseListener.current =
+  //     Notifications.addNotificationResponseReceivedListener((response) => {
+  //       handlePushNotification(response.notification);
+  //     });
 
-    return () => {
-      handleAppStateChangeEventListener.remove();
-      // Clear the timer if the component unmounts
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, []);
+  //   return () => {
+  //     if (notificationListener.current)
+  //       Notifications.removeNotificationSubscription(
+  //         notificationListener.current
+  //       );
+  //     if (responseListener.current)
+  //       Notifications.removeNotificationSubscription(responseListener.current);
+  //   };
+  // }, [userData?.id, expoPushToken, auth?.data?.uuid]);
+
+  // useEffect(() => {
+  //   const handleAppStateChange = async (nextAppState: any) => {
+  //     const isBiometricAuth = await isBiometric();
+  //     if (nextAppState === "active") {
+  //       // if nextAppState is active clear/refresh the timer
+  //       if (timerRef.current) {
+  //         clearTimeout(timerRef.current);
+  //         timerRef.current = null;
+  //       }
+  //     } else {
+  //       // if nextAppState is in other state run a timer and if the reach INACTIVE_TIMEOUT and isBiometricAuth, log out the user
+  //       timerRef.current = setTimeout(() => {
+  //         if (isBiometricAuth) {
+  //           dispatch(signout());
+  //           timerRef.current = null;
+  //         }
+  //       }, INACTIVE_TIMEOUT);
+
+  //       return () => {
+  //         // Clear the timer if the component unmounts
+  //         if (timerRef.current) {
+  //           clearTimeout(timerRef.current);
+  //           timerRef.current = null;
+  //         }
+  //       };
+  //     }
+  //   };
+
+  //   // Add event listeners when the component mounts
+  //   const handleAppStateChangeEventListener = AppState.addEventListener(
+  //     "change",
+  //     handleAppStateChange
+  //   );
+
+  //   return () => {
+  //     handleAppStateChangeEventListener.remove();
+  //     // Clear the timer if the component unmounts
+  //     if (timerRef.current) {
+  //       clearTimeout(timerRef.current);
+  //       timerRef.current = null;
+  //     }
+  //   };
+  // }, []);
+  console.log("auth?.isAuthenticated", auth?.isAuthenticated);
 
   return (
     <>
@@ -316,13 +311,13 @@ export default function AppNavigationWrapper() {
         }}
       >
         {auth?.isAuthenticated ? (
-          <>
+          <Fragment>
             <Root.Screen
               name="dashboard"
               component={DashboardStack}
               options={{ headerShown: false }}
             />
-            <Root.Screen
+            {/* <Root.Screen
               name="profile"
               component={ProfileScreen}
               options={{ headerShown: false }}
@@ -346,10 +341,10 @@ export default function AppNavigationWrapper() {
               options={{ headerShown: false }}
               name={screenNames.receivedPayment}
               component={PaymentReceivedScreen}
-            />
-          </>
+            /> */}
+          </Fragment>
         ) : (
-          <>
+          <Fragment>
             <Root.Screen
               name={"login"}
               component={LoginScreen}
@@ -385,7 +380,7 @@ export default function AppNavigationWrapper() {
               options={{ headerShown: true }}
               component={EmailVerifiedMessageV2}
             /> */}
-          </>
+          </Fragment>
         )}
       </Root.Navigator>
     </>

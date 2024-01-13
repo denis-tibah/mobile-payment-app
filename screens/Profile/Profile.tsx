@@ -297,7 +297,7 @@ export function Profile({ route, navigation }: any) {
   return (
     <MainLayout navigation={navigation}>
       <Spinner
-        visible={isLoading || loadingUserProfileData || isloadingAccountDetails}
+        visible={false}
       />
       <SuccessModal
         isOpen={isUpdateLimitSuccess.isModalOpen}

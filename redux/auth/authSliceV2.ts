@@ -10,7 +10,7 @@ export const authV2 = createApi({
       return headers;
     },
   }),
-  tagTypes: ["AuthV2"],
+  tagTypes: ["authV2"],
   endpoints: (builder) => ({
     updateBiometric: builder.mutation({
       query: (body) => {
@@ -34,3 +34,4 @@ export const authV2 = createApi({
 });
 
 export const { useUpdateBiometricMutation, useLoginMutation } = authV2;
+export const loginReducer = authV2.reducer;

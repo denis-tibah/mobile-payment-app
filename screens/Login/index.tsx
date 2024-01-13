@@ -24,7 +24,7 @@ import {
   signInViaRTKFulfillByValue,
 } from "../../redux/auth/authSlice";
 import { useLoginMutation } from "../../redux/auth/authSliceV2";
-import { useGetAccountQuery } from "../../redux/account/accountSliceV2";
+import { useGetAccountQuery, useLazyGetAccountQuery } from "../../redux/account/accountSliceV2";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
 import { arrayChecker } from "../../utils/helpers";
@@ -62,85 +62,87 @@ export function LoginScreen({ navigation }: any) {
     },
   ] = useLoginMutation();
 
-  const {
+  const [
+    getAccountQuery, {
     isLoading: isLoadingAccount,
     isError: isErrorAccount,
     isSuccess: isSuccessAccount,
     error: errorAccount,
     data: dataAccount,
-  } = useGetAccountQuery(
-    { accessToken: dataLogin?.access_token, tokenZiyl: dataLogin?.token_ziyl },
-    {
-      skip:
-        !arrayChecker(dataLogin) &&
-        !dataLogin?.access_token &&
-        !dataLogin?.token_ziyl,
+  }] = useLazyGetAccountQuery();
+
+  // useEffect(() => {
+  //   const handleAuth = (data: any) => {
+  //     dispatch<any>(signInViaRTK(data));
+  //   };
+
+  //   if (
+  //     !isLoadingAccount &&
+  //     isSuccessAccount &&
+  //     arrayChecker(dataAccount) &&
+  //     dataAccount.length > 0
+  //   ) {
+  //     handleAuth(dataAccount[0]);
+  //   }
+  // }, [isLoadingAccount, isSuccessAccount, arrayChecker(dataAccount)]);
+
+  const handleLogin = async (signInData: any) => {
+    const { dataLogin, accountQuery } = signInData;
+    
+    if (dataLogin?.token_ziyl && dataLogin?.access_token) {
+      await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
+      await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
+      dispatch<any>(signInViaRTK({dataLogin, dataAccount: accountQuery}));
     }
-  );
+    if (dataLogin?.biometricYN && dataLogin?.biometricYN === "Y") {
+      console.log("use biometric");
+      await saveSecureCredetails(
+        values?.email || storageData?.email,
+        values?.password || storageData?.password
+      );
+      // if (dataLogin?.token_ziyl && dataLogin?.access_token) {
+      //   console.log("use biometric");
+      //   await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
+      //   await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
+      //   dispatch<any>(signInViaRTKFulfillByValue(dataLogin));
+      // }
+    } else {
+      console.log("do not use biometric");
+      await SecureStore.deleteItemAsync("email");
+      await SecureStore.deleteItemAsync("password");
+    }
+  };
 
   useEffect(() => {
-    const handleAuth = (data: any) => {
-      dispatch<any>(signInViaRTK(data));
-    };
-
-    if (
-      !isLoadingAccount &&
-      isSuccessAccount &&
-      arrayChecker(dataAccount) &&
-      dataAccount.length > 0
-    ) {
-      handleAuth(dataAccount[0]);
-    }
-  }, [isLoadingAccount, isSuccessAccount, arrayChecker(dataAccount)]);
-
-  useEffect(() => {
-    if (!isLoadingLogin && isSuccessLogin) {
-      if (dataLogin?.code === "401" || dataLogin?.code === "400") {
-        setStatusMessage({
-          header: `${dataLogin?.code} Error`,
-          body: dataLogin?.message,
-          isOpen: true,
-          isError: true,
-        });
-      }
-
-      const handleLogin = async (dataLogin: any) => {
-        if (dataLogin?.token_ziyl && dataLogin?.access_token) {
-          await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
-          await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
-          dispatch<any>(signInViaRTKFulfillByValue(dataLogin));
-        }
-        if (dataLogin?.biometricYN && dataLogin?.biometricYN === "Y") {
-          console.log("use biometric");
-          await saveSecureCredetails(
-            values?.email || storageData?.email,
-            values?.password || storageData?.password
-          );
-          // if (dataLogin?.token_ziyl && dataLogin?.access_token) {
-          //   console.log("use biometric");
-          //   await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
-          //   await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
-          //   dispatch<any>(signInViaRTKFulfillByValue(dataLogin));
-          // }
-        } else {
-          console.log("do not use biometric");
-          await SecureStore.deleteItemAsync("email");
-          await SecureStore.deleteItemAsync("password");
-        }
-      };
-
-      if (dataLogin?.code === "200" || dataLogin?.code === "201") {
-        handleLogin(dataLogin);
-      } else {
+    if (isSuccessLogin) {
+      // if (dataLogin?.code === "401" || dataLogin?.code === "400") {
+      //   setStatusMessage({
+      //     header: `${dataLogin?.code} Error`,
+      //     body: dataLogin?.message,
+      //     isOpen: true,
+      //     isError: true,
+      //   });
+      // }
+      getAccountQuery({
+        tokenZiyl: dataLogin?.token_ziyl,
+        accessToken : dataLogin?.access_token,
+      })
+      .unwrap()
+      .then((res) => {
+        const [accountQuery] = res;
+        handleLogin({dataLogin, accountQuery});
+      })
+      .catch((err) => {
+        console.log("getAccountQuery", err);
         setStatusMessage({
           header: `Error`,
           body: "Something went wrong",
           isOpen: true,
           isError: true,
         });
-      }
+      });
     }
-  }, [isLoadingLogin, isSuccessLogin, dataLogin]);
+  }, [isSuccessLogin]);
 
   useEffect(() => {
     if (!isLoadingLogin && isErrorLogin) {

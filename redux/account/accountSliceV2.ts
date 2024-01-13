@@ -45,4 +45,8 @@ export const accountV2 = createApi({
   }),
 });
 
-export const { useGetAccountQuery, useGetAccountDetailsQuery } = accountV2;
+export const { 
+  useGetAccountQuery,
+  useLazyGetAccountQuery,
+  useGetAccountDetailsQuery,
+  } = accountV2;

@@ -650,7 +650,7 @@ export function Card({ navigation }: any) {
               </Button>
             </View>
           </BottomSheet>
-          <Spinner visible={isLoading} />
+          {/* <Spinner visible={isLoading} /> */}
           <Spinner visible={orderCardIsLoading} />
         </ScrollView>
       </View>

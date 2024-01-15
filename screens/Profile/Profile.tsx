@@ -296,9 +296,7 @@ export function Profile({ route, navigation }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      <Spinner
-        visible={isLoading || loadingUserProfileData || isloadingAccountDetails}
-      />
+      <Spinner visible={false} />
       <SuccessModal
         isOpen={isUpdateLimitSuccess.isModalOpen}
         isError={!isUpdateLimitSuccess.state}
@@ -1159,7 +1157,7 @@ export function Profile({ route, navigation }: any) {
             )}
 
             {tabSelection !== "" ? (
-              <View style={{ backgroundColor: "#fff" }}>
+              <Fragment>
                 <View style={styles.containerTab}>
                   <TouchableOpacity onPress={() => setTabSelection("")}>
                     <View style={styles.containerBackBtn}>
@@ -1175,7 +1173,7 @@ export function Profile({ route, navigation }: any) {
                   marginBottom={16}
                   width="100%"
                 />
-              </View>
+              </Fragment>
             ) : null}
             {displayTabSelection()}
           </View>

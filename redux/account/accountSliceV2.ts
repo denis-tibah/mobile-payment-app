@@ -31,6 +31,10 @@ export const accountV2 = createApi({
     }),
     getAccountDetails: builder.query({
       query: ({ accountId, tokenZiyl, accessToken }) => {
+        console.log("🚀 ~ accessTokenff:", accessToken);
+        console.log("🚀 ~ tokenZiylff:", tokenZiyl);
+        console.log("🚀 ~ accountId:", accountId);
+
         return {
           url: `/accountdetailsfinxp/${accountId}`,
           method: "GET",
@@ -39,10 +43,15 @@ export const accountV2 = createApi({
             AuthorizationFinxp: `Bearer ${accessToken}`,
             Authorization: `Bearer ${tokenZiyl}`,
           },
+          invalidatesTags: ["accountV2"],
         };
       },
     }),
   }),
 });
 
-export const { useGetAccountQuery, useGetAccountDetailsQuery } = accountV2;
+export const {
+  useGetAccountQuery,
+  useLazyGetAccountQuery,
+  useGetAccountDetailsQuery,
+} = accountV2;

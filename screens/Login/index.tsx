@@ -19,12 +19,9 @@ import EmailIcon from "../../assets/icons/Email";
 import LockIcon from "../../assets/icons/Lock";
 import FaceIdIcon from "../../assets/icons/FaceId";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
-import {
-  signInViaRTK,
-  signInViaRTKFulfillByValue,
-} from "../../redux/auth/authSlice";
+import { signInViaRTK } from "../../redux/auth/authSlice";
 import { useLoginMutation } from "../../redux/auth/authSliceV2";
-import { useGetAccountQuery } from "../../redux/account/accountSliceV2";
+import { useLazyGetAccountQuery } from "../../redux/account/accountSliceV2";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
 import { arrayChecker } from "../../utils/helpers";
@@ -62,107 +59,16 @@ export function LoginScreen({ navigation }: any) {
     },
   ] = useLoginMutation();
 
-  const {
-    isLoading: isLoadingAccount,
-    isError: isErrorAccount,
-    isSuccess: isSuccessAccount,
-    error: errorAccount,
-    data: dataAccount,
-  } = useGetAccountQuery(
-    { accessToken: dataLogin?.access_token, tokenZiyl: dataLogin?.token_ziyl },
+  const [
+    getAccountQuery,
     {
-      skip:
-        !arrayChecker(dataLogin) &&
-        !dataLogin?.access_token &&
-        !dataLogin?.token_ziyl,
-    }
-  );
-
-  useEffect(() => {
-    const handleAuth = (data: any) => {
-      dispatch<any>(signInViaRTK(data));
-    };
-
-    if (
-      !isLoadingAccount &&
-      isSuccessAccount &&
-      arrayChecker(dataAccount) &&
-      dataAccount.length > 0
-    ) {
-      handleAuth(dataAccount[0]);
-    }
-  }, [isLoadingAccount, isSuccessAccount, arrayChecker(dataAccount)]);
-
-  useEffect(() => {
-    if (!isLoadingLogin && isSuccessLogin) {
-      if (dataLogin?.code === "401" || dataLogin?.code === "400") {
-        setStatusMessage({
-          header: `${dataLogin?.code} Error`,
-          body: dataLogin?.message,
-          isOpen: true,
-          isError: true,
-        });
-      }
-
-      const handleLogin = async (dataLogin: any) => {
-        if (dataLogin?.token_ziyl && dataLogin?.access_token) {
-          await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
-          await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
-          dispatch<any>(signInViaRTKFulfillByValue(dataLogin));
-        }
-        if (dataLogin?.biometricYN && dataLogin?.biometricYN === "Y") {
-          console.log("use biometric");
-          await saveSecureCredetails(
-            values?.email || storageData?.email,
-            values?.password || storageData?.password
-          );
-          // if (dataLogin?.token_ziyl && dataLogin?.access_token) {
-          //   console.log("use biometric");
-          //   await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
-          //   await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
-          //   dispatch<any>(signInViaRTKFulfillByValue(dataLogin));
-          // }
-        } else {
-          console.log("do not use biometric");
-          await SecureStore.deleteItemAsync("email");
-          await SecureStore.deleteItemAsync("password");
-        }
-      };
-
-      if (dataLogin?.code === "200" || dataLogin?.code === "201") {
-        handleLogin(dataLogin);
-      } else {
-        setStatusMessage({
-          header: `Error`,
-          body: "Something went wrong",
-          isOpen: true,
-          isError: true,
-        });
-      }
-    }
-  }, [isLoadingLogin, isSuccessLogin, dataLogin]);
-
-  useEffect(() => {
-    if (!isLoadingLogin && isErrorLogin) {
-      setStatusMessage({
-        header: `${errorLogin?.data?.code} Error`,
-        body: errorLogin?.data?.message,
-        isOpen: true,
-        isError: true,
-      });
-    }
-  }, [isLoadingLogin, isErrorLogin, errorLogin]);
-
-  useEffect(() => {
-    if (!isLoadingLogin && isErrorAccount) {
-      setStatusMessage({
-        header: `${errorAccount?.data?.code} Error`,
-        body: errorAccount?.data?.message || errorAccount?.data?.status,
-        isOpen: true,
-        isError: true,
-      });
-    }
-  }, [isLoadingAccount, isErrorAccount, errorAccount]);
+      isLoading: isLoadingAccount,
+      isError: isErrorAccount,
+      isSuccess: isSuccessAccount,
+      error: errorAccount,
+      data: dataAccount,
+    },
+  ] = useLazyGetAccountQuery();
 
   const { handleSubmit, handleChange, values, touched, errors, handleBlur } =
     useFormik({
@@ -182,6 +88,39 @@ export function LoginScreen({ navigation }: any) {
         loginMutation(reqData);
       },
     });
+
+  const onCloseModal = (): void => {
+    setStatusMessage({
+      header: "",
+      body: "",
+      isOpen: false,
+      isError: false,
+    });
+  };
+
+  const handleLogin = async (signInData: any) => {
+    const { dataLogin, accountQuery } = signInData;
+    const objAccountQuery =
+      arrayChecker(accountQuery) && accountQuery.length > 0
+        ? accountQuery[0]
+        : {};
+    if (dataLogin?.token_ziyl && dataLogin?.access_token) {
+      await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
+      await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
+      dispatch<any>(signInViaRTK({ dataLogin, dataAccount: objAccountQuery }));
+    }
+    if (dataLogin?.biometricYN && dataLogin?.biometricYN === "Y") {
+      console.log("use biometric");
+      await saveSecureCredetails(
+        values?.email || storageData?.email,
+        values?.password || storageData?.password
+      );
+    } else {
+      console.log("do not use biometric");
+      await SecureStore.deleteItemAsync("email");
+      await SecureStore.deleteItemAsync("password");
+    }
+  };
 
   const checkCompatible = async () => {
     const compatible: boolean = await LocalAuthentication.hasHardwareAsync();
@@ -237,6 +176,73 @@ export function LoginScreen({ navigation }: any) {
     return biometricAuth.success;
   };
 
+  const handleChangeFaceId = () => {
+    setFaceId(!isFaceId);
+  };
+
+  // set storage data for biometric to be used on users next session
+  const handleSetBiometricFlag = async (param: string) => {
+    await AsyncStorage.setItem("IsBiometricOn", param);
+  };
+  // get storage data for biometric
+  const handleGetBiometricFlag = async () => {
+    const isBiometric = await AsyncStorage.getItem("IsBiometricOn");
+    return isBiometric;
+  };
+  // set storage data for faceId switch. this will be remembered when user go to login page
+  const handleSetFaceIdFlag = async (param: string) => {
+    await AsyncStorage.setItem("faceId", param);
+  };
+  // get storage data for faceId
+  const handleGetFaceIdFlag = async () => {
+    const faceIdFlag = await AsyncStorage.getItem("faceId");
+    return faceIdFlag;
+  };
+  // get email and password from storage
+  const handleGetStoredEmailPassword = async () => {
+    const credentials = await getSavedCredetails();
+    if (credentials?.email && credentials?.password) {
+      setStorageData({
+        email: credentials?.email,
+        password: credentials?.password,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (isSuccessLogin) {
+      getAccountQuery({
+        tokenZiyl: dataLogin?.token_ziyl,
+        accessToken: dataLogin?.access_token,
+      });
+    }
+  }, [isSuccessLogin]);
+
+  useEffect(() => {
+    if (isSuccessAccount) {
+      handleLogin({ dataLogin, accountQuery: dataAccount });
+    }
+  }, [isSuccessAccount]);
+
+  useEffect(() => {
+    if (isErrorAccount) {
+      setStatusMessage({
+        header: `${errorAccount?.data?.code} Error`,
+        body: errorAccount?.data?.message || errorAccount?.data?.status,
+        isOpen: true,
+        isError: true,
+      });
+    }
+    if (isErrorLogin) {
+      setStatusMessage({
+        header: `${errorLogin?.data?.code} Error`,
+        body: errorLogin?.data?.message || errorLogin?.data?.status,
+        isOpen: true,
+        isError: true,
+      });
+    }
+  }, [isErrorLogin, isErrorAccount]);
+
   // original logic of biometrics login
   /*   useEffect(() => {
     (async () => {
@@ -272,39 +278,6 @@ export function LoginScreen({ navigation }: any) {
       }
     })();
   }, []); */
-
-  const handleChangeFaceId = () => {
-    setFaceId(!isFaceId);
-  };
-
-  // set storage data for biometric to be used on users next session
-  const handleSetBiometricFlag = async (param: string) => {
-    await AsyncStorage.setItem("IsBiometricOn", param);
-  };
-  // get storage data for biometric
-  const handleGetBiometricFlag = async () => {
-    const isBiometric = await AsyncStorage.getItem("IsBiometricOn");
-    return isBiometric;
-  };
-  // set storage data for faceId switch. this will be remembered when user go to login page
-  const handleSetFaceIdFlag = async (param: string) => {
-    await AsyncStorage.setItem("faceId", param);
-  };
-  // get storage data for faceId
-  const handleGetFaceIdFlag = async () => {
-    const faceIdFlag = await AsyncStorage.getItem("faceId");
-    return faceIdFlag;
-  };
-  // get email and password from storage
-  const handleGetStoredEmailPassword = async () => {
-    const credentials = await getSavedCredetails();
-    if (credentials?.email && credentials?.password) {
-      setStorageData({
-        email: credentials?.email,
-        password: credentials?.password,
-      });
-    }
-  };
 
   useEffect(() => {
     // set biometricFlag true/false to show or hide biometrics switch
@@ -366,15 +339,6 @@ export function LoginScreen({ navigation }: any) {
       triggerBiometric();
     }
   }, [isFaceId, storageData]);
-
-  const onCloseModal = (): void => {
-    setStatusMessage({
-      header: "",
-      body: "",
-      isOpen: false,
-      isError: false,
-    });
-  };
 
   return (
     <MainLayout navigation={navigation}>

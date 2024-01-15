@@ -101,10 +101,11 @@ export function LoginScreen({ navigation }: any) {
 
   const handleLogin = async (signInData: any) => {
     const { dataLogin, accountQuery } = signInData;
+    const [account] = accountQuery;
     if (dataLogin?.token_ziyl && dataLogin?.access_token) {
       await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
       await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
-      dispatch<any>(signInViaRTK({dataLogin, dataAccount: accountQuery}));
+      dispatch<any>(signInViaRTK({dataLogin, dataAccount: account}));
     }
     if (dataLogin?.biometricYN && dataLogin?.biometricYN === "Y") {
       console.log("use biometric");

@@ -78,7 +78,7 @@ export function Payees({ navigation }: any) {
       <View style={styles.heading}>
         <Heading
           icon={<BeneficiaryIcon size={18} color="pink" />}
-          title={"My Payees"}
+          title={"Make Payments"}
           rightAction={
             <Button
               onPress={() => navigation.navigate(screenNames.addPayee)}

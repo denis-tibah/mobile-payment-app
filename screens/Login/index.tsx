@@ -104,7 +104,6 @@ export function LoginScreen({ navigation }: any) {
       arrayChecker(accountQuery) && accountQuery.length > 0
         ? accountQuery[0]
         : {};
-    console.log("🚀 ~ handleLogin ~ objAccountQuery:", objAccountQuery);
     if (dataLogin?.token_ziyl && dataLogin?.access_token) {
       await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
       await AsyncStorage.setItem("accessToken", dataLogin?.access_token);

@@ -133,7 +133,7 @@ const SecurityTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
 
   return (
     <ScrollView>
-      <View>
+      <View style={{ backgroundColor: "#ffff" }}>
         <Spinner visible={isLoadingUpdatePassword} />
         <SuccessModal
           isOpen={statusMessage?.isOpen}

@@ -164,8 +164,8 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
   };
 
   return (
-    <ScrollView style={{}}>
-      <View>
+    <ScrollView>
+      <View style={{ backgroundColor: "#fff" }}>
         <Spinner visible={isLoadingCreateTicketReq} />
         <SuccessModal
           isOpen={statusMessage?.isOpen}

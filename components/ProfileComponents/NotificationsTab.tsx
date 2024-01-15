@@ -117,7 +117,7 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
 
   return (
     <ScrollView>
-      <View>
+      <View style={{ backgroundColor: "#ffff" }}>
         <Spinner
           visible={isLoadingUpdateNotifications || isLoadingGetProfile}
         />

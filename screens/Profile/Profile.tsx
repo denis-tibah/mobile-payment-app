@@ -140,7 +140,6 @@ export function Profile({ route, navigation }: any) {
     (state: RootState) => state.profile.profile.loading
   );
   const userData = useSelector((state: RootState) => state?.auth?.userData);
-  console.log("🚀 ~ Profile ~ userData:", userData?.id);
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
 
   const { data: userAccountDetails, isLoading: isloadingAccountDetails } =
@@ -149,7 +148,6 @@ export function Profile({ route, navigation }: any) {
       accessToken: userTokens?.access_token,
       tokenZiyl: userTokens?.token_ziyl,
     });
-  console.log("🚀 ~ Profile ~ userAccountDetails:", userAccountDetails);
 
   useEffect(() => {
     dispatch<any>(getProfile());

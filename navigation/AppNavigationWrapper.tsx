@@ -316,16 +316,17 @@ export default function AppNavigationWrapper() {
               component={DashboardStack}
               options={{ headerShown: false }}
             />
-            {/* <Root.Screen
-              name="profile"
-              component={ProfileScreen}
-              options={{ headerShown: false }}
-            />
             <Root.Screen
               options={{ headerShown: false }}
               name={screenNames.payeeSendFunds}
               component={PayeeSendFunds}
             />
+            <Root.Screen
+              name="profile"
+              component={ProfileScreen}
+              options={{ headerShown: false }}
+            />
+
             <Root.Screen
               options={{ headerShown: false }}
               name={screenNames.payees}
@@ -340,7 +341,7 @@ export default function AppNavigationWrapper() {
               options={{ headerShown: false }}
               name={screenNames.receivedPayment}
               component={PaymentReceivedScreen}
-            /> */}
+            />
           </Fragment>
         ) : (
           <Fragment>

@@ -82,6 +82,7 @@ function DashboardStack() {
       <Tab.Screen name={screenNames.card} component={CardScreen} />
       <Tab.Screen name={screenNames.payments} component={PaymentScreen} />
       <Tab.Screen name={screenNames.statements} component={StatementScreen} />
+      <Tab.Screen name={screenNames.payees} component={PayeeScreen} />
       <Tab.Screen name="profile" component={ProfileScreen} />
     </TabNavigation>
   );

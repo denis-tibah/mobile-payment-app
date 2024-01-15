@@ -113,7 +113,8 @@ export const store = configureStore({
       transactionV2.middleware,
       registrationV2.middleware,
       payeeSlice.middleware,
-      profileV2.middleware
+      profileV2.middleware,
+      settingV2.middleware
     ),
 });
 

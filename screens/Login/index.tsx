@@ -19,12 +19,9 @@ import EmailIcon from "../../assets/icons/Email";
 import LockIcon from "../../assets/icons/Lock";
 import FaceIdIcon from "../../assets/icons/FaceId";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
-import {
-  signInViaRTK,
-  signInViaRTKFulfillByValue,
-} from "../../redux/auth/authSlice";
+import { signInViaRTK } from "../../redux/auth/authSlice";
 import { useLoginMutation } from "../../redux/auth/authSliceV2";
-import { useGetAccountQuery, useLazyGetAccountQuery } from "../../redux/account/accountSliceV2";
+import { useLazyGetAccountQuery } from "../../redux/account/accountSliceV2";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
 import { arrayChecker } from "../../utils/helpers";
@@ -63,33 +60,35 @@ export function LoginScreen({ navigation }: any) {
   ] = useLoginMutation();
 
   const [
-    getAccountQuery, {
-    isLoading: isLoadingAccount,
-    isError: isErrorAccount,
-    isSuccess: isSuccessAccount,
-    error: errorAccount,
-    data: dataAccount,
-  }] = useLazyGetAccountQuery();
+    getAccountQuery,
+    {
+      isLoading: isLoadingAccount,
+      isError: isErrorAccount,
+      isSuccess: isSuccessAccount,
+      error: errorAccount,
+      data: dataAccount,
+    },
+  ] = useLazyGetAccountQuery();
 
   const { handleSubmit, handleChange, values, touched, errors, handleBlur } =
-  useFormik({
-    initialValues: {
-      email: "",
-      password: "",
-    },
-    validationSchema: validationAuthSchema,
-    onSubmit: async ({ email, password }) => {
-      const ipAddress = await getDeviceDetails();
-      const reqData = {
-        email,
-        password,
-        ipAddress,
-        browserfingerprint: "react native app",
-      };
-      loginMutation(reqData);
-    },
-  });
-  
+    useFormik({
+      initialValues: {
+        email: "",
+        password: "",
+      },
+      validationSchema: validationAuthSchema,
+      onSubmit: async ({ email, password }) => {
+        const ipAddress = await getDeviceDetails();
+        const reqData = {
+          email,
+          password,
+          ipAddress,
+          browserfingerprint: "react native app",
+        };
+        loginMutation(reqData);
+      },
+    });
+
   const onCloseModal = (): void => {
     setStatusMessage({
       header: "",
@@ -101,10 +100,15 @@ export function LoginScreen({ navigation }: any) {
 
   const handleLogin = async (signInData: any) => {
     const { dataLogin, accountQuery } = signInData;
+    const objAccountQuery =
+      arrayChecker(accountQuery) && accountQuery.length > 0
+        ? accountQuery[0]
+        : {};
+    console.log("🚀 ~ handleLogin ~ objAccountQuery:", objAccountQuery);
     if (dataLogin?.token_ziyl && dataLogin?.access_token) {
       await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
       await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
-      dispatch<any>(signInViaRTK({dataLogin, dataAccount: accountQuery}));
+      dispatch<any>(signInViaRTK({ dataLogin, dataAccount: objAccountQuery }));
     }
     if (dataLogin?.biometricYN && dataLogin?.biometricYN === "Y") {
       console.log("use biometric");
@@ -112,12 +116,6 @@ export function LoginScreen({ navigation }: any) {
         values?.email || storageData?.email,
         values?.password || storageData?.password
       );
-      // if (dataLogin?.token_ziyl && dataLogin?.access_token) {
-      //   console.log("use biometric");
-      //   await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
-      //   await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
-      //   dispatch<any>(signInViaRTKFulfillByValue(dataLogin));
-      // }
     } else {
       console.log("do not use biometric");
       await SecureStore.deleteItemAsync("email");
@@ -216,14 +214,14 @@ export function LoginScreen({ navigation }: any) {
     if (isSuccessLogin) {
       getAccountQuery({
         tokenZiyl: dataLogin?.token_ziyl,
-        accessToken : dataLogin?.access_token,
+        accessToken: dataLogin?.access_token,
       });
     }
   }, [isSuccessLogin]);
 
   useEffect(() => {
-    if(isSuccessAccount) {
-      handleLogin({dataLogin, accountQuery: dataAccount});
+    if (isSuccessAccount) {
+      handleLogin({ dataLogin, accountQuery: dataAccount });
     }
   }, [isSuccessAccount]);
 
@@ -342,7 +340,6 @@ export function LoginScreen({ navigation }: any) {
       triggerBiometric();
     }
   }, [isFaceId, storageData]);
-
 
   return (
     <MainLayout navigation={navigation}>

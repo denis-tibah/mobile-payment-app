@@ -123,10 +123,10 @@ export function MyAccount({ navigation }: any) {
               ...styles.balanceFirstThird,
             }}
           >
-            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
+            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12} lineHeight={14}>
               Current Balance
             </Typography>
-            <Typography color={"accent-pink"} fontWeight={600} fontSize={18}>
+            <Typography color={"accent-pink"} fontWeight={600} fontSize={18} ineHeight={14}>
               {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
                 userAccountInformation?.data?.curbal || 0
               }`}
@@ -139,10 +139,10 @@ export function MyAccount({ navigation }: any) {
               ...styles.pendingBalance,
             }}
           >
-            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
+            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12} lineHeight={14}>
               Pending
             </Typography>
-            <Typography color={"accent-orange"} fontWeight={600} fontSize={18}>
+            <Typography color={"accent-orange"} fontWeight={600} fontSize={18} ineHeight={14}>
               {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
                 userAccountInformation?.data?.blocked_amount || 0
               }`}
@@ -155,10 +155,10 @@ export function MyAccount({ navigation }: any) {
               ...styles.balanceFirstThird,
             }}
           >
-            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
+            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12} lineHeight={14}>
               Available Balance
             </Typography>
-            <Typography color={"accent-green"} fontWeight={600} fontSize={18}>
+            <Typography color={"accent-green"} fontWeight={600} fontSize={18} ineHeight={14}>
               {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
                 userAccountInformation?.data?.avlbal || 0
               }`}

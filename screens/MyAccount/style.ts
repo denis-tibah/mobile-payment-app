@@ -30,7 +30,9 @@ export const styles: any = StyleSheet.create<any>({
     paddingRight: 25,
   },
   totalBalance: {
-    padding: 7,
+    paddingLeft: 8,
+    paddingRight: 4,
+    paddingTopo: 8,
     // width: '100%',
     flex: 1,
     backgroundColor: "white",
@@ -40,8 +42,7 @@ export const styles: any = StyleSheet.create<any>({
     textAlign: "left",
     marginTop: 10,
     marginBottom: 10,
-    marginHorizontal: 3,
-    borderRadius: 18,
+    borderRadius: 14,
     height: 64,
   },
   balanceContainer: {
@@ -49,6 +50,7 @@ export const styles: any = StyleSheet.create<any>({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: 6,
     paddingHorizontal: 5,
   },
   balancesTitleA: {
@@ -115,7 +117,7 @@ export const styles: any = StyleSheet.create<any>({
   },
   arrow: {
     paddingTop: 5,
-    marginLeft: 7
+    marginLeft: 7,
   },
   amountLabel: {
     paddingLeft: 10,
@@ -142,5 +144,11 @@ export const styles: any = StyleSheet.create<any>({
   },
   paginateTextNextPrev: {
     marginBottom: 2,
+  },
+  balanceFirstThird: {
+    flexGrow: 1.9,
+  },
+  pendingBalance: {
+    flexGrow: 1.1,
   },
 });

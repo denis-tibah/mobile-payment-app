@@ -14,9 +14,7 @@ import TransactionIcon from "../../assets/icons/Transaction";
 import Typography from "../../components/Typography";
 import AccountIcon from "../../assets/icons/Account";
 import Pagination from "../../components/Pagination/Pagination";
-import {
-  SearchFilter,
-} from "../../redux/transaction/transactionSlice";
+import { SearchFilter } from "../../redux/transaction/transactionSlice";
 import { RootState } from "../../store";
 import Box from "../../components/Box";
 import { getCurrency, groupedByDateTransactions } from "../../utils/helpers";
@@ -36,18 +34,17 @@ export function MyAccount({ navigation }: any) {
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userId = userData?.id;
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
-  const [
-    getTransactionsWithFilter, {
-      data: transactionsWithFilter,
-    }
-  ] = useLazyGetTransactionsQuery();
+  const [getTransactionsWithFilter, { data: transactionsWithFilter }] =
+    useLazyGetTransactionsQuery();
   const transactionsList = transactionsWithFilter?.transactions;
-  const _groupedByDateTransactions = groupedByDateTransactions(transactionsList);
+  const _groupedByDateTransactions =
+    groupedByDateTransactions(transactionsList);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [sortByStatus, setSortByStatus] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [paginateRefresh, setPaginateRefresh] = useState<boolean>(false);
-  const [isOneTransactionOpen, setIsOneTransactionOpen] = useState<boolean>(false);
+  const [isOneTransactionOpen, setIsOneTransactionOpen] =
+    useState<boolean>(false);
   const { data: userAccountInformation } = useGetAccountDetailsQuery({
     accountId: userData?.id || 0,
     accessToken: userTokens?.access_token,
@@ -58,18 +55,18 @@ export function MyAccount({ navigation }: any) {
     pageNumber?: number;
     status?: string;
   }) => {
-      if (userData && userData?.id) {
-        let search: SearchFilter = {
-          accountId: `${userData?.id}`,
-          direction: "desc",
-          status: filterParams?.status ? filterParams?.status : defaultStatus,
-          limit: 20,
-          page: filterParams?.pageNumber || 1,
-          accessToken: userTokens?.access_token,
-          tokenZiyl: userTokens?.token_ziyl,
-        };
-        setIsLoading(prev => !prev);
-        getTransactionsWithFilter(search)
+    if (userData && userData?.id) {
+      let search: SearchFilter = {
+        accountId: `${userData?.id}`,
+        direction: "desc",
+        status: filterParams?.status ? filterParams?.status : defaultStatus,
+        limit: 20,
+        page: filterParams?.pageNumber || 1,
+        accessToken: userTokens?.access_token,
+        tokenZiyl: userTokens?.token_ziyl,
+      };
+      setIsLoading((prev) => !prev);
+      getTransactionsWithFilter(search)
         .unwrap()
         .then((res) => {
           setRefreshing(false);
@@ -85,8 +82,8 @@ export function MyAccount({ navigation }: any) {
           setPaginateRefresh(false);
           setIsLoading(false);
         });
-        setPaginateRefresh(false);
-      }
+      setPaginateRefresh(false);
+    }
   };
 
   const handlePreviousPage = () => {
@@ -120,34 +117,48 @@ export function MyAccount({ navigation }: any) {
       >
         <View style={styles.balanceContainer}>
           <Box
-            style={{ ...styles.totalBalance, ...styles.currentBalanceShadow }}
+            style={{
+              ...styles.totalBalance,
+              ...styles.currentBalanceShadow,
+              ...styles.balanceFirstThird,
+            }}
           >
             <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
               Current Balance
             </Typography>
-            <Typography color={"accent-pink"} fontWeight={600} fontSize={16}>
-              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${userAccountInformation?.data?.curbal || 0}`}
+            <Typography color={"accent-pink"} fontWeight={600} fontSize={18}>
+              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
+                userAccountInformation?.data?.curbal || 0
+              }`}
             </Typography>
           </Box>
           <Box
-            style={{ ...styles.totalBalance, ...styles.pendingBalanceShadow }}
+            style={{
+              ...styles.totalBalance,
+              ...styles.pendingBalanceShadow,
+              ...styles.pendingBalance,
+            }}
           >
             <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
               Pending
             </Typography>
-            <Typography color={"accent-orange"} fontWeight={600} fontSize={16}>
+            <Typography color={"accent-orange"} fontWeight={600} fontSize={18}>
               {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
                 userAccountInformation?.data?.blocked_amount || 0
               }`}
             </Typography>
           </Box>
           <Box
-            style={{ ...styles.totalBalance, ...styles.availableBalanceShadow }}
+            style={{
+              ...styles.totalBalance,
+              ...styles.availableBalanceShadow,
+              ...styles.balanceFirstThird,
+            }}
           >
             <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
               Available Balance
             </Typography>
-            <Typography color={"accent-green"} fontWeight={600} fontSize={16}>
+            <Typography color={"accent-green"} fontWeight={600} fontSize={18}>
               {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
                 userAccountInformation?.data?.avlbal || 0
               }`}
@@ -184,18 +195,17 @@ export function MyAccount({ navigation }: any) {
               <>
                 <View>
                   {_groupedByDateTransactions
-                    ? Object.keys(_groupedByDateTransactions)
-                        .map((date: string) => {
+                    ? Object.keys(_groupedByDateTransactions).map(
+                        (date: string) => {
                           let _amount: number = 0;
                           const transactionsByDate = _groupedByDateTransactions[
                             date
-                          ]
-                            .map((tx) => {
-                              const { amount } = tx;
-                              _amount = Number(_amount) + Number(amount);
+                          ].map((tx) => {
+                            const { amount } = tx;
+                            _amount = Number(_amount) + Number(amount);
 
-                              return tx;
-                            });
+                            return tx;
+                          });
 
                           const shownData = {
                             date,
@@ -215,7 +225,8 @@ export function MyAccount({ navigation }: any) {
                               totalAmount={_amount.toString()}
                             />
                           );
-                        })
+                        }
+                      )
                     : null}
                 </View>
               </>

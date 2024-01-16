@@ -57,7 +57,7 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
   isError: false,
 };
 
-export function Card({ navigation }: any) {
+export function Card({ navigation, route }: any) {
   const dispatch = useDispatch();
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
@@ -79,6 +79,7 @@ export function Card({ navigation }: any) {
   const [isManagePaymentMethod, setIsManagePaymentMethod] = useState<boolean>(false);
   const [isShowPinActionPressed, setIsShowPinActionPressed] = useState<boolean>(false);
   const [isLostPinActionPressed, setIsLostPinActionPressed] = useState<boolean>(false);
+
   const [showCardDetailOTP, setShowCardDetailOTP] = useState<number>(0);
   const [chosenCurrency, setChosenCurrency] = useState<string>("");
   // const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
@@ -101,7 +102,6 @@ export function Card({ navigation }: any) {
   }] = useLazyShowCardDetailsQuery();
   const [terminatedThisCard] = useLazySendSmsLostCardVerificationQuery();
   const shownCardsOnCarousel = isTerminatedCardShown ? cardsActiveList ? [...cardsActiveList, ...cardData] : [] : cardsActiveList ? cardsActiveList : [];
-
   const handleGetCards = async () => {
     try {
       await dispatch(getCards() as any);
@@ -487,7 +487,9 @@ export function Card({ navigation }: any) {
                     See Card Transactions
                   </Typography>
                 </View>
-                <TouchableOpacity style={{marginTop: 7}} onPress={() => navigation.navigate('Transactions')}>
+                <TouchableOpacity style={{marginTop: 7}} onPress={() => 
+                  navigation.navigate('Transactions', {isCardTransactionsSelected: true})
+                  }>
                   <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
                 </TouchableOpacity>
               </View>
@@ -554,13 +556,13 @@ export function Card({ navigation }: any) {
             </Typography>
             <Divider style={{marginVertical: 8, paddingHorizontal: 15}} />
             <ManagePaymentMethod />
-            <Button 
+            {/* <Button 
               onPress={() => setIsManagePaymentMethod(false)}
               style={{color: '#fff'}}
               color="light-blue"
             >
               Close
-            </Button>
+            </Button> */}
           </BottomSheet>
           <BottomSheet
             isVisible={isShowPinActionPressed}

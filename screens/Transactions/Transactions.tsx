@@ -25,6 +25,7 @@ import Pagination from "../../components/Pagination/Pagination";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 import {
   formatDateDayMonthYear,
+  getUserActiveCards,
   groupedByDateTransactions,
   sortUserActiveToInactiveCards,
 } from "../../utils/helpers";
@@ -70,7 +71,7 @@ const initialDateRange: DateRangeType = {
   },
 };
 
-export function Transactions({ navigation }: any) {
+export function Transactions({ navigation, route }: any) {
   const dispatch = useDispatch();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
@@ -89,6 +90,9 @@ export function Transactions({ navigation }: any) {
   const [searchFieldData, setSearchFieldData] = useState<SearchFilter>(
     initialSearchFieldData
   );
+  const checkIfCardTransactions = route?.params?.isCardTransactionsSelected;
+  const [isCardTransactionsSelected, setIsCardTransactionsSelected] = useState<boolean>(checkIfCardTransactions);
+
   const [showPickerDateFilter, setShowPickerDateFilter] =
     useState<DateRangeType>(initialDateRange);
     const [
@@ -106,6 +110,7 @@ export function Transactions({ navigation }: any) {
     setShowPickerDateFilter(initialDateRange);
     setSearchFieldData(initialSearchFieldData);
     setSearchText("");
+    setIsCardTransactionsSelected(false);
   };
 
   const fetchTransactionsWithFilters = async (value?: SearchFilter) => {
@@ -293,6 +298,19 @@ export function Transactions({ navigation }: any) {
   // };
 
   useEffect(() => {
+    if (checkIfCardTransactions) {
+      const activeCard = getUserActiveCards(listOfActiveCards);
+      setIsCardTransactionsSelected(true);
+      if (listOfActiveCards && listOfActiveCards.length > 0) {
+        setSearchFieldData({
+          ...searchFieldData,
+          card_id: activeCard[0].cardreferenceId.toString(),
+        });
+      }
+    }
+  },[checkIfCardTransactions, searchFieldData.card_id]);
+
+  useEffect(() => {
     setIsLoading(true);
     fetchTransactionsWithFilters();
     return () => {
@@ -308,7 +326,7 @@ export function Transactions({ navigation }: any) {
         <View style={styles.container}>
           <Heading
             icon={<TransactionIcon size={18} color="pink" />}
-            title={"Transactions History"}
+            title={isCardTransactionsSelected ? "Card Transactions History": "Transactions History"}
             rightAction={
               <View style={{display: 'flex', flexDirection: 'row'}}>
                 <TouchableOpacity 

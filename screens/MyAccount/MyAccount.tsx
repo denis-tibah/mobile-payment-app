@@ -166,7 +166,7 @@ export function MyAccount({ navigation }: any) {
           </Box>
         </View> */}
         <View style={styles.balancesContainer}>
-          <View style={styles.balanceItem}>
+          <View style={[styles.balanceItem, { borderBottomColor: "#E7038E" }]}>
             <Typography
               color={"medium-grey2"}
               fontWeight={400}
@@ -182,7 +182,7 @@ export function MyAccount({ navigation }: any) {
               }`}
             </Typography>
           </View>
-          <View style={styles.balanceItem}>
+          <View style={[styles.balanceItem, { borderBottomColor: "#FBB445" }]}>
             <Typography
               color={"medium-grey2"}
               fontWeight={400}
@@ -198,7 +198,7 @@ export function MyAccount({ navigation }: any) {
               }`}
             </Typography>
           </View>
-          <View style={styles.balanceItem}>
+          <View style={[styles.balanceItem, { borderBottomColor: "#0DCA9D" }]}>
             <Typography
               color={"medium-grey2"}
               fontWeight={400}

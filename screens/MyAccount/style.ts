@@ -160,7 +160,6 @@ export const styles: any = StyleSheet.create<any>({
     width: "36.33%",
     flexShrink: 1,
     borderRadius: 14,
-    borderBottomColor: "#E7038E",
     borderBottomWidth: 6,
     paddingTop: 6,
     paddingBottom: 6,

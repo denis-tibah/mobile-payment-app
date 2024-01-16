@@ -167,7 +167,13 @@ export function MyAccount({ navigation }: any) {
         </View> */}
         <View style={styles.balancesContainer}>
           <View style={styles.balanceItem}>
-            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
+            <Typography
+              color={"medium-grey2"}
+              fontWeight={400}
+              fontSize={12}
+              marginTop={4}
+              lineHeight={14}
+            >
               Current Balance
             </Typography>
             <Typography color={"accent-pink"} fontWeight={800} fontSize={18}>
@@ -177,7 +183,13 @@ export function MyAccount({ navigation }: any) {
             </Typography>
           </View>
           <View style={styles.balanceItem}>
-            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
+            <Typography
+              color={"medium-grey2"}
+              fontWeight={400}
+              fontSize={12}
+              marginTop={4}
+              lineHeight={14}
+            >
               Pending
             </Typography>
             <Typography color={"accent-orange"} fontWeight={800} fontSize={18}>
@@ -187,7 +199,13 @@ export function MyAccount({ navigation }: any) {
             </Typography>
           </View>
           <View style={styles.balanceItem}>
-            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
+            <Typography
+              color={"medium-grey2"}
+              fontWeight={400}
+              fontSize={12}
+              marginTop={4}
+              lineHeight={14}
+            >
               Available Balance
             </Typography>
             <Typography color={"accent-green"} fontWeight={800} fontSize={18}>

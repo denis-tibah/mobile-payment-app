@@ -115,7 +115,7 @@ export function MyAccount({ navigation }: any) {
           />
         }
       >
-        <View style={styles.balanceContainer}>
+        {/* <View style={styles.balanceContainer}>
           <Box
             style={{
               ...styles.totalBalance,
@@ -164,6 +164,82 @@ export function MyAccount({ navigation }: any) {
               }`}
             </Typography>
           </Box>
+        </View> */}
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            gap: 8,
+            margin: 10,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "white",
+              width: "36.33%",
+              flexShrink: 1,
+              borderRadius: 14,
+              borderBottomColor: "#E7038E",
+              borderBottomWidth: 6,
+              paddingTop: 6,
+              paddingBottom: 6,
+              paddingLeft: 8,
+            }}
+          >
+            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
+              Current Balance
+            </Typography>
+            <Typography color={"accent-pink"} fontWeight={800} fontSize={18}>
+              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
+                userAccountInformation?.data?.curbal || 0
+              }`}
+            </Typography>
+          </View>
+          <View
+            style={{
+              backgroundColor: "white",
+              width: "26.33%",
+              flexShrink: 1,
+              borderRadius: 14,
+              borderBottomColor: "#FBB445",
+              borderBottomWidth: 6,
+              paddingTop: 6,
+              paddingBottom: 6,
+              paddingLeft: 8,
+            }}
+          >
+            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
+              Pending
+            </Typography>
+            <Typography color={"accent-orange"} fontWeight={800} fontSize={18}>
+              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
+                userAccountInformation?.data?.blocked_amount || 0
+              }`}
+            </Typography>
+          </View>
+          <View
+            style={{
+              backgroundColor: "white",
+              width: "36.33%",
+              flexShrink: 1,
+              borderRadius: 14,
+              borderBottomColor: "#0DCA9D",
+              borderBottomWidth: 6,
+              paddingTop: 6,
+              paddingBottom: 6,
+              paddingLeft: 8,
+            }}
+          >
+            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
+              Available Balance
+            </Typography>
+            <Typography color={"accent-green"} fontWeight={800} fontSize={18}>
+              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
+                userAccountInformation?.data?.avlbal || 0
+              }`}
+            </Typography>
+          </View>
         </View>
         <View>
           <View style={styles.base}>

@@ -14,22 +14,22 @@ export const styles: any = StyleSheet.create<any>({
     // paddingRight: -30,
     justifyContent: "space-between",
   },
-  currentBalanceShadow: {
+  /*   currentBalanceShadow: {
     borderBottomWidth: 6,
     borderBottomColor: "#E7038E",
     paddingRight: 25,
-  },
-  pendingBalanceShadow: {
+  }, */
+  /*   pendingBalanceShadow: {
     borderBottomWidth: 6,
     borderBottomColor: "#FBB445",
     paddingRight: 25,
-  },
-  availableBalanceShadow: {
+  }, */
+  /*   availableBalanceShadow: {
     borderBottomWidth: 6,
     borderBottomColor: "#0DCA9D",
     paddingRight: 25,
-  },
-  totalBalance: {
+  }, */
+  /*   totalBalance: {
     paddingLeft: 8,
     paddingRight: 8,
     paddingTop: 8,
@@ -41,15 +41,15 @@ export const styles: any = StyleSheet.create<any>({
     marginTop: 10,
     marginBottom: 10,
     borderRadius: 14,
-  },
-  balanceContainer: {
+  }, */
+  /*   balanceContainer: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     gap: 6,
     paddingHorizontal: 5,
-  },
+  }, */
   balancesTitleA: {
     // padding: 12,
     paddingTop: 15,
@@ -142,10 +142,28 @@ export const styles: any = StyleSheet.create<any>({
   paginateTextNextPrev: {
     marginBottom: 2,
   },
-  balanceFirstThird: {
+  /*   balanceFirstThird: {
     flexGrow: 1.9,
-  },
-  pendingBalance: {
+  }, */
+  /*   pendingBalance: {
     flexGrow: 1.1,
+  }, */
+  balancesContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 8,
+    margin: 10,
+  },
+  balanceItem: {
+    backgroundColor: "white",
+    width: "36.33%",
+    flexShrink: 1,
+    borderRadius: 14,
+    borderBottomColor: "#E7038E",
+    borderBottomWidth: 6,
+    paddingTop: 6,
+    paddingBottom: 6,
+    paddingLeft: 8,
   },
 });

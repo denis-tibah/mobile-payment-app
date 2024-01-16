@@ -165,28 +165,8 @@ export function MyAccount({ navigation }: any) {
             </Typography>
           </Box>
         </View> */}
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            gap: 8,
-            margin: 10,
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: "white",
-              width: "36.33%",
-              flexShrink: 1,
-              borderRadius: 14,
-              borderBottomColor: "#E7038E",
-              borderBottomWidth: 6,
-              paddingTop: 6,
-              paddingBottom: 6,
-              paddingLeft: 8,
-            }}
-          >
+        <View style={styles.balancesContainer}>
+          <View style={styles.balanceItem}>
             <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
               Current Balance
             </Typography>
@@ -196,19 +176,7 @@ export function MyAccount({ navigation }: any) {
               }`}
             </Typography>
           </View>
-          <View
-            style={{
-              backgroundColor: "white",
-              width: "26.33%",
-              flexShrink: 1,
-              borderRadius: 14,
-              borderBottomColor: "#FBB445",
-              borderBottomWidth: 6,
-              paddingTop: 6,
-              paddingBottom: 6,
-              paddingLeft: 8,
-            }}
-          >
+          <View style={styles.balanceItem}>
             <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
               Pending
             </Typography>
@@ -218,19 +186,7 @@ export function MyAccount({ navigation }: any) {
               }`}
             </Typography>
           </View>
-          <View
-            style={{
-              backgroundColor: "white",
-              width: "36.33%",
-              flexShrink: 1,
-              borderRadius: 14,
-              borderBottomColor: "#0DCA9D",
-              borderBottomWidth: 6,
-              paddingTop: 6,
-              paddingBottom: 6,
-              paddingLeft: 8,
-            }}
-          >
+          <View style={styles.balanceItem}>
             <Typography color={"medium-grey2"} fontWeight={400} fontSize={12}>
               Available Balance
             </Typography>

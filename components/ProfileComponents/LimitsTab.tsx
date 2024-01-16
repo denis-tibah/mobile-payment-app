@@ -1,12 +1,10 @@
-import { useState, useEffect, FC, useCallback } from "react";
-import { View, ScrollView, Pressable, Switch } from "react-native";
+import { useState, useEffect, FC } from "react";
+import { View, ScrollView, Pressable } from "react-native";
 import { useSelector } from "react-redux";
 import { useFormik } from "formik";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Spinner from "react-native-loading-spinner-overlay/lib";
-import { useFocusEffect } from "@react-navigation/native";
-import { ProgressBar, MD3Colors } from "react-native-paper";
+import { ProgressBar } from "react-native-paper";
 
 import Typography from "../Typography";
 import FixedBottomAction from "../../components/FixedBottomAction";
@@ -15,10 +13,11 @@ import SettingsIcon from "../../assets/icons/Settings";
 import Button from "../Button";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { Seperator } from "../Seperator/Seperator";
-import TwoFactorAuthenticationIcon from "../../assets/icons/TwoFactorAuthentication";
-import LimitIcon from "../../assets/icons/Limit";
 import { limitsTabSchema } from "../../utils/formikSchema";
-import { useGetLimitsQuery } from "../../redux/setting/settingSliceV2";
+import {
+  useGetLimitsQuery,
+  useUpdateLimitsMutation,
+} from "../../redux/setting/settingSliceV2";
 import { RootState } from "../../store";
 import { arrayChecker } from "../../utils/helpers";
 import vars from "../../styles/vars";
@@ -28,13 +27,12 @@ interface ISecurityTab {
 }
 
 const LimitsTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
-  const profileData = useSelector(
+  /* const profileData = useSelector(
     (state: RootState) => state?.profile?.profile
-  )?.data;
+  )?.data; */
 
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const userData = useSelector((state: RootState) => state?.auth?.userData);
-  console.log("🚀 ~ userData:", userData);
 
   const [statusMessage, setStatusMessage] = useState<{
     header: string;
@@ -42,14 +40,12 @@ const LimitsTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
     isOpen: boolean;
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
-  const [isEnableTwoFactor, setTwoFactorAuthentication] =
-    useState<boolean>(false);
 
   const {
     isLoading: isLoadingGetLimits,
     isError: isErrorGetProfile,
-    isSuccess: isSuccessGetProfile,
-    error: errorGetProfile,
+    /* isSuccess: isSuccessGetProfile,
+    error: errorGetProfile, */
     data: dataGetLimits,
   } = useGetLimitsQuery(
     {
@@ -61,19 +57,57 @@ const LimitsTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
       skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
     }
   );
-  console.log("🚀 ~ errorGetProfile:", errorGetProfile);
-  console.log("🚀 ~ dataGetLimits:", dataGetLimits);
 
-  /* const [
-    updatePasswordMutation,
+  useEffect(() => {
+    if (!isLoadingGetLimits && isErrorGetProfile) {
+      setStatusMessage({
+        header: "Error",
+        body: "Something went wrong getting your account limits",
+        isOpen: false,
+        isError: false,
+      });
+    }
+  }, [isLoadingGetLimits, isErrorGetProfile]);
+
+  const [
+    updateLimit,
     {
-      isLoading: isLoadingUpdatePassword,
-      isError: isErrorUpdatePassword,
-      isSuccess: isSuccessUpdatePassword,
-      error: errorUpdatePassword,
-      data: dataUpdatePassword,
+      isLoading: isLoadingUpdateLimits,
+      isError: isErrorUpdateLimits,
+      isSuccess: isSuccessUpdateLimits,
+      error: errorUpdateLimits,
+      data: dataUpdateLimits,
     },
-  ] = useUpdatePasswordMutation(); */
+  ] = useUpdateLimitsMutation();
+  console.log("🚀 ~ errorUpdateLimits:", errorUpdateLimits);
+  useEffect(() => {
+    if (!isLoadingUpdateLimits && isSuccessUpdateLimits) {
+      if (dataUpdateLimits?.code === "200") {
+        setStatusMessage({
+          header: "Success",
+          body: dataUpdateLimits?.message || "Updated your limit",
+          isOpen: false,
+          isError: false,
+        });
+      }
+    }
+  }, [isLoadingUpdateLimits, isSuccessUpdateLimits, dataUpdateLimits]);
+
+  useEffect(() => {
+    if (!isLoadingUpdateLimits && isErrorUpdateLimits) {
+      if (
+        errorUpdateLimits?.data?.code === 401 ||
+        errorUpdateLimits?.status === 401
+      ) {
+        setStatusMessage({
+          header: "Error",
+          body: errorUpdateLimits?.data?.status || "Failed updating your limit",
+          isOpen: true,
+          isError: true,
+        });
+      }
+    }
+  }, [isLoadingUpdateLimits, isErrorUpdateLimits, errorUpdateLimits]);
 
   const { handleSubmit, handleChange, values, touched, errors, handleBlur } =
     useFormik({
@@ -83,9 +117,32 @@ const LimitsTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
         monthly: "",
       },
       validationSchema: limitsTabSchema,
-      onSubmit: async ({ transaction, daily, monthly }) => {},
+      onSubmit: async ({ transaction, daily, monthly }) => {
+        const transactionLimit = dataGetLimits.find(
+          (param: any) => param?.type === "transaction"
+        );
+        const dailyLimit = dataGetLimits.find(
+          (param: any) => param?.type === "daily"
+        );
+        const monthlyLimit = dataGetLimits.find(
+          (param: any) => param?.type === "month"
+        );
+        const limitsArr = [
+          {
+            type: "transaction",
+            limit: transaction || transactionLimit?.limit || "0",
+          },
+          { type: "daily", limit: daily || dailyLimit?.limit || "0" },
+          { type: "monthly", limit: monthly || monthlyLimit?.limit || "0" },
+        ];
+        updateLimit({
+          bodyParams: limitsArr,
+          accessToken: userTokens?.access_token,
+          tokenZiyl: userTokens?.token_ziyl,
+          accountId: userData?.id,
+        });
+      },
     });
-  console.log("🚀 ~ values:", values);
 
   const onCloseModal = (): void => {
     setStatusMessage({
@@ -95,14 +152,6 @@ const LimitsTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
       isError: false,
     });
   };
-
-  /*   useFocusEffect(() => {
-    useCallback(() => {
-      return () => {
-        cleanUpTabSelection();
-      };
-    }, []);
-  }); */
 
   const calculatePercentage = (min: number, max: number) => {
     if (min < 0 || max < 0) {
@@ -123,7 +172,7 @@ const LimitsTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
   return (
     <ScrollView>
       <View style={{ backgroundColor: "#ffff" }}>
-        <Spinner visible={isLoadingGetLimits} />
+        <Spinner visible={isLoadingGetLimits || isLoadingUpdateLimits} />
         <SuccessModal
           isOpen={statusMessage?.isOpen}
           title={statusMessage.header}
@@ -132,7 +181,7 @@ const LimitsTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
           onClose={onCloseModal}
         />
         <Pressable>
-          <View>
+          <View style={{ marginTop: 16 }}>
             <View>
               {arrayChecker(dataGetLimits)
                 ? dataGetLimits.map((params: any, index: number) => {

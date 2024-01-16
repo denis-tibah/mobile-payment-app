@@ -157,7 +157,6 @@ export const styles: any = StyleSheet.create<any>({
   },
   balanceItem: {
     backgroundColor: "white",
-    width: "36.33%",
     flexShrink: 1,
     borderRadius: 14,
     borderBottomWidth: 6,

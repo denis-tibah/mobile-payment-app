@@ -142,7 +142,7 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = ({
           onClose={onCloseModal}
         />
         <Pressable>
-          <View style={{ paddingBottom: 12 }}>
+          <View style={{ paddingBottom: 12, paddingTop: 16 }}>
             <View
               style={[
                 styles.formContainer,

@@ -11,8 +11,6 @@ export const settingV2 = createApi({
   endpoints: (builder) => ({
     getLimits: builder.query({
       query: ({ accessToken, tokenZiyl, accountId }) => {
-        console.log("🚀 ~ tokenZiyl:", tokenZiyl);
-        console.log("🚀 ~ accessToken:", accessToken);
         return {
           url: `/getlimitsfinxp`,
           method: "POST",
@@ -40,7 +38,6 @@ export const settingV2 = createApi({
         accessToken: any;
         tokenZiyl: any;
       }) => {
-        console.log("🚀 ~ bodyParams:", bodyParams);
         return {
           url: `/updatelimitsfinxp/${accountId}`,
           method: "POST",
@@ -52,6 +49,7 @@ export const settingV2 = createApi({
           body: bodyParams,
         };
       },
+      invalidatesTags: ["settingV2"],
     }),
   }),
 });

@@ -4,6 +4,8 @@ import {
   formatAmountTableValue,
   formatDateTableValue,
   getFormattedDate,
+  getFormattedDateAndTime,
+  getFormattedDateFromUnix,
 } from "../../utils/helpers";
 import { styles } from "./styles";
 import ArrowDown from "../../assets/icons/ArrowDown";
@@ -97,7 +99,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
             <CalenderEmptyIcon size={14} color="blue" />
             <Typography fontSize={14}>
               {" "}
-              {getFormattedDate(data?.transaction_datetime)}
+              {getFormattedDateFromUnix(data?.receiptDate)}
             </Typography>
           </Box>
             ) : (
@@ -111,7 +113,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
               <CalenderEmptyIcon size={14} color="blue" />
               <Typography fontSize={14}>
                 {" "}
-                {getFormattedDate(data?.transaction_datetime)}
+                {getFormattedDateFromUnix(data?.receiptDate)}
               </Typography>
             </Box>
           )}
@@ -242,14 +244,14 @@ export function TransactionItem({ data }: TransactionItemProps) {
                   <Text style={styles.nameDetailMobile}>Reference:</Text>
                   <Text style={styles.valueDetailMobile}>
                     {/* Invoice_{data?.reference_no} */}
-                    {data?.reference_no}
+                    {data?.approvalCode}
                   </Text>
                 </Box>
                 <Box style={styles.detailMobile}>
                   <Text style={styles.nameDetailMobile}>Description:</Text>
                   <Text style={styles.valueDetailMobile}>
                     {/* Invoice_{data?.reference_no} */}
-                    {data?.description}
+                    {data?.purposeSimple}
                   </Text>
                 </Box>
                 {!data.isCardTx ? (
@@ -258,18 +260,18 @@ export function TransactionItem({ data }: TransactionItemProps) {
                       <Text style={styles.valueDetailMobile}>
                         {/* Invoice_{data?.reference_no} */}
                         {/* {data?.trn_type} */}
-                        {data?.service}
+                        {data?.revenueType}
                       </Text>
                     </Box>
                  ) : null}
                 {!data.isCardTx ? (
                   // <Box style={styles.cardDetails}>
                   <Box>
-                    <Box style={styles.detailMobile}>
+                    {/* <Box style={styles.detailMobile}>
                       <Text style={styles.nameDetailMobile}>IBAN:</Text>
                       <Text style={styles.valueDetailMobile}>{data?.iban}</Text>
-                      {/* <Text style={styles.valueDetailMobile}>{data?.cr_iban}</Text> */}
-                    </Box>
+                      <Text style={styles.valueDetailMobile}>{data?.cr_iban}</Text>
+                    </Box> */}
                     {/* <Box style={styles.detailMobile}>
                       <Text style={styles.nameDetailMobile}>BIC:</Text>
                       <Text style={styles.valueDetailMobile}>{data?.bic}</Text>
@@ -316,7 +318,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
                   <Text style={styles.nameDetailMobile}>Time:</Text>
                   <Text style={styles.valueDetailMobile}>
                     {/* {data?.transaction_datetime} */}
-                    {getFormattedDate(data?.transaction_datetime)}
+                    {getFormattedDateFromUnix(data?.receiptDate)}
                   </Text>
                 </View>
                 <Box style={styles.downloadContainer}>

@@ -23,6 +23,7 @@ import {
   getCards,
   sendSmsShowCardVerification,
   setCardAsFrozen,
+  setIsCardTransactionShown,
   terminateCard,
 } from "../../redux/card/cardSlice";
 import {
@@ -57,12 +58,14 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
   isError: false,
 };
 
-export function Card({ navigation }: any) {
+export function Card({ navigation, route }: any) {
   const dispatch = useDispatch();
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
   const profile = useSelector((state: any) => state.profile?.profile);
   const userEmail = profile?.data.email;
+  const isCardTransactionShown = useSelector((state: RootState) => state?.card?.isCardTransactionShown);
+  console.log({ isCardTransactionShown });
   const [cardPin, setCardPin] = useState<string>("");
   const [remainingTime, setRemainingTime] = useState(30);
   const cardData = useSelector((state: RootState) => state?.card?.data);
@@ -79,7 +82,6 @@ export function Card({ navigation }: any) {
   const [isManagePaymentMethod, setIsManagePaymentMethod] = useState<boolean>(false);
   const [isShowPinActionPressed, setIsShowPinActionPressed] = useState<boolean>(false);
   const [isLostPinActionPressed, setIsLostPinActionPressed] = useState<boolean>(false);
-  const [showCardDetailOTP, setShowCardDetailOTP] = useState<number>(0);
   const [chosenCurrency, setChosenCurrency] = useState<string>("");
   // const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
   const [isEnrollingCard, setIsEnrollingCard] = useState<boolean>(false);
@@ -101,7 +103,6 @@ export function Card({ navigation }: any) {
   }] = useLazyShowCardDetailsQuery();
   const [terminatedThisCard] = useLazySendSmsLostCardVerificationQuery();
   const shownCardsOnCarousel = isTerminatedCardShown ? cardsActiveList ? [...cardsActiveList, ...cardData] : [] : cardsActiveList ? cardsActiveList : [];
-
   const handleGetCards = async () => {
     try {
       await dispatch(getCards() as any);
@@ -346,6 +347,7 @@ export function Card({ navigation }: any) {
   useEffect(() => {
     setIsloading(true);
     handleGetCards();
+    dispatch<any>(setIsCardTransactionShown(false));
   }, []);
 
   return (
@@ -487,7 +489,10 @@ export function Card({ navigation }: any) {
                     See Card Transactions
                   </Typography>
                 </View>
-                <TouchableOpacity style={{marginTop: 7}} onPress={() => navigation.navigate('Transactions')}>
+                <TouchableOpacity style={{marginTop: 7}} onPress={() => {
+                  dispatch<any>(setIsCardTransactionShown(true));
+                  navigation.navigate('Transactions');
+                }}>
                   <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
                 </TouchableOpacity>
               </View>
@@ -554,13 +559,13 @@ export function Card({ navigation }: any) {
             </Typography>
             <Divider style={{marginVertical: 8, paddingHorizontal: 15}} />
             <ManagePaymentMethod />
-            <Button 
+            {/* <Button 
               onPress={() => setIsManagePaymentMethod(false)}
               style={{color: '#fff'}}
               color="light-blue"
             >
               Close
-            </Button>
+            </Button> */}
           </BottomSheet>
           <BottomSheet
             isVisible={isShowPinActionPressed}

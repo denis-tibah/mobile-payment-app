@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { View, ScrollView, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
@@ -25,6 +25,7 @@ import Pagination from "../../components/Pagination/Pagination";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 import {
   formatDateDayMonthYear,
+  getUserActiveCards,
   groupedByDateTransactions,
   sortUserActiveToInactiveCards,
 } from "../../utils/helpers";
@@ -33,10 +34,12 @@ import { Text } from "react-native";
 import BottomSheet from "../../components/BottomSheet";
 import Filter from "../../assets/icons/Filter";
 import { Divider } from "react-native-paper";
-import { useLazyGetCardV2Query } from "../../redux/card/cardSliceV2";
+import { useGetCardV2Query, useLazyGetCardTransactionsQuery, useLazyGetCardV2Query } from "../../redux/card/cardSliceV2";
 import { useLazyGetTransactionsQuery } from "../../redux/transaction/transactionV2Slice";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Spinner from "react-native-loading-spinner-overlay/lib";
+import { setIsCardTransactionShown } from "../../redux/card/cardSlice";
+import TransactionItem from "../../components/TransactionItem";
 
 interface DateRangeType {
   dateTo: {
@@ -70,10 +73,13 @@ const initialDateRange: DateRangeType = {
   },
 };
 
-export function Transactions({ navigation }: any) {
+export function Transactions({ navigation, route }: any) {
   const dispatch = useDispatch();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
+  const isCardTransactionShown = useSelector((state: RootState) => state?.card?.isCardTransactionShown);
+  console.log({ isCardTransactionShown });
+
   const [getTransactionsWithFilter, { 
     data: transactionsWithFilter, 
     isLoading: isLoadingTransations,
@@ -89,24 +95,50 @@ export function Transactions({ navigation }: any) {
   const [searchFieldData, setSearchFieldData] = useState<SearchFilter>(
     initialSearchFieldData
   );
+
   const [showPickerDateFilter, setShowPickerDateFilter] =
     useState<DateRangeType>(initialDateRange);
-    const [
-      getCardDetails,
-      {
-        data: userCardsList,
-      },
-    ] = useLazyGetCardV2Query();
-  useEffect(() => {
-    getCardDetails(undefined,true);
-  }, []);
+  const {
+      data: userCardsList,
+    } = useGetCardV2Query({
+      accountId: userData?.id,
+      accessToken: userTokens?.access_token,
+      tokenZiyl: userTokens?.token_ziyl,
+    });
+  const [getCartTransactions, {
+    data: cardTransactions,
+  }] = useLazyGetCardTransactionsQuery();
   const listOfActiveCards = sortUserActiveToInactiveCards(userCardsList);
+  const activeCard = listOfActiveCards?.find((card: any) => card.cardStatus === CardStatus.ACTIVE);
 
   const clearFilter = () => {
     setShowPickerDateFilter(initialDateRange);
-    setSearchFieldData(initialSearchFieldData);
+    setSearchFieldData({
+      ...initialSearchFieldData,
+      card_id: "",
+    });
     setSearchText("");
+    dispatch<any>(setIsCardTransactionShown(false));
   };
+
+  const handleFetchCardTransactions = async (cardId: string) => {
+    const cardTransactionsFilter = {
+      account_id: userData?.id,
+      from_date: new Date(new Date().setFullYear(new Date().getFullYear() - 2)).toISOString().split('T')[0],
+      to_date: new Date().toISOString().split('T')[0],
+      type: 'PREAUTH',
+      card_id: cardId,
+    };
+    console.log({ cardTransactionsFilter });
+    getCartTransactions(cardTransactionsFilter)
+    .catch((err) => {
+      console.log('error');
+      console.log({ err });
+    })
+    .finally(() => {
+      setIsLoading(false);
+    });
+  }
 
   const fetchTransactionsWithFilters = async (value?: SearchFilter) => {
       if (userData && userData?.id) {
@@ -293,8 +325,28 @@ export function Transactions({ navigation }: any) {
   // };
 
   useEffect(() => {
+    if(isCardTransactionShown) {
+      const activeCard = listOfActiveCards?.find((card: any) => card.cardStatus === CardStatus.ACTIVE);
+      setSearchFieldData({
+        ...searchFieldData,
+        card_id: activeCard?.cardreferenceId.toString(),
+      });
+      handleFetchCardTransactions(activeCard?.cardreferenceId.toString());
+    }
+  }, [isCardTransactionShown]);
+
+  useEffect(() => {
+    if(searchFieldData.card_id !== "") {
+      dispatch<any>(setIsCardTransactionShown(true));
+    } else {
+      dispatch<any>(setIsCardTransactionShown(false));
+    }
+  }, [searchFieldData.card_id]);
+
+  useEffect(() => {
     setIsLoading(true);
     fetchTransactionsWithFilters();
+    dispatch<any>(setIsCardTransactionShown(false));
     return () => {
       clearFilter();
       dispatch<any>(clearTransactions());
@@ -308,7 +360,7 @@ export function Transactions({ navigation }: any) {
         <View style={styles.container}>
           <Heading
             icon={<TransactionIcon size={18} color="pink" />}
-            title={"Transactions History"}
+            title={isCardTransactionShown ? "Card Transactions History": "Transactions History"}
             rightAction={
               <View style={{display: 'flex', flexDirection: 'row'}}>
                 <TouchableOpacity 
@@ -351,10 +403,43 @@ export function Transactions({ navigation }: any) {
             </View>
           )
         }
-        <View>
+        <View style={{backgroundColor: '#fff'}}>
           <Seperator backgroundColor={vars["grey"]} />
+          {isCardTransactionShown && cardTransactions?.length > 0 ? cardTransactions?.map((transaction: any, index: number) => (
+            <TransactionItem
+              data={{
+                ...transaction,
+                id: Number(transaction.id),
+                amount: transaction.amount.toString(),
+                name: transaction.purpose,
+                balance: transaction.transactionAmount,
+                bic: "",
+                closing_balance: "",
+                running_balance: "",
+                currency: transaction.transactionCurrency,
+                description: "",
+                iban: "",
+                opening_balance: "",
+                reference_no: "",
+                service: "",
+                status: "",
+                transaction_datetime: "",
+                transaction_id: 0,
+                transaction_uuid: "",
+              }}
+              key={index}
+            />
+          )) : !_groupedByDateTransactions && (
+            <Fragment>
+              <View style={{padding: 30}}>
+                <Text>
+                  Card don't have any transactions. Make sure you have selected the right card.
+                </Text>
+              </View>
+            </Fragment>
+          )} 
           <View>
-            {_groupedByDateTransactions
+            {!isCardTransactionShown && _groupedByDateTransactions
               ? Object.keys(_groupedByDateTransactions)
                   .map((date: string) => {
                     let _amount: number = 0;
@@ -381,17 +466,19 @@ export function Transactions({ navigation }: any) {
                       />
                     );
                   })
-              : null}
+            : null }
           </View>
           <Seperator backgroundColor={vars["grey"]} />
-          <View>
-            <Pagination
-              handlePreviousPage={handlePreviousPage}
-              handleNextPage={handleNextPage}
-              page={currentPage || 0}
-              lastPage={lastPage || 0}
-            />
-          </View>
+          { !isCardTransactionShown && 
+            <View style={{bottom: 0}}>
+              <Pagination
+                handlePreviousPage={handlePreviousPage}
+                handleNextPage={handleNextPage}
+                page={currentPage || 0}
+                lastPage={lastPage || 0}
+              />
+            </View>
+          }
         </View>
       </ScrollView>
       <BottomSheet isVisible={isSheetFilterOpen} onClose={() => setIsSheetFilterOpen(!isSheetFilterOpen)}>
@@ -399,13 +486,11 @@ export function Transactions({ navigation }: any) {
           <Typography fontSize={18}>
             Filters
           </Typography>
-          {/* icon button to clear filter */}
           <TouchableOpacity onPress={() => clearFilter()}>
             <Ionicons name="refresh" size={18} color={vars['accent-blue']} />
           </TouchableOpacity>
         </View>
         <Divider style={{marginVertical: 5}} />
-        {/* filter for date range */}
         <View style={{display: 'flex', flexDirection: 'row'}}>
           <View style={{flex: 1, flexWrap: 'wrap'}}>
             <Typography fontSize={14} color="#696F7A">
@@ -433,6 +518,7 @@ export function Transactions({ navigation }: any) {
                     },
                   })
                 }}
+                disabled={searchFieldData.card_id !== ""}
               >
                 {showPickerDateFilter.dateFrom.value && formatDateDayMonthYear(showPickerDateFilter.dateFrom.value)}
               </Button>
@@ -499,6 +585,7 @@ export function Transactions({ navigation }: any) {
                     },
                   })
                 }}
+                disabled={searchFieldData.card_id !== ""}
               >
                 {showPickerDateFilter.dateTo.value && formatDateDayMonthYear(showPickerDateFilter.dateTo.value)}
               </Button>
@@ -549,6 +636,7 @@ export function Transactions({ navigation }: any) {
           {transactionStatusOptions.map((option, index) => (
             <TouchableOpacity
               key={index}
+              disabled={searchFieldData.card_id !== ""}
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -583,6 +671,7 @@ export function Transactions({ navigation }: any) {
               <FormGroup.Input
                 placeholder={"From"}
                 color={vars["black"]}
+                disabled={searchFieldData.card_id !== ""}
                 fontSize={14}
                 fontWeight={"400"}
                 style={{ width: "100%", borderWidth: 1, borderColor: vars['accent-blue'] }}
@@ -599,6 +688,7 @@ export function Transactions({ navigation }: any) {
               <FormGroup.Input
                 placeholder={"To"}
                 color={vars["black"]}
+                disabled={searchFieldData.card_id !== ""}
                 fontSize={14}
                 fontWeight={"400"}
                 style={{ width: "100%", borderWidth: 1, borderColor: vars['accent-blue'] }}
@@ -655,8 +745,9 @@ export function Transactions({ navigation }: any) {
           leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
           onPress={() => {
             setIsLoading(true);
-            setIsSheetFilterOpen(!isSheetFilterOpen)
-            fetchTransactionsWithFilters(searchFieldData);
+            setIsSheetFilterOpen(!isSheetFilterOpen);
+            !isCardTransactionShown ? fetchTransactionsWithFilters(searchFieldData) :
+            handleFetchCardTransactions(searchFieldData.card_id || activeCard?.cardreferenceId.toString());
           }}
         >
           Submit

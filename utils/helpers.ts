@@ -212,6 +212,18 @@ export function getFormattedDateAndTime(dateToFormat: any) {
   return formattedDate;
 }
 
+export function getFormattedDateFromUnix(dateToFormat: any) {
+  const date = new Date(dateToFormat);
+
+  const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(
+    date.getMonth() + 1
+  )
+    .toString()
+    .padStart(2, "0")}/${date.getFullYear()}`;
+
+  return formattedDate;
+}
+
 export const formatCurrencyToLocalEn = (currency: string) => {
   if (!currency) {
     return 0.0;

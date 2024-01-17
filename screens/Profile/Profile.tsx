@@ -76,6 +76,7 @@ import SecurityTab from "../../components/ProfileComponents/SecurityTab";
 import FinancialDetailsTab from "../../components/ProfileComponents/FinancialDetailsTab";
 import NotificationsTab from "../../components/ProfileComponents/NotificationsTab";
 import LimitsTab from "../../components/ProfileComponents/LimitsTab";
+import HelpTab from "../../components/ProfileComponents/HelpTab";
 
 import {
   updateNotifications,
@@ -288,6 +289,9 @@ export function Profile({ route, navigation }: any) {
       }
       case "Set you limits": {
         return <LimitsTab cleanUpTabSelection={cleanUpTabSelection} />;
+      }
+      case "Help": {
+        return <HelpTab cleanUpTabSelection={cleanUpTabSelection} />;
       }
       default:
         return null;
@@ -728,7 +732,7 @@ export function Profile({ route, navigation }: any) {
                         Create ticket
                       </Text>
                     </View>
-                    <TouchableOpacity
+                    < 
                       onPress={() => setDropDownOpen(!dropDownOpen)}
                     >
                       <ArrowDown
@@ -738,7 +742,7 @@ export function Profile({ route, navigation }: any) {
                         size={18}
                         color={"black"}
                       />
-                    </TouchableOpacity>
+                    </>
                   </View>
                   {dropDownOpen && (
                     <Formik
@@ -1119,6 +1123,33 @@ export function Profile({ route, navigation }: any) {
                           </View>
                           <Typography fontSize={18} marginLeft={8}>
                             Limits
+                          </Typography>
+                        </View>
+                        <View style={{ paddingRight: 12 }}>
+                          <ArrowRightIcon color="#086afb" size={16} />
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                  <Seperator backgroundColor={vars["grey"]} width="100%" />
+
+                  <View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        handleShowTab("Help");
+                      }}
+                    >
+                      <View style={styles.buttonNavigationContainer}>
+                        <View style={styles.buttonNavigation}>
+                          <View>
+                            <Feather
+                              color="#086afb"
+                              size={18}
+                              name="life-buoy"
+                            />
+                          </View>
+                          <Typography fontSize={18} marginLeft={8}>
+                            Help
                           </Typography>
                         </View>
                         <View style={{ paddingRight: 12 }}>

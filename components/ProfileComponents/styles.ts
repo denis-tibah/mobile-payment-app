@@ -90,4 +90,11 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  containerButtonHelp: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 8,
+    paddingVertical: 14,
+  },
 });

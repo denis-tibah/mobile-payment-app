@@ -10,7 +10,6 @@ import { createNavigationContainerRef } from "@react-navigation/native";
 
 import AppNavigationContainer from "./navigation/AppNavigationContainer";
 
-
 export default function App() {
   // added by Aristos for deep linking
 

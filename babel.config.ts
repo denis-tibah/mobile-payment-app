@@ -7,12 +7,12 @@ module.exports = function (api) {
         {
           test: /\.(ts|tsx)$/,
           exclude: /node_modules/,
-          use: 'ts-loader',
+          use: "ts-loader",
         },
       ],
     },
     resolve: {
-      extensions: ['.tsx', '.ts', '.js'],
+      extensions: [".tsx", ".ts", ".js"],
     },
     plugins: [
       [
@@ -26,7 +26,7 @@ module.exports = function (api) {
           safe: false,
           allowUndefined: false,
           verbose: false,
-        }
+        },
       ],
     ],
   };

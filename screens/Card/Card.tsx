@@ -23,6 +23,7 @@ import {
   getCards,
   sendSmsShowCardVerification,
   setCardAsFrozen,
+  setIsCardTransactionShown,
   terminateCard,
 } from "../../redux/card/cardSlice";
 import {
@@ -63,6 +64,8 @@ export function Card({ navigation, route }: any) {
   const userID = userData?.id;
   const profile = useSelector((state: any) => state.profile?.profile);
   const userEmail = profile?.data.email;
+  const isCardTransactionShown = useSelector((state: RootState) => state?.card?.isCardTransactionShown);
+  console.log({ isCardTransactionShown });
   const [cardPin, setCardPin] = useState<string>("");
   const [remainingTime, setRemainingTime] = useState(30);
   const cardData = useSelector((state: RootState) => state?.card?.data);
@@ -79,8 +82,6 @@ export function Card({ navigation, route }: any) {
   const [isManagePaymentMethod, setIsManagePaymentMethod] = useState<boolean>(false);
   const [isShowPinActionPressed, setIsShowPinActionPressed] = useState<boolean>(false);
   const [isLostPinActionPressed, setIsLostPinActionPressed] = useState<boolean>(false);
-
-  const [showCardDetailOTP, setShowCardDetailOTP] = useState<number>(0);
   const [chosenCurrency, setChosenCurrency] = useState<string>("");
   // const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
   const [isEnrollingCard, setIsEnrollingCard] = useState<boolean>(false);
@@ -346,6 +347,7 @@ export function Card({ navigation, route }: any) {
   useEffect(() => {
     setIsloading(true);
     handleGetCards();
+    dispatch<any>(setIsCardTransactionShown(false));
   }, []);
 
   return (
@@ -487,9 +489,10 @@ export function Card({ navigation, route }: any) {
                     See Card Transactions
                   </Typography>
                 </View>
-                <TouchableOpacity style={{marginTop: 7}} onPress={() => 
-                  navigation.navigate('Transactions', {isCardTransactionsSelected: true})
-                  }>
+                <TouchableOpacity style={{marginTop: 7}} onPress={() => {
+                  dispatch<any>(setIsCardTransactionShown(true));
+                  navigation.navigate('Transactions');
+                }}>
                   <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
                 </TouchableOpacity>
               </View>

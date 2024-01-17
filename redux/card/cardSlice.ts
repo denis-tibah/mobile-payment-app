@@ -19,6 +19,7 @@ export interface CardState {
   error: boolean;
   primaryCardID?: string;
   errorMessage?: string;
+  isCardTransactionShown?: boolean;
 }
 
 const initialState: CardState = {
@@ -28,6 +29,7 @@ const initialState: CardState = {
   error: false,
   primaryCardID: undefined,
   errorMessage: undefined,
+  isCardTransactionShown: false,
 };
 
 export const cardSlice = createSlice({
@@ -37,11 +39,10 @@ export const cardSlice = createSlice({
     setPrimaryCardID: (state, action) => {
       state.primaryCardID = action.payload;
     },
+    setIsCardTransactionShown: (state, action) => {
+      state.isCardTransactionShown = action.payload;
+    },
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }),
   extraReducers: (builder) => {
     //enroll for card scheme
     builder.addCase(enrollforCardScheme.pending, (state) => {
@@ -238,4 +239,5 @@ export const terminateCard = createAsyncThunk(
 );
 
 export const { setPrimaryCardID } = cardSlice.actions;
+export const { setIsCardTransactionShown } = cardSlice.actions;
 export default cardSlice.reducer;

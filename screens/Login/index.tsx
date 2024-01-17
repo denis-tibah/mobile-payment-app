@@ -226,6 +226,7 @@ export function LoginScreen({ navigation }: any) {
 
   useEffect(() => {
     if (isErrorAccount) {
+      console.log({ errorAccount });
       setStatusMessage({
         header: `${errorAccount?.data?.code} Error`,
         body: errorAccount?.data?.message || errorAccount?.data?.status,
@@ -234,6 +235,7 @@ export function LoginScreen({ navigation }: any) {
       });
     }
     if (isErrorLogin) {
+      console.log({ errorLogin });
       setStatusMessage({
         header: `${errorLogin?.data?.code} Error`,
         body: errorLogin?.data?.message || errorLogin?.data?.status,

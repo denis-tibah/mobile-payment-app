@@ -57,6 +57,7 @@ export function Input({
   iconSize = 16,
   type = "text",
   value,
+  disabled,
   ...props
 }: any) {
   return (
@@ -67,6 +68,7 @@ export function Input({
         </View>
       )}
       <TextInput
+        editable={!disabled}
         style={input.input}
         value={value ? value.toString() : null}
         type={type}

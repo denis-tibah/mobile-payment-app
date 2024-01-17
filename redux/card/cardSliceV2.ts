@@ -98,7 +98,6 @@ export const cardsV2 = createApi({
         url: `/getcardsfinxpV2`,
         method: "GET",
       }),
-      invalidatesTags: ["cardsV2"] as any,
     }),
     freezeCard: builder.query({
       query: ({ freezeYN, account_id }) => ({
@@ -144,6 +143,7 @@ export const {
   useLazySendSmsLostCardVerificationQuery,
   useShowCardDetailsQuery,
   useLazyShowCardDetailsQuery,
+  useGetCardV2Query,
   useLazyGetCardV2Query,
   useLazyFreezeCardQuery,
   useLazyShowCardPinNumberQuery,

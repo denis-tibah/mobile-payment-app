@@ -54,7 +54,7 @@ export const CardView = ({
   const expiryMonth = (card?.expiration_date).split("-")[1] || "";
   const expiryYear = (card?.expiration_date).split("-")[0].slice(2,4)  || "";
   const profileData = useSelector((state: any) => state.profile?.profile)?.data;
-  console.log("profileData", profileData);
+
   return (
     <View style={styles.container}>
       <ImageBackground

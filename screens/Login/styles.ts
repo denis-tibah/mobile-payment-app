@@ -35,7 +35,6 @@ export const styles: any = StyleSheet.create<any>({
   },
   cardTitleHeader: {},
   cardTitleSubheader: {
-    paddingTop: 12,
     display: "flex",
     flexDirection: "row",
     justifyContent: "flex-start",

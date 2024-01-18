@@ -17,15 +17,14 @@ export function FixedBottomAction({
         isFullWidth && styles.fullWidth,
         isNoTopMargin && styles.noTopMargin,
         {
-          // drop shadow
-          // boxShadow: "0px 3px 6px rgba(0, 0, 0, 0.1)",
           shadowColor: "#0000001A",
-          shadowOpacity: 0.75,
+          shadowOpacity: 1,
           shadowRadius: 6,
           shadowOffset: {
             height: 2,
             width: 0,
           },
+          elevation: 5,
         }
       ]}
     >

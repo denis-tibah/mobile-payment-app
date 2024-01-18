@@ -333,11 +333,6 @@ const PayeeSendFunds = ({navigation, route}: any) => {
               >
                 Send
               </Button>
-              {/* <TouchableOpacity>
-                <Text>
-                  Send
-                </Text>
-              </TouchableOpacity> */}
             </View>
           </View>
         </KeyboardAwareScrollView>

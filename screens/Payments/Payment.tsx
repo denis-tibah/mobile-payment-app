@@ -26,7 +26,6 @@ import PinGPS from "../../assets/icons/PinGPS";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import IconQr from "../../assets/icons/IconsQr";
 import ArrowDownDotted from "../../assets/icons/ArrowDownDotted";
-import DropdownComponent from "../../components/CustomDropDown/CustomDropDown";
 
 export function Payment({ navigation }: any) {
   const dispatch = useDispatch();

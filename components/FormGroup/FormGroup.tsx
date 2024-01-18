@@ -1,5 +1,6 @@
 import { cloneElement, useEffect, useRef, useState } from "react";
 import { Picker, PickerIOS } from "@react-native-picker/picker";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Text, View, TextInput, Platform, Pressable } from "react-native";
 import Checkbox from "expo-checkbox";
 

@@ -65,8 +65,8 @@ function PayeeStack() {
         headerShown: false,
       }}
     >
-      <Payee.Screen name={screenNames.payeesList} component={PayeeScreen} />
-      <Payee.Screen name={screenNames.addPayee} component={AddPayeeScreen} />
+      <Payee.Screen name={screenNames.payments} component={PaymentScreen} />
+      <Payee.Screen name={screenNames.payeeSendFunds} component={PayeeSendFunds} />
     </Payee.Navigator>
   );
 }
@@ -80,9 +80,10 @@ function DashboardStack() {
         component={TransactionsScreen}
       />
       <Tab.Screen name={screenNames.card} component={CardScreen} />
-      <Tab.Screen name={screenNames.payments} component={PaymentScreen} />
+      <Tab.Screen name={screenNames.payments} component={PayeeStack} />
       <Tab.Screen name={screenNames.statements} component={StatementScreen} />
       <Tab.Screen name={screenNames.payees} component={PayeeScreen} />
+      {/* <Tab.Screen name={screenNames.payeeSendFunds} component={PayeeSendFunds} /> */}
       <Tab.Screen name="profile" component={ProfileScreen} />
     </TabNavigation>
   );
@@ -317,11 +318,11 @@ export default function AppNavigationWrapper() {
               component={DashboardStack}
               options={{ headerShown: false }}
             />
-            <Root.Screen
+            {/* <Root.Screen
               options={{ headerShown: false }}
               name={screenNames.payeeSendFunds}
               component={PayeeSendFunds}
-            />
+            /> */}
             <Root.Screen
               name="profile"
               component={ProfileScreen}

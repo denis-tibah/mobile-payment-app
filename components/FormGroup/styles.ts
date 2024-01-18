@@ -3,9 +3,9 @@ import vars from "../../styles/vars";
 export const textarea: any = StyleSheet.create({
   wrapper: {
     width: "100%",
-    height: 120,
+    height: 296,
     backgroundColor: "#f9f9f9",
-    borderRadius: 7,
+    borderRadius: 21,
     display: "flex",
     alignItems: "center",
     borderColor: vars["accent-blue"],
@@ -159,7 +159,7 @@ export const checkbox: any = StyleSheet.create({
     justifyContent: "center",
   },
   checkboxContainer: {
-    display: 'flex',
+    display: "flex",
     flexDirection: "row",
     marginLeft: 14,
   },

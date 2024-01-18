@@ -1,42 +1,27 @@
-import { useState, FC, useCallback, useRef, Fragment } from "react";
-import { StatusBar } from "expo-status-bar";
-import {
-  View,
-  ScrollView,
-  Pressable,
-  Image,
-  TouchableOpacity,
-  SafeAreaView,
-} from "react-native";
+import { useState, FC, useRef, Fragment } from "react";
+import { View, ScrollView, Pressable, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { useFormik } from "formik";
-import Spinner from "react-native-loading-spinner-overlay/lib";
 import DropDownPicker from "react-native-dropdown-picker";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { useFocusEffect } from "@react-navigation/native";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Feather from "react-native-vector-icons/Feather";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import RBSheet from "react-native-raw-bottom-sheet";
+import Spinner from "react-native-loading-spinner-overlay/lib";
 
 import { Seperator } from "../Seperator/Seperator";
 import ArrowRightIcon from "../../assets/icons/ArrowRight";
-import PigIcon from "../../assets/icons/Pig";
 import SquareQuestionMarkIcon from "../../assets/icons/SquareQuestionMark";
-import BusinessBagIcon from "../../assets/icons/BusinessBag";
 import FormGroup from "../FormGroup";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import Button from "../Button";
-import { financialDataTabSchema } from "../../utils/formikSchema";
-import { sourceOfWealth, employmentStatus } from "../../data/options";
-import { useCreateTicketRequestMutation } from "../../redux/profile/profileSliceV2";
+import { helpTabCreateTicketSchema } from "../../utils/formikSchema";
+import { ticketType } from "../../data/options";
+import { useCreateTicketFreshDeskMutation } from "../../redux/profile/profileSliceV2";
 import { RootState } from "../../store";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
 import Typography from "../Typography";
-import BottomSheetSwiper, {
-  BottomSheetRefProps,
-} from "../BottomSheetSwiper/BottomSheetSwiper";
+import SwipableBottomSheet from "../SwipableBottomSheet";
 
 interface IFinancialDetailsTab {
   cleanUpTabSelection: () => void;
@@ -49,6 +34,9 @@ const HelpTab: FC<IFinancialDetailsTab> = ({ cleanUpTabSelection }) => {
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const refRBSheet = useRef();
 
+  const [openListForTicketType, setOpenListForTicketType] =
+    useState<boolean>(false);
+
   const [statusMessage, setStatusMessage] = useState<{
     header: string;
     body: string;
@@ -56,16 +44,26 @@ const HelpTab: FC<IFinancialDetailsTab> = ({ cleanUpTabSelection }) => {
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
 
-  /* const [
-    createTicketMutation,
+  const [
+    createTicketFreshDesk,
     {
-      isLoading: isLoadingCreateTicketReq,
-      isError: isErrorCreateTicketReq,
-      isSuccess: isSuccessCreateTicketReq,
-      error: errorCreateTicketReq,
-      data: dataCreateTicketReq,
+      isLoading: isLoadingCreateTicketFreshDesk,
+      isError: isErrorCreateTicketFreshDesk,
+      isSuccess: isSuccessCreateTicketFreshDesk,
+      error: errorCreateTicketFreshDesk,
+      data: dataCreateTicketFreshDesk,
     },
-  ] = useCreateTicketRequestMutation(); */
+  ] = useCreateTicketFreshDeskMutation();
+  console.log(
+    "🚀 ~ isErrorCreateTicketFreshDesk:",
+    isErrorCreateTicketFreshDesk
+  );
+  console.log(
+    "🚀 ~ isSuccessCreateTicketFreshDesk:",
+    isSuccessCreateTicketFreshDesk
+  );
+  console.log("🚀 ~ errorCreateTicketFreshDesk:", errorCreateTicketFreshDesk);
+  console.log("🚀 ~ dataCreateTicketFreshDesk:", dataCreateTicketFreshDesk);
 
   const {
     handleSubmit,
@@ -76,9 +74,28 @@ const HelpTab: FC<IFinancialDetailsTab> = ({ cleanUpTabSelection }) => {
     handleBlur,
     setValues,
   } = useFormik({
-    initialValues: {},
-    validationSchema: financialDataTabSchema,
-    onSubmit: async ({}) => {},
+    initialValues: { type: "", ticketValue: "" },
+    validationSchema: helpTabCreateTicketSchema,
+    onSubmit: async ({ type, ticketValue }) => {
+      const bodyParams = {
+        type: "helpdesk issue Request",
+        dateSubmitted: new Date().toISOString(),
+        ticketValue: [
+          {
+            help: {
+              type,
+              value: ticketValue,
+            },
+          },
+        ],
+        receive_mail: profileData?.email,
+      };
+      createTicketFreshDesk({
+        bodyParams: bodyParams,
+        accessToken: userTokens?.access_token,
+        tokenZiyl: userTokens?.token_ziyl,
+      });
+    },
   });
 
   const onCloseModal = (): void => {
@@ -94,7 +111,7 @@ const HelpTab: FC<IFinancialDetailsTab> = ({ cleanUpTabSelection }) => {
     <Fragment>
       <ScrollView style={{}}>
         <View style={{ backgroundColor: "#ffff" }}>
-          {/* <Spinner visible={} /> */}
+          <Spinner visible={isLoadingCreateTicketFreshDesk} />
           <SuccessModal
             isOpen={statusMessage?.isOpen}
             title={statusMessage.header}
@@ -181,80 +198,141 @@ const HelpTab: FC<IFinancialDetailsTab> = ({ cleanUpTabSelection }) => {
           </Pressable>
         </View>
       </ScrollView>
-      <RBSheet
-        ref={refRBSheet}
+      <SwipableBottomSheet
+        rbSheetRef={refRBSheet}
         closeOnDragDown={true}
         closeOnPressMask={false}
-        height={600}
-        customStyles={{
-          wrapper: {
-            backgroundColor: "transparent",
-          },
-          container: {
-            backgroundColor: vars["grey"],
-            borderTopLeftRadius: 40,
-            borderTopRightRadius: 40,
-          },
-          draggableIcon: {
-            backgroundColor: "grey",
-            width: 100,
-          },
+        height={560}
+        wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+        containerStyles={{
+          backgroundColor: "#ffffff",
+          borderTopLeftRadius: 14,
+          borderTopRightRadius: 14,
+          elevation: 12,
+          shadowColor: "#52006A",
         }}
+        draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
       >
-        <SafeAreaView style={{ flex: 1 }}>
-          <ScrollView style={{}}>
-            <Pressable>
-              <View style={{ backgroundColor: vars["grey"] }}>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
-                <Typography>my text</Typography>
+        <View>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              paddingHorizontal: 22,
+              paddingVertical: 4,
+            }}
+          >
+            <MaterialCommunityIcons
+              color="#E7038E"
+              size={20}
+              name="ticket-outline"
+            />
+            <Typography fontSize={16} marginLeft={8} fontWeight={600}>
+              Create ticket
+            </Typography>
+          </View>
+          <View>
+            <Seperator
+              borderColor={vars["grey"]}
+              marginTop={18}
+              borderWidth={0.5}
+            />
+          </View>
+          <View
+            style={[
+              styles.formContainer,
+              { paddingLeft: 18, paddingRight: 18, paddingVertical: 26 },
+            ]}
+          >
+            <FormGroup
+              validationError={errors.type && touched.type && errors.type}
+            >
+              <View style={styles.dropdownWrapper}>
+                <View style={styles.dropDownIconContainerLeft}>
+                  <FontAwesome5
+                    size={20}
+                    color="#086AFB"
+                    name={"globe-europe"}
+                  />
+                </View>
+                <View>
+                  <DropDownPicker
+                    schema={{ label: "label", value: "value" }}
+                    onSelectItem={(value: any) => {
+                      const { value: type } = value;
+
+                      setValues({
+                        ...values,
+                        type: type,
+                      });
+                    }}
+                    listMode="MODAL"
+                    items={ticketType}
+                    value={values?.type}
+                    setOpen={setOpenListForTicketType}
+                    open={openListForTicketType}
+                    style={styles.dropdown}
+                    dropDownContainerStyle={styles.dropdownContainer}
+                    placeholder="Bug report"
+                    placeholderStyle={{
+                      color: vars["medium-grey"],
+                    }}
+                  />
+                </View>
+                <View style={styles.dropDownIconContainerRight}>
+                  <ArrowRightIcon size={16} color="blue" />
+                </View>
               </View>
-            </Pressable>
-          </ScrollView>
-        </SafeAreaView>
-      </RBSheet>
+            </FormGroup>
+            <Seperator
+              borderColor={vars["light-grey"]}
+              marginTop={16}
+              marginBottom={28}
+              borderWidth={0.5}
+            />
+            <View>
+              <FormGroup
+                validationError={
+                  errors.ticketValue &&
+                  touched.ticketValue &&
+                  errors.ticketValue
+                }
+              >
+                <FormGroup.TextArea
+                  keyboardType="default"
+                  returnKeyType={"done"}
+                  onChangeText={handleChange("ticketValue")}
+                  onBlur={handleBlur("ticketValue")}
+                  value={values.ticketValue}
+                  editable={values.ticketValue === "N/A" ? false : true}
+                  selectTextOnFocus={
+                    values.ticketValue === "N/A" ? false : true
+                  }
+                  placeholder="Type here your issue"
+                />
+              </FormGroup>
+            </View>
+          </View>
+          <View style={styles.footerContent}>
+            <View style={styles.downloadBtnMain}>
+              <Button
+                color="light-pink"
+                leftIcon={
+                  <MaterialCommunityIcons
+                    color="#E7038E"
+                    size={20}
+                    name="send-outline"
+                  />
+                }
+                onPress={handleSubmit}
+              >
+                Send ticket
+              </Button>
+            </View>
+          </View>
+        </View>
+      </SwipableBottomSheet>
     </Fragment>
   );
 };

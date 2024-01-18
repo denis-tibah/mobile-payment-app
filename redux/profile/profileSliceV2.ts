@@ -96,6 +96,29 @@ export const profileV2 = createApi({
         };
       },
     }),
+    createTicketFreshDesk: builder.mutation({
+      query: ({
+        bodyParams,
+        accessToken,
+        tokenZiyl,
+      }: {
+        bodyParams: any;
+        accessToken: any;
+        tokenZiyl: any;
+      }) => {
+        console.log("🚀 ~ bodyParams:", bodyParams);
+        return {
+          url: "/createticketfinxpfreshdesk",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            AuthorizationFinxp: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${tokenZiyl}`,
+          },
+          body: bodyParams,
+        };
+      },
+    }),
   }),
 });
 
@@ -104,4 +127,5 @@ export const {
   useCreateTicketRequestMutation,
   useUpdatePasswordMutation,
   useUpdateNotificationsMutation,
+  useCreateTicketFreshDeskMutation,
 } = profileV2;

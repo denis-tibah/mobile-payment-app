@@ -28,7 +28,7 @@ const initialState = {
     error: false,
     errorMessage: "",
   },
-  biometric: {  
+  biometric: {
     loading: false,
     error: false,
     errorMessage: "",
@@ -101,7 +101,6 @@ export const profileSlice = createSlice({
       state.biometric.errorMessage = "Error";
     });
 
-
     // udpate security
     builder.addCase(updateSecurity.pending, (state) => {
       state.security.loading = true;
@@ -146,28 +145,30 @@ export const updateAddress = createAsyncThunk(
   }
 );
 
-export const createTicket = createAsyncThunk("createTicket", async (params:any) => {
-  const { data } = await api.post("/createticketfinxpfreshdesk", params);
-  return data;
-});
+export const createTicket = createAsyncThunk(
+  "createTicket",
+  async (params: any) => {
+    const { data } = await api.post("/createticketfinxpfreshdesk", params);
+    return data;
+  }
+);
 
 export const updateNotifications = createAsyncThunk(
   "updateNotifications",
-  async (params:{email:string, enableYN:string}) => {
+  async (params: { email: string; enableYN: string }) => {
     const { data } = await api.post("/enablenotifications", params);
     return data;
   }
 );
 
-export const updateBiometric= createAsyncThunk(
+export const updateBiometric = createAsyncThunk(
   "updateBiometric",
-  async (params:{email:string, enableYN:string}) => {
+  async (params: { email: string; enableYN: string }) => {
     const { data } = await api.post("/updateBiometric", params);
     // console.log("****enable biometric *********", data);
     return data;
   }
 );
-
 
 export const updateSecurity = createAsyncThunk(
   "changePassword",

@@ -150,3 +150,19 @@ export const countries = [
   { label: "Spain", value: "ESP" },
   { label: "Netherlands", value: "NLD" },
 ];
+
+export const ticketType = [
+  { label: "Technical", value: "technical" },
+  { label: "Access", value: "access" },
+  { label: "Payment", value: "payment" },
+  {
+    label: "Beneficiary",
+    value: "beneficiary",
+  },
+  { label: "Card", value: "card" },
+  { label: "Profile", value: "profile" },
+  {
+    label: "Transactions",
+    value: "transactions",
+  },
+];

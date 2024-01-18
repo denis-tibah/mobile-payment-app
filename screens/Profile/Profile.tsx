@@ -1053,7 +1053,11 @@ export function Profile({ route, navigation }: any) {
                               name={"lock-outline"}
                             />
                           </View>
-                          <Typography fontSize={18} marginLeft={8}>
+                          <Typography
+                            fontSize={18}
+                            fontWeight={600}
+                            marginLeft={8}
+                          >
                             Security
                           </Typography>
                         </View>
@@ -1075,7 +1079,11 @@ export function Profile({ route, navigation }: any) {
                           <View>
                             <FinancialDataGraphIcon color="#086afb" size={16} />
                           </View>
-                          <Typography fontSize={18} marginLeft={8}>
+                          <Typography
+                            fontSize={18}
+                            fontWeight={600}
+                            marginLeft={8}
+                          >
                             Financial data
                           </Typography>
                         </View>
@@ -1098,7 +1106,11 @@ export function Profile({ route, navigation }: any) {
                           <View>
                             <Feather color="#086afb" size={16} name="bell" />
                           </View>
-                          <Typography fontSize={18} marginLeft={8}>
+                          <Typography
+                            fontSize={18}
+                            fontWeight={600}
+                            marginLeft={8}
+                          >
                             Notifications
                           </Typography>
                         </View>
@@ -1121,7 +1133,11 @@ export function Profile({ route, navigation }: any) {
                           <View>
                             <LimitIcon color="#086afb" size={18} />
                           </View>
-                          <Typography fontSize={18} marginLeft={8}>
+                          <Typography
+                            fontSize={18}
+                            fontWeight={600}
+                            marginLeft={8}
+                          >
                             Limits
                           </Typography>
                         </View>
@@ -1148,7 +1164,11 @@ export function Profile({ route, navigation }: any) {
                               name="life-buoy"
                             />
                           </View>
-                          <Typography fontSize={18} marginLeft={8}>
+                          <Typography
+                            fontSize={18}
+                            fontWeight={600}
+                            marginLeft={8}
+                          >
                             Help
                           </Typography>
                         </View>
@@ -1175,7 +1195,11 @@ export function Profile({ route, navigation }: any) {
                               name={"logout"}
                             />
                           </View>
-                          <Typography fontSize={18} marginLeft={8}>
+                          <Typography
+                            fontSize={18}
+                            fontWeight={600}
+                            marginLeft={8}
+                          >
                             Logout
                           </Typography>
                         </View>
@@ -1197,7 +1221,9 @@ export function Profile({ route, navigation }: any) {
                       <View style={styles.btnBack}>
                         <ArrowBackIcon color="blue" size={14} />
                       </View>
-                      <Typography fontSize={16}>{tabSelection}</Typography>
+                      <Typography fontSize={18} fontWeight={600}>
+                        {tabSelection}
+                      </Typography>
                     </View>
                   </TouchableOpacity>
                 </View>

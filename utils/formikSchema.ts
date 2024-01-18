@@ -378,6 +378,11 @@ const limitsTabSchema = Yup.object({
   monthly: Yup.string().notRequired(),
 });
 
+const helpTabCreateTicketSchema = Yup.object({
+  type: Yup.string().required("Required"),
+  ticketValue: Yup.string().required("Required"),
+});
+
 export {
   addressDetailsSchema,
   financialDetailsSchema,
@@ -390,4 +395,5 @@ export {
   securityTabSchema,
   financialDataTabSchema,
   limitsTabSchema,
+  helpTabCreateTicketSchema,
 };

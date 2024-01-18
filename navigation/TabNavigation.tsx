@@ -40,7 +40,7 @@ export default function TabNavigation({ children }: any) {
             }
             if (route.name === screenNames.payments) {
               return (
-                <PaymentIcon size={35} color={focused ? "pink" : "soft-pink"} />
+                <PaymentIcon size={30} color={focused ? "pink" : "soft-pink"} />
               );
             }
             if (route.name === screenNames.statements) {

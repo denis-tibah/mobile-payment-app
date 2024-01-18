@@ -63,18 +63,49 @@ export const CardView = ({
         imageStyle={{ borderRadius: 8, height: 225, width: 340 }}
         source={cardImage}
       >
-        <Text style={styles.panTitle}>Card Number</Text>
-        <Text style={styles.panText}>{pan}</Text>
-        <Text style={styles.cardHolder}>Card holder</Text>
-        <Text style={styles.cardHolderName}>{profileData.first_name} {profileData.last_name}</Text>
-        <Text style={styles.expiryDateTitle}>Expiry Date</Text>
-        <Text style={styles.expiryDate}>{expiryMonth}/{expiryYear}</Text>
+        <View style={{width: '73%'}}>
+          <Text style={styles.panTitle}>Card Number</Text>
+          <Text style={styles.panText}>{pan}</Text>
+        </View>
+        <View style={styles.cardHolderAndExpiryDateContainer}>
+          <View>
+            <Text style={styles.cardHolder}>Card holder</Text>
+            <Text style={styles.cardHolderName}>{profileData.first_name} {profileData.last_name}</Text>
+          </View>
+          <View>
+            <Text style={styles.expiryDateTitle}>Expiry Date</Text>
+            <Text style={styles.expiryDate}>{expiryMonth}/{expiryYear}</Text>
+          </View>
+        </View>
       </ImageBackground>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  cardHolderAndExpiryDateContainer: {
+    width: '73%',
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 45,
+  },
+  panTitle: {
+    color: "rgba(255, 255, 255, 0.5)",
+    fontSize: 11,
+    fontWeight: "600",
+    marginTop: 25,
+  },
+  panText: {
+    color: "#FFF",
+    fontSize: 20,
+    fontWeight: "400",
+    marginTop: -3,
+  },
   cardContainer: {
     height: 225,
     width: 340,
@@ -82,50 +113,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  panTitle: {
-    marginLeft:-60,
-    color: "#FFF",
-    fontSize: 12,
-    fontWeight: "bold",
-    marginTop: 46,
-  },
-  panText: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginLeft:40,
-    marginTop: -3,
-  },
   cardHolder: {
-    marginLeft:-170,
-    color: "#FFF",
-    fontSize: 12,
-    fontWeight: "bold",
-    marginTop: 45,
+    color: "rgba(255, 255, 255, 0.5)",
+    fontSize: 11,
+    fontWeight: "600",
   },
   cardHolderName: {
-    marginLeft: -140,
     color: "#FFF",
-    fontSize: 12,
-    fontWeight: "bold",
+    fontSize: 18,
+    fontWeight: "400",
     marginTop: -5,
   },
   expiryDateTitle: {
-    marginLeft:80,
-    color: "#FFF",
-    fontSize: 12,
-    fontWeight: "bold",
-    marginTop: -29,
+    color: "rgba(255, 255, 255, 0.5)",
+    fontSize: 11,
+    fontWeight: "600",
   },
   expiryDate: {
-    marginLeft:80,
     color: "#FFF",
-    fontSize: 14,
-    fontWeight: "bold",
-    marginTop: -5,
+    fontSize: 18,
+    fontWeight: "400",
   },
-  container: {
-    alignItems: "center",
-    justifyContent: "center"
-  }
 });

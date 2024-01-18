@@ -16,6 +16,16 @@ export function FixedBottomAction({
         smallMargin && styles.smallMargin,
         isFullWidth && styles.fullWidth,
         isNoTopMargin && styles.noTopMargin,
+        {
+          shadowColor: "#0000001A",
+          shadowOpacity: 1,
+          shadowRadius: 6,
+          shadowOffset: {
+            height: 2,
+            width: 0,
+          },
+          elevation: 5,
+        }
       ]}
     >
       {children}

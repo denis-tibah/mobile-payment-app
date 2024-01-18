@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Alert, Pressable, View, Switch } from "react-native";
+import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import * as LocalAuthentication from "expo-local-authentication";
@@ -377,7 +378,7 @@ export function LoginScreen({ navigation }: any) {
                 </Pressable>
               </View>
             </View>
-            <Seperator marginBottom={36} backgroundColor={vars["grey"]} />
+            {/* <Seperator marginBottom={36} backgroundColor={vars["grey"]} /> */}
             <View>
               <View style={styles.cardBody}>
                 <View>
@@ -438,10 +439,10 @@ export function LoginScreen({ navigation }: any) {
                     <Switch
                       value={isFaceId}
                       trackColor={{
-                        false: "#767577",
-                        true: "#81b0ff",
+                        false: "#81b0ff",
+                        true: "#767577",
                       }}
-                      thumbColor={isFaceId ? "white" : vars["light-blue"]}
+                      thumbColor={isFaceId ? "white" : vars["shaded-grey"]}
                       style={{ marginTop: -24 }}
                       ios_backgroundColor="#3e3e3e"
                       onValueChange={handleChangeFaceId}
@@ -449,12 +450,12 @@ export function LoginScreen({ navigation }: any) {
                   </View>
                 </View>
               ) : null}
-              <FixedBottomAction rounded isFullWidth isNoTopMargin>
+              <FixedBottomAction rounded isFullWidth isNoTopMargin style={{backgroundColor: '#ACACAC'}}>
                 <View
                   style={{
                     width: "100%",
                     paddingLeft: 12,
-                    paddingRight: 12,
+                    paddingRight: 12
                   }}
                 >
                   <Button
@@ -463,7 +464,7 @@ export function LoginScreen({ navigation }: any) {
                     disabled={isLoadingLogin || isLoadingAccount}
                     color="light-pink"
                     onPress={handleSubmit}
-                    leftIcon={<ProfileIcon size={14} />}
+                    leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
                   >
                     Submit
                   </Button>

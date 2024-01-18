@@ -17,6 +17,8 @@ export const styles: any = StyleSheet.create<any>({
   },
   cardTitle: {
     paddingTop: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     paddingBottom: 8,
     paddingLeft: 24,
     paddingRight: 24,
@@ -33,7 +35,7 @@ export const styles: any = StyleSheet.create<any>({
   },
   cardTitleHeader: {},
   cardTitleSubheader: {
-    // paddingTop: 12,
+    paddingTop: 12,
     display: "flex",
     flexDirection: "row",
     justifyContent: "flex-start",

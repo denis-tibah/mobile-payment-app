@@ -26,7 +26,6 @@ import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { Image } from "react-native";
 import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
 import CloudMessage from "../../assets/icons/CloudMessage";
-import FileUploadExample from "../Payments/Dummy";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const currencyOptions = [

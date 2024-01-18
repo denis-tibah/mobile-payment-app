@@ -78,7 +78,6 @@ export function Transactions({ navigation, route }: any) {
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const isCardTransactionShown = useSelector((state: RootState) => state?.card?.isCardTransactionShown);
-  console.log({ isCardTransactionShown });
 
   const [getTransactionsWithFilter, { 
     data: transactionsWithFilter, 

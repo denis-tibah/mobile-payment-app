@@ -1,9 +1,9 @@
-import EuroIcon from "../../assets/icons/Euro";
 import { View, StyleSheet, TouchableOpacity, Text, Dimensions } from "react-native";
 import { useSelector } from "react-redux";
 import { AntDesign } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
+import Euro from "../../assets/icons/Euro";
 import CheckBox from "expo-checkbox";
 import { useFormik } from "formik";
 import MainLayout from "../../layout/Main";
@@ -252,12 +252,12 @@ const PayeeSendFunds = ({navigation, route}: any) => {
                   placeholder="Amount to send"
                   iconColor="blue"
                   style={{height: 52}}
-                  icon={<EuroIcon size={22}/>}
+                  icon={<Euro size={22} />}
                 />
               </FormGroup>
               <FormGroup
                 validationError={
-                  errors.amount && touched.amount && errors.amount
+                  errors.reason && touched.reason && errors.reason
                 }
               >
                 <FormGroup.Input
@@ -279,7 +279,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
             <Divider style={{marginVertical: 15}}/>
             <FormGroup
               validationError={
-                errors.reason && touched.reason && errors.reason
+                errors.purpose && touched.purpose && errors.purpose
               }
             >
               <FormGroup.TextArea

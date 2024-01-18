@@ -5,7 +5,7 @@ export function Euro({ size = 14, color }:any) {
     <Svg
       width={size}
       height={size}
-      viewBox="-6.4 -6.4 76.80 76.80"
+      viewBox="0 0 62.2 62.2"
       stroke={getColor(color) || color}
       strokeWidth="3.5200000000000005"
       fill="none"

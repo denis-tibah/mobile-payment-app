@@ -50,6 +50,7 @@ export const payeeSlice = createApi({
       query: ({
         access_token,
         token_ziyl,
+        attached_file,
         recipientFirstname,
         recipientLastname,
         debtor_iban,
@@ -67,6 +68,7 @@ export const payeeSlice = createApi({
           amount,
           currency,
           reason,
+          attached_file,
         },
         headers: {
           "Content-Type": "application/json",

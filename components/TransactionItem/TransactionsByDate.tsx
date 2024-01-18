@@ -49,8 +49,6 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
   //   await printAsync({ uri: pdfUri });
   // };
 
-  // create a box from material ui showing the name and amount of each transactions
-
   const TransactionByDate = ({ transactions }: any) => {
     const [openTransactionIndex, setOpenTransactionIndex] = useState<
       number | null
@@ -232,10 +230,12 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
             }}
           >
             <CalenderEmptyIcon size={14} color="blue" />
-            <Typography fontSize={14} textAlign="left">
-              {" "}
-              {getFormattedDate(shownData.date)}
-            </Typography>
+            <View style={{top: -4, paddingLeft: 3}}>
+              <Typography fontSize={14} textAlign="left">
+                {" "}
+                {getFormattedDate(shownData.date)}
+              </Typography>
+            </View>
           </Box>
           <Box
             style={{ 

@@ -2,6 +2,8 @@ import EuroIcon from "../../assets/icons/Euro";
 import { View, StyleSheet, TouchableOpacity, Text, Dimensions } from "react-native";
 import { useSelector } from "react-redux";
 import { AntDesign } from '@expo/vector-icons';
+import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system';
 import CheckBox from "expo-checkbox";
 import { useFormik } from "formik";
 import MainLayout from "../../layout/Main";
@@ -23,7 +25,9 @@ import LoadingScreen from "../../components/Loader/LoadingScreen";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { Image } from "react-native";
 import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
-
+import CloudMessage from "../../assets/icons/CloudMessage";
+import FileUploadExample from "../Payments/Dummy";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const currencyOptions = [
   { label: "EUR", value: "EUR" },
@@ -56,6 +60,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
   const [isDropDownCurrencyOpen, setIsDropDownCurrencyOpen] = useState<boolean>(false);
   const [isOTPModalOpen, setIsOTPModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [base64File, setBase64File] = useState<string>("");
   const [isPaymentResultBottomSheetOpen, setIsPaymentResultBottomSheetOpen] = useState<boolean>(false);
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState<boolean>(false);
   const [selectedCurrency, setSelectedCurrency] = useState<string>('EUR');
@@ -113,6 +118,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
       reason: paymentValues.reason,
       access_token: userTokens?.access_token,
       token_ziyl: userTokens?.token_ziyl,});
+      
     initiatePayment({
       // isManualProcessing: paymentValues.isManualProcessing,
       amount: paymentValues.amount,
@@ -123,6 +129,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
       reason: paymentValues.reason,
       access_token: userTokens?.access_token,
       token_ziyl: userTokens?.token_ziyl,
+      attached_file: paymentValues.attachedFile,
     })
     .unwrap()
     .then((res) => {
@@ -162,19 +169,36 @@ const PayeeSendFunds = ({navigation, route}: any) => {
   } = useFormik({
     initialValues: {
       amount: '',
-      currency: '',
+      currency: 'EUR',
+      purpose: '',
       isManualProcessing: false,
-      reason: ''
+      reason: '',
     },
     onSubmit: (values: any) => {
-      const { currency } = values;
-      handleInitiatepayment({
-        ...values,
-        currency: currency ? currency : selectedCurrency,
-      });
+      handleInitiatepayment(values);
     },
     validationSchema: validationSchema,
   });
+
+  const pickDocument = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: 'application/pdf', // file types
+      });
+      if (result.type === 'success') {
+        const { uri } = result;
+        const fileContent = await FileSystem.readAsStringAsync(uri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        setValues({
+          ...values,
+          attachedFile: fileContent,
+        });
+      }
+    } catch (err) {
+      console.error('Error picking document:', err);
+    }
+  };
 
   return (
       <MainLayout>
@@ -192,131 +216,132 @@ const PayeeSendFunds = ({navigation, route}: any) => {
           loading={false}
           handleResendSMSVerificationCode={handleResendSMSVerificationCode}
         />
-        <View style={{height: '100%', backgroundColor: 'white'}}>
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <TouchableOpacity
-                style={styles.headerLeftIcon}
-                onPress={() => navigation.navigate(screenNames.payments)}
-              >
-                <ArrowLeftLine size={14} color='blue'/>
-              </TouchableOpacity>
+        <KeyboardAwareScrollView style={{height: '100%', backgroundColor: 'white'}}>
+          <View>
+            <View style={styles.header}>
+              <View style={styles.headerLeft}>
+                <TouchableOpacity
+                  style={styles.headerLeftIcon}
+                  onPress={() => navigation.navigate(screenNames.payments)}
+                >
+                  <ArrowLeftLine size={14} color='blue'/>
+                </TouchableOpacity>
+                <View>
+                  <Text style={{fontSize: 14}}>{receiverName}</Text>
+                  <Text style={{fontSize: 12, color: vars['shade-grey']}}>{receiverIban}</Text>
+                </View>
+              </View>
               <View>
-                <Text style={{fontSize: 14}}>{receiverName}</Text>
-                <Text style={{fontSize: 12, color: vars['shade-grey']}}>{receiverIban}</Text>
+                <Text>Your Balance</Text>
+                <Text style={{fontSize: 12, color: vars['shade-grey']}}>€ {accountBalance}</Text>
               </View>
             </View>
-            <View>
-              <Text>Your Balance</Text>
-              <Text style={{fontSize: 12, color: vars['shade-grey']}}>€ {accountBalance}</Text>
-            </View>
-          </View>
-          <View style={{paddingVertical: 15, backgroundColor: '#fff'}}>
-            <Divider style={{marginBottom: 25}}/>
-            <FormGroup
-              validationError={
-                errors.amount && touched.amount && errors.amount
-              }
-            >
-              <FormGroup.Input
-                keyboardType="text"
-                name="amount"
-                onChangeText={handleChange("amount")}
-                onBlur={handleBlur("amount")}
-                value={values.amount}
-                placeholderTextColor={vars["ios-default-text"]}
-                placeholder="Amount to send"
-                iconColor="blue"
-                style={{height: 52}}
-                icon={<EuroIcon />}
-              />
-            </FormGroup>
-            <View style={styles.dropdown}>
-              <DropDownPicker
-                schema={{ label: "label", value: "value" }}
-                onSelectItem={(value: any) => {
-                  const { value: currency } = value;
-                  setValues({
-                    ...values,
-                    currency: currency,
-                  });
-                }}
-                listMode="SCROLLVIEW"
-                placeholder="Currency"
-                items={currencyOptions}
-                value={selectedCurrency}
-                setValue={setSelectedCurrency}
-                setOpen={setIsDropDownCurrencyOpen}
-                open={isDropDownCurrencyOpen}
-                style={styles.dropdownContainer}
-                dropDownContainerStyle={{
-                  borderWidth: 0,
-                }}
-                dropDownDirection="TOP"
-              />
-            </View>
-          <Divider style={{marginVertical: 15}}/>
-          {/* purpose of your transfer input */}
-          <Text style={{fontSize: 12, color: vars['accent-grey'], alignSelf: 'center'}}>Please provide supporting information for all transfers above $5,000</Text>
-          <Divider style={{marginVertical: 5}}/>
-          <FormGroup
-            validationError={
-              errors.reason && touched.reason && errors.reason
-            }
-          >
-            <FormGroup.TextArea
-              keyboardType="default"
-              name="reason"
-              returnKeyType={"done"}
-              onChangeText={handleChange("reason")}
-              onBlur={handleBlur("reason")}
-              value={values.postcode}
-              placeholderTextColor={vars["ios-default-text"]}
-              placeholder="Purpose of your transfer"
-              iconColor="blue"
-              editable={values.reason === "N/A" ? false : true}
-              icon={<StatementsIcon size={16} />}
-            />
-            </FormGroup>
-            <View style={{paddingHorizontal: 16}}>
-              <TouchableOpacity style={{display: 'flex', flexDirection: 'row'}}>
-                <AntDesign name="pluscircleo" size={42} color={vars['accent-blue']} />
-                <Text style={{color: vars['shade-grey'], top: 10, paddingLeft: 15}}>Attach a file</Text>
-              </TouchableOpacity>
-            </View>
-            <Divider style={{marginVertical: 15}}/>
-            <View style={{display: 'flex', flexDirection: 'row'}}>
-              <FormGroup>
-                <FormGroup.CheckboxUI
-                  label="For manual processing outside my limits"
-                  value={values?.isManualProcessing}
-                  color={
-                    values?.isManualProcessing
-                      ? vars["accent-blue"]
-                      : undefined
-                  }
-                  onValueChange={() => {
-                    setFieldValue(
-                      "isManualProcessing",
-                      !values?.isManualProcessing
-                    );
-                  }}
+            <View style={{paddingVertical: 15, backgroundColor: '#fff'}}>
+              <Divider style={{marginBottom: 25}}/>
+              <FormGroup
+                validationError={
+                  errors.amount && touched.amount && errors.amount
+                }
+              >
+                <FormGroup.Input
+                  keyboardType="text"
+                  name="amount"
+                  onChangeText={handleChange("amount")}
+                  onBlur={handleBlur("amount")}
+                  value={values.amount}
+                  placeholderTextColor={vars["ios-default-text"]}
+                  placeholder="Amount to send"
+                  iconColor="blue"
+                  style={{height: 52}}
+                  icon={<EuroIcon size={22}/>}
                 />
               </FormGroup>
-              <Text style={{backgroundColor: vars['shade-grey']}}>{` `}</Text>
+              <FormGroup
+                validationError={
+                  errors.amount && touched.amount && errors.amount
+                }
+              >
+                <FormGroup.Input
+                  keyboardType="text"
+                  name="reason"
+                  onChangeText={handleChange("reason")}
+                  onBlur={handleBlur("reason")}
+                  value={values.reason}
+                  placeholderTextColor={vars["ios-default-text"]}
+                  placeholder="Reference"
+                  iconColor="blue"
+                  style={{height: 52}}
+                  icon={<CloudMessage />}
+                />
+              </FormGroup>
+            <Divider style={{marginVertical: 15}}/>
+            {/* purpose of your transfer input */}
+            <Text style={{fontSize: 12, color: vars['accent-grey'], alignSelf: 'center'}}>Please provide supporting information for all transfers above $5,000</Text>
+            <Divider style={{marginVertical: 15}}/>
+            <FormGroup
+              validationError={
+                errors.reason && touched.reason && errors.reason
+              }
+            >
+              <FormGroup.TextArea
+                keyboardType="default"
+                name="purpose"
+                returnKeyType={"done"}
+                onChangeText={handleChange("purpose")}
+                onBlur={handleBlur("purpose")}
+                value={values.postcode}
+                placeholderTextColor={vars["ios-default-text"]}
+                placeholder="Purpose of your transfer"
+                iconColor="blue"
+                editable={values.reason === "N/A" ? false : true}
+                icon={<StatementsIcon size={16} />}
+              />
+              </FormGroup>
+              <View style={{paddingHorizontal: 16}}>
+                <TouchableOpacity onPress={pickDocument} style={{display: 'flex', flexDirection: 'row'}}>
+                  <AntDesign name="pluscircleo" size={42} color={vars['accent-blue']} />
+                  <Text style={{color: vars['shade-grey'], top: 10, paddingLeft: 15}}>Attach a file</Text>
+                </TouchableOpacity>
+              </View>
+              <Divider style={{marginVertical: 15}}/>
+              <View style={{display: 'flex', flexDirection: 'row'}}>
+                <FormGroup>
+                  <FormGroup.CheckboxUI
+                    label="For manual processing outside my limits"
+                    value={values?.isManualProcessing}
+                    color={
+                      values?.isManualProcessing
+                        ? vars["accent-blue"]
+                        : undefined
+                    }
+                    onValueChange={() => {
+                      setFieldValue(
+                        "isManualProcessing",
+                        !values?.isManualProcessing
+                      );
+                    }}
+                  />
+                </FormGroup>
+                <Text style={{backgroundColor: vars['shade-grey']}}>{` `}</Text>
+              </View>
+            </View>
+            <View style={{ bottom: windowHeight * .01 - 10, width: '100%'}}>
+              <Button
+                onPress={handleSubmit}
+                color="light-pink"
+                style={{width: '80%', alignSelf: 'center'}}
+                leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
+              >
+                Send
+              </Button>
+              {/* <TouchableOpacity>
+                <Text>
+                  Send
+                </Text>
+              </TouchableOpacity> */}
             </View>
           </View>
-          <View style={{ bottom: windowHeight / 8, position: 'absolute', width: '100%'}}>
-            <Button
-              onPress={handleSubmit}
-              color="light-pink"
-              style={{width: '80%', alignSelf: 'center'}}
-              leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
-            >
-              Send
-            </Button>
-          </View>
-        </View>
+        </KeyboardAwareScrollView>
         <BottomSheet
           isVisible={isPaymentResultBottomSheetOpen}
           onClose={() => setIsPaymentResultBottomSheetOpen(false)}

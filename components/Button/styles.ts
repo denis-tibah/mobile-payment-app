@@ -30,6 +30,9 @@ export const styles: any = StyleSheet.create({
   leftIcon: {
     marginRight: 8,
   },
+  isTextAtEnd: {
+    justifyContent: "flex-end",
+  },
 
   // button background color
   blue: {

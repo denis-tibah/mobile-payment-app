@@ -25,6 +25,7 @@ import { AppDispatch } from "../../store";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
 import { registerForPushNotificationsAsync } from "../PushNotification";
+import WholeContainer from "../../layout/WholeContainer";
 
 interface ILoginDetails {
   handleNextStep: () => void;
@@ -54,7 +55,6 @@ const LoginDetails: FC<ILoginDetails> = ({
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
   const [emailToken, setEmailToken] = useState<string>("");
-  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
 
   const dispatch = useDispatch<AppDispatch>();
   const registration = useSelector((state: any) => state.registration);
@@ -255,6 +255,11 @@ const LoginDetails: FC<ILoginDetails> = ({
                 />
               </FormGroup>
             </View>
+            <Seperator
+              backgroundColor={vars["input-light-grey"]}
+              marginTop={8}
+              marginBottom={20}
+            />
             <View>
               <FormGroup
                 validationError={
@@ -323,18 +328,13 @@ const LoginDetails: FC<ILoginDetails> = ({
                 />
               </FormGroup>
             </View>
+            <Seperator
+              backgroundColor={vars["input-light-grey"]}
+              marginTop={8}
+              marginBottom={20}
+            />
             {isValidEmail ? (
               <View>
-                {/* <View
-                  style={[styles.emailVerifiedContainer, styles.emailContainer]}
-                >
-                  <Text style={styles.emailVerifiedText}>
-                    Email Verified required
-                  </Text>
-                  <Text style={styles.emailVerifiedText}>
-                    We have send you a verification link to your email
-                  </Text>
-                </View> */}
                 {!isChangeEmail ? (
                   <View style={styles.emailVerifiedContainer}>
                     <TouchableOpacity
@@ -388,56 +388,30 @@ const LoginDetails: FC<ILoginDetails> = ({
                 ) : null}
               </View>
             ) : null}
-            <FixedBottomAction rounded>
-              <Button
-                loading={isLoadingLogin}
-                disabled={isLoadingLogin}
-                color="light-pink"
-                onPress={handleSubmit}
-                leftIcon={<ArrowRightLong size={14} />}
+
+            <FixedBottomAction rounded isNoPaddingLeft isNoInlineStyle>
+              <View
+                style={{
+                  width: "100%",
+                }}
               >
-                {isLoadingLogin ? "Authenticating..." : "Continue"}
-              </Button>
+                <WholeContainer>
+                  <Button
+                    isTextAtEnd
+                    loading={isLoadingLogin}
+                    disabled={isLoadingLogin}
+                    color="light-pink"
+                    onPress={handleSubmit}
+                    rightIcon={<ArrowRightLong size={14} />}
+                  >
+                    {isLoadingLogin ? "Authenticating..." : "Next"}
+                  </Button>
+                </WholeContainer>
+              </View>
             </FixedBottomAction>
           </View>
         </View>
       </View>
-      {/* {isOpenModal ? (
-        <ModalBottomSheet
-          isOpen={isOpenModal}
-          hasNoHeaderPadding
-          contentHeight={450}
-        >
-          <View style={styles.headerContainer}>
-            <View style={styles.headerWrapper}>
-              <CheckIcon color="white" size={18} />
-              <Typography
-                color="#FFFF"
-                fontSize={18}
-                marginLeft={6}
-                fontWeight={600}
-              >
-                Email address verified
-              </Typography>
-            </View>
-          </View>
-          <View style={styles.headerWrapper}>
-            <Button
-              color={"green"}
-              onPress={() => setIsOpenModal(false)}
-              style={styles.buttonOK}
-            >
-              <Text>OK</Text>
-            </Button>
-          </View>
-          <View style={styles.imageWrapper}>
-            <Image
-              source={require('("../../../assets/images/verified.png')}
-              style={styles.image}
-            />
-          </View>
-        </ModalBottomSheet>
-      ) : null} */}
     </Fragment>
   );
 };

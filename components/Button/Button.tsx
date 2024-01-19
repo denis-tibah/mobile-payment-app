@@ -12,6 +12,7 @@ export function Button({
   selected = false,
   loading = false,
   disabled = false,
+  isTextAtEnd = false,
   style,
 }: any) {
   return (
@@ -24,6 +25,7 @@ export function Button({
           (rightIcon || leftIcon) && styles.buttonIconContainer,
           color && styles[color],
           selected && styles[`selected-${color}`],
+          isTextAtEnd && styles.isTextAtEnd,
         ]}
       >
         {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
@@ -32,7 +34,7 @@ export function Button({
             styles.baseText,
             color && styles[`text-${color}`],
             selected && styles[`text-selected-${color}`],
-            withLine && styles.withLineText
+            withLine && styles.withLineText,
           ]}
         >
           {children}

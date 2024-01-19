@@ -25,6 +25,7 @@ import Verifications from "../../components/SignupComponents/Verifications";
 import VerificationLast from "../../components/SignupComponents/VerificationLast";
 import Sumsub from "../../components/SignupComponents/Sumsub";
 import ModalBottomSheet from "../../components/ModalBottomSheet/ModalBottomSheet";
+import WholeContainer from "../../layout/WholeContainer";
 
 export function SignupScreen({ navigation, route }: any) {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
@@ -134,16 +135,18 @@ export function SignupScreen({ navigation, route }: any) {
             style={{ flex: 1 }}
             contentContainerStyle={{ flexGrow: 1 }}
           >
-            <View style={styles.container}>
-              <View
-                style={styles.innerContainer}
-                onStartShouldSetResponder={() => true}
-              >
-                <KeyboardAvoidingView style={{ flex: 1 }} enabled>
-                  {steps[selectedNavIndex]}
-                </KeyboardAvoidingView>
+            <WholeContainer>
+              <View style={styles.container}>
+                <View
+                  style={styles.innerContainer}
+                  onStartShouldSetResponder={() => true}
+                >
+                  <KeyboardAvoidingView style={{ flex: 1 }} enabled>
+                    {steps[selectedNavIndex]}
+                  </KeyboardAvoidingView>
+                </View>
               </View>
-            </View>
+            </WholeContainer>
           </ScrollView>
         </SafeAreaView>
       </ImageBackground>

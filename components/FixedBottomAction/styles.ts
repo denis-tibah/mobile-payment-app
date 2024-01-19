@@ -7,10 +7,16 @@ export const styles: any = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#ffffff",
-    shadowColor: "black",
+    /* shadowColor: "black",
     shadowOpacity: 0.05,
     shadowRadius: 10,
-    elevation: 4,
+    elevation: 4, */
+
+    shadowOpacity: 1,
+    shadowRadius: 18,
+    shadowColor: "black",
+    elevation: 18,
+
     paddingLeft: 24,
     marginTop: 40,
   },
@@ -31,4 +37,5 @@ export const styles: any = StyleSheet.create({
   noTopMargin: {
     marginTop: 0,
   },
+  isNoPaddingLeft: { paddingLeft: 0 },
 });

@@ -8,9 +8,6 @@ export const styles: any = StyleSheet.create<any>({
     backgroundColor: "transparent",
   },
   innerContainer: {
-    paddingLeft: 12,
-    paddingRight: 12,
-    /* paddingTop: 40, */
     paddingTop: 10,
   },
   card: {

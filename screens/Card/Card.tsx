@@ -65,7 +65,7 @@ export function Card({ navigation, route }: any) {
   const profile = useSelector((state: any) => state.profile?.profile);
   const userEmail = profile?.data.email;
   const isCardTransactionShown = useSelector((state: RootState) => state?.card?.isCardTransactionShown);
-  console.log({ isCardTransactionShown });
+
   const [cardPin, setCardPin] = useState<string>("");
   const [remainingTime, setRemainingTime] = useState(30);
   const cardData = useSelector((state: RootState) => state?.card?.data);

@@ -328,7 +328,7 @@ export function Transactions({ navigation, route }: any) {
       const activeCard = listOfActiveCards?.find((card: any) => card.cardStatus === CardStatus.ACTIVE);
       setSearchFieldData({
         ...searchFieldData,
-        card_id: activeCard?.cardreferenceId.toString(),
+        card_id: searchFieldData.card_id || activeCard?.cardreferenceId.toString(),
       });
       handleFetchCardTransactions(activeCard?.cardreferenceId.toString());
     }
@@ -485,8 +485,9 @@ export function Transactions({ navigation, route }: any) {
           <Typography fontSize={18}>
             Filters
           </Typography>
-          <TouchableOpacity onPress={() => clearFilter()}>
-            <Ionicons name="refresh" size={18} color={vars['accent-blue']} />
+          <TouchableOpacity onPress={() => clearFilter()} style={{flexDirection: 'row'}}>
+            <Text style={{paddingRight: 5, fontSize: 12, color: vars['accent-blue']}}>Refresh</Text>
+            <Ionicons name="refresh" size={14} color={vars['accent-blue']} />
           </TouchableOpacity>
         </View>
         <Divider style={{marginVertical: 5}} />

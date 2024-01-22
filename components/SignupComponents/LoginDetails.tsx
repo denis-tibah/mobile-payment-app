@@ -1,4 +1,4 @@
-import { useState, FC, useEffect, Fragment } from "react";
+import { useState, FC, useEffect, Fragment, useRef } from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,9 +33,11 @@ interface ILoginDetails {
   handleModalContent: ({
     header,
     body,
+    iconType,
   }: {
     header: string;
     body: string;
+    iconType?: string;
   }) => void;
 }
 
@@ -89,7 +91,7 @@ const LoginDetails: FC<ILoginDetails> = ({
     onSubmit: async ({ email, alternateEmail, phoneNumber, countryCode }) => {
       const expoToken = await registerForPushNotificationsAsync({
         email: alternateEmail ? alternateEmail : email,
-        uuid: registration?.data?.uuid,
+        /* uuid: registration?.data?.uuid, */
       }).catch((error: any) => {
         setStatusMessage({
           header: "Error",
@@ -98,8 +100,14 @@ const LoginDetails: FC<ILoginDetails> = ({
           isError: true,
         });
       });
-
-      if (expoToken) {
+      const reqData = {
+        email: alternateEmail ? alternateEmail : email,
+        phone_number: `${countryCode}${phoneNumber}`,
+        mobile: true,
+        expoToken,
+      };
+      loginCredentialsMutation(reqData);
+      /* if (expoToken) {
         const reqData = {
           email: alternateEmail ? alternateEmail : email,
           phone_number: `${countryCode}${phoneNumber}`,
@@ -114,7 +122,7 @@ const LoginDetails: FC<ILoginDetails> = ({
           isOpen: true,
           isError: true,
         });
-      }
+      } */
     },
   });
 
@@ -124,8 +132,9 @@ const LoginDetails: FC<ILoginDetails> = ({
         setIsValidEmail(true);
         handleOpenModal();
         handleModalContent({
-          header: "Email  verified",
+          header: "Verification in progress",
           body: "We have sent a verification link to your email",
+          iconType: "update",
         });
         dispatch(
           setRegistrationData({

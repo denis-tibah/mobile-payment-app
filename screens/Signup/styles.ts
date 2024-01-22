@@ -43,11 +43,12 @@ export const styles: any = StyleSheet.create<any>({
   },
   headerContainer: {
     backgroundColor: "#0DCA9D",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 0,
+    /* borderTopLeftRadius: 20,
+    borderTopRightRadius: 20, */
     width: "100%",
-    height: 75,
+    /* height: 75, */
+    paddingBottom: 16,
+    paddingTop: 4,
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-around",

@@ -1,9 +1,16 @@
 import { FC, useState, useEffect } from "react";
-import { View, ScrollView, Pressable } from "react-native";
+import {
+  View,
+  ScrollView,
+  Pressable,
+  TouchableOpacity,
+  Text,
+} from "react-native";
 import { useSelector } from "react-redux";
 import { useFormik } from "formik";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import DropDownPicker from "react-native-dropdown-picker";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 import Button from "../Button";
 import FormGroup from "../FormGroup";
@@ -18,6 +25,7 @@ import CompassIcon from "../../assets/icons/Compass";
 import ChangeRequestIcon from "../../assets/icons/ChangeRequest";
 import KeyIcon from "../../assets/icons/Key";
 import LocationIcon from "../../assets/icons/Location";
+import DobIcon from "../../assets/icons/Birthday";
 import { Avatar } from "../../components/Avatar/Avatar";
 import MapIcon from "../../assets/icons/Map";
 import CityIcon from "../../assets/icons/City";
@@ -28,6 +36,7 @@ import { useCreateTicketRequestMutation } from "../../redux/profile/profileSlice
 import { RootState } from "../../store";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
+import WholeContainer from "../../layout/WholeContainer";
 
 interface IProfileTab {
   cleanUpTabSelection: () => void;
@@ -48,6 +57,14 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
     isOpen: boolean;
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
+  const [isDatePickerVisible, setDatePickerVisibility] =
+    useState<boolean>(false);
+
+  const formatDOBToDash = (paramDOB: string): string | null => {
+    const arrDOB: string[] | boolean = paramDOB ? paramDOB.split("-") : false;
+    const [year, month, day] = arrDOB ? arrDOB : [];
+    return year && month && day ? `${month}/${day}/${year}` : null;
+  };
 
   // ASK SANTI FOR STATUS CODES OF /createticketfinxp
   const [
@@ -79,11 +96,13 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
     errors,
     handleBlur,
     setValues,
+    setFieldValue,
   } = useFormik({
     initialValues: {
       salutation: profileData?.salutation || "",
       firstName: profileData?.first_name || "",
       lastName: profileData?.last_name || "",
+      dob: formatDOBToDash(profileData?.dob) || "",
       street: profileData?.address_line_1 || "",
       subStreet: profileData?.address_line_2 || "",
       town: profileData?.town || "",
@@ -96,6 +115,7 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
       salutation,
       firstName,
       lastName,
+      dob,
       street,
       subStreet,
       town,
@@ -116,6 +136,7 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
               profile: {
                 salutation: salutation || "",
                 first_name: firstName || "",
+                dob: dob || "",
                 last_name: lastName || "",
               },
             },
@@ -140,6 +161,7 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
                 salutation,
                 first_name: firstName,
                 last_name: lastName,
+                dob: dob || "",
               },
             },
           ],
@@ -153,6 +175,19 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
       });
     },
   });
+
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = (date: any) => {
+    setFieldValue("dob", date.toLocaleDateString());
+    hideDatePicker();
+  };
 
   const onCloseModal = (): void => {
     setStatusMessage({
@@ -175,61 +210,272 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
           onClose={onCloseModal}
         />
         <Pressable>
-          <View style={{ paddingHorizontal: 22, paddingBottom: 12 }}>
+          <WholeContainer>
             <View
               style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                width: "100%",
-                marginBottom: 12,
+                marginTop: 22,
+                paddingBottom: 12,
               }}
             >
-              <View style={{ flexGrow: 1 }}>
-                {profileData?.UserProfile?.profileimage ? (
-                  <Avatar
-                    isBase64Image
-                    src={profileData?.UserProfile?.profileimage}
-                    fileUpload
-                    size="medium"
-                    icon={<Camera color="blue" size={34} />}
-                  />
-                ) : null}
-              </View>
               <View
                 style={{
-                  flexGrow: 4,
-                  width: "80%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  width: "100%",
+                  marginBottom: 12,
+                  marginLeft: 4,
+                  marginRight: 4,
+                  gap: 8,
                 }}
               >
+                <View style={{ width: "20%" }}>
+                  {profileData?.UserProfile?.profileimage ? (
+                    <Avatar
+                      isBase64Image
+                      src={profileData?.UserProfile?.profileimage}
+                      fileUpload
+                      size="large"
+                      icon={<Camera color="blue" size={34} />}
+                    />
+                  ) : null}
+                </View>
+                <View
+                  style={{
+                    marginTop: 12,
+                    width: "75%",
+                  }}
+                >
+                  <FormGroup
+                    validationError={
+                      errors.salutation &&
+                      touched.salutation &&
+                      errors.salutation
+                    }
+                  >
+                    <View style={styles.dropdownWrapper}>
+                      <View style={styles.dropDownIconContainerLeft}>
+                        <SalutationIcon size={16} color="blue" />
+                      </View>
+                      <View>
+                        <DropDownPicker
+                          schema={{ label: "label", value: "value" }}
+                          onSelectItem={(value: any) => {
+                            const { value: salutationValue } = value;
+                            setValues({
+                              ...values,
+                              salutation: salutationValue,
+                            });
+                          }}
+                          listMode="MODAL"
+                          // setValue={setSelectedSalutation}
+                          items={salutations}
+                          value={values?.salutation}
+                          setOpen={setOpenListForSalutation}
+                          open={openListForSalutation}
+                          style={styles.dropdown}
+                          dropDownContainerStyle={styles.dropdownContainer}
+                          placeholder="Salutation"
+                          placeholderStyle={{
+                            color: vars["medium-grey"],
+                          }}
+                        />
+                      </View>
+                      <View style={styles.dropDownIconContainerRight}>
+                        <ArrowRightIcon size={16} color="blue" />
+                      </View>
+                    </View>
+                  </FormGroup>
+                </View>
+              </View>
+              <View style={styles.formContainer}>
                 <FormGroup
                   validationError={
-                    errors.salutation && touched.salutation && errors.salutation
+                    errors.firstName && touched.firstName && errors.firstName
                   }
                 >
+                  <FormGroup.Input
+                    keyboardType="default"
+                    returnKeyType={"done"}
+                    onChangeText={handleChange("firstName")}
+                    onBlur={handleBlur("firstName")}
+                    value={values.firstName}
+                    placeholder="First Name"
+                    placeholderTextColor={vars["ios-default-text"]}
+                    iconColor="blue"
+                    icon={<ProfileIcon size={10} />}
+                  />
+                </FormGroup>
+              </View>
+              <View style={styles.formContainer}>
+                <FormGroup
+                  validationError={
+                    errors.lastName && touched.lastName && errors.lastName
+                  }
+                >
+                  <FormGroup.Input
+                    keyboardType="default"
+                    returnKeyType={"done"}
+                    onChangeText={handleChange("lastName")}
+                    onBlur={handleBlur("lastName")}
+                    value={values.lastName}
+                    placeholder="Last Name"
+                    placeholderTextColor={vars["ios-default-text"]}
+                    iconColor="blue"
+                    icon={<ProfileIcon size={10} />}
+                  />
+                </FormGroup>
+              </View>
+              <View>
+                <FormGroup
+                  validationError={errors.dob && touched.dob && errors.dob}
+                >
+                  <View style={styles.dobWrapper}>
+                    <DobIcon size={18} color="blue" />
+                    <TouchableOpacity
+                      onPress={showDatePicker}
+                      style={{
+                        width: "100%",
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.dobText,
+                          values?.dob
+                            ? styles.dobTextSelected
+                            : styles.dobTextDefault,
+                        ]}
+                      >
+                        {values?.dob ? values?.dob : "Date of birth"}
+                      </Text>
+                      <View
+                        style={[styles.dropDownIconContainerRight, { top: 3 }]}
+                      >
+                        <ArrowRightIcon size={16} color="blue" />
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                  <DateTimePickerModal
+                    isVisible={isDatePickerVisible}
+                    mode="date"
+                    onConfirm={handleConfirm}
+                    onCancel={hideDatePicker}
+                  />
+                </FormGroup>
+              </View>
+              <View style={styles.separatorContainer}>
+                <Seperator
+                  backgroundColor={vars["medium-grey"]}
+                  marginTop={18}
+                  marginBottom={16}
+                  width="94%"
+                />
+              </View>
+              <View style={[styles.formContainer, styles.addressHeader]}>
+                <CompassIcon color="blue" size={18} />
+                <Typography fontSize={16} marginLeft={4}>
+                  Address
+                </Typography>
+              </View>
+              <View style={styles.formContainer}>
+                <FormGroup>
+                  <FormGroup.Input
+                    keyboardType="default"
+                    returnKeyType={"done"}
+                    onChangeText={handleChange("street")}
+                    onBlur={handleBlur("street")}
+                    value={values.street}
+                    placeholderTextColor={vars["ios-default-text"]}
+                    placeholder="Address"
+                    iconColor="blue"
+                    icon={<KeyIcon />}
+                  />
+                </FormGroup>
+              </View>
+              <View style={styles.formContainer}>
+                <FormGroup>
+                  <FormGroup.Input
+                    keyboardType="default"
+                    returnKeyType={"done"}
+                    onChangeText={handleChange("subStreet")}
+                    onBlur={handleBlur("subStreet")}
+                    value={values.subStreet}
+                    placeholderTextColor={vars["ios-default-text"]}
+                    placeholder="Address 2"
+                    iconColor="blue"
+                    icon={<KeyIcon />}
+                  />
+                </FormGroup>
+              </View>
+              <View style={styles.formContainer}>
+                <FormGroup>
+                  <FormGroup.Input
+                    keyboardType="default"
+                    returnKeyType={"done"}
+                    onChangeText={handleChange("town")}
+                    onBlur={handleBlur("town")}
+                    value={values.town}
+                    placeholderTextColor={vars["ios-default-text"]}
+                    placeholder="Town"
+                    iconColor="blue"
+                    icon={<LocationIcon />}
+                  />
+                </FormGroup>
+              </View>
+              <View style={styles.formContainer}>
+                <FormGroup>
+                  <FormGroup.Input
+                    keyboardType="default"
+                    returnKeyType={"done"}
+                    onChangeText={handleChange("state")}
+                    onBlur={handleBlur("state")}
+                    value={values.state}
+                    placeholderTextColor={vars["ios-default-text"]}
+                    placeholder="State"
+                    iconColor="blue"
+                    icon={<MapIcon />}
+                  />
+                </FormGroup>
+              </View>
+              <View style={styles.formContainer}>
+                <FormGroup>
+                  <FormGroup.Input
+                    keyboardType="default"
+                    returnKeyType={"done"}
+                    onChangeText={handleChange("postCode")}
+                    onBlur={handleBlur("postCode")}
+                    value={values.postCode}
+                    placeholderTextColor={vars["ios-default-text"]}
+                    placeholder="Post code"
+                    iconColor="blue"
+                    icon={<MapIcon />}
+                  />
+                </FormGroup>
+              </View>
+              <View>
+                <FormGroup>
                   <View style={styles.dropdownWrapper}>
                     <View style={styles.dropDownIconContainerLeft}>
-                      <SalutationIcon size={16} color="blue" />
+                      <CityIcon size={16} color="blue" />
                     </View>
                     <View>
                       <DropDownPicker
-                        schema={{ label: "label", value: "value" }}
+                        schema={{ label: "name", value: "alpha3" }}
                         onSelectItem={(value: any) => {
-                          const { value: salutationValue } = value;
+                          const { alpha3: countryValue } = value;
                           setValues({
                             ...values,
-                            salutation: salutationValue,
+                            country: countryValue,
                           });
                         }}
                         listMode="MODAL"
-                        // setValue={setSelectedSalutation}
-                        items={salutations}
-                        value={values?.salutation}
-                        setOpen={setOpenListForSalutation}
-                        open={openListForSalutation}
+                        items={countries}
+                        value={values?.country}
+                        setOpen={setOpenListForCountry}
+                        open={openListForCountry}
                         style={styles.dropdown}
                         dropDownContainerStyle={styles.dropdownContainer}
-                        placeholder="Salutation"
+                        placeholder="Country"
                         placeholderStyle={{
                           color: vars["medium-grey"],
                         }}
@@ -242,178 +488,18 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
                 </FormGroup>
               </View>
             </View>
-            <View style={styles.formContainer}>
-              <FormGroup
-                validationError={
-                  errors.firstName && touched.firstName && errors.firstName
-                }
-              >
-                <FormGroup.Input
-                  keyboardType="default"
-                  returnKeyType={"done"}
-                  onChangeText={handleChange("firstName")}
-                  onBlur={handleBlur("firstName")}
-                  value={values.firstName}
-                  placeholder="First Name"
-                  placeholderTextColor={vars["ios-default-text"]}
-                  iconColor="blue"
-                  icon={<ProfileIcon size={10} />}
-                />
-              </FormGroup>
-            </View>
-            <View style={styles.formContainer}>
-              <FormGroup
-                validationError={
-                  errors.lastName && touched.lastName && errors.lastName
-                }
-              >
-                <FormGroup.Input
-                  keyboardType="default"
-                  returnKeyType={"done"}
-                  onChangeText={handleChange("lastName")}
-                  onBlur={handleBlur("lastName")}
-                  value={values.lastName}
-                  placeholder="Last Name"
-                  placeholderTextColor={vars["ios-default-text"]}
-                  iconColor="blue"
-                  icon={<ProfileIcon size={10} />}
-                />
-              </FormGroup>
-            </View>
-            <View style={styles.separatorContainer}>
-              <Seperator
-                backgroundColor={vars["medium-grey"]}
-                marginTop={18}
-                marginBottom={16}
-                width="94%"
-              />
-            </View>
-            <View style={[styles.formContainer, styles.addressHeader]}>
-              <CompassIcon color="blue" size={18} />
-              <Typography fontSize={16} marginLeft={4}>
-                Address
-              </Typography>
-            </View>
-            <View style={styles.formContainer}>
-              <FormGroup>
-                <FormGroup.Input
-                  keyboardType="default"
-                  returnKeyType={"done"}
-                  onChangeText={handleChange("street")}
-                  onBlur={handleBlur("street")}
-                  value={values.street}
-                  placeholderTextColor={vars["ios-default-text"]}
-                  placeholder="Address"
-                  iconColor="blue"
-                  icon={<KeyIcon />}
-                />
-              </FormGroup>
-            </View>
-            <View style={styles.formContainer}>
-              <FormGroup>
-                <FormGroup.Input
-                  keyboardType="default"
-                  returnKeyType={"done"}
-                  onChangeText={handleChange("subStreet")}
-                  onBlur={handleBlur("subStreet")}
-                  value={values.subStreet}
-                  placeholderTextColor={vars["ios-default-text"]}
-                  placeholder="Address 2"
-                  iconColor="blue"
-                  icon={<KeyIcon />}
-                />
-              </FormGroup>
-            </View>
-            <View style={styles.formContainer}>
-              <FormGroup>
-                <FormGroup.Input
-                  keyboardType="default"
-                  returnKeyType={"done"}
-                  onChangeText={handleChange("town")}
-                  onBlur={handleBlur("town")}
-                  value={values.town}
-                  placeholderTextColor={vars["ios-default-text"]}
-                  placeholder="Town"
-                  iconColor="blue"
-                  icon={<LocationIcon />}
-                />
-              </FormGroup>
-            </View>
-            <View style={styles.formContainer}>
-              <FormGroup>
-                <FormGroup.Input
-                  keyboardType="default"
-                  returnKeyType={"done"}
-                  onChangeText={handleChange("state")}
-                  onBlur={handleBlur("state")}
-                  value={values.state}
-                  placeholderTextColor={vars["ios-default-text"]}
-                  placeholder="State"
-                  iconColor="blue"
-                  icon={<MapIcon />}
-                />
-              </FormGroup>
-            </View>
-            <View style={styles.formContainer}>
-              <FormGroup>
-                <FormGroup.Input
-                  keyboardType="default"
-                  returnKeyType={"done"}
-                  onChangeText={handleChange("postCode")}
-                  onBlur={handleBlur("postCode")}
-                  value={values.postCode}
-                  placeholderTextColor={vars["ios-default-text"]}
-                  placeholder="Post code"
-                  iconColor="blue"
-                  icon={<MapIcon />}
-                />
-              </FormGroup>
-            </View>
-            <View>
-              <FormGroup>
-                <View style={styles.dropdownWrapper}>
-                  <View style={styles.dropDownIconContainerLeft}>
-                    <CityIcon size={16} color="blue" />
-                  </View>
-                  <View>
-                    <DropDownPicker
-                      schema={{ label: "name", value: "alpha3" }}
-                      onSelectItem={(value: any) => {
-                        const { alpha3: countryValue } = value;
-                        setValues({
-                          ...values,
-                          country: countryValue,
-                        });
-                      }}
-                      listMode="MODAL"
-                      items={countries}
-                      value={values?.country}
-                      setOpen={setOpenListForCountry}
-                      open={openListForCountry}
-                      style={styles.dropdown}
-                      dropDownContainerStyle={styles.dropdownContainer}
-                      placeholder="Country"
-                      placeholderStyle={{
-                        color: vars["medium-grey"],
-                      }}
-                    />
-                  </View>
-                  <View style={styles.dropDownIconContainerRight}>
-                    <ArrowRightIcon size={16} color="blue" />
-                  </View>
-                </View>
-              </FormGroup>
-            </View>
-          </View>
+          </WholeContainer>
           <View style={styles.footerContent}>
             <View style={styles.downloadBtnMain}>
-              <Button
-                color="light-pink"
-                leftIcon={<ChangeRequestIcon color="pink" />}
-                onPress={handleSubmit}
-              >
-                Change request
-              </Button>
+              <WholeContainer>
+                <Button
+                  color="light-pink"
+                  leftIcon={<ChangeRequestIcon color="pink" />}
+                  onPress={handleSubmit}
+                >
+                  Change request
+                </Button>
+              </WholeContainer>
             </View>
           </View>
         </Pressable>

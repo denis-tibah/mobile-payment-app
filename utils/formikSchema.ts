@@ -327,6 +327,7 @@ const editProfileSchema = Yup.object({
   salutation: Yup.string().required("Required"),
   firstName: Yup.string().required("Required"),
   lastName: Yup.string().required("Required"),
+  dob: Yup.string().required("Required"),
   street: Yup.string().notRequired(),
   subStreet: Yup.string().notRequired(),
   town: Yup.string().notRequired(),

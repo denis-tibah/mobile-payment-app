@@ -97,4 +97,29 @@ export const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 14,
   },
+  dobWrapper: {
+    width: "100%",
+    height: 42,
+    borderWidth: 1,
+    backgroundColor: "#f9f9f9",
+    borderColor: vars["accent-blue"],
+    borderRadius: 999,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    paddingLeft: 16,
+    paddingRight: 12,
+  },
+  dobText: {
+    fontSize: 16,
+    marginLeft: 10,
+    fontWeight: "400",
+  },
+  dobTextSelected: {
+    color: "black",
+  },
+  dobTextDefault: {
+    color: vars["medium-grey"],
+  },
 });

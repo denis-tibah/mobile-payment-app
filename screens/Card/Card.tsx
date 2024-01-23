@@ -123,11 +123,6 @@ export function Card({ navigation, route }: any) {
     }
     try {
       setIsloading(prev => true);
-      console.log({
-        freezeYN: isCardToFreeze ? "Y" : "N",
-        account_id: userData?.id,
-        card_id: !selectedCard ? cardsActiveList[0].cardreferenceId : selectedCard?.cardreferenceId,
-      });
       await dispatch<any>(
         setCardAsFrozen({
           freezeYN: isCardToFreeze ? "Y" : "N",

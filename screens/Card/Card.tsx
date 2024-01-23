@@ -52,6 +52,7 @@ import ManagePaymentMethod from "./Components/ManagePayment";
 import { PinCodeInputBoxes } from "../../components/FormGroup/FormGroup";
 import { useLazyOrderCardQuery, useLazySendSmsLostCardVerificationQuery, useLazyShowCardDetailsQuery } from "../../redux/card/cardSliceV2";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
+import { Seperator } from "../../components/Seperator/Seperator";
 
 const DEFAULT_CARD_ENROLLMENT_STATUS = {
   title: "",
@@ -61,11 +62,15 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
 
 export function Card({ navigation, route }: any) {
   const dispatch = useDispatch();
+  // get window
+
   const refRBSheet = useRef();
+  const refRBSheetShowTerminatedCards = useRef();
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
   const profile = useSelector((state: any) => state.profile?.profile);
   const userEmail = profile?.data.email;
+
   const isCardTransactionShown = useSelector((state: RootState) => state?.card?.isCardTransactionShown);
 
   const [cardPin, setCardPin] = useState<string>("");
@@ -82,7 +87,7 @@ export function Card({ navigation, route }: any) {
   const [selectedCard, setSelectedCard] = useState<any>(null);
   const [isLoading, setIsloading] = useState<boolean>(false);
   const [isManagePaymentMethod, setIsManagePaymentMethod] = useState<boolean>(false);
-  const [isShowPinActionPressed, setIsShowPinActionPressed] = useState<boolean>(false);
+  const [isShowTerminatedCard, setIsShowTerminatedCard] = useState<boolean>(false);
   const [isLostPinActionPressed, setIsLostPinActionPressed] = useState<boolean>(false);
   const [chosenCurrency, setChosenCurrency] = useState<string>("");
   // const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
@@ -580,7 +585,7 @@ export function Card({ navigation, route }: any) {
                     Show Terminated Cards
                   </Typography>
                 </View>
-                <TouchableOpacity style={{marginTop: 7}} onPress={() => setIsShowPinActionPressed(true)}>
+                <TouchableOpacity style={{marginTop: 7}} onPress={() => refRBSheetShowTerminatedCards?.current?.open()}>
                   <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
                 </TouchableOpacity>
               </View>
@@ -590,7 +595,7 @@ export function Card({ navigation, route }: any) {
             rbSheetRef={refRBSheet}
             closeOnDragDown={true}
             closeOnPressMask={false}
-            height={380}
+            height={480}
             wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
             containerStyles={{
               backgroundColor: "#FFF",
@@ -601,8 +606,17 @@ export function Card({ navigation, route }: any) {
               paddingHorizontal: 15,
             }}
             draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
-
           >
+            <View style={{
+              width: '30%',
+                alignSelf:'center', 
+                backgroundColor: vars['grey'],
+                height: 5,
+                borderRadius: 10, 
+                zIndex: 999, 
+                marginBottom: 20, 
+                top: 0
+                }}></View>
             <Typography fontSize={18} fontWeight={600}>
               <MaterialCommunityIcons name="cog-outline" size={18} color={vars['accent-blue']} />
               {" "}Manage Payment Method
@@ -610,10 +624,32 @@ export function Card({ navigation, route }: any) {
             <Divider style={{marginVertical: 8, paddingHorizontal: 15}} />
             <ManagePaymentMethod />
           </SwipableBottomSheet>
-          <BottomSheet
-            isVisible={isShowPinActionPressed}
-            onClose={() => setIsShowPinActionPressed(false)}
-          >
+            <SwipableBottomSheet
+              rbSheetRef={refRBSheetShowTerminatedCards}
+              closeOnDragDown={true}
+              closeOnPressMask={false}
+              height={200}
+              wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+              containerStyles={{
+                backgroundColor: "#FFF",
+                borderTopLeftRadius: 14,
+                borderTopRightRadius: 14,
+                elevation: 12,
+                shadowColor: "#52006A",
+                paddingHorizontal: 15,
+              }}
+              draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
+            >
+              <View style={{
+              width: '30%',
+                alignSelf:'center', 
+                backgroundColor: vars['grey'],
+                height: 5,
+                borderRadius: 10, 
+                zIndex: 999, 
+                marginBottom: 20, 
+                top: 0
+              }}></View>
             <Typography fontSize={16} fontWeight={600}>
               Show Terminated Cards
             </Typography>
@@ -632,7 +668,7 @@ export function Card({ navigation, route }: any) {
                 onPress={() => {
                   setIsTerminatedCardShown(true);
                   setSelectedCard(cardsActiveList[0]);
-                  setIsShowPinActionPressed(false);
+                  refRBSheetShowTerminatedCards?.current?.close();
                 }}
                 style={{color: '#fff', width: 140}}
                 color="light-pink"
@@ -645,7 +681,7 @@ export function Card({ navigation, route }: any) {
                   setIsTerminatedCardShown(false);
                   setSelectedCard(cardsActiveList[0]);
                   setSelectedCard(null);
-                  setIsShowPinActionPressed(false);
+                  refRBSheetShowTerminatedCards?.current?.close()
                 }}
                 style={{color: '#fff', width: 140}}
                 color="light-pink"
@@ -654,7 +690,7 @@ export function Card({ navigation, route }: any) {
                 No
               </Button>
             </View>
-          </BottomSheet>
+          </SwipableBottomSheet>
           <BottomSheet
             isVisible={isLostPinActionPressed}
             onClose={() => setIsLostPinActionPressed(false)}

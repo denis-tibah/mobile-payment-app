@@ -105,7 +105,7 @@ export function Payees({ navigation }: any) {
       <Spinner visible={isPayeesListLoading || isAddPayeeLoading} />
       <Heading
           icon={<EuroIcon color="pink" size={25} />}
-          title={"Payees"}
+          title={"Make Payment"}
           rightAction={
             <View style={{ flexDirection: "row", display: "flex" }}>
               <Button

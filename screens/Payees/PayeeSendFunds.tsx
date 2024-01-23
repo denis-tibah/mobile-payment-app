@@ -105,19 +105,9 @@ const PayeeSendFunds = ({navigation, route}: any) => {
   }
 
   const handleInitiatepayment = (paymentValues: any) => {
-    // console.log(paymentValues);
+  // console.log(paymentValues);
 
-    // return;
-    console.log({
-      amount: paymentValues.amount,
-      currency: paymentValues.currency,
-      debtor_iban: accountIban,
-      creditor_iban: receiverIban,
-      creditor_name: receiverName,
-      reason: paymentValues.reason,
-      access_token: userTokens?.access_token,
-      token_ziyl: userTokens?.token_ziyl,});
-      
+  // return;
     initiatePayment({
       // isManualProcessing: paymentValues.isManualProcessing,
       amount: paymentValues.amount,
@@ -182,7 +172,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
   const pickDocument = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: 'application/pdf', // file types
+        type: 'application/pdf',
       });
       if (result.type === 'success') {
         const { uri } = result;

@@ -7,6 +7,7 @@ export const styles: any = StyleSheet.create<any>({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 6,
+    paddingHorizontal: 5,
   },
   container: {
     // marginTop: 26,

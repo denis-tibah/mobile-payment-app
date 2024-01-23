@@ -14,11 +14,12 @@ export interface Transaction {
   service: any;
   status: string;
   transaction_datetime: string | number;
+  transaction_datetime_with_hour: string | number;
   transaction_id: number;
   transaction_uuid: string;
   isCardTx: boolean;
   total_amount?: string;
-  trn_type :string;
+  trn_type: string;
   dr_iban: string;
   cr_iban: string;
   transfer_currency: string;
@@ -45,7 +46,7 @@ export interface transactions {
   transaction_uuid: string;
   isCardTx: boolean;
   total_amount?: string;
-  trn_type :string;
+  trn_type: string;
   dr_iban: string;
   cr_iban: string;
   transfer_currency: string;

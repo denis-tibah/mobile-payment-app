@@ -34,7 +34,11 @@ import { Text } from "react-native";
 import BottomSheet from "../../components/BottomSheet";
 import Filter from "../../assets/icons/Filter";
 import { Divider } from "react-native-paper";
-import { useGetCardV2Query, useLazyGetCardTransactionsQuery, useLazyGetCardV2Query } from "../../redux/card/cardSliceV2";
+import {
+  useGetCardV2Query,
+  useLazyGetCardTransactionsQuery,
+  useLazyGetCardV2Query,
+} from "../../redux/card/cardSliceV2";
 import { useLazyGetTransactionsQuery } from "../../redux/transaction/transactionV2Slice";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Spinner from "react-native-loading-spinner-overlay/lib";
@@ -77,16 +81,19 @@ export function Transactions({ navigation, route }: any) {
   const dispatch = useDispatch();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
-  const isCardTransactionShown = useSelector((state: RootState) => state?.card?.isCardTransactionShown);
+  const isCardTransactionShown = useSelector(
+    (state: RootState) => state?.card?.isCardTransactionShown
+  );
 
-  const [getTransactionsWithFilter, { 
-    data: transactionsWithFilter, 
-    isLoading: isLoadingTransations,
-  }] = useLazyGetTransactionsQuery();
+  const [
+    getTransactionsWithFilter,
+    { data: transactionsWithFilter, isLoading: isLoadingTransations },
+  ] = useLazyGetTransactionsQuery();
   const currentPage = transactionsWithFilter?.current_page;
   const lastPage = transactionsWithFilter?.last_page;
   const transactionsList = transactionsWithFilter?.transactions;
-  const _groupedByDateTransactions = groupedByDateTransactions(transactionsList);
+  const _groupedByDateTransactions =
+    groupedByDateTransactions(transactionsList);
   const [isSearchTextOpen, setIsSearchTextOpen] = useState<boolean>(false);
   const [isSheetFilterOpen, setIsSheetFilterOpen] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
@@ -97,18 +104,17 @@ export function Transactions({ navigation, route }: any) {
 
   const [showPickerDateFilter, setShowPickerDateFilter] =
     useState<DateRangeType>(initialDateRange);
-  const {
-      data: userCardsList,
-    } = useGetCardV2Query({
-      accountId: userData?.id,
-      accessToken: userTokens?.access_token,
-      tokenZiyl: userTokens?.token_ziyl,
-    });
-  const [getCartTransactions, {
-    data: cardTransactions,
-  }] = useLazyGetCardTransactionsQuery();
+  const { data: userCardsList } = useGetCardV2Query({
+    accountId: userData?.id,
+    accessToken: userTokens?.access_token,
+    tokenZiyl: userTokens?.token_ziyl,
+  });
+  const [getCartTransactions, { data: cardTransactions }] =
+    useLazyGetCardTransactionsQuery();
   const listOfActiveCards = sortUserActiveToInactiveCards(userCardsList);
-  const activeCard = listOfActiveCards?.find((card: any) => card.cardStatus === CardStatus.ACTIVE);
+  const activeCard = listOfActiveCards?.find(
+    (card: any) => card.cardStatus === CardStatus.ACTIVE
+  );
 
   const clearFilter = () => {
     setShowPickerDateFilter(initialDateRange);
@@ -123,46 +129,48 @@ export function Transactions({ navigation, route }: any) {
   const handleFetchCardTransactions = async (cardId: string) => {
     const cardTransactionsFilter = {
       account_id: userData?.id,
-      from_date: new Date(new Date().setFullYear(new Date().getFullYear() - 2)).toISOString().split('T')[0],
-      to_date: new Date().toISOString().split('T')[0],
-      type: 'PREAUTH',
+      from_date: new Date(new Date().setFullYear(new Date().getFullYear() - 2))
+        .toISOString()
+        .split("T")[0],
+      to_date: new Date().toISOString().split("T")[0],
+      type: "PREAUTH",
       card_id: cardId,
     };
     console.log({ cardTransactionsFilter });
     getCartTransactions(cardTransactionsFilter)
-    .catch((err) => {
-      console.log('error');
-      console.log({ err });
-    })
-    .finally(() => {
-      setIsLoading(false);
-    });
-  }
+      .catch((err) => {
+        console.log("error");
+        console.log({ err });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
 
   const fetchTransactionsWithFilters = async (value?: SearchFilter) => {
-      if (userData && userData?.id) {
-        let search: SearchFilter = {
-          ...(value ? value : initialSearchFieldData),
-          accountId: `${userData?.id}`,
-          accessToken: userTokens?.access_token,
-          tokenZiyl: userTokens?.token_ziyl,
-        };
-        getTransactionsWithFilter(search)
+    if (userData && userData?.id) {
+      let search: SearchFilter = {
+        ...(value ? value : initialSearchFieldData),
+        accountId: `${userData?.id}`,
+        accessToken: userTokens?.access_token,
+        tokenZiyl: userTokens?.token_ziyl,
+      };
+      getTransactionsWithFilter(search)
         .then((res) => {
           if (res.data) {
             const { data: _transactions } = res;
             dispatch<any>(setTransationsData(_transactions));
           }
-        }
-        ).catch((err) => {
-          console.log('error')
+        })
+        .catch((err) => {
+          console.log("error");
           console.log({ err });
         })
         .finally(() => {
           setIsLoading(false);
         });
-        setSearchFieldData(search);
-      }
+      setSearchFieldData(search);
+    }
   };
 
   // const filterFromToDate = async (fromDate: string, toDate: string) => {
@@ -215,7 +223,7 @@ export function Transactions({ navigation, route }: any) {
   //   });
   // }
 
-  const handleBackgroundChangeActiveInactive = (card: any) : string => {
+  const handleBackgroundChangeActiveInactive = (card: any): string => {
     if (card.cardreferenceId === searchFieldData.card_id) {
       if (card.cardStatus === CardStatus.INACTIVE) {
         return vars["accent-yellow"];
@@ -239,7 +247,7 @@ export function Transactions({ navigation, route }: any) {
     rawTimeStamp: number,
     setState: any,
     values: any,
-    key: string,
+    key: string
   ) => {
     const { dateFrom, dateTo } = values;
     if (key === "dateFrom") {
@@ -249,7 +257,7 @@ export function Transactions({ navigation, route }: any) {
         if (fromDate > toDate) {
           alert("Date from should be before or same with Date to");
           return;
-        } 
+        }
       }
     } else {
       if (dateFrom.value) {
@@ -270,7 +278,9 @@ export function Transactions({ navigation, route }: any) {
     });
     setSearchFieldData({
       ...searchFieldData,
-      [key === 'dateFrom' ? 'from_date' : 'to_date']: new Date(rawTimeStamp).toISOString().split('T')[0],
+      [key === "dateFrom" ? "from_date" : "to_date"]: new Date(rawTimeStamp)
+        .toISOString()
+        .split("T")[0],
     });
   };
 
@@ -279,7 +289,7 @@ export function Transactions({ navigation, route }: any) {
     if (!userId) {
       return;
     }
-    if (key === 'min_amount') {
+    if (key === "min_amount") {
       if (searchFieldData.max_amount && amount > searchFieldData.max_amount) {
         alert("Amount from should be less than Amount to");
         return;
@@ -294,7 +304,7 @@ export function Transactions({ navigation, route }: any) {
       ...searchFieldData,
       [key]: amount,
     });
-  }
+  };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
@@ -324,18 +334,21 @@ export function Transactions({ navigation, route }: any) {
   // };
 
   useEffect(() => {
-    if(isCardTransactionShown) {
-      const activeCard = listOfActiveCards?.find((card: any) => card.cardStatus === CardStatus.ACTIVE);
+    if (isCardTransactionShown) {
+      const activeCard = listOfActiveCards?.find(
+        (card: any) => card.cardStatus === CardStatus.ACTIVE
+      );
       setSearchFieldData({
         ...searchFieldData,
-        card_id: searchFieldData.card_id || activeCard?.cardreferenceId.toString(),
+        card_id:
+          searchFieldData.card_id || activeCard?.cardreferenceId.toString(),
       });
       handleFetchCardTransactions(activeCard?.cardreferenceId.toString());
     }
   }, [isCardTransactionShown]);
 
   useEffect(() => {
-    if(searchFieldData.card_id !== "") {
+    if (searchFieldData.card_id !== "") {
       dispatch<any>(setIsCardTransactionShown(true));
     } else {
       dispatch<any>(setIsCardTransactionShown(false));
@@ -359,117 +372,120 @@ export function Transactions({ navigation, route }: any) {
         <View style={styles.container}>
           <Heading
             icon={<TransactionIcon size={18} color="pink" />}
-            title={isCardTransactionShown ? "Card Transactions History": "Transactions History"}
+            title={
+              isCardTransactionShown
+                ? "Card Transactions History"
+                : "Transactions History"
+            }
             rightAction={
-              <View style={{display: 'flex', flexDirection: 'row'}}>
-                <TouchableOpacity 
+              <View style={{ display: "flex", flexDirection: "row" }}>
+                <TouchableOpacity
                   style={styles.iconFilter}
                   onPress={() => {
                     // setIsMobileFilterShown(!isMobileFilterShown);
                     setIsSheetFilterOpen(!isSheetFilterOpen);
-                    }
-                  }
+                  }}
                 >
-                  <Filter size={14} color="blue"/>
+                  <Filter size={14} color="blue" />
                 </TouchableOpacity>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.iconFilter}
                   onPress={() => setIsSearchTextOpen(!isSearchTextOpen)}
-                  >
-                  <SearchIcon size={14} color="blue"/>
+                >
+                  <SearchIcon size={14} color="blue" />
                 </TouchableOpacity>
               </View>
             }
           />
         </View>
-        {
-          isSearchTextOpen && (
-            <View style={styles.searchBar}>
-              <FormGroup.Input
-                icon={<SearchIcon color="blue" size={18}/>}
-                placeholder={"Search text ..."}
-                color={vars["black"]}
-                fontSize={14}
-                fontWeight={"400"}
-                style={{ width: "100%" }}
-                value={searchText}
-                onChangeText={(event: string) => setSearchText(event)}
-                onSubmitEditing={() => fetchTransactionsWithFilters({
+        {isSearchTextOpen && (
+          <View style={styles.searchBar}>
+            <FormGroup.Input
+              icon={<SearchIcon color="blue" size={18} />}
+              placeholder={"Search text ..."}
+              color={vars["black"]}
+              fontSize={14}
+              fontWeight={"400"}
+              style={{ width: "100%" }}
+              value={searchText}
+              onChangeText={(event: string) => setSearchText(event)}
+              onSubmitEditing={() =>
+                fetchTransactionsWithFilters({
                   ...searchFieldData,
                   name: searchText,
-                })}
-              />
-            </View>
-          )
-        }
-        <View style={{backgroundColor: '#fff'}}>
-          <Seperator backgroundColor={vars["grey"]} />
-          {isCardTransactionShown && cardTransactions?.length > 0 ? cardTransactions?.map((transaction: any, index: number) => (
-            <TransactionItem
-              data={{
-                ...transaction,
-                id: Number(transaction.id),
-                amount: transaction.amount.toString(),
-                name: transaction.purpose,
-                balance: transaction.transactionAmount,
-                bic: "",
-                closing_balance: "",
-                running_balance: "",
-                currency: transaction.transactionCurrency,
-                description: "",
-                iban: "",
-                opening_balance: "",
-                reference_no: "",
-                service: "",
-                status: "",
-                transaction_datetime: "",
-                transaction_id: 0,
-                transaction_uuid: "",
-              }}
-              key={index}
+                })
+              }
             />
-          )) : !_groupedByDateTransactions && (
-            <Fragment>
-              <View style={{padding: 30}}>
-                <Text>
-                  Card don't have any transactions. Make sure you have selected the right card.
-                </Text>
-              </View>
-            </Fragment>
-          )} 
+          </View>
+        )}
+        <View style={{ backgroundColor: "#fff" }}>
+          <Seperator backgroundColor={vars["grey"]} />
+          {isCardTransactionShown && cardTransactions?.length > 0
+            ? cardTransactions?.map((transaction: any, index: number) => (
+                <TransactionItem
+                  data={{
+                    ...transaction,
+                    id: Number(transaction.id),
+                    amount: transaction.amount.toString(),
+                    name: transaction.purpose,
+                    balance: transaction.transactionAmount,
+                    bic: "",
+                    closing_balance: "",
+                    running_balance: "",
+                    currency: transaction.transactionCurrency,
+                    description: "",
+                    iban: "",
+                    opening_balance: "",
+                    reference_no: "",
+                    service: "",
+                    status: "",
+                    transaction_datetime: "",
+                    transaction_id: 0,
+                    transaction_uuid: "",
+                  }}
+                  key={index}
+                />
+              ))
+            : !_groupedByDateTransactions && (
+                <Fragment>
+                  <View style={{ padding: 30 }}>
+                    <Text>
+                      Card don't have any transactions. Make sure you have
+                      selected the right card.
+                    </Text>
+                  </View>
+                </Fragment>
+              )}
           <View>
             {!isCardTransactionShown && _groupedByDateTransactions
-              ? Object.keys(_groupedByDateTransactions)
-                  .map((date: string) => {
-                    let _amount: number = 0;
-                    const transactionsByDate = _groupedByDateTransactions[
-                      date
-                    ].map((tx, index) => {
-                      const { amount } = tx;
-                      _amount = Number(_amount) + Number(amount);
-                      return tx;
-                    });
-                    const shownData = {
-                      date,
-                      totalAmount: _amount.toString(),
-                      currency: _groupedByDateTransactions[date][0].currency,
-                    };
-                    return (
-                      <TransactionsByDate
-                        key={
-                          _groupedByDateTransactions[date][0].transaction_uuid
-                        }
-                        shownData={shownData}
-                        transactionsByDate={transactionsByDate}
-                        totalAmount={_amount.toString()}
-                      />
-                    );
-                  })
-            : null }
+              ? Object.keys(_groupedByDateTransactions).map((date: string) => {
+                  let _amount: number = 0;
+                  const transactionsByDate = _groupedByDateTransactions[
+                    date
+                  ].map((tx, index) => {
+                    const { amount } = tx;
+                    _amount = Number(_amount) + Number(amount);
+                    return tx;
+                  });
+                  const shownData = {
+                    date,
+                    totalAmount: _amount.toString(),
+                    currency: _groupedByDateTransactions[date][0].currency,
+                  };
+                  return (
+                    <TransactionsByDate
+                      key={_groupedByDateTransactions[date][0].transaction_uuid}
+                      shownData={shownData}
+                      transactionsByDate={transactionsByDate}
+                      totalAmount={_amount.toString()}
+                    />
+                  );
+                })
+              : null}
           </View>
           <Seperator backgroundColor={vars["grey"]} />
-          { !isCardTransactionShown && 
-            <View style={{bottom: 0}}>
+          {!isCardTransactionShown && (
+            <View style={{ bottom: 0 }}>
               <Pagination
                 handlePreviousPage={handlePreviousPage}
                 handleNextPage={handleNextPage}
@@ -477,162 +493,185 @@ export function Transactions({ navigation, route }: any) {
                 lastPage={lastPage || 0}
               />
             </View>
-          }
+          )}
         </View>
       </ScrollView>
-      <BottomSheet isVisible={isSheetFilterOpen} onClose={() => setIsSheetFilterOpen(!isSheetFilterOpen)}>
+      <BottomSheet
+        isVisible={isSheetFilterOpen}
+        onClose={() => setIsSheetFilterOpen(!isSheetFilterOpen)}
+      >
         <View style={styles.containerBottomSheetHeader}>
-          <Typography fontSize={18}>
-            Filters
-          </Typography>
-          <TouchableOpacity onPress={() => clearFilter()} style={{flexDirection: 'row'}}>
-            <Text style={{paddingRight: 5, fontSize: 12, color: vars['accent-blue']}}>Refresh</Text>
-            <Ionicons name="refresh" size={14} color={vars['accent-blue']} />
+          <Typography fontSize={18}>Filters</Typography>
+          <TouchableOpacity
+            onPress={() => clearFilter()}
+            style={{ flexDirection: "row" }}
+          >
+            <Text
+              style={{
+                paddingRight: 5,
+                fontSize: 12,
+                color: vars["accent-blue"],
+              }}
+            >
+              Refresh
+            </Text>
+            <Ionicons name="refresh" size={14} color={vars["accent-blue"]} />
           </TouchableOpacity>
         </View>
-        <Divider style={{marginVertical: 5}} />
-        <View style={{display: 'flex', flexDirection: 'row'}}>
-          <View style={{flex: 1, flexWrap: 'wrap'}}>
+        <Divider style={{ marginVertical: 5 }} />
+        <View style={{ display: "flex", flexDirection: "row" }}>
+          <View style={{ flex: 1, flexWrap: "wrap" }}>
             <Typography fontSize={14} color="#696F7A">
               Start date
             </Typography>
             <Button
-                style={{
-                  width: 131,
-                  backgroundColor: "gey",
-                  marginTop: 10,
-                  lineHeight: 25,
-                  borderWidth: 1,
-                  borderColor: vars['accent-blue']
-                }}
-                color="black-only"
-                onPress={() => {
+              style={{
+                width: 131,
+                backgroundColor: "gey",
+                marginTop: 10,
+                lineHeight: 25,
+                borderWidth: 1,
+                borderColor: vars["accent-blue"],
+              }}
+              color="black-only"
+              onPress={() => {
+                setShowPickerDateFilter({
+                  dateTo: {
+                    state: false,
+                    value: showPickerDateFilter.dateTo.value,
+                  },
+                  dateFrom: {
+                    state: true,
+                    value: showPickerDateFilter.dateFrom.value,
+                  },
+                });
+              }}
+              disabled={searchFieldData.card_id !== ""}
+            >
+              {showPickerDateFilter.dateFrom.value &&
+                formatDateDayMonthYear(showPickerDateFilter.dateFrom.value)}
+            </Button>
+            {showPickerDateFilter.dateFrom.state && (
+              <DateTimePicker
+                mode="date"
+                display="spinner"
+                onTouchCancel={() =>
                   setShowPickerDateFilter({
-                    dateTo: {
-                      state: false,
-                      value: showPickerDateFilter.dateTo.value,
-                    },
+                    ...showPickerDateFilter,
                     dateFrom: {
-                      state: true,
-                      value: showPickerDateFilter.dateFrom.value,
+                      state: false,
+                      value: null,
                     },
                   })
+                }
+                // minimumDate={new Date(new Date().setMonth(new Date().getMonth() - 2))}
+                //go back 5 years 12*5
+                minimumDate={
+                  new Date(new Date().setMonth(new Date().getMonth() - 60))
+                }
+                maximumDate={new Date()}
+                value={
+                  !showPickerDateFilter.dateFrom.value
+                    ? currentDate
+                    : new Date(showPickerDateFilter.dateFrom.value)
+                }
+                textColor="black"
+                onChange={(event: any) => {
+                  if (event.type == "set") {
+                    handleOnChangeShowPickerDate(
+                      event.nativeEvent.timestamp,
+                      setShowPickerDateFilter,
+                      showPickerDateFilter,
+                      "dateFrom"
+                    );
+                  }
                 }}
-                disabled={searchFieldData.card_id !== ""}
-              >
-                {showPickerDateFilter.dateFrom.value && formatDateDayMonthYear(showPickerDateFilter.dateFrom.value)}
-              </Button>
-              {showPickerDateFilter.dateFrom.state && (
-                <DateTimePicker
-                  mode="date"
-                  display="spinner"
-                  onTouchCancel={() =>
-                    setShowPickerDateFilter({
-                      ...showPickerDateFilter,
-                      dateFrom: {
-                        state: false,
-                        value: null,
-                      },
-                    })
-                  }
-                  // minimumDate={new Date(new Date().setMonth(new Date().getMonth() - 2))}
-                  //go back 5 years 12*5
-                  minimumDate={new Date(new Date().setMonth(new Date().getMonth()- 60))}
-                  maximumDate={new Date()}
-                  value={
-                    !showPickerDateFilter.dateFrom.value
-                      ? currentDate
-                      : new Date(showPickerDateFilter.dateFrom.value)
-                  }
-                  textColor="black"
-                  onChange={(event: any) => {
-                    if (event.type == "set") {
-                      handleOnChangeShowPickerDate(
-                        event.nativeEvent.timestamp,
-                        setShowPickerDateFilter,
-                        showPickerDateFilter,
-                        "dateFrom",
-                      );
-                    }
-                  }}
-                  style={styles.dropdownIOSFrom}
-                />
-              )}
+                style={styles.dropdownIOSFrom}
+              />
+            )}
           </View>
-          <View style={{flex: 1}}>
+          <View style={{ flex: 1 }}>
             <Typography fontSize={14} color="#696F7A">
               Finish date
             </Typography>
             <Button
-                style={{
-                  width: 131,
-                  backgroundColor: "grey",
-                  marginTop: 10,
-                  lineHeight: 25,
-                  borderWidth: 1,
-                  borderColor: vars['accent-blue']
-                }}
-                color="black-only"
-                onPress={() => {
+              style={{
+                width: 131,
+                backgroundColor: "grey",
+                marginTop: 10,
+                lineHeight: 25,
+                borderWidth: 1,
+                borderColor: vars["accent-blue"],
+              }}
+              color="black-only"
+              onPress={() => {
+                setShowPickerDateFilter({
+                  dateFrom: {
+                    state: false,
+                    value: showPickerDateFilter.dateFrom.value,
+                  },
+                  dateTo: {
+                    state: true,
+                    value: showPickerDateFilter.dateTo.value,
+                  },
+                });
+              }}
+              disabled={searchFieldData.card_id !== ""}
+            >
+              {showPickerDateFilter.dateTo.value &&
+                formatDateDayMonthYear(showPickerDateFilter.dateTo.value)}
+            </Button>
+            {showPickerDateFilter.dateTo.state && (
+              <DateTimePicker
+                mode="date"
+                display="spinner"
+                onTouchCancel={() =>
                   setShowPickerDateFilter({
-                    dateFrom: {
-                      state: false,
-                      value: showPickerDateFilter.dateFrom.value,
-                    },
+                    ...showPickerDateFilter,
                     dateTo: {
-                      state: true,
-                      value: showPickerDateFilter.dateTo.value,
+                      state: false,
+                      value: null,
                     },
                   })
+                }
+                // minimumDate={new Date(new Date().setMonth(new Date().getMonth() - 2))}
+                //go back 5 years 12*5
+                minimumDate={
+                  new Date(new Date().setMonth(new Date().getMonth() - 60))
+                }
+                maximumDate={new Date()}
+                value={
+                  !showPickerDateFilter.dateTo.value
+                    ? currentDate
+                    : new Date(showPickerDateFilter.dateTo.value)
+                }
+                textColor="black"
+                onChange={(event: any) => {
+                  if (event.type == "set") {
+                    handleOnChangeShowPickerDate(
+                      event.nativeEvent.timestamp,
+                      setShowPickerDateFilter,
+                      showPickerDateFilter,
+                      "dateTo"
+                    );
+                  }
                 }}
-                disabled={searchFieldData.card_id !== ""}
-              >
-                {showPickerDateFilter.dateTo.value && formatDateDayMonthYear(showPickerDateFilter.dateTo.value)}
-              </Button>
-              {showPickerDateFilter.dateTo.state && (
-                <DateTimePicker
-                  mode="date"
-                  display="spinner"
-                  onTouchCancel={() =>
-                    setShowPickerDateFilter({
-                      ...showPickerDateFilter,
-                      dateTo: {
-                        state: false,
-                        value: null,
-                      },
-                    })
-                  }
-                  // minimumDate={new Date(new Date().setMonth(new Date().getMonth() - 2))}
-                   //go back 5 years 12*5
-                  minimumDate={new Date(new Date().setMonth(new Date().getMonth()- 60))}
-                  maximumDate={new Date()}
-                  value={
-                    !showPickerDateFilter.dateTo.value
-                      ? currentDate
-                      : new Date(showPickerDateFilter.dateTo.value)
-                  }
-                  textColor="black"
-                  onChange={(event: any) => {
-                    if (event.type == "set") {
-                      handleOnChangeShowPickerDate(
-                        event.nativeEvent.timestamp,
-                        setShowPickerDateFilter,
-                        showPickerDateFilter,
-                        "dateTo",
-                      );
-                    }
-                  }}
-                  style={styles.dropdownIOSTo}
-                />
-              )}
+                style={styles.dropdownIOSTo}
+              />
+            )}
           </View>
         </View>
-        <Typography fontSize={10} color="#696F7A">maximum date range is 60 days</Typography>
-        <Divider style={{marginVertical: 15}} />
+        <Typography fontSize={10} color="#696F7A">
+          maximum date range is 60 days
+        </Typography>
+        <Divider style={{ marginVertical: 15 }} />
         <Typography fontSize={14} color="#696F7A">
           Status
         </Typography>
-        <ScrollView horizontal style={{display: 'flex', flexDirection: 'row'}}>
+        <ScrollView
+          horizontal
+          style={{ display: "flex", flexDirection: "row" }}
+        >
           {transactionStatusOptions.map((option, index) => (
             <TouchableOpacity
               key={index}
@@ -642,7 +681,10 @@ export function Transactions({ navigation, route }: any) {
                 flexDirection: "row",
                 alignItems: "center",
                 marginRight: 10,
-                backgroundColor: searchFieldData.status === option.value ? vars[option.colorActive] : vars[option.color],
+                backgroundColor:
+                  searchFieldData.status === option.value
+                    ? vars[option.colorActive]
+                    : vars[option.color],
                 paddingHorizontal: 18,
                 paddingVertical: 12,
                 borderRadius: 99,
@@ -654,105 +696,140 @@ export function Transactions({ navigation, route }: any) {
                 });
               }}
             >
-              <Text style={{
-                color: searchFieldData.status === option.value ? '#fff' : vars[option.colorActive],
-                fontSize: 14
-              }}>{option.label}</Text>
+              <Text
+                style={{
+                  color:
+                    searchFieldData.status === option.value
+                      ? "#fff"
+                      : vars[option.colorActive],
+                  fontSize: 14,
+                }}
+              >
+                {option.label}
+              </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
-        <Divider style={{marginVertical: 15}} />
-        <View style={{display: 'flex', flexDirection: 'row'}}>
-            {/* two input fields for amount range: amount from and amount to */}
-            <View style={{flex: 1, flexWrap: 'wrap', paddingRight: 10}}>
-              <Typography fontSize={14} color="#696F7A">
-                Amount from
-              </Typography>
-              <FormGroup.Input
-                placeholder={"From"}
-                color={vars["black"]}
-                disabled={searchFieldData.card_id !== ""}
-                fontSize={14}
-                fontWeight={"400"}
-                style={{ width: "100%", borderWidth: 1, borderColor: vars['accent-blue'] }}
-                value={searchFieldData.min_amount}
-                onChangeText={(event: string) => {
-                  amountRangeFilter(Number(event), 'min_amount');
-                }}
-              />
-            </View>
-            <View style={{flex: 1, paddingLeft: 10}}>
-              <Typography fontSize={14} color="#696F7A">
-                Amount to
-              </Typography>
-              <FormGroup.Input
-                placeholder={"To"}
-                color={vars["black"]}
-                disabled={searchFieldData.card_id !== ""}
-                fontSize={14}
-                fontWeight={"400"}
-                style={{ width: "100%", borderWidth: 1, borderColor: vars['accent-blue'] }}
-                value={searchFieldData.max_amount}
-                onChangeText={(event: string) => {
-                  amountRangeFilter(Number(event), 'max_amount');
-                }}
-              />
-            </View>
+        <Divider style={{ marginVertical: 15 }} />
+        <View style={{ display: "flex", flexDirection: "row" }}>
+          {/* two input fields for amount range: amount from and amount to */}
+          <View style={{ flex: 1, flexWrap: "wrap", paddingRight: 10 }}>
+            <Typography fontSize={14} color="#696F7A">
+              Amount from
+            </Typography>
+            <FormGroup.Input
+              placeholder={"From"}
+              color={vars["black"]}
+              disabled={searchFieldData.card_id !== ""}
+              fontSize={14}
+              fontWeight={"400"}
+              style={{
+                width: "100%",
+                borderWidth: 1,
+                borderColor: vars["accent-blue"],
+              }}
+              value={searchFieldData.min_amount}
+              onChangeText={(event: string) => {
+                amountRangeFilter(Number(event), "min_amount");
+              }}
+            />
+          </View>
+          <View style={{ flex: 1, paddingLeft: 10 }}>
+            <Typography fontSize={14} color="#696F7A">
+              Amount to
+            </Typography>
+            <FormGroup.Input
+              placeholder={"To"}
+              color={vars["black"]}
+              disabled={searchFieldData.card_id !== ""}
+              fontSize={14}
+              fontWeight={"400"}
+              style={{
+                width: "100%",
+                borderWidth: 1,
+                borderColor: vars["accent-blue"],
+              }}
+              value={searchFieldData.max_amount}
+              onChangeText={(event: string) => {
+                amountRangeFilter(Number(event), "max_amount");
+              }}
+            />
+          </View>
         </View>
-        <Divider style={{marginVertical: 10}} />
+        <Divider style={{ marginVertical: 10 }} />
         <Typography fontSize={14} color="#696F7A">
           Your cards
         </Typography>
         <ScrollView horizontal>
           {listOfActiveCards?.map((card: any, index: number) => (
-            <TouchableOpacity style={{
-              backgroundColor: handleBackgroundChangeActiveInactive(card),
-              paddingVertical: 10,
-              paddingHorizontal: 18,
-              borderRadius: 99,
-              marginHorizontal: 3,
-              width: 151,
-              height: 40,
+            <TouchableOpacity
+              style={{
+                backgroundColor: handleBackgroundChangeActiveInactive(card),
+                paddingVertical: 10,
+                paddingHorizontal: 18,
+                borderRadius: 99,
+                marginHorizontal: 3,
+                width: 151,
+                height: 40,
               }}
-                onPress={() => {
+              onPress={() => {
                 setSearchFieldData({
                   ...searchFieldData,
                   card_id: card.cardreferenceId,
                 });
+              }}
+            >
+              <Typography
+                fontSize={14}
+                color={
+                  searchFieldData.card_id === card.cardreferenceId
+                    ? "#fff"
+                    : card.cardStatus === CardStatus.INACTIVE
+                    ? vars["accent-yellow"]
+                    : card.lostYN === "N"
+                    ? card.type === "P"
+                      ? vars["accent-blue"]
+                      : vars["accent-pink"]
+                    : vars["accent-grey"]
                 }
-              }
               >
-            <Typography fontSize={14} color={ searchFieldData.card_id  === card.cardreferenceId ? '#fff' :
-              card.cardStatus === CardStatus.INACTIVE ? vars['accent-yellow'] : 
-              card.lostYN === "N" ? card.type === "P" ? vars['accent-blue'] : vars['accent-pink'] : vars['accent-grey']
-            }>
-              {card.pan}
-            </Typography>
-          </TouchableOpacity>
+                {card.pan}
+              </Typography>
+            </TouchableOpacity>
           ))}
         </ScrollView>
-        <Divider style={{marginVertical: 15}} />
+        <Divider style={{ marginVertical: 15 }} />
         <Button
           style={{
-            width: '100%',
+            width: "100%",
             backgroundColor: "grey",
             marginTop: 10,
             lineHeight: 25,
             borderWidth: 1,
-            borderColor: vars['accent-pink']
+            borderColor: vars["accent-pink"],
           }}
           color="light-pink"
-          leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
+          leftIcon={
+            <AntDesign
+              name="checkcircleo"
+              size={16}
+              color={vars["accent-pink"]}
+            />
+          }
           onPress={() => {
             setIsLoading(true);
             setIsSheetFilterOpen(!isSheetFilterOpen);
-            !isCardTransactionShown ? fetchTransactionsWithFilters(searchFieldData) :
-            handleFetchCardTransactions(searchFieldData.card_id || activeCard?.cardreferenceId.toString());
+            !isCardTransactionShown
+              ? fetchTransactionsWithFilters(searchFieldData)
+              : handleFetchCardTransactions(
+                  searchFieldData.card_id ||
+                    activeCard?.cardreferenceId.toString()
+                );
           }}
         >
           Submit
         </Button>
-        <Divider style={{marginVertical: 15}} />
+        <Divider style={{ marginVertical: 15 }} />
       </BottomSheet>
       <LoadingScreen isLoading={isLoading} />
     </MainLayout>

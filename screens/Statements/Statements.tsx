@@ -25,6 +25,7 @@ import Button from "../../components/Button";
 import { RootState } from "../../store";
 import ScrollingButtons from "./ScrollingButtons";
 import { format } from "path";
+import { generateStatementsPDF } from "../../components/StatementsPDF/StatementsPDF";
 
 
 interface DateRangeType {
@@ -56,6 +57,8 @@ export function Statements({ navigation }: any) {
   const dispatch = useDispatch();
 
   const [selectedPrint, setSelectedPrint] = useState<string>("pdf");
+  const [searchFilter, setSearchFilter] = useState<StatementFilter>();
+
   const [
     showStatementPickerDateToAndFrom,
     setShowStatementPickerDateToAndFrom,
@@ -64,12 +67,21 @@ export function Statements({ navigation }: any) {
     useState<DateRangeType>(initialDateRange);
   const [isLoading, setLoading] = useState<boolean>(false);
 
+  // const handleGeneratePDF = async (
+  //   statements: StatementTransactionsResponse[]
+  // ) => {
+  //   const pdfUri = await generatePDF(statements);
+  //   return await printAsync({ uri: pdfUri });
+  // };
+
   const handleGeneratePDF = async (
     statements: StatementTransactionsResponse[]
   ) => {
-    const pdfUri = await generatePDF(statements);
+    const pdfUri = await generateStatementsPDF({statements, accountData: {...userData, ...searchFilter}});
     return await printAsync({ uri: pdfUri });
   };
+
+  // generateStatementsPDF
 
   const handleOnChangeShowPickerDate = (
     formattedDate: string,
@@ -111,18 +123,19 @@ export function Statements({ navigation }: any) {
       const { dateFrom, dateTo } = showStatementPickerDateToAndFrom;
       if (userData?.id && dateFrom.value && dateTo.value) {
         setLoading(true);
-        const searchFilter: StatementFilter = {
+        const _searchFilter: StatementFilter = {
           account_id: Number(userData?.id),
           from_date: dateFrom.value,
           to_date: dateTo.value,
         };
         try {
-          await dispatch<any>(getStatementsfinxp(searchFilter))
+          await dispatch<any>(getStatementsfinxp(_searchFilter))
             .unwrap()
             .then((res: StatementResponse) => {
               const { statements } = res;
               if (statements.length > 0) {
                 setLoading(false);
+                setSearchFilter(_searchFilter);
                 return handleGeneratePDF(statements);
               } else {
                 setLoading(false);

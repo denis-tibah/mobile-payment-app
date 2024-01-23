@@ -51,6 +51,7 @@ export default function App() {
   const [fontsLoaded] = useFonts({
     "Nunito-Regular": require("./assets/fonts/Nunito-Regular.ttf"),
     "Nunito-SemiBold": require("./assets/fonts/Nunito-SemiBold.ttf"),
+    "Nunito-Bold": require("./assets/fonts/Nunito-Bold.ttf"),
     "Mukta-Regular": require("./assets/fonts/Mukta-Regular.ttf"),
     "Mukta-SemiBold": require("./assets/fonts/Mukta-SemiBold.ttf"),
     "Mukta-Bold": require("./assets/fonts/Mukta-Bold.ttf"),

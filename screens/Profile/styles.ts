@@ -225,15 +225,18 @@ export const styles: any = StyleSheet.create<any>({
     gap: 2,
   },
   containerTab: {
-    paddingTop: 16,
-    paddingBottom: 16,
-    paddingLeft: 20,
+    height: 70,
+    backgroundColor: "#fff",
   },
+
   containerBackBtn: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+    paddingTop: 16,
+    paddingBottom: 16,
+    marginLeft: 20,
   },
   btnBack: {
     width: 35,

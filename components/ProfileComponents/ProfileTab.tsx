@@ -11,6 +11,8 @@ import { useFormik } from "formik";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import DropDownPicker from "react-native-dropdown-picker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Entypo from "react-native-vector-icons/Entypo";
 
 import Button from "../Button";
 import FormGroup from "../FormGroup";
@@ -223,7 +225,7 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
                   flexDirection: "row",
                   alignItems: "center",
                   width: "100%",
-                  marginBottom: 12,
+                  marginBottom: 18,
                   marginLeft: 4,
                   marginRight: 4,
                   gap: 8,
@@ -303,6 +305,7 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
                     placeholder="First Name"
                     placeholderTextColor={vars["ios-default-text"]}
                     iconColor="blue"
+                    fontSize={16}
                     icon={<ProfileIcon size={10} />}
                   />
                 </FormGroup>
@@ -321,6 +324,7 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
                     value={values.lastName}
                     placeholder="Last Name"
                     placeholderTextColor={vars["ios-default-text"]}
+                    fontSize={16}
                     iconColor="blue"
                     icon={<ProfileIcon size={10} />}
                   />
@@ -351,7 +355,12 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
                       <View
                         style={[styles.dropDownIconContainerRight, { top: 3 }]}
                       >
-                        <ArrowRightIcon size={16} color="blue" />
+                        {/* <ArrowRightIcon size={16} color="blue" /> */}
+                        <MaterialCommunityIcons
+                          size={20}
+                          color="#086AFB"
+                          name={"calendar-month-outline"}
+                        />
                       </View>
                     </TouchableOpacity>
                   </View>
@@ -365,7 +374,7 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
               </View>
               <View style={styles.separatorContainer}>
                 <Seperator
-                  backgroundColor={vars["medium-grey"]}
+                  backgroundColor={vars["light-grey"]}
                   marginTop={18}
                   marginBottom={16}
                   width="94%"
@@ -373,7 +382,12 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
               </View>
               <View style={[styles.formContainer, styles.addressHeader]}>
                 <CompassIcon color="blue" size={18} />
-                <Typography fontSize={16} marginLeft={4}>
+                <Typography
+                  fontSize={18}
+                  fontWeight={600}
+                  fontFamily="Nunito-SemiBold"
+                  marginLeft={4}
+                >
                   Address
                 </Typography>
               </View>
@@ -388,7 +402,7 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
                     placeholderTextColor={vars["ios-default-text"]}
                     placeholder="Address"
                     iconColor="blue"
-                    icon={<KeyIcon />}
+                    icon={<CityIcon size={16} color="blue" />}
                   />
                 </FormGroup>
               </View>
@@ -422,7 +436,7 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
                   />
                 </FormGroup>
               </View>
-              <View style={styles.formContainer}>
+              {/*  <View style={styles.formContainer}>
                 <FormGroup>
                   <FormGroup.Input
                     keyboardType="default"
@@ -436,7 +450,7 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
                     icon={<MapIcon />}
                   />
                 </FormGroup>
-              </View>
+              </View> */}
               <View style={styles.formContainer}>
                 <FormGroup>
                   <FormGroup.Input
@@ -456,7 +470,7 @@ const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
                 <FormGroup>
                   <View style={styles.dropdownWrapper}>
                     <View style={styles.dropDownIconContainerLeft}>
-                      <CityIcon size={16} color="blue" />
+                      <Entypo size={18} color="#086AFB" name={"globe"} />
                     </View>
                     <View>
                       <DropDownPicker

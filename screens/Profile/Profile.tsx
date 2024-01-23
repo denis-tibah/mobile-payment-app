@@ -6,6 +6,7 @@ import {
   Switch,
   Pressable,
   SafeAreaView,
+  Platform,
 } from "react-native";
 import { Formik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
@@ -1213,21 +1214,51 @@ export function Profile({ route, navigation }: any) {
 
             {tabSelection !== "" ? (
               <Fragment>
-                <View
-                  style={[styles.containerTab, { backgroundColor: "#fff" }]}
-                >
-                  <TouchableOpacity onPress={() => setTabSelection("")}>
-                    <View style={styles.containerBackBtn}>
-                      <View style={styles.btnBack}>
-                        <ArrowBackIcon color="blue" size={14} />
+                <View style={[styles.containerTab, { overflow: "hidden" }]}>
+                  <View
+                    style={{
+                      ...Platform.select({
+                        ios: {
+                          backgroundColor: "#fff",
+                          shadowColor: "grey",
+                          shadowOffset: { width: 1, height: 3 },
+                          shadowOpacity: 0.2,
+                        },
+                        android: {
+                          backgroundColor: "#fff",
+                          shadowColor: "grey",
+                          shadowOpacity: 0.6,
+                          elevation: 5,
+                        },
+                      }),
+                    }}
+                  >
+                    <TouchableOpacity onPress={() => setTabSelection("")}>
+                      <View style={styles.containerBackBtn}>
+                        <View style={styles.btnBack}>
+                          <ArrowBackIcon color="blue" size={14} />
+                        </View>
+                        <Typography
+                          fontSize={18}
+                          fontWeight={600}
+                          fontFamily="Nunito-SemiBold"
+                        >
+                          {tabSelection}
+                        </Typography>
                       </View>
-                      <Typography fontSize={18} fontWeight={600}>
-                        {tabSelection}
-                      </Typography>
-                    </View>
-                  </TouchableOpacity>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <Seperator backgroundColor={vars["medium-grey"]} width="100%" />
+                {/* <View
+                  style={{
+                    shadowOpacity: 0.1,
+                    shadowRadius: 15,
+                    shadowColor: "black",
+                    elevation: 8,
+                    width: "100%",
+                    height: 2,
+                  }}
+                /> */}
               </Fragment>
             ) : null}
             {displayTabSelection()}

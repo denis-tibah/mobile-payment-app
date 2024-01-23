@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Pressable,
   RefreshControl,
@@ -51,6 +51,7 @@ import BottomSheet from "../../components/BottomSheet";
 import ManagePaymentMethod from "./Components/ManagePayment";
 import { PinCodeInputBoxes } from "../../components/FormGroup/FormGroup";
 import { useLazyOrderCardQuery, useLazySendSmsLostCardVerificationQuery, useLazyShowCardDetailsQuery } from "../../redux/card/cardSliceV2";
+import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 
 const DEFAULT_CARD_ENROLLMENT_STATUS = {
   title: "",
@@ -60,6 +61,7 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
 
 export function Card({ navigation, route }: any) {
   const dispatch = useDispatch();
+  const refRBSheet = useRef();
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
   const profile = useSelector((state: any) => state.profile?.profile);
@@ -104,6 +106,7 @@ export function Card({ navigation, route }: any) {
   const [terminatedThisCard] = useLazySendSmsLostCardVerificationQuery();
   const shownCardsOnCarousel = isTerminatedCardShown ? cardsActiveList ? [...cardsActiveList, ...cardData] : [] : cardsActiveList ? cardsActiveList : [];
 
+
   const handleGetCards = async () => {
     try {
       await dispatch(getCards() as any);
@@ -120,11 +123,16 @@ export function Card({ navigation, route }: any) {
     }
     try {
       setIsloading(prev => true);
+      console.log({
+        freezeYN: isCardToFreeze ? "Y" : "N",
+        account_id: userData?.id,
+        card_id: !selectedCard ? cardsActiveList[0].cardreferenceId : selectedCard?.cardreferenceId,
+      });
       await dispatch<any>(
         setCardAsFrozen({
           freezeYN: isCardToFreeze ? "Y" : "N",
           account_id: userData?.id,
-          card_id: !selectedCard ? cardsActiveList[0] : selectedCard?.cardreferenceId,
+          card_id: !selectedCard ? cardsActiveList[0].cardreferenceId : selectedCard?.cardreferenceId,
         })
       )
       .unwrap()
@@ -336,6 +344,10 @@ export function Card({ navigation, route }: any) {
   //   })();
   // }, [cardData]);
 
+  useEffect(() => {
+    isManagePaymentMethod ? refRBSheet?.current?.open() : refRBSheet?.current?.close();
+  }, [isManagePaymentMethod]);
+
   // triggered when cardDetails image is truthy
   useEffect(() => {
     let interval: any;
@@ -352,8 +364,8 @@ export function Card({ navigation, route }: any) {
   }, [cardDetails, remainingTime]);
 
   useEffect(() => {
-    if(!selectedCard) {
-      setSelectedCard(shownCardsOnCarousel[0]);
+    if (!selectedCard) {
+      setSelectedCard(cardsActiveList[0]);
     }
   }, [shownCardsOnCarousel]);
 
@@ -579,9 +591,22 @@ export function Card({ navigation, route }: any) {
               </View>
             </View>
           <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
-          <BottomSheet
-            isVisible={isManagePaymentMethod}
-            onClose={() => setIsManagePaymentMethod(false)}
+          <SwipableBottomSheet
+            rbSheetRef={refRBSheet}
+            closeOnDragDown={true}
+            closeOnPressMask={false}
+            height={380}
+            wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+            containerStyles={{
+              backgroundColor: "#FFF",
+              borderTopLeftRadius: 14,
+              borderTopRightRadius: 14,
+              elevation: 12,
+              shadowColor: "#52006A",
+              paddingHorizontal: 15,
+            }}
+            draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
+
           >
             <Typography fontSize={18} fontWeight={600}>
               <MaterialCommunityIcons name="cog-outline" size={18} color={vars['accent-blue']} />
@@ -589,14 +614,7 @@ export function Card({ navigation, route }: any) {
             </Typography>
             <Divider style={{marginVertical: 8, paddingHorizontal: 15}} />
             <ManagePaymentMethod />
-            {/* <Button 
-              onPress={() => setIsManagePaymentMethod(false)}
-              style={{color: '#fff'}}
-              color="light-blue"
-            >
-              Close
-            </Button> */}
-          </BottomSheet>
+          </SwipableBottomSheet>
           <BottomSheet
             isVisible={isShowPinActionPressed}
             onClose={() => setIsShowPinActionPressed(false)}
@@ -617,7 +635,8 @@ export function Card({ navigation, route }: any) {
               {/* Yes and no button */}
               <Button
                 onPress={() => {
-                  setIsTerminatedCardShown(!isTerminatedCardShown);
+                  setIsTerminatedCardShown(true);
+                  setSelectedCard(cardsActiveList[0]);
                   setIsShowPinActionPressed(false);
                 }}
                 style={{color: '#fff', width: 140}}
@@ -628,7 +647,9 @@ export function Card({ navigation, route }: any) {
               </Button>
               <Button
                 onPress={() => {
-                  setIsTerminatedCardShown(!isTerminatedCardShown);
+                  setIsTerminatedCardShown(false);
+                  setSelectedCard(cardsActiveList[0]);
+                  setSelectedCard(null);
                   setIsShowPinActionPressed(false);
                 }}
                 style={{color: '#fff', width: 140}}

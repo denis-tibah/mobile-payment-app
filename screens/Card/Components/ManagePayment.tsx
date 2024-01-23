@@ -32,6 +32,7 @@ const ManagePaymentMethod: React.FC = () => {
                   setListOfChecks([...listOfChecks, item.label]);
                 }
               }}
+              style={{top: -9}}
               value={checkIfThisIsChecked ? true : false}
             />
           </View>

@@ -212,6 +212,12 @@ export function getFormattedDateAndTime(dateToFormat: any) {
   return formattedDate;
 }
 
+// convert 2024-01-30 to 30.01.2024
+export const convertDateToDottedName = (date: string) => {
+  const [year, month, day] = date.split("-");
+  return `${day}.${month}.${year}`;
+};
+
 export function getFormattedDateFromUnix(dateToFormat: any) {
   const date = new Date(dateToFormat);
 
@@ -222,6 +228,16 @@ export function getFormattedDateFromUnix(dateToFormat: any) {
     .padStart(2, "0")}/${date.getFullYear()}`;
 
   return formattedDate;
+}
+
+export function convertDateToName(timestamp: any) {
+  let currentTimestamp = new Date(parseInt(timestamp));
+
+    return new Intl.DateTimeFormat("en-UK", {
+      year: "numeric",
+      month: "long",
+      day: "2-digit",
+    }).format(timestamp);
 }
 
 export const formatCurrencyToLocalEn = (currency: string) => {

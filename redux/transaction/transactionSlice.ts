@@ -144,7 +144,6 @@ export const getStatementsfinxp = createAsyncThunk<
 >(
   "getStatementsfinxp",
   async (params, { rejectWithValue, fulfillWithValue }) => {
-    console.log("redux", params);
     try {
       const { data } = await api.post("/getStatementfinxp", params);
       return fulfillWithValue(data);

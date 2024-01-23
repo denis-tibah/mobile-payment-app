@@ -103,6 +103,7 @@ export function Card({ navigation, route }: any) {
   }] = useLazyShowCardDetailsQuery();
   const [terminatedThisCard] = useLazySendSmsLostCardVerificationQuery();
   const shownCardsOnCarousel = isTerminatedCardShown ? cardsActiveList ? [...cardsActiveList, ...cardData] : [] : cardsActiveList ? cardsActiveList : [];
+
   const handleGetCards = async () => {
     try {
       await dispatch(getCards() as any);
@@ -115,8 +116,7 @@ export function Card({ navigation, route }: any) {
 
   const freezeCard = async (isCardToFreeze: boolean) => {
     if(!selectedCard) {
-      console.log("no card selected");
-      return;
+      setSelectedCard(cardsActiveList[0]);
     }
     try {
       setIsloading(prev => true);
@@ -124,9 +124,18 @@ export function Card({ navigation, route }: any) {
         setCardAsFrozen({
           freezeYN: isCardToFreeze ? "Y" : "N",
           account_id: userData?.id,
-          card_id: selectedCard?.cardreferenceId,
+          card_id: !selectedCard ? cardsActiveList[0] : selectedCard?.cardreferenceId,
         })
-      );
+      )
+      .unwrap()
+      .then((res: any) => {
+        const updatedSelectedCard = res.find((card: any) => card.cardreferenceId === selectedCard?.cardreferenceId);
+        setSelectedCard(updatedSelectedCard);
+      })
+      .catch((error: any) => {
+        console.log({ error });
+      });
+      ;
     } catch (error) {
       console.log({ error });
     } finally {
@@ -265,8 +274,6 @@ export function Card({ navigation, route }: any) {
   };
 
   useEffect(() => {
-    // console.log("showCardDetailsData",showCardDetailsData);
-    // console.log("showCardDetailsIsSuccess",showCardDetailsIsSuccess);
     if (showCardDetailsIsSuccess) {
       setCardPin(showCardDetailsData?.cardPin);
       setRemainingTime(30);
@@ -343,6 +350,12 @@ export function Card({ navigation, route }: any) {
     }
     return () => clearInterval(interval);
   }, [cardDetails, remainingTime]);
+
+  useEffect(() => {
+    if(!selectedCard) {
+      setSelectedCard(shownCardsOnCarousel[0]);
+    }
+  }, [shownCardsOnCarousel]);
 
   useEffect(() => {
     setIsloading(true);
@@ -468,7 +481,24 @@ export function Card({ navigation, route }: any) {
                     onPress={() => {
                       setFreezeLoading(true);
                       setIsloading(prev => true);
-                      freezeCard(selectedCard?.frozenYN === "Y" ? false : true);
+                      //card status === do_not_honor means frozen now, before it means pending from enrollment by aristos - arjay 1.23.2024
+                      if( 
+                        selectedCard?.cardStatus === "cancelled" ||
+                        selectedCard?.cardStatus === "terminated"
+                      ) {
+                        Alert.alert("Card is not active", "Please activate your card first");
+                        setFreezeLoading(false);
+                        setIsloading(prev => false);
+                        return;
+                      } else {
+                        setFreezeLoading(false);
+                        setIsloading(prev => false);
+                      }
+                      freezeCard(
+                        selectedCard?.frozenYN === "Y" &&
+                        selectedCard?.cardStatus === "do_not_honor"
+                          ? false : true
+                        );
                     }}
                     disabled={freezeLoading}
                   >

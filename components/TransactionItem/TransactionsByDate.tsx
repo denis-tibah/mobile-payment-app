@@ -176,7 +176,9 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                         </Text>
                       </View>
                     </Box>
-                    <Divider style={{ marginVertical: 5 }} />
+                    {transaction?.description != null  ? (
+                      <Divider style={{ marginVertical: 5 }} />
+                    ): null} 
                      {/* do not show description if the value is null */}
                      {transaction?.description != null  ? (
                         <Box style={styles.detailMobile}>

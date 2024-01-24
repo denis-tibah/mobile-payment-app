@@ -83,6 +83,19 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
             border-collapse: collapse;
             width: 100%;
           }
+          th {
+            text-align: left;
+          }
+          th, td {
+            border: 1px solid black;
+            padding: 5px;
+          }
+          .title {
+            color: #086AFB;
+            font-size: 18pt;
+            font-weight: bold;
+            margin-bottom: 10px;
+          }
           .row-div {
             display: flex;
             flex-direction: row;

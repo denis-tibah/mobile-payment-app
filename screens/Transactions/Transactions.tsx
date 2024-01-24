@@ -160,7 +160,6 @@ export function Transactions({ navigation, route }: any) {
         .then((res) => {
           if (res.data) {
             const { data: _transactions } = res;
-            console.log("🚀 ~ .then ~ _transactions:", _transactions);
             dispatch<any>(setTransationsData(_transactions));
           }
         })

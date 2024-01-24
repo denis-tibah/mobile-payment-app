@@ -28,8 +28,8 @@ interface TransactionItemProps {
 }
 
 export function TransactionItem({ data }: TransactionItemProps) {
+  console.log("🚀 ~ TransactionItem ~ data:", data);
   const [isOpen, setIsOpen] = useState(false);
-
 
   const handleOnOpen = () => {
     setIsOpen(!isOpen);
@@ -71,38 +71,40 @@ export function TransactionItem({ data }: TransactionItemProps) {
         <View style={[styles.base, isOpen && styles.isOpen]}>
           {/* <Box paddingLeft={data.isCardTx ? -5 : 5} width={data.isCardTx ? "45%" : "30%"}> */}
           {/* <Box width={data.isCardTx ? "45%" : "30%"}> */}
-          <Box marginLeft={data.isCardTx ? -10 : 10} width={data.isCardTx ? "45%" : "30%"}>
+          <Box
+            marginLeft={data.isCardTx ? -10 : 10}
+            width={data.isCardTx ? "45%" : "30%"}
+          >
             <Text>
-            {!data.isCardTx ? (
-              <Typography fontSize={14}>
-                {data?.name?.length > 10
-                  ? data?.name?.substring(0, 20) + "."
-                  : data?.name}
-              </Typography>
-                ) : (
+              {!data.isCardTx ? (
                 <Typography fontSize={14}>
-                {data?.name?.length > 10
-                  ? data?.name?.substring(0, 15) + "."
-                  : data?.name}
-              </Typography>
+                  {data?.name?.length > 10
+                    ? data?.name?.substring(0, 20) + "."
+                    : data?.name}
+                </Typography>
+              ) : (
+                <Typography fontSize={14}>
+                  {data?.name?.length > 10
+                    ? data?.name?.substring(0, 15) + "."
+                    : data?.name}
+                </Typography>
               )}
             </Text>
           </Box>
           {!data.isCardTx ? (
-          <Box
-            display="flex"
-            paddingLeft={35}
-            flexDirection="row"
-            alignItems="center"
-            width="40%"
-          >
-            <CalenderEmptyIcon size={14} color="blue" />
-            <Typography fontSize={14}>
-              {" "}
-              {getFormattedDateFromUnix(data?.receiptDate)}
-            </Typography>
-          </Box>
-            ) : (
+            <Box
+              display="flex"
+              paddingLeft={35}
+              flexDirection="row"
+              alignItems="center"
+              width="40%"
+            >
+              <CalenderEmptyIcon size={14} color="blue" />
+              <Typography fontSize={14}>
+                {getFormattedDateFromUnix(data?.receiptDate)}
+              </Typography>
+            </Box>
+          ) : (
             <Box
               display="flex"
               paddingLeft={-5}
@@ -118,46 +120,42 @@ export function TransactionItem({ data }: TransactionItemProps) {
             </Box>
           )}
           {!data.isCardTx ? (
-              <Box
-                width="30%"
-                // paddingLeft={20}
-                paddingLeft={35}
-                display="flex"
-                flexDirection="row"
-                alignItems="center"
-              >
-                  <View>
-                    {currencyIcon(data?.currency)}
-                  </View>
+            <Box
+              width="30%"
+              // paddingLeft={20}
+              paddingLeft={35}
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+            >
+              <View>{currencyIcon(data?.currency)}</View>
 
-                  <Typography fontSize={14}>
-                    {formatAmountTableValue(data?.amount, data?.currency)}
-                    
-                  </Typography>
-          </Box>
+              <Typography fontSize={14}>
+                {formatAmountTableValue(data?.amount, data?.currency)}
+              </Typography>
+            </Box>
           ) : (
             <Box
-                width="30%"
-                // paddingLeft={20}
-                paddingLeft={15}
-                display="flex"
-                flexDirection="row"
-                alignItems="center"
-              > 
-                  <View style={styles.cardpayments}>
-                    {currencyIcon(data?.currency)}
-                  </View>
-      
-                  <View style={styles.cardCell}>
-                    <Typography fontSize={14}>
-                      {formatAmountTableValue(data?.amount, data?.currency)}
-                    </Typography>
-                  </View>
-             
+              width="30%"
+              // paddingLeft={20}
+              paddingLeft={15}
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+            >
+              <View style={styles.cardpayments}>
+                {currencyIcon(data?.currency)}
+              </View>
+
+              <View style={styles.cardCell}>
+                <Typography fontSize={14}>
+                  {formatAmountTableValue(data?.amount, data?.currency)}
+                </Typography>
+              </View>
             </Box>
-           )}
-           
-            {/* {data.isCardTx ? (
+          )}
+
+          {/* {data.isCardTx ? (
               <View style={styles.cardpayments}>
                 {currencyIcon(data?.transfer_currency)}
               </View>
@@ -186,29 +184,33 @@ export function TransactionItem({ data }: TransactionItemProps) {
               </View>
             )} */}
           {/* </Box> */}
-          {!data.isCardTx ? (  
-              <Box
-                width="30%"
-                // paddingLeft={-15}
-                // paddingRight={-20}
-                display="flex"
-                flexDirection="row"
-                alignItems="center"
-              >
-                <Box style={styles.cell}>
-                  {isOpen ? <ArrowDown color="blue" /> : <ArrowDown color="blue" />}
-                </Box>
+          {!data.isCardTx ? (
+            <Box
+              width="30%"
+              // paddingLeft={-15}
+              // paddingRight={-20}
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+            >
+              <Box style={styles.cell}>
+                {isOpen ? (
+                  <ArrowDown color="blue" />
+                ) : (
+                  <ArrowDown color="blue" />
+                )}
               </Box>
-        ) : (
-          <Box
-            width="30%"
-            // paddingLeft={-15}
-            paddingRight={-20}
-            display="flex"
-            flexDirection="row"
-            alignItems="center"
-          >
-            {/* {!data.isCardTx ? <EuroIcon size={18} color="green" /> : null}
+            </Box>
+          ) : (
+            <Box
+              width="30%"
+              // paddingLeft={-15}
+              paddingRight={-20}
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+            >
+              {/* {!data.isCardTx ? <EuroIcon size={18} color="green" /> : null}
 
             {!data.isCardTx ? (
               <Typography fontSize={14}>
@@ -216,12 +218,15 @@ export function TransactionItem({ data }: TransactionItemProps) {
               </Typography>
             ) : null} */}
 
-            <Box style={styles.arrowCell}>
-              {isOpen ? <ArrowDown color="blue" /> : <ArrowDown color="blue" />}
-            
+              <Box style={styles.arrowCell}>
+                {isOpen ? (
+                  <ArrowDown color="blue" />
+                ) : (
+                  <ArrowDown color="blue" />
+                )}
+              </Box>
             </Box>
-          </Box>
-         )}
+          )}
 
           {/* <Box style={styles.cell}>
             
@@ -238,7 +243,9 @@ export function TransactionItem({ data }: TransactionItemProps) {
               <Box style={styles.detailMobileWrapper}>
                 <Box style={styles.detailMobile}>
                   <Text style={styles.nameDetailMobile}>Name:</Text>
-                  <Text numberOfLines={1} style={styles.valueDetailMobile}>{data?.name}</Text>
+                  <Text numberOfLines={1} style={styles.valueDetailMobile}>
+                    {data?.name}
+                  </Text>
                 </Box>
                 <Box style={styles.detailMobile}>
                   <Text style={styles.nameDetailMobile}>Reference:</Text>
@@ -255,15 +262,15 @@ export function TransactionItem({ data }: TransactionItemProps) {
                   </Text>
                 </Box>
                 {!data.isCardTx ? (
-                    <Box style={styles.detailMobile}>
-                      <Text style={styles.nameDetailMobile}>Type:</Text>
-                      <Text style={styles.valueDetailMobile}>
-                        {/* Invoice_{data?.reference_no} */}
-                        {/* {data?.trn_type} */}
-                        {data?.revenueType}
-                      </Text>
-                    </Box>
-                 ) : null}
+                  <Box style={styles.detailMobile}>
+                    <Text style={styles.nameDetailMobile}>Type:</Text>
+                    <Text style={styles.valueDetailMobile}>
+                      {/* Invoice_{data?.reference_no} */}
+                      {/* {data?.trn_type} */}
+                      {data?.revenueType}
+                    </Text>
+                  </Box>
+                ) : null}
                 {!data.isCardTx ? (
                   // <Box style={styles.cardDetails}>
                   <Box>
@@ -318,7 +325,8 @@ export function TransactionItem({ data }: TransactionItemProps) {
                   <Text style={styles.nameDetailMobile}>Time:</Text>
                   <Text style={styles.valueDetailMobile}>
                     {/* {data?.transaction_datetime} */}
-                    {getFormattedDateFromUnix(data?.receiptDate)}
+                    {/* {getFormattedDateFromUnix(data?.receiptDate)} */}
+                    {getFormattedDateAndTime(data?.receiptDate)}
                   </Text>
                 </View>
                 <Box style={styles.downloadContainer}>
@@ -332,30 +340,30 @@ export function TransactionItem({ data }: TransactionItemProps) {
                 </Box>
               </Box>
               {!data.isCardTx ? (
-              <Box style={styles.statusItem}>
-                {data?.status === "SUCCESS" && (
-                  <Chip label="Completed" color="green" />
-                )}
-                {data?.status === "PENDING" && (
-                  <Chip label="Pending" color="orange" />
-                )}
-                {data?.status === "CANCELLED" && (
-                  <Chip label="Cancelled" color="red" />
-                )}
-                {data?.status === "PROCESSING" && (
-                  <Chip label="Processing" color="red" />
-                )}
-              </Box>
-                  ) : <Box style={styles.statusItem}>
+                <Box style={styles.statusItem}>
+                  {data?.status === "SUCCESS" && (
+                    <Chip label="Completed" color="green" />
+                  )}
+                  {data?.status === "PENDING" && (
+                    <Chip label="Pending" color="orange" />
+                  )}
+                  {data?.status === "CANCELLED" && (
+                    <Chip label="Cancelled" color="red" />
+                  )}
+                  {data?.status === "PROCESSING" && (
+                    <Chip label="Processing" color="red" />
+                  )}
+                </Box>
+              ) : (
+                <Box style={styles.statusItem}>
                   {data?.revenueType === "CLEARING" && (
                     <Chip label="Clearing" color="green" />
                   )}
                   {data?.revenueType === "PREAUTH" && (
                     <Chip label="Preauth" color="orange" />
                   )}
-                 
                 </Box>
-                  }
+              )}
             </Box>
           </Box>
         </Box>

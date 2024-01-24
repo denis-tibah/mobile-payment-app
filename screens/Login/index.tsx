@@ -180,7 +180,6 @@ export function LoginScreen({ navigation }: any) {
   const handleChangeFaceId = () => {
     setFaceId(!isFaceId);
   };
-  console.log("🚀 ~ handleChangeFaceId ~ isFaceId:", isFaceId);
 
   // set storage data for biometric to be used on users next session
   const handleSetBiometricFlag = async (param: string) => {

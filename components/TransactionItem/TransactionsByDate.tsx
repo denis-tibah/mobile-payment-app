@@ -177,56 +177,66 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                       </View>
                     </Box>
                     <Divider style={{ marginVertical: 5 }} />
-                    <Box style={styles.detailMobile}>
-                      <Text style={styles.nameDetailMobile}>Description</Text>
-                      <Text style={styles.valueDetailMobile}>
-                        {transaction?.description}
-                      </Text>
-                    </Box>
-                    <View
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        width: "100%",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <View style={styles.detailMobileInnerDetail}>
+                     {/* do not show description if the value is null */}
+                     {transaction?.description != null  ? (
                         <Box style={styles.detailMobile}>
-                          <Text style={styles.nameDetailMobile}>IBAN</Text>
+                          <Text style={styles.nameDetailMobile}>Description</Text>
+                          <Text style={styles.valueDetailMobile}>
+                            {transaction?.description}
+                          </Text>
+                        </Box>
+                       ): null} 
+                       {/* only show Iban and Bic for sepa transfer */}
+                       {transaction?.service != "DEBIT CARD"  ? (
                           <View
                             style={{
                               display: "flex",
                               flexDirection: "row",
-                              backgroundColor: "none",
+                              width: "100%",
+                              justifyContent: "space-between",
                             }}
                           >
-                            <Text style={styles.valueDetailMobile}>
-                              {transaction?.iban &&
-                                `${transaction?.iban.substring(0, 14)}...`}
-                            </Text>
-                            <TouchableOpacity
-                              onPress={async () =>
-                                await Clipboard.setStringAsync(
-                                  transaction?.iban || ""
-                                )
-                              }
-                              style={{ paddingLeft: 10, paddingTop: 3 }}
-                            >
-                              <CopyClipboard color="heavy-blue" size={14} />
-                            </TouchableOpacity>
-                          </View>
-                        </Box>
-                      </View>
-                      <View style={styles.detailMobileInnerDetail}>
-                        <Box style={styles.detailMobile}>
-                          <Text style={styles.nameDetailMobile}>BIC</Text>
-                          <Text style={styles.valueDetailMobile}>
-                            {transaction?.bic}
-                          </Text>
-                        </Box>
-                      </View>
-                    </View>
+                                  <View style={styles.detailMobileInnerDetail}>
+                                    <Box style={styles.detailMobile}>
+                                      <Text style={styles.nameDetailMobile}>IBAN</Text>
+                                      <View
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "row",
+                                          backgroundColor: "none",
+                                        }}
+                                      >
+                                        <Text style={styles.valueDetailMobile}>
+                                          {transaction?.iban &&
+                                            `${transaction?.iban.substring(0, 14)}...`}
+                                        </Text>
+                                        <TouchableOpacity
+                                          onPress={async () =>
+                                            await Clipboard.setStringAsync(
+                                              transaction?.iban || ""
+                                            )
+                                          }
+                                          style={{ paddingLeft: 10, paddingTop: 3 }}
+                                        >
+                                          <CopyClipboard color="heavy-blue" size={14} />
+                                        </TouchableOpacity>
+                                      </View>
+                                    </Box>
+                                  </View>
+                             {/* do not show bic if the value is null */}
+                             {transaction?.bic != null  ? (
+                                <View style={styles.detailMobileInnerDetail}>
+                                  <Box style={styles.detailMobile}>
+                                    <Text style={styles.nameDetailMobile}>BIC</Text>
+                                    <Text style={styles.valueDetailMobile}>
+                                      {transaction?.bic}
+                                    </Text>
+                                  </Box>
+                                  </View>
+                               ): null} 
+                        </View>
+                     ): null}
+                 
                     <Divider style={{ marginVertical: 5 }} />
                     <View
                       style={{

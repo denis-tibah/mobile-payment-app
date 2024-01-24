@@ -2,6 +2,7 @@ import { dateFormatter } from "./dates";
 import { Transaction } from "../models/Transactions";
 import { TRANSACTIONS_STATUS } from "./constants";
 import { err } from "react-native-svg/lib/typescript/xml";
+import dateFns from "date-fns";
 
 export interface GroupedByDateTransactionObject {
   [date: string]: Transaction[];
@@ -14,7 +15,9 @@ export function formatDateTableValue(date = "") {
 //added by Aristos
 export function formatAmountTableValue(amount: any = "", currency = "") {
   if (!amount || !currency) return Number.parseFloat("0").toFixed(2);
-  return `${Number(amount) > 0 ? '+ ' : '- '}${Math.abs(Number.parseFloat(amount)).toFixed(2)}`;
+  return `${Number(amount) > 0 ? "+ " : "- "}${Math.abs(
+    Number.parseFloat(amount)
+  ).toFixed(2)}`;
 }
 
 export function formatAmountTableValue_old(amount: any = "", currency = "") {
@@ -89,20 +92,24 @@ export const getCurrency = (currency = "") => {
   return currency === "EUR" ? "€" : "€";
 };
 
-export const groupedByDateTransactions = ( txData: Transaction[] ): GroupedByDateTransactionObject => {
+export const groupedByDateTransactions = (
+  txData: Transaction[]
+): GroupedByDateTransactionObject => {
   if (!txData) return {};
   const sanitizedDate: Transaction[] = txData.map((tx: Transaction) => {
     return {
       ...tx,
       transaction_datetime: dateFormatter(tx.transaction_datetime.toString()),
-    }
+      transaction_datetime_with_hour: tx.transaction_datetime.toString(),
+    };
   });
-  const groupedByDateTransactions: GroupedByDateTransactionObject = sanitizedDate.reduce((current: any, element) => {
-    (current[element.transaction_datetime] ??= []).push(element);
-    return current;
-  }, {});
+  const groupedByDateTransactions: GroupedByDateTransactionObject =
+    sanitizedDate.reduce((current: any, element) => {
+      (current[element.transaction_datetime] ??= []).push(element);
+      return current;
+    }, {});
   return groupedByDateTransactions;
-}
+};
 
 export function capitalizeFirstLetter(str: string): string {
   return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
@@ -138,8 +145,32 @@ export const screenNames: any = {
 };
 
 const chechIfResponseIsError = (response: any) => {
-  const errorCodes = [500, 400, 401, 403, 404, 405, 406, 409, 422, 429, "500", "400", "401", "403", "404", "405", "406", "409", "422", "429"];
-  if (response && (errorCodes.includes(response.status) || errorCodes.includes(response.code))) {
+  const errorCodes = [
+    500,
+    400,
+    401,
+    403,
+    404,
+    405,
+    406,
+    409,
+    422,
+    429,
+    "500",
+    "400",
+    "401",
+    "403",
+    "404",
+    "405",
+    "406",
+    "409",
+    "422",
+    "429",
+  ];
+  if (
+    response &&
+    (errorCodes.includes(response.status) || errorCodes.includes(response.code))
+  ) {
     return true;
   }
   return false;
@@ -148,19 +179,21 @@ const chechIfResponseIsError = (response: any) => {
 export const getNameInitials = (name: string) => {
   const initials = name.match(/\b\w/g) || [];
   return ((initials.shift() || "") + (initials.pop() || "")).toUpperCase();
-}
+};
 
 export const getUserActiveCards = (cards: any) => {
-  if (!cards || chechIfResponseIsError(cards) || typeof cards === undefined) return [];
+  if (!cards || chechIfResponseIsError(cards) || typeof cards === undefined)
+    return [];
   return cards.filter((card: any) => card.lostYN === "N");
-}
+};
 
 export const sortUserActiveToInactiveCards = (cards: any) => {
-  if (!cards || chechIfResponseIsError(cards) || typeof cards === undefined) return [];
+  if (!cards || chechIfResponseIsError(cards) || typeof cards === undefined)
+    return [];
   const activeCards = cards.filter((card: any) => card.lostYN === "N");
   const inactiveCards = cards.filter((card: any) => card.lostYN === "Y");
   return [...activeCards, ...inactiveCards];
-}
+};
 
 export function getPendingAmount(avlbal: any, currentBalance: any) {
   const pendingAmount = Math.abs(currentBalance - avlbal);
@@ -187,29 +220,30 @@ export function getFormattedDate(dateToFormat: any) {
   return formattedDate;
 }
 
-  export function getFirstAndLastName(str: string) {
-    const firstSpace = str.indexOf(" ");
-    let data = str.slice(firstSpace + 1);
-    data.slice(0, data?.indexOf(" "));
-    return {
-      firstname: str.slice(0, firstSpace),
-      lastname: str.slice(firstSpace + 1),
-    };
-  }
+export function getFirstAndLastName(str: string) {
+  const firstSpace = str.indexOf(" ");
+  let data = str.slice(firstSpace + 1);
+  data.slice(0, data?.indexOf(" "));
+  return {
+    firstname: str.slice(0, firstSpace),
+    lastname: str.slice(firstSpace + 1),
+  };
+}
 
 export function getFormattedDateAndTime(dateToFormat: any) {
   const date = new Date(dateToFormat);
+  const formattedDateAndTime = dateFns.format(date, "yyyy-MM-dd h:mm a"); // Output: YYYY-MM-DD TT:MM PM
 
-  const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(
+  /*   const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(
     date.getMonth() + 1
   )
     .toString()
     .padStart(2, "0")}/${date.getFullYear()} ${date.getHours()}:${date
     .getMinutes()
     .toString()
-    .padStart(2, "0")}`;
+    .padStart(2, "0")}`; */
 
-  return formattedDate;
+  return formattedDateAndTime;
 }
 
 // convert 2024-01-30 to 30.01.2024
@@ -233,11 +267,11 @@ export function getFormattedDateFromUnix(dateToFormat: any) {
 export function convertDateToName(timestamp: any) {
   let currentTimestamp = new Date(parseInt(timestamp));
 
-    return new Intl.DateTimeFormat("en-UK", {
-      year: "numeric",
-      month: "long",
-      day: "2-digit",
-    }).format(timestamp);
+  return new Intl.DateTimeFormat("en-UK", {
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+  }).format(timestamp);
 }
 
 export const formatCurrencyToLocalEn = (currency: string) => {
@@ -256,4 +290,3 @@ export const formatCurrencyToLocalEn = (currency: string) => {
 export const arrayChecker = (arr: any[]): Boolean => {
   return arr && Array.isArray(arr) && arr.length > 0 ? true : false;
 };
-

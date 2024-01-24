@@ -10,6 +10,6 @@ export const getTodaysDate = () => {
 };
 
 export const dateFormatter = (date: string) => {
-  const dateFormatted = new Date(date).toISOString().split('T')[0];
+  const dateFormatted = new Date(date).toISOString().split("T")[0];
   return dateFormatted;
-}
+};

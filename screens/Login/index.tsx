@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Alert, Pressable, View, Switch } from "react-native";
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import * as LocalAuthentication from "expo-local-authentication";
@@ -180,6 +180,7 @@ export function LoginScreen({ navigation }: any) {
   const handleChangeFaceId = () => {
     setFaceId(!isFaceId);
   };
+  console.log("🚀 ~ handleChangeFaceId ~ isFaceId:", isFaceId);
 
   // set storage data for biometric to be used on users next session
   const handleSetBiometricFlag = async (param: string) => {
@@ -439,10 +440,11 @@ export function LoginScreen({ navigation }: any) {
                     <Switch
                       value={isFaceId}
                       trackColor={{
-                        false: "#81b0ff",
-                        true: "#767577",
+                        true: "#81b0ff",
+                        false: "#DDDDDD",
                       }}
-                      thumbColor={isFaceId ? "white" : vars["shaded-grey"]}
+                      /* thumbColor={isFaceId ? "#81b0ff" : "white"} */
+                      thumbColor="#808080"
                       style={{ marginTop: -24 }}
                       ios_backgroundColor="#3e3e3e"
                       onValueChange={handleChangeFaceId}
@@ -450,12 +452,17 @@ export function LoginScreen({ navigation }: any) {
                   </View>
                 </View>
               ) : null}
-              <FixedBottomAction rounded isFullWidth isNoTopMargin style={{backgroundColor: '#ACACAC'}}>
+              <FixedBottomAction
+                rounded
+                isFullWidth
+                isNoTopMargin
+                style={{ backgroundColor: "#ACACAC" }}
+              >
                 <View
                   style={{
                     width: "100%",
                     paddingLeft: 12,
-                    paddingRight: 12
+                    paddingRight: 12,
                   }}
                 >
                   <Button
@@ -464,7 +471,13 @@ export function LoginScreen({ navigation }: any) {
                     disabled={isLoadingLogin || isLoadingAccount}
                     color="light-pink"
                     onPress={handleSubmit}
-                    leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
+                    leftIcon={
+                      <AntDesign
+                        name="checkcircleo"
+                        size={16}
+                        color={vars["accent-pink"]}
+                      />
+                    }
                   >
                     Submit
                   </Button>

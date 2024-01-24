@@ -21,7 +21,7 @@ import { Seperator } from "../../components/Seperator/Seperator";
 import { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import LoadingScreen from "../../components/Loader/LoadingScreen";
-import Pagination from "../../components/Pagination/Pagination";
+/* import Pagination from "../../components/Pagination/Pagination"; */
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 import {
   formatDateDayMonthYear,
@@ -62,9 +62,11 @@ const initialSearchFieldData: SearchFilter = {
   accountId: "",
   direction: "desc",
   status: "",
-  limit: 20,
+  /* limit: 20, */
+  limit: 500,
   page: 1,
 };
+console.log("🚀 ~ initialSearchFieldData:", initialSearchFieldData);
 
 const initialDateRange: DateRangeType = {
   dateTo: {
@@ -159,6 +161,7 @@ export function Transactions({ navigation, route }: any) {
         .then((res) => {
           if (res.data) {
             const { data: _transactions } = res;
+            console.log("🚀 ~ .then ~ _transactions:", _transactions);
             dispatch<any>(setTransationsData(_transactions));
           }
         })
@@ -483,7 +486,7 @@ export function Transactions({ navigation, route }: any) {
                 })
               : null}
           </View>
-          <Seperator backgroundColor={vars["grey"]} />
+          {/* <Seperator backgroundColor={vars["grey"]} />
           {!isCardTransactionShown && (
             <View style={{ bottom: 0 }}>
               <Pagination
@@ -493,7 +496,7 @@ export function Transactions({ navigation, route }: any) {
                 lastPage={lastPage || 0}
               />
             </View>
-          )}
+          )} */}
         </View>
       </ScrollView>
       <BottomSheet

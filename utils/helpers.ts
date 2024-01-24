@@ -2,6 +2,7 @@ import { dateFormatter } from "./dates";
 import { Transaction } from "../models/Transactions";
 import { TRANSACTIONS_STATUS } from "./constants";
 import { err } from "react-native-svg/lib/typescript/xml";
+import dateFns from "date-fns";
 
 export interface GroupedByDateTransactionObject {
   [date: string]: Transaction[];
@@ -231,17 +232,18 @@ export function getFirstAndLastName(str: string) {
 
 export function getFormattedDateAndTime(dateToFormat: any) {
   const date = new Date(dateToFormat);
+  const formattedDateAndTime = dateFns.format(date, "yyyy-MM-dd h:mm a"); // Output: YYYY-MM-DD TT:MM PM
 
-  const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(
+  /*   const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(
     date.getMonth() + 1
   )
     .toString()
     .padStart(2, "0")}/${date.getFullYear()} ${date.getHours()}:${date
     .getMinutes()
     .toString()
-    .padStart(2, "0")}`;
+    .padStart(2, "0")}`; */
 
-  return formattedDate;
+  return formattedDateAndTime;
 }
 
 // convert 2024-01-30 to 30.01.2024

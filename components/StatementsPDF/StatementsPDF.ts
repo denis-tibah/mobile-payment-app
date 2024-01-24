@@ -2,11 +2,12 @@ import React from "react";
 import * as Print from "expo-print";
 import { Asset } from 'expo-asset';
 import { StyleSheet, Text, View, Image } from "react-native";
-import { convertDateToDottedName, convertDateToName } from "../../utils/helpers";
+import { convertDateToDottedName, convertDateToName, formatAmountTableValue } from "../../utils/helpers";
 import * as DocumentPicker from 'expo-document-picker';
 import ZazooLogo from "../../assets/images/ZazooLogoDark.jpg";
 import * as FileSystem from 'expo-file-system';
 import mime from 'react-native-mime-types';
+import { StatementTransactionsResponse } from "../../redux/transaction/transactionSlice";
 // const ZazooLogo = '../../assets/images/ZazooLogo.png';
 
 // const convertImageToBase64 = async (imagePath: string): Promise<string | undefined> => {
@@ -25,7 +26,7 @@ const convertImageToBase64 = async (): Promise<string | undefined> => {
       encoding: 'base64',
     });
     
-    const mimeType = mime.lookup(asset.localUri || '');
+  const mimeType = mime.lookup(asset.localUri || '');
     
     return `data:${mimeType};base64,${image}`;
   } catch (error) {
@@ -60,20 +61,53 @@ const styles = StyleSheet.create({
     },
 });
 
-// const StatementsDocumentHeader = () => (
-//   <View style={styles.bankStatmentHeaderContainer}>
-//     <Text>Account Statement</Text>
-//     <View style={ styles.statementTitle}>
-//       <Text style={ styles.bankStatementGeneratedfont}>Generated on the {convertDateToName(Date.now())} </Text>
-//     </View>
-//   </View>
-// );
+const generateHTML = (transactions: StatementTransactionsResponse[]) => {
+  return transactions.map((transaction: StatementTransactionsResponse) => {
+      let transaction_ref_no = "";
+      let transfer_currency = "";
+
+      if (transaction.transaction_ref_no) {
+        transaction_ref_no = `<p>Transaction Ref No.: ${transaction.transaction_ref_no}</p>`;
+      }
+      if (transaction.transfer_currency) {
+        transfer_currency = `<p>BIC: ${transaction.transfer_currency}</p>`;
+      }
+      const transactionDate = new Date(
+        transaction.transaction_date
+      ).toLocaleDateString();
+
+      return `
+      <tr>
+        <td style="border: none; padding: 5px;">${
+          transaction?.transaction_ref_no || ""
+        }</td>
+        <td style="border: none; padding: 5px;">${transactionDate}</td>
+        <td style="border: none; padding: 5px;">${
+          transaction?.sender_receiver || ""
+        }</td>
+        <td style="border: none; padding: 5px;">${formatAmountTableValue(
+          transaction.balance,
+          transaction.transfer_currency
+        )}</td>
+        <td style="border: none; padding: 5px; width: 250px;">${formatAmountTableValue(
+          transaction.closing_balance,
+          transaction.transfer_currency
+        )}</td>
+        <td style="border: none; padding: 5px; ">${
+          transaction?.balance || ""
+        }</td>
+      </tr>
+    `;
+    }
+  );
+}
 
 const statementsPDFGenerator = async ({ statements, accountData }: any): Promise<string> => {
   if (!statements || !accountData) {
     return '';
   }
   const image = await convertImageToBase64();
+  const tableRows = generateHTML(statements);
 
   return `
     <html>
@@ -85,9 +119,11 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
           }
           th {
             text-align: left;
+            background-color: #F9F9F9;
+
           }
           th, td {
-            border: 1px solid black;
+            border: none;
             padding: 5px;
           }
           .title {
@@ -152,8 +188,18 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
             <h4 style="font-weight: bold; padding-left: 10px;">To:</h4><h4>${` ` + convertDateToDottedName(accountData?.to_date) + ` `}</h4>
           </div>
         </div>
-        <div style="">
-          
+        <div>
+          <table>
+            <tr>
+              <th>Reference</th>
+              <th>Date(UTC)</th>
+              <th>Description</th>
+              <th style="margin: 0px 15px 0px 15px;">Money out</th>
+              <th style="margin: 0px 15px 0px 15px;">Money in</th>
+              <th>Balance</th>
+            </tr>
+            ${tableRows.join("")}
+          </table>
         </div>
       </body>
     </html>

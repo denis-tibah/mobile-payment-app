@@ -318,11 +318,11 @@ export default function AppNavigationWrapper() {
               component={DashboardStack}
               options={{ headerShown: false }}
             />
-            {/* <Root.Screen
+            <Root.Screen
               options={{ headerShown: false }}
               name={screenNames.payeeSendFunds}
               component={PayeeSendFunds}
-            /> */}
+            />
             <Root.Screen
               name="profile"
               component={ProfileScreen}

@@ -15,11 +15,15 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"],
+        "UIBackgroundModes": [
+          "remote-notification"
+        ],
         "NSFaceIDUsageDescription": "We need your permission to authenticate using Face ID",
         "NSCameraUsageDescription": "This app uses the camera to scan barcodes on event tickets.",
         "NSMicrophoneUsageDescription": "Time to record a video",
@@ -56,7 +60,10 @@
               "pathPrefix": "/"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -66,7 +73,6 @@
     "extra": {
       "eas": {
         "projectId": "7454c009-85fa-4eb0-ae8c-5834ded616c2"
-        
       }
     },
     "plugins": [
@@ -87,6 +93,20 @@
         {
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
         }
+      ],
+      [
+      "expo-build-properties",
+      {
+        "android": {
+          "compileSdkVersion": 33,
+          "targetSdkVersion": 33,
+          "buildToolsVersion": "33.0.0",
+          "minSdkVersion": 31
+        },
+        "ios": {
+          "deploymentTarget": "14.0"
+        }
+      }
       ]
     ]
   }

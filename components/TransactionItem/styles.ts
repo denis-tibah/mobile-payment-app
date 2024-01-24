@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import vars from "../../styles/vars";
 
-export const styles:any = StyleSheet.create<any>({
+export const styles: any = StyleSheet.create<any>({
   base: {
     backgroundColor: "#F5F9FF",
     height: 60,
@@ -18,16 +18,12 @@ export const styles:any = StyleSheet.create<any>({
     borderTopWidth: 1,
   },
   cell: {
-
     paddingLeft: 25,
-    paddingRight: 10
-  
+    paddingRight: 10,
   },
   cardCell: {
-
     paddingLeft: 2,
     // paddingRight: 20
-  
   },
   arrowCell: {
     paddingLeft: 15,
@@ -52,33 +48,34 @@ export const styles:any = StyleSheet.create<any>({
     position: "absolute",
     top: 0,
     right: 0,
-    paddingTop:23,
+    paddingTop: 23,
   },
   detailMobile: {
     marginBottom: 12,
-    display: 'flex',
-    flexDirection: 'column',
-    flexWrap: 'wrap',
-    maxWidth: 230,
+    display: "flex",
+    flexDirection: "column",
+    flexWrap: "nowrap",
+    /* maxWidth: 230, */
+    width: "100%",
   },
   detailMobileInnerDetail: {
     flex: 1,
   },
   detailMobileForEachTransactionContainer: {
-    backgroundColor: '#fff',
-    display: 'flex',
-    flexDirection: 'column',
-    flexWrap: 'wrap',
+    backgroundColor: "#fff",
+    display: "flex",
+    flexDirection: "column",
+    flexWrap: "wrap",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    border: '1px solid #E5E5E5',
+    border: "1px solid #E5E5E5",
   },
   detailMobileForEachTransactionWrapper: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    backgroundColor: "#fff",
     // width: '100%',
   },
   nameDetailMobile: {
@@ -110,26 +107,26 @@ export const styles:any = StyleSheet.create<any>({
     alignItems: "center",
     maxWidth: 250,
     flex: 1,
-    marginRight: 50
+    marginRight: 50,
   },
   valueDetailMobile: {
     color: "#000000",
     fontSize: 14,
     paddingLeft: 5,
-    marginTop: -1
+    marginTop: -1,
   },
   amountDetailMobile: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     flex: 1,
     // alignSelf: 'flex-end',
     // marginTop: -5
   },
   amountAddedDetail: {
-    color: 'green',
+    color: "green",
   },
   amountDeductedDetail: {
-    color: 'red'
+    color: "red",
   },
   detailMobileWrapper: {},
   cardDetails: {
@@ -172,8 +169,7 @@ export const styles:any = StyleSheet.create<any>({
     // display: "flex",
     // flexDirection: "row",
     // alignItems: "center",
-    marginTop: 20
+    marginTop: 20,
     // paddingTop: 30
-
-  }
+  },
 });

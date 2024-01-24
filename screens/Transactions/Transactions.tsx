@@ -66,7 +66,6 @@ const initialSearchFieldData: SearchFilter = {
   limit: 500,
   page: 1,
 };
-console.log("🚀 ~ initialSearchFieldData:", initialSearchFieldData);
 
 const initialDateRange: DateRangeType = {
   dateTo: {

@@ -6,6 +6,8 @@ import {
   getFormattedDate,
   getFormattedDateAndTime,
   getFormattedDateFromUnix,
+  getCurrency,
+  formatCurrencyToLocalEn,
 } from "../../utils/helpers";
 import { styles } from "./styles";
 import ArrowDown from "../../assets/icons/ArrowDown";
@@ -22,6 +24,8 @@ import { printAsync } from "expo-print";
 import { Transaction, CardTransaction } from "../../models/Transactions";
 /* import { TTransaction } from "../../utils/types"; */
 import Export from "../../assets/icons/Export";
+import { displayTitle, displayValue } from "./TransactionHelper";
+import { Divider } from "react-native-paper";
 
 interface TransactionItemProps {
   data: Transaction;
@@ -235,7 +239,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
         </View>
       </Pressable>
 
-      {isOpen && (
+      {/* {isOpen && (
         <Box>
           <Box style={styles.separator}></Box>
           <Box style={styles.rowDetail}>
@@ -250,14 +254,12 @@ export function TransactionItem({ data }: TransactionItemProps) {
                 <Box style={styles.detailMobile}>
                   <Text style={styles.nameDetailMobile}>Reference:</Text>
                   <Text style={styles.valueDetailMobile}>
-                    {/* Invoice_{data?.reference_no} */}
                     {data?.approvalCode}
                   </Text>
                 </Box>
                 <Box style={styles.detailMobile}>
                   <Text style={styles.nameDetailMobile}>Description:</Text>
                   <Text style={styles.valueDetailMobile}>
-                    {/* Invoice_{data?.reference_no} */}
                     {data?.purposeSimple}
                   </Text>
                 </Box>
@@ -265,67 +267,13 @@ export function TransactionItem({ data }: TransactionItemProps) {
                   <Box style={styles.detailMobile}>
                     <Text style={styles.nameDetailMobile}>Type:</Text>
                     <Text style={styles.valueDetailMobile}>
-                      {/* Invoice_{data?.reference_no} */}
-                      {/* {data?.trn_type} */}
                       {data?.revenueType}
                     </Text>
                   </Box>
                 ) : null}
-                {!data.isCardTx ? (
-                  // <Box style={styles.cardDetails}>
-                  <Box>
-                    {/* <Box style={styles.detailMobile}>
-                      <Text style={styles.nameDetailMobile}>IBAN:</Text>
-                      <Text style={styles.valueDetailMobile}>{data?.iban}</Text>
-                      <Text style={styles.valueDetailMobile}>{data?.cr_iban}</Text>
-                    </Box> */}
-                    {/* <Box style={styles.detailMobile}>
-                      <Text style={styles.nameDetailMobile}>BIC:</Text>
-                      <Text style={styles.valueDetailMobile}>{data?.bic}</Text>
-                    </Box> */}
-
-                    {/* : '') */}
-
-                    {/* <Box style={styles.detailMobile}>
-                    <Text style={styles.nameDetailMobile}>
-                      Opening Balance:
-                    </Text>
-                    <Text style={styles.valueDetailMobile}>
-                      {data?.opening_balance}
-                    </Text>
-                  </Box> */}
-                    {/* <Box style={styles.detailMobile}>
-                    <Text style={styles.nameDetailMobile}>
-                      Closing Balance:
-                    </Text>
-                    <Text style={styles.valueDetailMobile}>
-                      {data?.closing_balance}
-                    </Text>
-                  </Box> */}
-                    {/* <Box style={styles.detailMobile}>
-                      <Text style={styles.nameDetailMobile}>
-                        Running Balance:
-                      </Text>
-                      <Text style={styles.valueDetailMobile}>
-
-                        <Box style={styles.eurosign}>
-                          <EuroIcon size={18} color="black" />
-
-                          <Typography fontSize={14}>
-                            {data?.running_balance}
-                          </Typography>
-                        </Box>
-
-                      </Text>
-                    </Box> */}
-                  </Box>
-                ) : null}
-
                 <View style={styles.detailMobile}>
                   <Text style={styles.nameDetailMobile}>Time:</Text>
                   <Text style={styles.valueDetailMobile}>
-                    {/* {data?.transaction_datetime} */}
-                    {/* {getFormattedDateFromUnix(data?.receiptDate)} */}
                     {getFormattedDateAndTime(data?.receiptDate)}
                   </Text>
                 </View>
@@ -367,6 +315,112 @@ export function TransactionItem({ data }: TransactionItemProps) {
             </Box>
           </Box>
         </Box>
+      )} */}
+      {isOpen && (
+        <View>
+          <Box style={styles.separator}></Box>
+          <Pressable>
+            <View style={styles.containerDetailsInfo}>
+              <View style={{ paddingTop: 12, paddingBottom: 16 }}>
+                <View
+                  style={[styles.detailMobile, styles.marginerDetailMobile]}
+                >
+                  {displayTitle({ title: "Name:" })}
+                  {displayValue({ content: data?.name })}
+                </View>
+                <View style={styles.detailMobile}>
+                  {displayTitle({ title: "Reference:" })}
+                  {displayValue({ content: data?.approvalCode })}
+                </View>
+              </View>
+              {data?.purposeSimple != null ? <Divider /> : null}
+              {data?.purposeSimple != null ? (
+                <View
+                  style={{
+                    paddingTop: 12,
+                    paddingBottom: 16,
+                  }}
+                >
+                  <View
+                    style={[styles.detailMobile, styles.marginerDetailMobile]}
+                  >
+                    {displayTitle({ title: "Description" })}
+                    {displayValue({ content: data?.purposeSimple })}
+                  </View>
+                  <View style={styles.cardContainer}>
+                    <View style={styles.cardContentContainer}>
+                      {displayTitle({ title: "Card" })}
+                      {/* {displayValue({ content: "**** **** 5566" })} */}
+                    </View>
+                    <View style={styles.cardContentContainer}>
+                      {displayTitle({ title: "FX" })}
+                      {displayValue({
+                        content: `${getCurrency(data?.currency || "")}${
+                          data?.ezb
+                        }`,
+                      })}
+                    </View>
+                    <View style={styles.cardContentContainer}>
+                      {displayTitle({ title: "Fees" })}
+                      {displayValue({
+                        content: `${getCurrency(data?.currency || "")}${
+                          data?.sumBilledFees
+                        }`,
+                      })}
+                    </View>
+                  </View>
+                </View>
+              ) : null}
+              {data?.revenueType != null ? <Divider /> : null}
+              {data?.revenueType != null ? (
+                <View
+                  style={{
+                    paddingTop: 12,
+                    paddingBottom: 16,
+                  }}
+                >
+                  <View
+                    style={[styles.detailMobile, styles.marginerDetailMobile]}
+                  >
+                    {displayTitle({ title: "Type:" })}
+                    {displayValue({ content: data?.revenueType })}
+                  </View>
+                  <View style={styles.detailMobile}>
+                    {displayTitle({ title: "Time:" })}
+                    {displayValue({
+                      content: getFormattedDateAndTime(data?.receiptDate),
+                    })}
+                  </View>
+                </View>
+              ) : null}
+              {data.isCardTx ? (
+                <Box style={styles.statusItem}>
+                  {data?.status === "SUCCESS" && (
+                    <Chip label="Completed" color="green" />
+                  )}
+                  {data?.status === "PENDING" && (
+                    <Chip label="Pending" color="orange" />
+                  )}
+                  {data?.status === "CANCELLED" && (
+                    <Chip label="Cancelled" color="red" />
+                  )}
+                  {data?.status === "PROCESSING" && (
+                    <Chip label="Processing" color="red" />
+                  )}
+                </Box>
+              ) : (
+                <Box style={styles.statusItem}>
+                  {data?.revenueType === "CLEARING" && (
+                    <Chip label="Clearing" color="green" />
+                  )}
+                  {data?.revenueType === "PREAUTH" && (
+                    <Chip label="Preauth" color="orange" />
+                  )}
+                </Box>
+              )}
+            </View>
+          </Pressable>
+        </View>
       )}
     </>
   );

@@ -47,16 +47,19 @@ export const styles: any = StyleSheet.create<any>({
   statusItem: {
     position: "absolute",
     top: 0,
-    right: 0,
+    right: 40,
     paddingTop: 23,
   },
   detailMobile: {
-    marginBottom: 12,
+    marginLeft: 12,
     display: "flex",
     flexDirection: "column",
-    flexWrap: "nowrap",
-    /* maxWidth: 230, */
+    /* flexWrap: "nowrap", */
+    flexFlow: "column wrap",
     width: "100%",
+  },
+  marginerDetailMobile: {
+    marginBottom: 12,
   },
   detailMobileInnerDetail: {
     flex: 1,
@@ -76,7 +79,6 @@ export const styles: any = StyleSheet.create<any>({
     flexWrap: "wrap",
     justifyContent: "space-between",
     backgroundColor: "#fff",
-    // width: '100%',
   },
   nameDetailMobile: {
     color: "#086AFB",
@@ -85,21 +87,23 @@ export const styles: any = StyleSheet.create<any>({
     paddingRight: 10,
     fontWeight: 600,
   },
+  transactionStatus: {
+    fontSize: 12,
+    fontWeight: 600,
+    paddingTop: 2,
+    paddingBottom: 2,
+    paddingLeft: 10,
+    paddingRight: 10,
+    fontFamily: "Mukta-SemiBold",
+    borderRadius: 15,
+  },
   valueDetailMobileStatusSuccess: {
     color: "#0DCA9D",
-    fontSize: 14,
-    fontWeight: 600,
-    paddingLeft: 10,
     backgroundColor: "#E7FAF5",
-    width: 130,
   },
   valueDetailMobileStatusFailed: {
     color: "#FF7171",
-    fontSize: 14,
-    fontWeight: 600,
-    paddingLeft: 10,
     backgroundColor: "#FFEDED",
-    width: 130,
   },
   nameContainer: {
     display: "flex",
@@ -112,15 +116,11 @@ export const styles: any = StyleSheet.create<any>({
   valueDetailMobile: {
     color: "#000000",
     fontSize: 14,
-    paddingLeft: 5,
-    marginTop: -1,
   },
   amountDetailMobile: {
     fontSize: 14,
     fontWeight: "bold",
     flex: 1,
-    // alignSelf: 'flex-end',
-    // marginTop: -5
   },
   amountAddedDetail: {
     color: "green",
@@ -162,14 +162,30 @@ export const styles: any = StyleSheet.create<any>({
     flexDirection: "row",
     alignItems: "center",
     paddingLeft: 10,
-    // marginLeft: 30,
-    // paddingRight: -30,
   },
   currencyIcon: {
-    // display: "flex",
-    // flexDirection: "row",
-    // alignItems: "center",
     marginTop: 20,
-    // paddingTop: 30
+  },
+  cardContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    flexWrap: "wrap",
+    width: "100%",
+    gap: 30,
+    marginLeft: 12,
+  },
+  cardContentContainer: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+  },
+  containerDetailsInfo: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 18,
+    borderTopColor: "#DDD",
+    borderTopWidth: 1,
+    paddingTop: 16,
+    paddingBottom: 28,
   },
 });

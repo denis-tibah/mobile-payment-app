@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
+import { useNavigation } from "@react-navigation/native";
 import { Text, View, TouchableOpacity, Pressable } from "react-native";
 import {
   formatAmountTableValue,
@@ -21,6 +22,7 @@ import CardIcon from "../../assets/icons/Card";
 import vars from "../../styles/vars";
 import { Divider } from "react-native-paper";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
+import { displayTitle, displayValue } from "./TransactionHelper";
 
 interface TransactionItemProps {
   setIsOneTransactionOpen?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -37,6 +39,8 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
   shownData,
   setIsOneTransactionOpen,
 }) => {
+  const { navigate }: any = useNavigation();
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const handleOnOpen = (): void => {
@@ -71,7 +75,6 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
               >
                 <Box style={styles.detailMobileForEachTransactionWrapper}>
                   <View style={styles.nameContainer}>
-                    {/* <Text style={styles.nameDetailMobile}>Name:</Text> */}
                     <CardIcon size={14} color={"heavy-grey"} />
                     <Text numberOfLines={1} style={styles.valueDetailMobile}>
                       {transaction.name}
@@ -135,147 +138,179 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
               </Box>
               {openTransactionIndex === index ? (
                 <Pressable>
-                  <View
-                    style={{
-                      backgroundColor: "#fff",
-                      paddingHorizontal: 18,
-                      borderTopColor: "#DDD",
-                      borderTopWidth: 1,
-                      paddingVertical: 15,
-                    }}
-                  >
-                    <Box style={styles.detailMobile}>
-                      <Text style={styles.nameDetailMobile}>
-                        Transaction Reference
-                      </Text>
-                      <Text style={styles.valueDetailMobile}>
-                        {transaction?.reference_no}
-                      </Text>
-                    </Box>
-                    <Box style={styles.detailMobile}>
-                      <Text style={styles.nameDetailMobile}>
-                        Transaction Status
-                      </Text>
+                  <View style={styles.containerDetailsInfo}>
+                    <View style={{ paddingTop: 12, paddingBottom: 16 }}>
+                      <View
+                        style={[
+                          styles.detailMobile,
+                          styles.marginerDetailMobile,
+                        ]}
+                      >
+                        {displayTitle({ title: "Transaction Reference" })}
+                        {displayValue({ content: transaction?.reference_no })}
+                      </View>
+                      <View style={styles.detailMobile}>
+                        {displayTitle({ title: "Transaction Status" })}
+                        <View
+                          style={{
+                            marginTop: 4,
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          <Text
+                            style={[
+                              styles.transactionStatus,
+                              transaction?.status === defaultStatus
+                                ? styles.valueDetailMobileStatusSuccess
+                                : styles.valueDetailMobileStatusFailed,
+                            ]}
+                          >
+                            {transaction?.status}
+                            {/* add UI here to show the reason for a unsuccessfull transaction */}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    {transaction?.description != null ? <Divider /> : null}
+                    {transaction?.description != null ? (
                       <View
                         style={{
-                          overflow: "hidden",
-                          width: "36%",
-                          borderRadius: 8,
-                          marginTop: 4,
+                          paddingTop: 12,
+                          paddingBottom: 16,
                         }}
                       >
-                        <Text
-                          style={
-                            transaction?.status === defaultStatus
-                              ? styles.valueDetailMobileStatusSuccess
-                              : styles.valueDetailMobileStatusFailed
-                          }
+                        <View
+                          style={[
+                            styles.detailMobile,
+                            styles.marginerDetailMobile,
+                          ]}
                         >
-                          {transaction?.status}
-                          {/* add UI here to show the reason for a unsuccessfull transaction */}
-                        </Text>
-                      </View>
-                    </Box>
-                    {transaction?.description != null  ? (
-                      <Divider style={{ marginVertical: 5 }} />
-                    ): null} 
-                     {/* do not show description if the value is null */}
-                     {transaction?.description != null  ? (
-                        <Box style={styles.detailMobile}>
-                          <Text style={styles.nameDetailMobile}>Description</Text>
-                          <Text style={styles.valueDetailMobile}>
-                            {transaction?.description}
-                          </Text>
-                        </Box>
-                       ): null} 
-                       {/* only show Iban and Bic for sepa transfer */}
-                       {transaction?.service != "DEBIT CARD"  ? (
-                          <View
-                            style={{
-                              display: "flex",
-                              flexDirection: "row",
-                              width: "100%",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                                  <View style={styles.detailMobileInnerDetail}>
-                                    <Box style={styles.detailMobile}>
-                                      <Text style={styles.nameDetailMobile}>IBAN</Text>
-                                      <View
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "row",
-                                          backgroundColor: "none",
-                                        }}
-                                      >
-                                        <Text style={styles.valueDetailMobile}>
-                                          {transaction?.iban &&
-                                            `${transaction?.iban.substring(0, 14)}...`}
-                                        </Text>
-                                        <TouchableOpacity
-                                          onPress={async () =>
-                                            await Clipboard.setStringAsync(
-                                              transaction?.iban || ""
-                                            )
-                                          }
-                                          style={{ paddingLeft: 10, paddingTop: 3 }}
-                                        >
-                                          <CopyClipboard color="heavy-blue" size={14} />
-                                        </TouchableOpacity>
-                                      </View>
-                                    </Box>
-                                  </View>
-                             {/* do not show bic if the value is null */}
-                             {transaction?.bic != null  ? (
-                                <View style={styles.detailMobileInnerDetail}>
-                                  <Box style={styles.detailMobile}>
-                                    <Text style={styles.nameDetailMobile}>BIC</Text>
-                                    <Text style={styles.valueDetailMobile}>
-                                      {transaction?.bic}
-                                    </Text>
-                                  </Box>
-                                  </View>
-                               ): null} 
+                          {displayTitle({ title: "Description" })}
+                          {displayValue({ content: transaction?.description })}
                         </View>
-                     ): null}
-                 
-                    <Divider style={{ marginVertical: 5 }} />
+                        <View style={styles.cardContainer}>
+                          <View style={styles.cardContentContainer}>
+                            {displayTitle({ title: "Card" })}
+                            {displayValue({ content: "**** **** 5566" })}
+                          </View>
+                          <View style={styles.cardContentContainer}>
+                            {displayTitle({ title: "FX" })}
+                            {displayValue({ content: "$266.00" })}
+                          </View>
+                          <View style={styles.cardContentContainer}>
+                            {displayTitle({ title: "Fees" })}
+                            {displayValue({ content: "$0.86" })}
+                          </View>
+                        </View>
+                      </View>
+                    ) : null}
+                    {transaction?.service != "DEBIT CARD" ? (
+                      <Divider style={{ marginVertical: 5 }} />
+                    ) : null}
+                    {/* only show Iban and Bic for sepa transfer */}
+                    {transaction?.service != "DEBIT CARD" ? (
+                      <View
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          width: "100%",
+                          justifyContent: "space-between",
+                          paddingTop: 12,
+                          paddingBottom: 16,
+                        }}
+                      >
+                        <View style={styles.detailMobileInnerDetail}>
+                          <Box style={styles.detailMobile}>
+                            {displayTitle({ title: "IBAN" })}
+                            <View
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                backgroundColor: "none",
+                              }}
+                            >
+                              {displayValue({
+                                content:
+                                  transaction?.iban &&
+                                  `${transaction?.iban.substring(0, 14)}...`,
+                              })}
+                              <TouchableOpacity
+                                onPress={async () =>
+                                  await Clipboard.setStringAsync(
+                                    transaction?.iban || ""
+                                  )
+                                }
+                                style={{ paddingLeft: 10, paddingTop: 3 }}
+                              >
+                                <CopyClipboard color="heavy-blue" size={14} />
+                              </TouchableOpacity>
+                            </View>
+                          </Box>
+                        </View>
+                        {/* do not show bic if the value is null */}
+                        {transaction?.bic != null ? (
+                          <View style={styles.detailMobileInnerDetail}>
+                            <Box style={styles.detailMobile}>
+                              {displayTitle({ title: "BIC" })}
+                              {displayValue({
+                                content: transaction?.bic,
+                              })}
+                            </Box>
+                          </View>
+                        ) : null}
+                      </View>
+                    ) : null}
+                    <Divider />
                     <View
                       style={{
                         display: "flex",
                         flexDirection: "row",
                         width: "100%",
                         justifyContent: "space-between",
+                        paddingTop: 12,
+                        paddingBottom: 16,
                       }}
                     >
                       <View style={styles.detailMobileInnerDetail}>
                         <Box style={styles.detailMobile}>
-                          <Text style={styles.nameDetailMobile}>Type</Text>
-                          <Text style={styles.valueDetailMobile}>
-                            {transaction?.service}
-                          </Text>
+                          {displayTitle({ title: "Type" })}
+                          {displayValue({
+                            content: transaction?.service,
+                          })}
                         </Box>
                       </View>
                       <View style={styles.detailMobileInnerDetail}>
-                        <Box style={styles.detailMobile}>
-                          <Text style={styles.nameDetailMobile}>
+                        <View style={styles.detailMobile}>
+                          <Typography
+                            color="#086AFB"
+                            fontFamily="Nunito-Bold"
+                            fontSize={12}
+                            fontWeight={600}
+                          >
                             Date & Time
-                          </Text>
-
-                          <Text style={styles.valueDetailMobile}>
+                          </Typography>
+                          <Typography
+                            color="#000"
+                            fontFamily="Nunito-SemiBold"
+                            fontSize={14}
+                            fontWeight={600}
+                          >
                             {getFormattedDateAndTime(
                               transaction?.transaction_datetime_with_hour
                             )}
-                          </Text>
-                        </Box>
+                          </Typography>
+                        </View>
                       </View>
                     </View>
-                    {/* <Divider style={{marginVertical: 5}} /> */}
                     <View style={{ marginTop: 10 }}>
                       <Button
                         color={"light-pink"}
                         style={{ width: 154 }}
-                        onPress={() => console.log("customer service")}
+                        onPress={() => {
+                          navigate("profile", { tabSelectionRoute: "Help" });
+                        }}
                         leftIcon={
                           <AntDesign
                             name="customerservice"

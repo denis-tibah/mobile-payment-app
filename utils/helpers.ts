@@ -89,7 +89,17 @@ export const prependBase64 = (base64: string) => {
 };
 
 export const getCurrency = (currency = "") => {
-  return currency === "EUR" ? "€" : "€";
+  const lowercaseCurrency = currency ? currency.toLocaleLowerCase() : "";
+  switch (lowercaseCurrency) {
+    case "eur":
+      return "€";
+    case "usd":
+      return "$";
+    case "gbp":
+      return "£";
+    default:
+      return "€";
+  }
 };
 
 export const groupedByDateTransactions = (

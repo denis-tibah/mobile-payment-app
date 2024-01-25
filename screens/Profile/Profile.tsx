@@ -299,6 +299,12 @@ export function Profile({ route, navigation }: any) {
     }
   };
 
+  useEffect(() => {
+    if (route?.params?.tabSelectionRoute ==="Help") {
+      setTabSelection("Help")
+    }
+  }, [route?.params]);
+
   return (
     <MainLayout navigation={navigation}>
       <Spinner visible={isloadingAccountDetails} />

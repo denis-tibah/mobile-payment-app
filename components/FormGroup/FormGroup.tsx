@@ -88,7 +88,7 @@ export function Label({ children }: any) {
 export function TextArea({ ...props }) {
   return (
     <View style={textarea.wrapper}>
-      <TextInput style={textarea.input} multiline {...props} />
+      <TextInput style={textarea.input} {...props} />
     </View>
   );
 }

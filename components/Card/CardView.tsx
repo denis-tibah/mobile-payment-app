@@ -60,10 +60,10 @@ export const CardView = ({
       <ImageBackground
         resizeMode="contain"
         style={styles.cardContainer}
-        imageStyle={{ borderRadius: 8, height: 225, width: 340 }}
+        imageStyle={{ borderRadius: 8, height: 245, width: 370 }}
         source={cardImage}
       >
-        <View style={{width: '73%'}}>
+        <View style={{width: '72%', paddingTop: 15}}>
           <Text style={styles.panTitle}>Card Number</Text>
           <Text style={styles.panText}>{pan}</Text>
         </View>
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 45,
+    marginTop: 60,
   },
   panTitle: {
     color: "rgba(255, 255, 255, 0.5)",

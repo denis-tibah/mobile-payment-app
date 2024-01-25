@@ -34,12 +34,14 @@ import { AppState } from "react-native";
 import { signout } from "../redux/auth/authSlice";
 import * as SecureStore from "expo-secure-store";
 import Inactivity from "../components/Inactivity";
+import { GetCardScreen } from "../screens/Card/Components/GetCardScreen";
 
 // import * as TaskManager from 'expo-task-manager';
 
 const Tab = createBottomTabNavigator();
 const Root = createNativeStackNavigator();
 const Payee = createStackNavigator();
+const CardStack = createStackNavigator();
 
 // const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
 
@@ -57,6 +59,19 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
+
+function CardScreenStack() {
+  return (
+    <CardStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+      >
+        <CardStack.Screen name={screenNames.card} component={CardScreen} />
+        <CardStack.Screen name={screenNames.getCard} component={GetCardScreen} />
+      </CardStack.Navigator>
+  )
+}
 
 function PayeeStack() {
   return (
@@ -79,7 +94,7 @@ function DashboardStack() {
         name={screenNames.transactions}
         component={TransactionsScreen}
       />
-      <Tab.Screen name={screenNames.card} component={CardScreen} />
+      <Tab.Screen name={screenNames.card} component={CardScreenStack} />
       <Tab.Screen name={screenNames.payments} component={PayeeStack} />
       <Tab.Screen name={screenNames.statements} component={StatementScreen} />
       <Tab.Screen name={screenNames.payees} component={PayeeScreen} />

@@ -55,7 +55,8 @@ const currentDate = new Date();
 export function Statements({ navigation }: any) {
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const dispatch = useDispatch();
-
+  const accountDetails = useSelector((state: RootState) => state?.account?.details);
+  const currentBalance = accountDetails?.curbal;
   const [selectedPrint, setSelectedPrint] = useState<string>("pdf");
   const [searchFilter, setSearchFilter] = useState<StatementFilter>();
 
@@ -77,7 +78,7 @@ export function Statements({ navigation }: any) {
   const handleGeneratePDF = async (
     statements: StatementTransactionsResponse[]
   ) => {
-    const pdfUri = await generateStatementsPDF({statements, accountData: {...userData, ...searchFilter}});
+    const pdfUri = await generateStatementsPDF({statements, accountData: {...userData, ...searchFilter, currentBalance}});
     return await printAsync({ uri: pdfUri });
   };
 

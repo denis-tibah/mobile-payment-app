@@ -142,6 +142,7 @@ export const screenNames: any = {
   forgottenPassword: "forgottenPassword",
   resetPassword: "Reset Password",
   payeeSendFunds: "payee_send_funds",
+  getCard: "getCard",
 };
 
 const chechIfResponseIsError = (response: any) => {
@@ -232,21 +233,31 @@ export function getFirstAndLastName(str: string) {
 
 export function getFormattedDateAndTime(dateToFormat: any) {
   const date = new Date(dateToFormat);
-  const formattedDateAndTime = dateFns.format(date, "yyyy-MM-dd h:mm a"); // Output: YYYY-MM-DD TT:MM PM
-
-  /*   const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(
+  const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(
     date.getMonth() + 1
   )
     .toString()
     .padStart(2, "0")}/${date.getFullYear()} ${date.getHours()}:${date
     .getMinutes()
     .toString()
-    .padStart(2, "0")}`; */
-
-  return formattedDateAndTime;
+    .padStart(2, "0")}`;
+  return formattedDate;
 }
 
-// convert 2024-01-30 to 30.01.2024
+export function getFormattedDateAndTimeV2(dateToFormat: any) {
+  const date = new Date(dateToFormat);
+  const monthNames = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+  const formattedDate = `
+  ${date.getDate().toString().padStart(2, "0")} ${monthNames[date.getMonth()]} ${date
+    .getFullYear()} ${date.getHours().toString().padStart(2, "0")}:${date
+    .getMinutes().toString().padStart(2, "0")}:${date
+    .getSeconds().toString().padStart(2, "0")}`;
+  return formattedDate;
+}
+
 export const convertDateToDottedName = (date: string) => {
   const [year, month, day] = date.split("-");
   return `${day}.${month}.${year}`;

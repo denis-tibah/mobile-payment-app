@@ -15,6 +15,7 @@ import MainLayout from "../../layout/Main";
 import Button from "../../components/Button";
 import { styles } from "./styles";
 import Typography from "../../components/Typography";
+import { AntDesign } from "@expo/vector-icons";
 import CardIcon from "../../assets/icons/Card";
 import FreezeIcon from "../../assets/icons/Freeze";
 import EyeIcon from "../../assets/icons/Eye";
@@ -28,6 +29,7 @@ import {
 } from "../../redux/card/cardSlice";
 import {
   getUserActiveCards,
+  screenNames,
 } from "../../utils/helpers";
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { CardView } from "../../components/Card/CardView";
@@ -62,10 +64,9 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
 
 export function Card({ navigation, route }: any) {
   const dispatch = useDispatch();
-  // get window
-
   const refRBSheet = useRef();
   const refRBSheetShowTerminatedCards = useRef();
+  const refRBSTerminateThisCard = useRef();
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
   const profile = useSelector((state: any) => state.profile?.profile);
@@ -89,6 +90,7 @@ export function Card({ navigation, route }: any) {
   const [isManagePaymentMethod, setIsManagePaymentMethod] = useState<boolean>(false);
   const [isShowTerminatedCard, setIsShowTerminatedCard] = useState<boolean>(false);
   const [isLostPinActionPressed, setIsLostPinActionPressed] = useState<boolean>(false);
+  const [onSnapEnd, setOnSnapEnd] = useState<any>(false);
   const [chosenCurrency, setChosenCurrency] = useState<string>("");
   // const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
   const [isEnrollingCard, setIsEnrollingCard] = useState<boolean>(false);
@@ -209,7 +211,7 @@ export function Card({ navigation, route }: any) {
       return;
     } else {
       setShowCardOtpLoading(true);
-      console.log({ account_id: userID, otp: code, card_id: selectedCard?.cardreferenceId });
+      // console.log({ account_id: userID, otp: code, card_id: selectedCard?.cardreferenceId });
       showCardDetails({ account_id: userID, otp: code, card_id: selectedCard?.cardreferenceId });
 
       // const payload = await dispatch(
@@ -344,10 +346,6 @@ export function Card({ navigation, route }: any) {
   //   })();
   // }, [cardData]);
 
-  useEffect(() => {
-    isManagePaymentMethod ? refRBSheet?.current?.open() : refRBSheet?.current?.close();
-  }, [isManagePaymentMethod]);
-
   // triggered when cardDetails image is truthy
   useEffect(() => {
     let interval: any;
@@ -384,7 +382,6 @@ export function Card({ navigation, route }: any) {
           setShowGetCardModal(false);
           setIsEnrollingCard(true);
           setShowCardOtpModal(true);
-          console.log('here', currency);
           setChosenCurrency(currency);
           }
         }
@@ -433,7 +430,7 @@ export function Card({ navigation, route }: any) {
                 rightAction={
                   <Button
                     onPress={() => {
-                      setShowGetCardModal(true);
+                      navigation.navigate(screenNames.getCard);
                     }}
                     color={"light-pink"}
                     leftIcon={<MaterialCommunityIcons name="credit-card-plus-outline" size={14} color={vars['accent-pink']} />}
@@ -451,13 +448,16 @@ export function Card({ navigation, route }: any) {
                 data={cardDetails?.cardImage ? [cardDetails] : shownCardsOnCarousel}
                 renderItem={_renderItem}
                 refreshing={isLoading}
-                sliderWidth={400}
-                itemWidth={303}
+                sliderWidth={370}
+                itemWidth={370}
                 layout="default"
-                lockScrollWhileSnapping={false}
-                // swipeThreshold={10}
+                lockScrollWhileSnapping={true}
+                onScroll={(value) => {
+                  const aaa = value.currentTarget.valueOf();
+                  console.log({ aaa });
+                }}
                 onSnapToItem={(index) => {
-                  setSelectedCard(shownCardsOnCarousel[index]);
+                  setOnSnapEnd(index);
                 }}
               />
               {cardDetails?.cardNumber ? (
@@ -483,7 +483,8 @@ export function Card({ navigation, route }: any) {
               <View style={styles.cardActionsButtonMargin}>
                 <Pressable>
                   <Button
-                    color={selectedCard?.frozenYN === "Y" ? "blue" : "light-blue"}
+                    // color={selectedCard?.frozenYN === "Y" ? "blue" : "light-blue"}
+                    color="light-blue"
                     leftIcon={
                       <FreezeIcon
                         color={selectedCard?.frozenYN === "Y" ? "white" : "blue"}
@@ -552,7 +553,7 @@ export function Card({ navigation, route }: any) {
                 </View>
                 <TouchableOpacity 
                   style={{marginTop: 7}} 
-                  onPress={() => setIsManagePaymentMethod(!isManagePaymentMethod)}
+                  onPress={() => refRBSheet?.current?.open()}
                 >
                   <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
                 </TouchableOpacity>
@@ -569,7 +570,7 @@ export function Card({ navigation, route }: any) {
                     Lost Card
                   </Typography>
                 </View>
-                <TouchableOpacity style={{marginTop: 7}} onPress={() => setIsLostPinActionPressed(true)}>
+                <TouchableOpacity style={{marginTop: 7}} onPress={() => refRBSTerminateThisCard?.current?.open()}>
                   <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
                 </TouchableOpacity>
               </View>
@@ -640,7 +641,7 @@ export function Card({ navigation, route }: any) {
               }}
               draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
             >
-              <View style={{
+            <View style={{
               width: '30%',
                 alignSelf:'center', 
                 backgroundColor: vars['grey'],
@@ -649,7 +650,7 @@ export function Card({ navigation, route }: any) {
                 zIndex: 999, 
                 marginBottom: 20, 
                 top: 0
-              }}></View>
+            }}></View>
             <Typography fontSize={16} fontWeight={600}>
               Show Terminated Cards
             </Typography>
@@ -691,21 +692,40 @@ export function Card({ navigation, route }: any) {
               </Button>
             </View>
           </SwipableBottomSheet>
-          <BottomSheet
-            isVisible={isLostPinActionPressed}
-            onClose={() => setIsLostPinActionPressed(false)}
+          <SwipableBottomSheet
+            rbSheetRef={refRBSTerminateThisCard}
+            closeOnDragDown={true}
+            closeOnPressMask={false}
+            height={280}
+            wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+            containerStyles={{
+              backgroundColor: "#FFF",
+              borderTopLeftRadius: 14,
+              borderTopRightRadius: 14,
+              elevation: 12,
+              shadowColor: "#52006A",
+              paddingHorizontal: 15,
+            }}
+            draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
           >
+            <View style={{
+              width: '30%',
+                alignSelf:'center', 
+                backgroundColor: vars['grey'],
+                height: 5,
+                borderRadius: 10, 
+                zIndex: 999, 
+                marginBottom: 20, 
+                top: 0
+            }}></View>
             <Typography fontSize={16} fontWeight={600}>
               Terminate This Card?
             </Typography>
-            <Typography fontSize={12} fontWeight={400} color={"#696F7A"}>
-              You will receive an sms to your mobile device. 
-              Please enter this code below.
-            </Typography>
-            <Divider style={{marginVertical: 15, paddingHorizontal: 15}} />
-            <Typography fontSize={16} fontWeight={400} color={"#000"}>
+            <Divider style={{marginVertical: 15, paddingHorizontal: 15, height: 1, backgroundColor: vars['shade-grey'], width: '100%', opacity: .4}} />
+            <Typography fontSize={16} fontWeight={400} color={"#000"} style={{paddingHorizontal: 50}}>
               Are you sure you want to terminate this card?
             </Typography>
+            {/* <Vie}}/> */}
             <Divider style={{marginVertical: 15, paddingHorizontal: 15}} />
             <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
               <Button 
@@ -718,25 +738,26 @@ export function Card({ navigation, route }: any) {
                   .unwrap()
                   .finally(() => {
                     setIsloading(false);
+                    refRBSTerminateThisCard?.current?.close();
                   })
                 }}
                 style={{color: '#fff', width: 140}}
                 color="light-pink"
-                leftIcon={<EyeIcon color="pink" size={14} />}
+                leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
                 disabled={isLoading}
               >
                 Yes
               </Button>
               <Button 
-                onPress={() => setIsLostPinActionPressed(false)}
+                onPress={() => refRBSTerminateThisCard?.current?.close()}
                 style={{color: '#fff', width: 140}}
                 color="light-pink"
-                leftIcon={<EyeIcon color="pink" size={14} />}
+                // leftIcon={<EyeIcon color="pink" size={14} />}
               >
                 No
               </Button>
             </View>
-          </BottomSheet>
+          </SwipableBottomSheet>
           {/* <Spinner visible={isLoading} /> */}
           <Spinner visible={orderCardIsLoading} />
         </ScrollView>

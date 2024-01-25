@@ -23,6 +23,7 @@ import TransactionsByDate from "../../components/TransactionItem/TransactionsByD
 import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
 import Button from "../../components/Button";
 import { useLazyGetTransactionsQuery } from "../../redux/transaction/transactionV2Slice";
+import { stat } from "fs";
 
 const defaultStatus = "SUCCESS";
 export function MyAccount({ navigation }: any) {

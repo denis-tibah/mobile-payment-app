@@ -60,19 +60,19 @@ export const CardView = ({
       <ImageBackground
         resizeMode="contain"
         style={styles.cardContainer}
-        imageStyle={{ borderRadius: 8, height: 245, width: 370 }}
+        imageStyle={{ borderRadius: 8, height: 255, width: 390, left: -23}}
         source={cardImage}
       >
-        <View style={{width: '72%', paddingTop: 15}}>
+        <View style={{width: '75%', paddingTop: 35}}>
           <Text style={styles.panTitle}>Card Number</Text>
           <Text style={styles.panText}>{pan}</Text>
         </View>
         <View style={styles.cardHolderAndExpiryDateContainer}>
-          <View>
+          <View style={{marginTop: 8, left: -8}}>
             <Text style={styles.cardHolder}>Card holder</Text>
             <Text style={styles.cardHolderName}>{profileData.first_name} {profileData.last_name}</Text>
           </View>
-          <View>
+          <View style={{left: 20, marginTop: 7}}>
             <Text style={styles.expiryDateTitle}>Expiry Date</Text>
             <Text style={styles.expiryDate}>{expiryMonth}/{expiryYear}</Text>
           </View>
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   cardHolderAndExpiryDateContainer: {
-    width: '73%',
+    width: '74%',
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -99,12 +99,14 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "600",
     marginTop: 25,
+    left: -8,
   },
   panText: {
     color: "#FFF",
     fontSize: 20,
     fontWeight: "400",
     marginTop: -3,
+    left: -8,
   },
   cardContainer: {
     height: 225,

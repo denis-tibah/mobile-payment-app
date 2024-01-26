@@ -50,7 +50,6 @@ export const payeeSlice = createApi({
       query: ({
         access_token,
         token_ziyl,
-        attached_file,
         recipientFirstname,
         recipientLastname,
         debtor_iban,
@@ -59,23 +58,38 @@ export const payeeSlice = createApi({
         amount,
         currency,
         reason,
-      }: any) => ({
+      }: any) => {
+        console.log({
+          access_token,
+          token_ziyl,
+          recipientFirstname,
+          recipientLastname,
+          debtor_iban,
+          creditor_iban,
+          creditor_name,
+          amount,
+          currency,
+          reason,
+        });
+        return {
         url: `/initiatepaymentfinxp`,
         method: "POST",
         body: {
+          recipientFirstname,
+          recipientLastname,
+          creditor_name,
           debtor_iban,
           creditor_iban,
           amount,
           currency,
           reason,
-          attached_file,
         },
         headers: {
           "Content-Type": "application/json",
           AuthorizationFinxp: `Bearer ${access_token}`,
           Authorization: `Bearer ${token_ziyl}`,
         },
-      }),
+      }},
     }),
     smsRequestVerification: builder.mutation({
       query: ({ 
@@ -85,7 +99,16 @@ export const payeeSlice = createApi({
         type,
         amount,
         currency,
-      }: any) => ({
+      }: any) => {
+        console.log({
+          identifier,
+          type,
+          amount,
+          currency,
+          access_token,
+          token_ziyl,
+        })
+        return {
         url: `/otprequestfinxp`,
         method: "POST",
         body: {
@@ -99,7 +122,7 @@ export const payeeSlice = createApi({
           AuthorizationFinxp: `Bearer ${access_token}`,
           Authorization: `Bearer ${token_ziyl}`,
         },
-      }),
+      }},
     }),
     processPayment : builder.mutation({
       query: ({ 

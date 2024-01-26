@@ -212,7 +212,8 @@ export function Card({ navigation, route }: any) {
     } else {
       setShowCardOtpLoading(true);
       // console.log({ account_id: userID, otp: code, card_id: selectedCard?.cardreferenceId });
-      showCardDetails({ account_id: userID, otp: code, card_id: selectedCard?.cardreferenceId });
+      showCardDetails({ account_id: userID, otp: code, card_id: selectedCard?.cardreferenceId })
+      ;
 
       // const payload = await dispatch(
       //   showCardDetails({
@@ -476,7 +477,7 @@ export function Card({ navigation, route }: any) {
                     onPress={requestShowCard}
                     leftIcon={<EyeIcon color="blue" size={14} />}
                   >
-                    Show Card
+                    <Text style={{fontSize: 14, fontFamily: 'Nunito', fontWeight: "600"}}>Show Card</Text>
                   </Button>
                 </Pressable>
               </View>
@@ -515,12 +516,15 @@ export function Card({ navigation, route }: any) {
                     }}
                     disabled={freezeLoading}
                   >
-                    {selectedCard?.frozenYN === "Y" ? "Unfreeze Card" : "Freeze Card"}
+                    <Text style={{fontSize: 14,fontFamily: 'Nunito', fontWeight: "600"}}>
+                      {selectedCard?.frozenYN === "Y" ? "Unfreeze Card" : "Freeze Card"}
+                    </Text>
                   </Button>
                 </Pressable>
               </View>
             </View>
           </View>
+          <Pressable>
           <Divider style={{marginVertical: 10, paddingHorizontal: 15}} />
             <View style={styles.cardActionsListContainer}>
               <View style={styles.cardActionItem}>
@@ -528,7 +532,7 @@ export function Card({ navigation, route }: any) {
                   <View style={{paddingRight: 8, marginTop: 5}}>
                     <ArrowSwitch color="heavy-blue" size={18}/>
                   </View>
-                  <Typography fontSize={16} fontWeight={600}>
+                  <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito'}>
                     See Card Transactions
                   </Typography>
                 </View>
@@ -547,7 +551,7 @@ export function Card({ navigation, route }: any) {
                   <View style={{paddingRight: 8, marginTop: 5}}>
                     <MaterialCommunityIcons name="cog-outline" size={18} color={vars['accent-blue']} />
                   </View>
-                  <Typography fontSize={16} fontWeight={600}>
+                  <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito'}>
                     Manage Payment Method
                   </Typography>
                 </View>
@@ -566,7 +570,7 @@ export function Card({ navigation, route }: any) {
                   <View style={{paddingRight: 8, marginTop: 5}}>
                     <PinNumberCode color="heavy-blue" size={18} />
                   </View>
-                  <Typography fontSize={16} fontWeight={600}>
+                  <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito'}>
                     Lost Card
                   </Typography>
                 </View>
@@ -582,7 +586,7 @@ export function Card({ navigation, route }: any) {
                   <View style={{paddingRight: 8, marginTop: 5}}>
                     <BugIcon size={18} color={vars['accent-blue']} />
                   </View>
-                  <Typography fontSize={16} fontWeight={600}>
+                  <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito'}>
                     Show Terminated Cards
                   </Typography>
                 </View>
@@ -592,6 +596,7 @@ export function Card({ navigation, route }: any) {
               </View>
             </View>
           <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
+          </Pressable>
           <SwipableBottomSheet
             rbSheetRef={refRBSheet}
             closeOnDragDown={true}
@@ -685,8 +690,8 @@ export function Card({ navigation, route }: any) {
                   refRBSheetShowTerminatedCards?.current?.close()
                 }}
                 style={{color: '#fff', width: 140}}
-                color="light-pink"
-                leftIcon={<EyeIcon color="pink" size={14} />}
+                color="grey"
+                // leftIcon={<EyeIcon color="pink" size={14} />}
               >
                 No
               </Button>
@@ -722,7 +727,10 @@ export function Card({ navigation, route }: any) {
               Terminate This Card?
             </Typography>
             <Divider style={{marginVertical: 15, paddingHorizontal: 15, height: 1, backgroundColor: vars['shade-grey'], width: '100%', opacity: .4}} />
-            <Typography fontSize={16} fontWeight={400} color={"#000"} style={{paddingHorizontal: 50}}>
+            <View>
+              
+            </View>
+            <Typography fontSize={16} fontWeight={400} color={"#000"} >
               Are you sure you want to terminate this card?
             </Typography>
             {/* <Vie}}/> */}
@@ -751,7 +759,7 @@ export function Card({ navigation, route }: any) {
               <Button 
                 onPress={() => refRBSTerminateThisCard?.current?.close()}
                 style={{color: '#fff', width: 140}}
-                color="light-pink"
+                color="grey"
                 // leftIcon={<EyeIcon color="pink" size={14} />}
               >
                 No

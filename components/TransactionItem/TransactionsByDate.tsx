@@ -181,7 +181,6 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                       <View
                         style={{
                           paddingTop: 12,
-                          paddingBottom: 16,
                         }}
                       >
                         <View
@@ -193,6 +192,20 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                           {displayTitle({ title: "Description" })}
                           {displayValue({ content: transaction?.description })}
                         </View>
+                      </View>
+                    ) : null}
+                    {!fieldHasValue(transaction?.description) &&
+                    transaction?.service === "DEBIT CARD" ? (
+                      <Divider /* style={{ marginTop: 10, marginBottom: 15 }}  */
+                      />
+                    ) : null}
+                    {transaction?.service === "DEBIT CARD" ? (
+                      <View
+                        style={{
+                          paddingTop: 16,
+                          paddingBottom: 16,
+                        }}
+                      >
                         <View style={styles.cardContainer}>
                           <View style={styles.cardContentContainer}>
                             {displayTitle({ title: "Card" })}

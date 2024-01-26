@@ -84,7 +84,7 @@ export const styles: any = StyleSheet.create<any>({
     backgroundColor: "white",
     marginTop: 24,
     marginBottom: 24,
-    marginLeft: 24,
+    marginLeft: 12,
     display: "flex",
     flexDirection: "row",
   },

@@ -16,7 +16,7 @@ import Button from "../../components/Button";
 import { RootState } from "../../store";
 import StatementsIcon from "../../assets/icons/StatementsIcon";
 import DropDownPicker from "react-native-dropdown-picker";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { validationPaymentSchema } from "../../utils/validation";
 import { useInitiatePaymentMutation, useProcessPaymentMutation, useSmsRequestVerificationMutation } from "../../redux/payee/payeeSlice";
 import BottomSheet from "../../components/BottomSheet";
@@ -27,6 +27,8 @@ import { Image } from "react-native";
 import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
 import CloudMessage from "../../assets/icons/CloudMessage";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import SwipableBottomSheet from "../../components/SwipableBottomSheet";
+import { PinCodeInputBoxes } from "../../components/FormGroup/FormGroup";
 
 const currencyOptions = [
   { label: "EUR", value: "EUR" },
@@ -38,6 +40,8 @@ const PayeeSendFunds = ({navigation, route}: any) => {
   const accountData = useSelector(
     (state: any) => state?.account?.details
   );
+  const refRBSheetCodeOTP = useRef();
+  const refRBSheetSuccess = useRef();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const accountIban = userData?.iban || '';
@@ -55,7 +59,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
     tokenZiyl: userTokens?.token_ziyl,
   });
   const accountBalance = userAccountInformation?.data?.avlbal || 0;
-
+  const [timeRemaining, setTimeRemaining] = useState<number>(60);
   const [isDropDownCurrencyOpen, setIsDropDownCurrencyOpen] = useState<boolean>(false);
   const [isOTPModalOpen, setIsOTPModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -65,12 +69,23 @@ const PayeeSendFunds = ({navigation, route}: any) => {
   const [selectedCurrency, setSelectedCurrency] = useState<string>('EUR');
   const [smsPaymentRequest, setSmsPaymentRequest] = useState<any>({});
   const validationSchema = validationPaymentSchema(accountBalance);
+  const [code, setCode] = useState("");
+  const [isTimeToCountDown, setIsTimeToCountDown] = useState<boolean>(false);
+  const enableResend = timeRemaining === 0;
+
+  const handlePinCodeChange = (value: string) => {
+    setCode(value);
+  };
+
+  const _handleResendSMSVerificationCode = () => {
+    // handleResendHere
+  };
 
   const handleProcessPayment = async ({code}: {code: string}) => {
     if (!code) {
       return;
     }
-    await processPayment({
+    processPayment({
       identifier: smsPaymentRequest.identifier,
       code,
       debtor_iban: accountIban,
@@ -79,20 +94,22 @@ const PayeeSendFunds = ({navigation, route}: any) => {
       amount: smsPaymentRequest.amount,
       currency: smsPaymentRequest.currency,
       remarks: smsPaymentRequest?.remarks,
+      access_token: userTokens?.access_token,
+      token_ziyl: userTokens?.token_ziyl,
     })
     .unwrap()
     .then((res) => {
       const { status } = res;
       if(status === 'success') {
-        setIsOTPModalOpen(false);
-        setIsPaymentResultBottomSheetOpen(true);
+        refRBSheetCodeOTP?.current.close();
+        refRBSheetSuccess?.current?.open();
         setIsPaymentSuccessful(true);
       }
     })
     .catch((err) => {
       console.log(err);
-      setIsOTPModalOpen(false);
-      setIsPaymentResultBottomSheetOpen(true);
+      refRBSheetCodeOTP?.current.close();
+      refRBSheetSuccess?.current?.open();
       setIsPaymentSuccessful(false);
     })
     .finally(() => {
@@ -105,11 +122,11 @@ const PayeeSendFunds = ({navigation, route}: any) => {
   }
 
   const handleInitiatepayment = (paymentValues: any) => {
-  // console.log(paymentValues);
-
-  // return;
-    initiatePayment({
-      // isManualProcessing: paymentValues.isManualProcessing,
+    const recipientFirstname = receiverName.split(' ')[0];
+    const recipientLastname = receiverName.split(' ')[1];
+    console.log({
+      recipientFirstname,
+      recipientLastname,
       amount: paymentValues.amount,
       currency: paymentValues.currency,
       debtor_iban: accountIban,
@@ -118,7 +135,20 @@ const PayeeSendFunds = ({navigation, route}: any) => {
       reason: paymentValues.reason,
       access_token: userTokens?.access_token,
       token_ziyl: userTokens?.token_ziyl,
-      attached_file: paymentValues.attachedFile,
+      ...(paymentValues.attachedFile && {attached_file: paymentValues.attachedFile}),
+    });
+    initiatePayment({
+      recipientFirstname,
+      recipientLastname,
+      amount: paymentValues.amount,
+      currency: paymentValues.currency,
+      debtor_iban: accountIban,
+      creditor_iban: receiverIban,
+      creditor_name: receiverName,
+      reason: paymentValues.reason,
+      access_token: userTokens?.access_token,
+      token_ziyl: userTokens?.token_ziyl,
+      ...(paymentValues.attachedFile && {attached_file: paymentValues.attachedFile}),
     })
     .unwrap()
     .then((res) => {
@@ -128,22 +158,37 @@ const PayeeSendFunds = ({navigation, route}: any) => {
         amount: paymentValues.amount,
         currency: paymentValues.currency,
       }
-      setSmsPaymentRequest({...res, ...paymentRequest});
-      smsRequestVerification(paymentRequest)
+      console.log('res', res);
+      setIsLoading(false);
+      setSmsPaymentRequest({
+        ...res,
+        ...paymentRequest,
+        token_ziyl: userTokens?.token_ziyl,
+        access_token: userTokens?.access_token,
+      });
+      smsRequestVerification({
+        ...paymentRequest,
+        token_ziyl: userTokens?.token_ziyl,
+        access_token: userTokens?.access_token
+      })
       .unwrap()
       .then((res) => {
         const { status } = res;
         if(status === 'success') {
-          setIsOTPModalOpen(true);
+          refRBSheetCodeOTP?.current.open();
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.log("Error2: ", err);
       })
       .finally(() => {
         setIsLoading(false);
       });
-    })
+    }).
+    catch((err) => {
+      console.log("Error1: ", err);
+      setIsLoading(false);
+    });
   }
 
   const { 
@@ -164,6 +209,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
       reason: '',
     },
     onSubmit: (values: any) => {
+      setIsLoading(true);
       handleInitiatepayment(values);
     },
     validationSchema: validationSchema,
@@ -189,22 +235,29 @@ const PayeeSendFunds = ({navigation, route}: any) => {
     }
   };
 
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isTimeToCountDown) {
+      interval = setInterval(() => {
+        if (timeRemaining > 0) {
+          setTimeRemaining(timeRemaining - 1);
+        } else {
+          clearInterval(interval);
+        }
+      }, 1000);
+    }
+    if (enableResend) {
+      setIsTimeToCountDown(false);
+      setTimeRemaining(60);
+    }
+    return () => {
+      clearInterval(interval);
+    };
+  }, [timeRemaining, isTimeToCountDown]);
+
   return (
       <MainLayout>
         <LoadingScreen isLoading={isLoading} />
-        <CodeModal
-          isOpen={isOTPModalOpen}
-          title="Verify your payment"
-          subtitle="Please enter the code sent to your phone number"
-          confirmButtonText="Confirm"
-          onSubmit={(data) => {
-            setIsLoading(true);
-            handleProcessPayment(data);
-          }}
-          onCancel={() => setIsOTPModalOpen(false)}
-          loading={false}
-          handleResendSMSVerificationCode={handleResendSMSVerificationCode}
-        />
         <KeyboardAwareScrollView style={{height: '100%', backgroundColor: 'white'}}>
           <View>
             <View style={styles.header}>
@@ -326,7 +379,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
             </View>
           </View>
         </KeyboardAwareScrollView>
-        <BottomSheet
+        {/* <BottomSheet
           isVisible={isPaymentResultBottomSheetOpen}
           onClose={() => setIsPaymentResultBottomSheetOpen(false)}
           headerResponse={{
@@ -354,7 +407,127 @@ const PayeeSendFunds = ({navigation, route}: any) => {
               />
             </>
           )}
-        </BottomSheet>
+        </BottomSheet> */}
+        <SwipableBottomSheet
+        rbSheetRef={refRBSheetCodeOTP}
+        closeOnDragDown={true}
+        closeOnPressMask={false}
+        height={380}
+        wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+        containerStyles={{
+          backgroundColor: "#fff",
+          borderTopLeftRadius: 14,
+          borderTopRightRadius: 14,
+          elevation: 12,
+          shadowColor: "#52006A",
+        }}
+        draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
+      >
+        <View style={styles.container}>
+          <Text style={{
+            fontSize: 18,
+            // fontWeight: "bold",
+            left: 20,
+            fontFamily: "Nunito",
+            color: "#000",
+            textAlign:'left',
+            paddingTop: 20,
+          }}>
+            Verify your payment
+          </Text>
+          <Text style={{
+              fontSize: 14,
+              // fontWeight: "bold",
+              left: 20,
+              fontFamily: "Nunito",
+              color: vars["shade-grey"],
+              textAlign:'left',
+              paddingTop: 20,
+            }}>
+            Please enter the 6-digit code sent to your mobile number.
+          </Text>
+          <Divider style={{marginVertical: 25}}/>
+          <View style={{alignItems: 'center', paddingHorizontal: 32}}>
+            <PinCodeInputBoxes fieldCount={6} onChange={handlePinCodeChange} />
+              <TouchableOpacity
+                onPress={_handleResendSMSVerificationCode}
+                disabled={isTimeToCountDown}
+              >
+                {isTimeToCountDown ? (
+                  <Text style={styles.noCodeResend}>
+                    Wait for {timeRemaining}s to request again.
+                  </Text>
+                ) : (
+                  <Text style={styles.noCodeResend}>Did not get a verification code?</Text>
+                )}
+              <Button
+                onPress={() => {
+                  setIsLoading(true);
+                  handleProcessPayment({code});
+                }}
+                color="light-pink"
+                style={{width: '100%', alignSelf: 'center'}}
+                leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
+              >
+                Confirm
+              </Button>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </SwipableBottomSheet>
+      <SwipableBottomSheet
+        rbSheetRef={refRBSheetSuccess}
+        closeOnDragDown={true}
+        closeOnPressMask={false}
+        height={420}
+        wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+        containerStyles={{
+          backgroundColor: "#fff",
+          borderTopLeftRadius: 14,
+          borderTopRightRadius: 14,
+          elevation: 12,
+          shadowColor: "#52006A",
+        }}
+        draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
+      >
+      <View style={{
+        width: '30%',
+          alignSelf:'center',
+          backgroundColor: vars['grey'],
+          height: 5,
+          borderRadius: 10, 
+          zIndex: 999, 
+          marginBottom: 20, 
+          top: 0
+      }}></View>
+      <View style={{
+            borderColor: isPaymentSuccessful ? vars["accent-green"] : vars["heavy-red"],
+            borderTopWidth: 60
+          }}>
+        <Text style={{color: 'white', alignSelf: 'center', top: -45, fontSize: 18}}>
+            {isPaymentSuccessful ? 'Payment Successful' : 'Payment Failed'}
+        </Text>
+      </View>
+      { isPaymentSuccessful ? (
+          <>
+            <Text style={styles.textConfirmation}>Your payment has been verified.</Text>
+            <Text style={styles.textConfirmation}>Check your notifications and transaction page.</Text>
+            <Image
+              source={require('../../assets/images/verified.png')}
+              style={styles.imageContainer}
+            />
+          </>
+        ) : (
+          <>
+            <Text style={styles.textConfirmation}>Your payment failed to verify.</Text>
+            <Text style={styles.textConfirmation}>Check your notifications and transaction page.</Text>
+            <Image
+              source={require('../../assets/images/failed.png')}
+              style={styles.imageContainer}
+            />
+          </>
+        )}
+      </SwipableBottomSheet>
       </MainLayout>
   );
 };
@@ -415,5 +588,13 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     marginTop: 20,
     right: -45
-  }
+  },
+  noCodeResend: {
+    color: vars["accent-pink"],
+    fontSize: 12,
+    fontWeight: "400",
+    marginTop: 12,
+    textAlign: 'center',
+    paddingBottom: 40,
+  },
 });

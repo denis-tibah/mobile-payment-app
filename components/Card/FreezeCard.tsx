@@ -14,13 +14,16 @@ import { RootState } from "../../store";
 export const FreezeCard = ({ card, loading }:any) => {
   return (
     <View style={styles.cardContainer}>
-      <View style={styles.creditCardImg}>
-        <ImageBackground
-          style={styles.card}
-          source={card?.type === "P" ? ZazooFrozenPhysicalCard : ZazooFrozenVirtualCard}
-        >
-        </ImageBackground>
-      </View>
+      <ImageBackground
+        style={{
+          borderRadius: 25, 
+          height: 230,
+          width: 390,
+          // left: 20
+        }}
+        source={card?.type === "P" ? ZazooFrozenPhysicalCard : ZazooFrozenVirtualCard}
+      >
+      </ImageBackground>
     </View>
   );
 };

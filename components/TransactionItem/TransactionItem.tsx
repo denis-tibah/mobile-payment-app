@@ -8,6 +8,8 @@ import {
   getFormattedDateFromUnix,
   getCurrency,
   formatCurrencyToLocalEn,
+  formatCurrencyToLocalEnTwo,
+  fieldHasValue,
 } from "../../utils/helpers";
 import { styles } from "./styles";
 import ArrowDown from "../../assets/icons/ArrowDown";
@@ -32,7 +34,6 @@ interface TransactionItemProps {
 }
 
 export function TransactionItem({ data }: TransactionItemProps) {
-  console.log("🚀 ~ TransactionItem ~ data:", data);
   const [isOpen, setIsOpen] = useState(false);
 
   const handleOnOpen = () => {
@@ -73,8 +74,6 @@ export function TransactionItem({ data }: TransactionItemProps) {
     <>
       <Pressable onPress={handleOnOpen}>
         <View style={[styles.base, isOpen && styles.isOpen]}>
-          {/* <Box paddingLeft={data.isCardTx ? -5 : 5} width={data.isCardTx ? "45%" : "30%"}> */}
-          {/* <Box width={data.isCardTx ? "45%" : "30%"}> */}
           <Box
             marginLeft={data.isCardTx ? -10 : 10}
             width={data.isCardTx ? "45%" : "30%"}
@@ -158,41 +157,9 @@ export function TransactionItem({ data }: TransactionItemProps) {
               </View>
             </Box>
           )}
-
-          {/* {data.isCardTx ? (
-              <View style={styles.cardpayments}>
-                {currencyIcon(data?.transfer_currency)}
-              </View>
-            ) : (
-              
-              currencyIcon(data?.transfer_currency)
-            )}
-                  
-          {data?.currency === "EUR"  ? (
-              <EuroIcon size={18} color={+data?.amount > 0 ? "green" : "red"} />
-            ) : (
-              <DollarIcon size={18} color="#278664" />
-            )}
-
-            {!data.isCardTx ? (
-              <Typography fontSize={14}>
-              
-                {formatAmountTableValue(data?.amount, data?.transfer_currency)}
-              </Typography>
-            ) : (
-              <View style={styles.cardCell}>
-                <Typography fontSize={14}>
-                 
-                  {formatAmountTableValue(data?.amount, data?.currency)}
-                </Typography>
-              </View>
-            )} */}
-          {/* </Box> */}
           {!data.isCardTx ? (
             <Box
               width="30%"
-              // paddingLeft={-15}
-              // paddingRight={-20}
               display="flex"
               flexDirection="row"
               alignItems="center"
@@ -208,20 +175,11 @@ export function TransactionItem({ data }: TransactionItemProps) {
           ) : (
             <Box
               width="30%"
-              // paddingLeft={-15}
               paddingRight={-20}
               display="flex"
               flexDirection="row"
               alignItems="center"
             >
-              {/* {!data.isCardTx ? <EuroIcon size={18} color="green" /> : null}
-
-            {!data.isCardTx ? (
-              <Typography fontSize={14}>
-                {formatAmountTableValue(data?.running_balance, data?. transfer_currency)}
-              </Typography>
-            ) : null} */}
-
               <Box style={styles.arrowCell}>
                 {isOpen ? (
                   <ArrowDown color="blue" />
@@ -231,110 +189,34 @@ export function TransactionItem({ data }: TransactionItemProps) {
               </Box>
             </Box>
           )}
-
-          {/* <Box style={styles.cell}>
-            
-            {isOpen ? <ArrowDown color="blue" /> : <ArrowDown color="blue" />}
-          </Box> */}
         </View>
       </Pressable>
-
-      {/* {isOpen && (
-        <Box>
-          <Box style={styles.separator}></Box>
-          <Box style={styles.rowDetail}>
-            <Box style={styles.detailMobileContainer}>
-              <Box style={styles.detailMobileWrapper}>
-                <Box style={styles.detailMobile}>
-                  <Text style={styles.nameDetailMobile}>Name:</Text>
-                  <Text numberOfLines={1} style={styles.valueDetailMobile}>
-                    {data?.name}
-                  </Text>
-                </Box>
-                <Box style={styles.detailMobile}>
-                  <Text style={styles.nameDetailMobile}>Reference:</Text>
-                  <Text style={styles.valueDetailMobile}>
-                    {data?.approvalCode}
-                  </Text>
-                </Box>
-                <Box style={styles.detailMobile}>
-                  <Text style={styles.nameDetailMobile}>Description:</Text>
-                  <Text style={styles.valueDetailMobile}>
-                    {data?.purposeSimple}
-                  </Text>
-                </Box>
-                {!data.isCardTx ? (
-                  <Box style={styles.detailMobile}>
-                    <Text style={styles.nameDetailMobile}>Type:</Text>
-                    <Text style={styles.valueDetailMobile}>
-                      {data?.revenueType}
-                    </Text>
-                  </Box>
-                ) : null}
-                <View style={styles.detailMobile}>
-                  <Text style={styles.nameDetailMobile}>Time:</Text>
-                  <Text style={styles.valueDetailMobile}>
-                    {getFormattedDateAndTime(data?.receiptDate)}
-                  </Text>
-                </View>
-                <Box style={styles.downloadContainer}>
-                  <Button
-                    onPress={handleExportData}
-                    color="light-blue"
-                    leftIcon={<Export size={14} color="blue" />}
-                  >
-                    Download
-                  </Button>
-                </Box>
-              </Box>
-              {!data.isCardTx ? (
-                <Box style={styles.statusItem}>
-                  {data?.status === "SUCCESS" && (
-                    <Chip label="Completed" color="green" />
-                  )}
-                  {data?.status === "PENDING" && (
-                    <Chip label="Pending" color="orange" />
-                  )}
-                  {data?.status === "CANCELLED" && (
-                    <Chip label="Cancelled" color="red" />
-                  )}
-                  {data?.status === "PROCESSING" && (
-                    <Chip label="Processing" color="red" />
-                  )}
-                </Box>
-              ) : (
-                <Box style={styles.statusItem}>
-                  {data?.revenueType === "CLEARING" && (
-                    <Chip label="Clearing" color="green" />
-                  )}
-                  {data?.revenueType === "PREAUTH" && (
-                    <Chip label="Preauth" color="orange" />
-                  )}
-                </Box>
-              )}
-            </Box>
-          </Box>
-        </Box>
-      )} */}
       {isOpen && (
         <View>
           <Box style={styles.separator}></Box>
           <Pressable>
             <View style={styles.containerDetailsInfo}>
-              <View style={{ paddingTop: 12, paddingBottom: 16 }}>
-                <View
-                  style={[styles.detailMobile, styles.marginerDetailMobile]}
-                >
-                  {displayTitle({ title: "Name:" })}
-                  {displayValue({ content: data?.name })}
+              {fieldHasValue(data?.name) ||
+              fieldHasValue(data?.approvalCode) ? (
+                <View style={{ paddingTop: 12, paddingBottom: 16 }}>
+                  {fieldHasValue(data?.name) ? (
+                    <View
+                      style={[styles.detailMobile, styles.marginerDetailMobile]}
+                    >
+                      {displayTitle({ title: "Name:" })}
+                      {displayValue({ content: data?.name })}
+                    </View>
+                  ) : null}
+                  {fieldHasValue(data?.approvalCode) ? (
+                    <View style={styles.detailMobile}>
+                      {displayTitle({ title: "Reference:" })}
+                      {displayValue({ content: data?.approvalCode })}
+                    </View>
+                  ) : null}
                 </View>
-                <View style={styles.detailMobile}>
-                  {displayTitle({ title: "Reference:" })}
-                  {displayValue({ content: data?.approvalCode })}
-                </View>
-              </View>
-              {data?.purposeSimple != null ? <Divider /> : null}
-              {data?.purposeSimple != null ? (
+              ) : null}
+              {fieldHasValue(data?.purposeSimple) ? <Divider /> : null}
+              {fieldHasValue(data?.purposeSimple) ? (
                 <View
                   style={{
                     paddingTop: 12,
@@ -355,24 +237,24 @@ export function TransactionItem({ data }: TransactionItemProps) {
                     <View style={styles.cardContentContainer}>
                       {displayTitle({ title: "FX" })}
                       {displayValue({
-                        content: `${getCurrency(data?.currency || "")}${
-                          data?.ezb
-                        }`,
+                        content: `${getCurrency(
+                          data?.currency || ""
+                        )}${formatCurrencyToLocalEnTwo(data?.ezb)}`,
                       })}
                     </View>
                     <View style={styles.cardContentContainer}>
                       {displayTitle({ title: "Fees" })}
                       {displayValue({
-                        content: `${getCurrency(data?.currency || "")}${
-                          data?.sumBilledFees
-                        }`,
+                        content: `${getCurrency(
+                          data?.currency || ""
+                        )}${formatCurrencyToLocalEnTwo(data?.sumBilledFees)}`,
                       })}
                     </View>
                   </View>
                 </View>
               ) : null}
-              {data?.revenueType != null ? <Divider /> : null}
-              {data?.revenueType != null ? (
+              {fieldHasValue(data?.revenueType) ? <Divider /> : null}
+              {fieldHasValue(data?.revenueType) ? (
                 <View
                   style={{
                     paddingTop: 12,
@@ -393,7 +275,7 @@ export function TransactionItem({ data }: TransactionItemProps) {
                   </View>
                 </View>
               ) : null}
-              {data.isCardTx ? (
+              {!data.isCardTx ? (
                 <Box style={styles.statusItem}>
                   {data?.status === "SUCCESS" && (
                     <Chip label="Completed" color="green" />

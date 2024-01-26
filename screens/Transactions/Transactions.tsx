@@ -137,7 +137,6 @@ export function Transactions({ navigation, route }: any) {
       type: "PREAUTH",
       card_id: cardId,
     };
-    console.log({ cardTransactionsFilter });
     getCartTransactions(cardTransactionsFilter)
       .catch((err) => {
         console.log("error");

@@ -1,4 +1,4 @@
-import { useState, FC, useRef, Fragment } from "react";
+import { useState, FC, useRef, Fragment, useEffect } from "react";
 import { View, ScrollView, Pressable, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { useFormik } from "formik";
@@ -24,10 +24,18 @@ import Typography from "../Typography";
 import SwipableBottomSheet from "../SwipableBottomSheet";
 
 interface IFinancialDetailsTab {
-  cleanUpTabSelection: () => void;
+  isOpenBottomSheet: boolean;
+  passedTicketType?: string;
+  transactionReferenceNumber?: string;
+  handleCloseBottomSheet: () => void;
 }
 
-const HelpTab: FC<IFinancialDetailsTab> = ({ cleanUpTabSelection }) => {
+const HelpTab: FC<IFinancialDetailsTab> = ({
+  isOpenBottomSheet,
+  passedTicketType,
+  transactionReferenceNumber,
+  handleCloseBottomSheet,
+}) => {
   const profileData = useSelector(
     (state: RootState) => state?.profile?.profile
   )?.data;
@@ -73,8 +81,12 @@ const HelpTab: FC<IFinancialDetailsTab> = ({ cleanUpTabSelection }) => {
     errors,
     handleBlur,
     setValues,
+    setFieldValue,
   } = useFormik({
-    initialValues: { type: "", ticketValue: "" },
+    initialValues: {
+      type: "",
+      ticketValue: "",
+    },
     validationSchema: helpTabCreateTicketSchema,
     onSubmit: async ({ type, ticketValue }) => {
       const bodyParams = {
@@ -97,6 +109,23 @@ const HelpTab: FC<IFinancialDetailsTab> = ({ cleanUpTabSelection }) => {
       });
     },
   });
+  console.log("🚀 ~ values:", values);
+
+  useEffect(() => {
+    if (isOpenBottomSheet) {
+      refRBSheet.current.open();
+    }
+  }, [isOpenBottomSheet]);
+
+  useEffect(() => {
+    setFieldValue("type", passedTicketType);
+    setFieldValue(
+      "ticketValue",
+      transactionReferenceNumber
+        ? `Transaction Reference: ${transactionReferenceNumber}`
+        : ""
+    );
+  }, [passedTicketType, transactionReferenceNumber]);
 
   const onCloseModal = (): void => {
     setStatusMessage({
@@ -203,6 +232,9 @@ const HelpTab: FC<IFinancialDetailsTab> = ({ cleanUpTabSelection }) => {
         closeOnDragDown={true}
         closeOnPressMask={false}
         height={560}
+        onClose={() => {
+          handleCloseBottomSheet();
+        }}
         wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
         containerStyles={{
           backgroundColor: "#ffffff",

@@ -1,35 +1,62 @@
-import React, { useEffect, useState, Fragment, useCallback } from "react";
+import React, { useEffect, useState, Fragment /* useCallback */ } from "react";
 import {
-  Text,
+  /* Text, */
   View,
   ScrollView,
-  Switch,
+  /* Switch, */
   Pressable,
   SafeAreaView,
   Platform,
 } from "react-native";
-import { Formik } from "formik";
+/* import { Formik } from "formik"; */
 import { useDispatch, useSelector } from "react-redux";
-import { Picker } from "@react-native-picker/picker";
+/* import { Picker } from "@react-native-picker/picker"; */
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import * as Clipboard from "expo-clipboard";
 import Toast from "react-native-root-toast";
-import DropDownPicker from "react-native-dropdown-picker";
+/* import DropDownPicker from "react-native-dropdown-picker"; */
 import Feather from "react-native-vector-icons/Feather";
-import Ionicons from "react-native-vector-icons/Ionicons";
+/* import Ionicons from "react-native-vector-icons/Ionicons"; */
+import { useAtom } from "jotai";
+import { TouchableOpacity } from "react-native";
 
-import { Tabs } from "../../components/Tabs/Tabs";
+/* import { Tabs } from "../../components/Tabs/Tabs"; */
 import MainLayout from "../../layout/Main";
-import FormGroup from "../../components/FormGroup";
+/* import FormGroup from "../../components/FormGroup"; */
 import Button from "../../components/Button";
 import { styles } from "./styles";
 import { Avatar } from "../../components/Avatar/Avatar";
+
+import ProfileIcon from "../../assets/icons/Profile";
+import vars from "../../styles/vars";
+import CopyClipboard from "../../assets/icons/CopyClipboard";
+import ArrowBackIcon from "../../assets/icons/ArrowBack";
+import ArrowRightIcon from "../../assets/icons/ArrowRight";
+import FinancialDataGraphIcon from "../../assets/icons/FinancialDataGraph";
+import LimitIcon from "../../assets/icons/Limit";
 import {
+  /* createTicket, */
+  getProfile,
+  /* updateSecurity, */
+} from "../../redux/profile/profileSlice";
+import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
+/* import { Address } from "../../components/Address/Address"; */
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { signout } from "../../redux/auth/authSlice";
+import { Seperator } from "../../components/Seperator/Seperator";
+import {
+  /* DefaultResponse,
+  LimitsData, */
+  UpdateLimitsRequest,
+  getLimits,
+  updateLimits,
+} from "../../redux/setting/settingSlice";
+import { RootState } from "../../store";
+/* import {
   checkNumber,
   checkUppercase,
   checkSpecialCharacter,
 } from "../../utils/validation";
-import ProfileIcon from "../../assets/icons/Profile";
 import CompassIcon from "../../assets/icons/Compass";
 import SecurityIcon from "../../assets/icons/Security";
 import BellIcon from "../../assets/icons/Bell";
@@ -37,40 +64,15 @@ import SettingsIcon from "../../assets/icons/Settings";
 import HelpIcon from "../../assets/icons/Help";
 import IncomeBox from "../../components/IncomeBox";
 import Box from "../../components/Box";
-import vars from "../../styles/vars";
 import PigIcon from "../../assets/icons/Pig";
 import LockIcon from "../../assets/icons/Lock";
-import CopyClipboard from "../../assets/icons/CopyClipboard";
-import ArrowBackIcon from "../../assets/icons/ArrowBack";
-import ArrowRightIcon from "../../assets/icons/ArrowRight";
-import FinancialDataGraphIcon from "../../assets/icons/FinancialDataGraph";
-import LimitIcon from "../../assets/icons/Limit";
-import {
-  createTicket,
-  getProfile,
-  updateSecurity,
-} from "../../redux/profile/profileSlice";
-import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
-import { Address } from "../../components/Address/Address";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { signout } from "../../redux/auth/authSlice";
-import { Seperator } from "../../components/Seperator/Seperator";
 import TransactionIcon from "../../assets/icons/Transaction";
-import {
-  DefaultResponse,
-  LimitsData,
-  UpdateLimitsRequest,
-  getLimits,
-  updateLimits,
-} from "../../redux/setting/settingSlice";
-import { RootState } from "../../store";
 import Camera from "../../assets/icons/Camera";
 import Ticket from "../../assets/icons/Ticket";
 import ArrowDown from "../../assets/icons/ArrowDown";
-import { TouchableOpacity } from "react-native";
 import Globe from "../../assets/icons/Globe";
 import Email from "../../assets/icons/Email";
-import Biometric from "../../assets/icons/Biometric";
+import Biometric from "../../assets/icons/Biometric"; */
 import { getCurrency } from "../../utils/helpers";
 import ProfileTab from "../../components/ProfileComponents/ProfileTab";
 import SecurityTab from "../../components/ProfileComponents/SecurityTab";
@@ -78,6 +80,7 @@ import FinancialDetailsTab from "../../components/ProfileComponents/FinancialDet
 import NotificationsTab from "../../components/ProfileComponents/NotificationsTab";
 import LimitsTab from "../../components/ProfileComponents/LimitsTab";
 import HelpTab from "../../components/ProfileComponents/HelpTab";
+import { helpTabticketParams } from "../../utils/globalStates";
 
 import {
   updateNotifications,
@@ -86,7 +89,7 @@ import {
 
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import Typography from "../../components/Typography";
-import FinancialDataGraph from "../../assets/icons/FinancialDataGraph";
+/* import FinancialDataGraph from "../../assets/icons/FinancialDataGraph"; */
 
 export interface SelectOption {
   label: string;
@@ -94,9 +97,9 @@ export interface SelectOption {
 }
 
 export function Profile({ route, navigation }: any) {
-  const getRedirectScreen = route.params?.screen;
+  /* const getRedirectScreen = route.params?.screen; */
   const dispatch = useDispatch();
-  const showChangeRequest = "Y";
+  /* const showChangeRequest = "Y";
   const salutationOptions: SelectOption[] = [
     { label: "Mr", value: "Mr" },
     { label: "Mrs", value: "Mrs" },
@@ -105,12 +108,15 @@ export function Profile({ route, navigation }: any) {
     { label: "Salary", value: "salary" },
     { label: "Self employed", value: "self-employed" },
   ];
-  const settings = useSelector((state: RootState) => state.setting.limits);
-  // console.log("🚀 ~ Profile ~ settings:", settings)
+  const settings = useSelector((state: RootState) => state.setting.limits); */
+
   const profileData = useSelector(
     (state: any) => state?.profile?.profile
   )?.data;
-  const [isLoading, setIsLoading] = useState(false);
+
+  const [ticketParams, setTicketParams] = useAtom(helpTabticketParams);
+
+  /* const [isLoading, setIsLoading] = useState(false); */
   const [isUpdateLimitSuccess, setIsUpdateLimitSuccess] = useState<{
     state: boolean;
     isModalOpen: boolean;
@@ -119,8 +125,6 @@ export function Profile({ route, navigation }: any) {
     (state: any) => state.auth.data.biometricYN
   );
 
-  const [isEnabled, setIsEnabled] = useState(false);
-  const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
   const [updateLimitToggles, setUpdateLimitToggles] = useState<{
     [key: string]: boolean;
   }>({});
@@ -128,6 +132,9 @@ export function Profile({ route, navigation }: any) {
     [key: string]: string;
   }>({});
   const [limitTypes, setLimitTypes] = useState<string>("");
+  const [tabSelection, setTabSelection] = useState<string>("");
+  /* const [isEnabled, setIsEnabled] = useState(false);
+  const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
   const [dropDownOpen, setDropDownOpen] = useState(false);
   const [helpTopicOpen, setHelpTopicOpen] = useState(false);
   const [openListForSalutation, setOpenListForSalutation] =
@@ -135,12 +142,11 @@ export function Profile({ route, navigation }: any) {
   const [openListForSourceOfWealth, setOpenListForSourceOfWealth] =
     useState<boolean>(false);
   const [selectedSourceOfWealth, setSelectedSourceOfWealth] = useState(null);
-  const [tabSelection, setTabSelection] = useState<string>("");
-  const [selectedTicketType, setSelectedTicketType] = useState(null);
+  const [selectedTicketType, setSelectedTicketType] = useState(null); */
 
-  const loadingUserProfileData = useSelector(
+  /* const loadingUserProfileData = useSelector(
     (state: RootState) => state.profile.profile.loading
-  );
+  ); */
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
 
@@ -151,9 +157,9 @@ export function Profile({ route, navigation }: any) {
       tokenZiyl: userTokens?.token_ziyl,
     });
 
-  useEffect(() => {
+  /* useEffect(() => {
     dispatch<any>(getProfile());
-    //set biometric checkbox setting
+    set biometric checkbox setting
     if (biometricSetting == "Y") {
       setIsBiometricEnabled(true);
     } else {
@@ -168,13 +174,19 @@ export function Profile({ route, navigation }: any) {
     } else {
       setIsEnabled(false);
     }
-  }, []);
+  }, []); */
 
   useEffect(() => {
     if (userData?.id) dispatch(getLimits({ account_id: userData.id }) as any);
   }, [userData]);
 
-  function toggleSwitch(value: boolean) {
+  useEffect(() => {
+    if (ticketParams?.tabSelectionRoute === "Help") {
+      setTabSelection("Help");
+    }
+  }, [ticketParams]);
+
+  /* function toggleSwitch(value: boolean) {
     setIsEnabled(value);
 
     if (value) {
@@ -194,11 +206,11 @@ export function Profile({ route, navigation }: any) {
         duration: Toast.durations.SHORT,
       });
     });
-  }
+  } */
 
-  function toggleBiometric(value: boolean) {
+  /* function toggleBiometric(value: boolean) {
     setIsBiometricEnabled(value);
-    //Enable or Disable Biometric authentication
+    Enable or Disable Biometric authentication
     if (value) {
       return dispatch<any>(
         updateBiometric({ email: profileData?.email, enableYN: "Y" })
@@ -222,9 +234,9 @@ export function Profile({ route, navigation }: any) {
         duration: Toast.durations.SHORT,
       });
     });
-  }
+  } */
 
-  const updateLimitRequest = async () => {
+  /* const updateLimitRequest = async () => {
     if (!userData?.id) return;
     let _updateRequest: UpdateLimitsRequest[] = [];
     Object.keys(updateLimitToggles).forEach((key) => {
@@ -247,7 +259,7 @@ export function Profile({ route, navigation }: any) {
         .join(", ")
     );
     try {
-      // this is temporary approach to update limits
+      this is temporary approach to update limits
       await Promise.all(
         _updateRequest.map((request) => dispatch(updateLimits(request) as any))
       );
@@ -260,7 +272,7 @@ export function Profile({ route, navigation }: any) {
       setLimitValueToUpdate({});
       setIsLoading(false);
     }
-  };
+  }; */
 
   const handleShowTab = (tab: string): void => {
     setTabSelection(tab);
@@ -271,6 +283,16 @@ export function Profile({ route, navigation }: any) {
   };
 
   const cleanUpTabSelection = () => setTabSelection("");
+
+  const handleCloseBottomSheet = (): void => {
+    console.log("trigger this");
+    setTicketParams({
+      tabSelectionRoute: "",
+      isOpenBottomSheet: false,
+      passedTicketType: "",
+      transactionReferenceNumber: "",
+    });
+  };
 
   const displayTabSelection = () => {
     switch (tabSelection) {
@@ -292,18 +314,19 @@ export function Profile({ route, navigation }: any) {
         return <LimitsTab cleanUpTabSelection={cleanUpTabSelection} />;
       }
       case "Help": {
-        return <HelpTab cleanUpTabSelection={cleanUpTabSelection} />;
+        return (
+          <HelpTab
+            isOpenBottomSheet={ticketParams.isOpenBottomSheet}
+            passedTicketType={ticketParams.passedTicketType}
+            transactionReferenceNumber={ticketParams.transactionReferenceNumber}
+            handleCloseBottomSheet={handleCloseBottomSheet}
+          />
+        );
       }
       default:
         return null;
     }
   };
-
-  useEffect(() => {
-    if (route?.params?.tabSelectionRoute ==="Help") {
-      setTabSelection("Help")
-    }
-  }, [route?.params]);
 
   return (
     <MainLayout navigation={navigation}>
@@ -1255,16 +1278,6 @@ export function Profile({ route, navigation }: any) {
                     </TouchableOpacity>
                   </View>
                 </View>
-                {/* <View
-                  style={{
-                    shadowOpacity: 0.1,
-                    shadowRadius: 15,
-                    shadowColor: "black",
-                    elevation: 8,
-                    width: "100%",
-                    height: 2,
-                  }}
-                /> */}
               </Fragment>
             ) : null}
             {displayTabSelection()}

@@ -1,10 +1,14 @@
 import React, { useState, Fragment } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Text, View, TouchableOpacity, Pressable } from "react-native";
+import { Divider } from "react-native-paper";
+import { useAtom } from "jotai";
+
 import {
   formatAmountTableValue,
   getFormattedDate,
   getFormattedDateAndTime,
+  fieldHasValue,
 } from "../../utils/helpers";
 import { styles } from "./styles";
 import ArrowDown from "../../assets/icons/ArrowDown";
@@ -20,9 +24,9 @@ import { Transaction } from "../../models/Transactions";
 import ArrowRight from "../../assets/icons/ArrowRight";
 import CardIcon from "../../assets/icons/Card";
 import vars from "../../styles/vars";
-import { Divider } from "react-native-paper";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
 import { displayTitle, displayValue } from "./TransactionHelper";
+import { helpTabticketParams } from "../../utils/globalStates";
 
 interface TransactionItemProps {
   setIsOneTransactionOpen?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -41,17 +45,14 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
 }) => {
   const { navigate }: any = useNavigation();
 
+  const [, setTicketParams] = useAtom(helpTabticketParams);
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const handleOnOpen = (): void => {
     setIsOpen(!isOpen);
     setIsOneTransactionOpen && setIsOneTransactionOpen(!isOpen);
   };
-
-  // const handleExportData = async (): Promise<void> => {
-  //   const pdfUri = await generateTransactionPDF([transactionsByDate]);
-  //   await printAsync({ uri: pdfUri });
-  // };
 
   const TransactionByDate = ({ transactions }: any) => {
     const [openTransactionIndex, setOpenTransactionIndex] = useState<
@@ -173,8 +174,10 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                         </View>
                       </View>
                     </View>
-                    {transaction?.description != null ? <Divider /> : null}
-                    {transaction?.description != null ? (
+                    {fieldHasValue(transaction?.description) ? (
+                      <Divider />
+                    ) : null}
+                    {fieldHasValue(transaction?.description) ? (
                       <View
                         style={{
                           paddingTop: 12,
@@ -193,15 +196,15 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                         <View style={styles.cardContainer}>
                           <View style={styles.cardContentContainer}>
                             {displayTitle({ title: "Card" })}
-                            {displayValue({ content: "**** **** 5566" })}
+                            {/* {displayValue({ content: "**** **** 5566" })} */}
                           </View>
                           <View style={styles.cardContentContainer}>
                             {displayTitle({ title: "FX" })}
-                            {displayValue({ content: "$266.00" })}
+                            {/* {displayValue({ content: "$266.00" })} */}
                           </View>
                           <View style={styles.cardContentContainer}>
                             {displayTitle({ title: "Fees" })}
-                            {displayValue({ content: "$0.86" })}
+                            {/* {displayValue({ content: "$0.86" })} */}
                           </View>
                         </View>
                       </View>
@@ -250,7 +253,7 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                           </Box>
                         </View>
                         {/* do not show bic if the value is null */}
-                        {transaction?.bic != null ? (
+                        {fieldHasValue(transaction?.bic) ? (
                           <View style={styles.detailMobileInnerDetail}>
                             <Box style={styles.detailMobile}>
                               {displayTitle({ title: "BIC" })}
@@ -309,7 +312,14 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                         color={"light-pink"}
                         style={{ width: 154 }}
                         onPress={() => {
-                          navigate("profile", { tabSelectionRoute: "Help" });
+                          navigate("profile");
+                          setTicketParams({
+                            tabSelectionRoute: "Help",
+                            passedTicketType: "transactions",
+                            transactionReferenceNumber:
+                              transaction?.reference_no || "",
+                            isOpenBottomSheet: true,
+                          });
                         }}
                         leftIcon={
                           <AntDesign

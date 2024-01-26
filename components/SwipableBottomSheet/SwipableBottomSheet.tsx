@@ -10,6 +10,7 @@ const SwipableBottomSheet = ({
   containerStyles,
   draggableIconStyles,
   children,
+  onClose,
 }: any) => {
   return (
     <RBSheet
@@ -17,6 +18,7 @@ const SwipableBottomSheet = ({
       closeOnDragDown={closeOnDragDown}
       closeOnPressMask={closeOnPressMask}
       height={height}
+      onClose={onClose}
       customStyles={{
         wrapper: {
           ...wrapperStyles,

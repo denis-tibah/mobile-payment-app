@@ -243,28 +243,43 @@ export function getFirstAndLastName(str: string) {
 
 export function getFormattedDateAndTime(dateToFormat: any) {
   const date = new Date(dateToFormat);
-  const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(
+  // uniform date as per QA
+  const formattedDateAndTime = dateFns.format(date, "dd.MM.yyyy h:mm a"); // Output: DD-MM-YYYY TT:MM PM
+
+  /*   const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(
     date.getMonth() + 1
   )
     .toString()
     .padStart(2, "0")}/${date.getFullYear()} ${date.getHours()}:${date
     .getMinutes()
     .toString()
-    .padStart(2, "0")}`;
-  return formattedDate;
+    .padStart(2, "0")}`;*/
+  return formattedDateAndTime;
 }
 
 export function getFormattedDateAndTimeV2(dateToFormat: any) {
   const date = new Date(dateToFormat);
   const monthNames = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
   const formattedDate = `
-  ${date.getDate().toString().padStart(2, "0")} ${monthNames[date.getMonth()]} ${date
-    .getFullYear()} ${date.getHours().toString().padStart(2, "0")}:${date
-    .getMinutes().toString().padStart(2, "0")}:${date
-    .getSeconds().toString().padStart(2, "0")}`;
+  ${date.getDate().toString().padStart(2, "0")} ${
+    monthNames[date.getMonth()]
+  } ${date.getFullYear()} ${date.getHours().toString().padStart(2, "0")}:${date
+    .getMinutes()
+    .toString()
+    .padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
   return formattedDate;
 }
 
@@ -295,6 +310,10 @@ export function convertDateToName(timestamp: any) {
   }).format(timestamp);
 }
 
+function isNumeric(value: string) {
+  return /^-?\d+$/.test(value);
+}
+
 export const formatCurrencyToLocalEn = (currency: string) => {
   if (!currency) {
     return 0.0;
@@ -308,6 +327,31 @@ export const formatCurrencyToLocalEn = (currency: string) => {
   }
 };
 
+export const formatCurrencyToLocalEnTwo = (currency: string) => {
+  if (currency && isNumeric(currency)) {
+    const trimString = currency.replace(/[^0-9.-]+/g, "");
+    if (trimString) {
+      return parseFloat(trimString).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+  }
+
+  return 0;
+};
+
 export const arrayChecker = (arr: any[]): Boolean => {
   return arr && Array.isArray(arr) && arr.length > 0 ? true : false;
+};
+
+export const fieldHasValue = (value: any) => {
+  if (value && value !== null && value !== undefined) {
+    if (value.toLowerCase() !== "null") {
+      return value;
+    } else {
+      return "";
+    }
+  }
+  return "";
 };

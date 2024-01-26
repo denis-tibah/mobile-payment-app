@@ -46,8 +46,8 @@ export const styles: any = StyleSheet.create<any>({
   },
   statusItem: {
     position: "absolute",
-    top: 0,
-    right: 40,
+    bottom: 50,
+    right: 50,
     paddingTop: 23,
   },
   detailMobile: {

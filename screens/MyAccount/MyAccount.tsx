@@ -61,7 +61,7 @@ export function MyAccount({ navigation }: any) {
         accountId: `${userData?.id}`,
         direction: "desc",
         status: filterParams?.status ? filterParams?.status : defaultStatus,
-        limit: 20,
+        limit: 100,
         page: filterParams?.pageNumber || 1,
         accessToken: userTokens?.access_token,
         tokenZiyl: userTokens?.token_ziyl,
@@ -304,12 +304,13 @@ export function MyAccount({ navigation }: any) {
               </View>
             )}
           </View>
-          <Pagination
+          {/* Aristos: temp disabled this */}
+          {/* <Pagination
             handlePreviousPage={handlePreviousPage}
             page={currentPage || 0}
             lastPage={lastPage || 0}
             handleNextPage={handleNextPage}
-          />
+          /> */}
         </View>
       </ScrollView>
     </MainLayout>

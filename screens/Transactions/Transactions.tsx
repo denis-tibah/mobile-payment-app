@@ -127,6 +127,7 @@ export function Transactions({ navigation, route }: any) {
     dispatch<any>(setIsCardTransactionShown(false));
   };
 
+
   const handleFetchCardTransactions = async (cardId: string) => {
     const cardTransactionsFilter = {
       account_id: userData?.id,
@@ -383,6 +384,8 @@ export function Transactions({ navigation, route }: any) {
                   style={styles.iconFilter}
                   onPress={() => {
                     // setIsMobileFilterShown(!isMobileFilterShown);
+                    //added by Aristos to fix issue with search being disabled
+                    clearFilter();
                     setIsSheetFilterOpen(!isSheetFilterOpen);
                   }}
                 >

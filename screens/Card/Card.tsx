@@ -693,7 +693,7 @@ export function Card({ navigation, route }: any) {
                 color="grey"
                 // leftIcon={<EyeIcon color="pink" size={14} />}
               >
-                No
+                Cancel
               </Button>
             </View>
           </SwipableBottomSheet>

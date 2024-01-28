@@ -6,12 +6,20 @@ export const styles: any = StyleSheet.create<any>({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 6,
+    marginTop: 14,
+    paddingVertical: "2%",
     paddingHorizontal: 5,
   },
   container: {
     // marginTop: 26,
     zIndex: 1,
+  },
+  noCode: {
+    color: vars["accent-pink"],
+    fontSize: 14,
+    fontWeight: 400,
+    marginTop: 12,
+    textAlign: "center",
   },
   // listHead: {
   //   backgroundColor: "white",

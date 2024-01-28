@@ -10,7 +10,7 @@ import MainLayout from "../../layout/Main";
 import { screenNames } from "../../utils/helpers";
 import ArrowLeftLine from "../../assets/icons/ArrowLeftLine";
 import vars from "../../styles/vars";
-import { Divider } from "react-native-paper";
+import { Divider, overlay } from "react-native-paper";
 import FormGroup from "../../components/FormGroup";
 import Button from "../../components/Button";
 import { RootState } from "../../store";
@@ -29,6 +29,7 @@ import CloudMessage from "../../assets/icons/CloudMessage";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 import { PinCodeInputBoxes } from "../../components/FormGroup/FormGroup";
+import ChangeLimits from "../../assets/icons/ChangeLimits";
 
 const currencyOptions = [
   { label: "EUR", value: "EUR" },
@@ -259,7 +260,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
       <MainLayout>
         <LoadingScreen isLoading={isLoading} />
         <KeyboardAwareScrollView style={{height: '100%', backgroundColor: 'white'}}>
-          <View>
+          <View style={{paddingRight: 6}}>
             <View style={styles.header}>
               <View style={styles.headerLeft}>
                 <TouchableOpacity
@@ -278,26 +279,53 @@ const PayeeSendFunds = ({navigation, route}: any) => {
                 <Text style={{fontSize: 12, color: vars['shade-grey']}}>€ {accountBalance}</Text>
               </View>
             </View>
-            <View style={{paddingVertical: 15, backgroundColor: '#fff'}}>
+            <View style={{paddingVertical: 15, backgroundColor: '#fff', paddingHorizontal: 18}}>
               <Divider style={{marginBottom: 25}}/>
-              <FormGroup
-                validationError={
-                  errors.amount && touched.amount && errors.amount
+              <View style={{marginBottom: 8, paddingBottom: 10}}>
+                <FormGroup
+                  validationError={
+                    errors.amount && touched.amount && errors.amount
+                  }
+                >
+                  <FormGroup.Input
+                    keyboardType="text"
+                    name="amount"
+                    onChangeText={handleChange("amount")}
+                    onBlur={handleBlur("amount")}
+                    value={values.amount}
+                    placeholderTextColor={vars["ios-default-text"]}
+                    placeholder="Amount to send"
+                    iconColor="blue"
+                    style={{height: 52}}
+                    icon={<Euro size={22} />}
+                  />
+                </FormGroup>
+                { errors.amount && touched.amount && <TouchableOpacity
+                    style={{
+                      position: 'absolute', 
+                      right: 0, 
+                      top: 56,
+                      bottom: 0,
+                      justifyContent: 'center', 
+                      paddingHorizontal: 10,
+                      backgroundColor: '#FFF1F1',
+                      borderRadius: 15,
+                      display: 'flex',
+                      flexDirection: 'row',
+                      padding: 5,
+                      height: 24,
+                    }}
+                    onPress={() => {
+                      console.log('change limits');
+                    }}
+                  >
+                    <ChangeLimits />
+                    <Text style={{color: '#FF7171', fontSize: 10, top: -2}}>
+                      Change your limits
+                    </Text>
+                  </TouchableOpacity>
                 }
-              >
-                <FormGroup.Input
-                  keyboardType="text"
-                  name="amount"
-                  onChangeText={handleChange("amount")}
-                  onBlur={handleBlur("amount")}
-                  value={values.amount}
-                  placeholderTextColor={vars["ios-default-text"]}
-                  placeholder="Amount to send"
-                  iconColor="blue"
-                  style={{height: 52}}
-                  icon={<Euro size={22} />}
-                />
-              </FormGroup>
+              </View>
               <FormGroup
                 validationError={
                   errors.reason && touched.reason && errors.reason
@@ -319,13 +347,13 @@ const PayeeSendFunds = ({navigation, route}: any) => {
             <Divider style={{marginVertical: 15}}/>
             {/* purpose of your transfer input */}
             <Text style={{fontSize: 12, color: vars['accent-grey'], alignSelf: 'center'}}>Please provide supporting information for all transfers above $5,000</Text>
-            <Divider style={{marginVertical: 15}}/>
+            <Divider style={{marginVertical: 15, backgroundColor: 'none'}}/>
             <FormGroup
               validationError={
                 errors.purpose && touched.purpose && errors.purpose
               }
             >
-              <FormGroup.TextArea
+              {/* <FormGroup.TextArea
                 keyboardType="default"
                 name="purpose"
                 returnKeyType={"done"}
@@ -337,7 +365,19 @@ const PayeeSendFunds = ({navigation, route}: any) => {
                 iconColor="blue"
                 editable={values.reason === "N/A" ? false : true}
                 icon={<StatementsIcon size={16} />}
-              />
+              /> */}
+                <FormGroup.Input
+                  keyboardType="text"
+                  name="purpose"
+                  onChangeText={handleChange("purpose")}
+                  onBlur={handleBlur("purpose")}
+                  value={values.reason}
+                  placeholderTextColor={vars["ios-default-text"]}
+                  placeholder="Purpose of your transfer"
+                  iconColor="blue"
+                  style={{height: 52}}
+                  icon={<CloudMessage />}
+                />
               </FormGroup>
               <View style={{paddingHorizontal: 16}}>
                 <TouchableOpacity onPress={pickDocument} style={{display: 'flex', flexDirection: 'row'}}>
@@ -367,16 +407,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
                 <Text style={{backgroundColor: vars['shade-grey']}}>{` `}</Text>
               </View>
             </View>
-            <View style={{ bottom: windowHeight * .01 - 10, width: '100%'}}>
-              <Button
-                onPress={handleSubmit}
-                color="light-pink"
-                style={{width: '80%', alignSelf: 'center'}}
-                leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
-              >
-                Send
-              </Button>
-            </View>
+
           </View>
         </KeyboardAwareScrollView>
         {/* <BottomSheet
@@ -408,6 +439,31 @@ const PayeeSendFunds = ({navigation, route}: any) => {
             </>
           )}
         </BottomSheet> */}
+        <View style={{
+            position: 'relative',
+            width: '100%',
+            backgroundColor: '#fff',
+            paddingHorizontal: 16,
+            paddingVertical: 20,
+            shadowColor: "#ACACAC",
+            shadowOffset: {
+              width: 0,
+              height: -2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
+            zIndex: 999,
+          }}>
+            <Button
+              onPress={handleSubmit}
+              color="light-pink"
+              style={{width: '80%', alignSelf: 'center'}}
+              leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
+            >
+              Send
+            </Button>
+          </View>
         <SwipableBottomSheet
         rbSheetRef={refRBSheetCodeOTP}
         closeOnDragDown={true}

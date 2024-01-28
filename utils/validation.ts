@@ -70,7 +70,7 @@ export const validationPaymentSchema = (maxAmount: number) => {
   return Yup.object().shape({
     amount: Yup.number()
       .required("This is a required field*")
-      .max(maxAmount, `Amount cannot be greater than ${maxAmount}`),
+      .max(maxAmount, `This amount is above your daily limit`),
   });
 };
 

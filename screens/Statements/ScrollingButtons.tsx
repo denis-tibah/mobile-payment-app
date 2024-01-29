@@ -76,7 +76,7 @@ const ScrollingButtons: React.FC<ScrollingButtonsProps> = ({
       snapToInterval={buttonHeight}
       decelerationRate="fast"
       onScroll={handleScroll}
-      onScrollEndDrag={handleScrollEnd}
+      // onScrollEndDrag={handleScrollEnd}
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.container}>{renderButtons()}</View>

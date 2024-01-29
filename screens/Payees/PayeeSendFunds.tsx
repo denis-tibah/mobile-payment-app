@@ -49,6 +49,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
   const accountName = `${userData?.first_name} ${userData?.last_name}` || '';
   const receiverName: string = params?.item.name || '';
   const receiverIban: string = params?.item.iban || '';
+  const receiverUuid: string = params?.item.uuid || '';
   const windowHeight = Dimensions.get('window').height;
 
   const [initiatePayment] = useInitiatePaymentMutation();
@@ -94,18 +95,20 @@ const PayeeSendFunds = ({navigation, route}: any) => {
       creditor_name: receiverName,
       amount: smsPaymentRequest.amount,
       currency: smsPaymentRequest.currency,
+      reference: smsPaymentRequest?.remarks,
       remarks: smsPaymentRequest?.remarks,
+      purpose: smsPaymentRequest?.reason,
+      reason: smsPaymentRequest?.reason,
       access_token: userTokens?.access_token,
       token_ziyl: userTokens?.token_ziyl,
     })
     .unwrap()
     .then((res) => {
       const { status } = res;
-      if(status === 'success') {
-        refRBSheetCodeOTP?.current.close();
-        refRBSheetSuccess?.current?.open();
-        setIsPaymentSuccessful(true);
-      }
+      refRBSheetCodeOTP?.current.close();
+      refRBSheetSuccess?.current?.open();
+      setIsPaymentSuccessful(true);
+
     })
     .catch((err) => {
       console.log(err);
@@ -134,6 +137,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
       creditor_iban: receiverIban,
       creditor_name: receiverName,
       reason: paymentValues.reason,
+      remarks: paymentValues.remarks,
       access_token: userTokens?.access_token,
       token_ziyl: userTokens?.token_ziyl,
       ...(paymentValues.attachedFile && {attached_file: paymentValues.attachedFile}),
@@ -147,6 +151,9 @@ const PayeeSendFunds = ({navigation, route}: any) => {
       creditor_iban: receiverIban,
       creditor_name: receiverName,
       reason: paymentValues.reason,
+      purpose: paymentValues.reason,
+      remarks: paymentValues.remarks,
+      reference: paymentValues.remarks,
       access_token: userTokens?.access_token,
       token_ziyl: userTokens?.token_ziyl,
       ...(paymentValues.attachedFile && {attached_file: paymentValues.attachedFile}),
@@ -164,6 +171,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
       setSmsPaymentRequest({
         ...res,
         ...paymentRequest,
+        ...paymentValues,
         token_ziyl: userTokens?.token_ziyl,
         access_token: userTokens?.access_token,
       });
@@ -205,12 +213,15 @@ const PayeeSendFunds = ({navigation, route}: any) => {
     initialValues: {
       amount: '',
       currency: 'EUR',
+      remarks: '',
       purpose: '',
+      reference: '',
       isManualProcessing: false,
       reason: '',
     },
     onSubmit: (values: any) => {
       setIsLoading(true);
+      console.log('values', values);
       handleInitiatepayment(values);
     },
     validationSchema: validationSchema,
@@ -350,7 +361,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
             <Divider style={{marginVertical: 15, backgroundColor: 'none'}}/>
             <FormGroup
               validationError={
-                errors.purpose && touched.purpose && errors.purpose
+                errors.remarks && touched.remarks && errors.remarks
               }
             >
               {/* <FormGroup.TextArea
@@ -368,10 +379,10 @@ const PayeeSendFunds = ({navigation, route}: any) => {
               /> */}
                 <FormGroup.Input
                   keyboardType="text"
-                  name="purpose"
-                  onChangeText={handleChange("purpose")}
-                  onBlur={handleBlur("purpose")}
-                  value={values.reason}
+                  name="remarks"
+                  onChangeText={handleChange("remarks")}
+                  onBlur={handleBlur("remarks")}
+                  value={values.remarks}
                   placeholderTextColor={vars["ios-default-text"]}
                   placeholder="Purpose of your transfer"
                   iconColor="blue"
@@ -477,7 +488,11 @@ const PayeeSendFunds = ({navigation, route}: any) => {
           elevation: 12,
           shadowColor: "#52006A",
         }}
-        draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
+        onClose={() => {
+          navigation.navigate(screenNames.payments);
+          }
+        }
+        draggableIconStyles={{ backgroundColor: "#DDD", width: 90 }}
       >
         <View style={styles.container}>
           <Text style={{

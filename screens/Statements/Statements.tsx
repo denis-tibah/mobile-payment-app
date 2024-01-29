@@ -209,22 +209,23 @@ export function Statements({ navigation }: any) {
         </Typography> */}
         <ScrollingButtons
           onScrollOptions={(formattedDate) => {
-              const date = new Date(formattedDate);
-              const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toString();
-              const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).toString();
-              const _firstDay = new Date(firstDay).toISOString().split("T")[0];
-              const _lastDay = new Date(lastDay).toISOString().split("T")[0];
-              setShowStatementPickerDateToAndFrom({
-                dateTo: {
-                  state: false,
-                  value: _lastDay,
-                },
-                dateFrom: {
-                  state: false,
-                  value: _firstDay,
-                },
-              });
-            }
+            if (!formattedDate) return;
+            const date = new Date(formattedDate);
+            const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toString();
+            const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).toString();
+            const _firstDay = new Date(firstDay).toISOString().split("T")[0];
+            const _lastDay = new Date(lastDay).toISOString().split("T")[0];
+            setShowStatementPickerDateToAndFrom({
+              dateTo: {
+                state: false,
+                value: _lastDay,
+              },
+              dateFrom: {
+                state: false,
+                value: _firstDay,
+              },
+            });
+          }
           }
         />
         {/* <Typography

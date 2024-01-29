@@ -5,6 +5,7 @@ import {
   RefreshControl,
   TouchableOpacity,
 } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { useSelector } from "react-redux";
 import Heading from "../../components/Heading";
@@ -22,8 +23,15 @@ import Spinner from "react-native-loading-spinner-overlay/lib";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
 import Button from "../../components/Button";
-import { useLazyGetTransactionsQuery } from "../../redux/transaction/transactionV2Slice";
+import {
+  useLazyGetTransactionsQuery,
+  useGetTransactionsQuery,
+} from "../../redux/transaction/transactionV2Slice";
 import { stat } from "fs";
+import AccordionItem from "../../components/AccordionItem";
+import ProgressClock from "../../assets/icons/ProgressClock";
+import TransactionsLeftRightIcon from "../../assets/icons/TransactionsLeftRight";
+import WholeContainer from "../../layout/WholeContainer";
 
 const defaultStatus = "SUCCESS";
 export function MyAccount({ navigation }: any) {
@@ -35,24 +43,71 @@ export function MyAccount({ navigation }: any) {
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userId = userData?.id;
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
-  const [getTransactionsWithFilter, { data: transactionsWithFilter }] =
+
+  /* const [getTransactionsWithFilter, { data: transactionsWithFilter }] =
     useLazyGetTransactionsQuery();
   const transactionsList = transactionsWithFilter?.transactions;
   const _groupedByDateTransactions =
-    groupedByDateTransactions(transactionsList);
-  const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [sortByStatus, setSortByStatus] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [paginateRefresh, setPaginateRefresh] = useState<boolean>(false);
-  const [isOneTransactionOpen, setIsOneTransactionOpen] =
-    useState<boolean>(false);
+    groupedByDateTransactions(transactionsList); */
+
+  const transactionsParams = ({ status }: any) => {
+    return {
+      accountId: userData?.id || 0,
+      accessToken: userTokens?.access_token,
+      tokenZiyl: userTokens?.token_ziyl,
+      status,
+      direction: "desc",
+      limit: 100,
+      page: 1,
+    };
+  };
+
+  const {
+    data: dataTransactionsPending,
+    isLoading: isloadingTransactionsPending,
+    refetch: refetchTransactionsPending,
+  } = useGetTransactionsQuery(transactionsParams({ status: "PROCESSING" }), {
+    skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
+  });
+  const transactionsListPending = dataTransactionsPending?.transactions;
+  const groupedByDateTransactionsPending = groupedByDateTransactions(
+    transactionsListPending
+  );
+  console.log(
+    "🚀 ~ MyAccount ~ groupedByDateTransactionsPending:",
+    groupedByDateTransactionsPending
+  );
+
+  const {
+    data: dataTransactionsCompleted,
+    isLoading: isloadingTransactionsCompleted,
+    refetch: refetchTransactionsCompleted,
+  } = useGetTransactionsQuery(transactionsParams({ status: "SUCCESS" }), {
+    skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
+  });
+  const transactionsListCompleted = dataTransactionsCompleted?.transactions;
+  const groupedByDateTransactionsCompleted = groupedByDateTransactions(
+    transactionsListCompleted
+  );
+  console.log(
+    "🚀 ~ MyAccount ~ groupedByDateTransactionsCompleted:",
+    groupedByDateTransactionsCompleted
+  );
+
   const { data: userAccountInformation } = useGetAccountDetailsQuery({
     accountId: userData?.id || 0,
     accessToken: userTokens?.access_token,
     tokenZiyl: userTokens?.token_ziyl,
   });
 
-  const fetchTransactions = async (filterParams?: {
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  /* const [sortByStatus, setSortByStatus] = useState<boolean>(false); */
+  /* const [isLoading, setIsLoading] = useState<boolean>(false); */
+  /* const [paginateRefresh, setPaginateRefresh] = useState<boolean>(false); */
+  /* const [isOneTransactionOpen, setIsOneTransactionOpen] =
+    useState<boolean>(false); */
+
+  /* const fetchTransactions = async (filterParams?: {
     pageNumber?: number;
     status?: string;
   }) => {
@@ -85,87 +140,45 @@ export function MyAccount({ navigation }: any) {
         });
       setPaginateRefresh(false);
     }
-  };
+  }; */
 
-  const handlePreviousPage = () => {
+  /* const handlePreviousPage = () => {
     if (currentPage > 1) {
       const _currentPage = currentPage - 1;
       fetchTransactions({ pageNumber: _currentPage });
     }
-  };
+  }; */
 
-  const handleNextPage = () => {
+  /*   const handleNextPage = () => {
     if (currentPage < lastPage) {
       const _currentPage = currentPage + 1;
       fetchTransactions({ pageNumber: _currentPage });
     }
-  };
+  }; */
 
-  useEffect(() => {
+  /* useEffect(() => {
     fetchTransactions();
-  }, [userId]);
+  }, [userId]); */
 
   return (
     <MainLayout navigation={navigation}>
+      <Spinner
+        visible={
+          /* paginateRefresh || */
+          /* isLoading || */
+          isloadingTransactionsPending || isloadingTransactionsCompleted
+        }
+      />
       <ScrollView
         bounces={true}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={fetchTransactions}
+            /* onRefresh={fetchTransactions} */
+            onRefresh={() => {}}
           />
         }
       >
-        {/* <View style={styles.balanceContainer}>
-          <Box
-            style={{
-              ...styles.totalBalance,
-              ...styles.currentBalanceShadow,
-              ...styles.balanceFirstThird,
-            }}
-          >
-            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12} lineHeight={14}>
-              Current Balance
-            </Typography>
-            <Typography color={"accent-pink"} fontWeight={600} fontSize={18} ineHeight={14}>
-              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
-                userAccountInformation?.data?.curbal || 0
-              }`}
-            </Typography>
-          </Box>
-          <Box
-            style={{
-              ...styles.totalBalance,
-              ...styles.pendingBalanceShadow,
-              ...styles.pendingBalance,
-            }}
-          >
-            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12} lineHeight={14}>
-              Pending
-            </Typography>
-            <Typography color={"accent-orange"} fontWeight={600} fontSize={18} ineHeight={14}>
-              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
-                userAccountInformation?.data?.blocked_amount || 0
-              }`}
-            </Typography>
-          </Box>
-          <Box
-            style={{
-              ...styles.totalBalance,
-              ...styles.availableBalanceShadow,
-              ...styles.balanceFirstThird,
-            }}
-          >
-            <Typography color={"medium-grey2"} fontWeight={400} fontSize={12} lineHeight={14}>
-              Available Balance
-            </Typography>
-            <Typography color={"accent-green"} fontWeight={600} fontSize={18} ineHeight={14}>
-              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
-                userAccountInformation?.data?.avlbal || 0
-              }`}
-            </Typography>
-          </Box>
-        </View> */}
         <View style={styles.balancesContainer}>
           <View
             style={[
@@ -232,7 +245,7 @@ export function MyAccount({ navigation }: any) {
           </View>
         </View>
         <View>
-          <View style={styles.base}>
+          {/* <View style={styles.base}>
             <Heading
               icon={<AccountIcon color="pink" size={18} />}
               title="Latest Transactions"
@@ -254,10 +267,51 @@ export function MyAccount({ navigation }: any) {
                 </TouchableOpacity>
               }
             />
-          </View>
+          </View> */}
           <View>
-            <Spinner visible={paginateRefresh || isLoading} />
-            {_groupedByDateTransactions ? (
+            <AccordionItem
+              title="Pending"
+              iconColor="#FBB445"
+              iconSize={28}
+              IconLeft={() => <ProgressClock color="#FBB445" size={18} />}
+            >
+              <View style={styles.accordionBodyContainer}>
+                <WholeContainer>
+                  <View style={{ paddingVertical: 6 }}>
+                    <Typography
+                      color={"accent-green"}
+                      fontWeight={800}
+                      fontSize={18}
+                    >
+                      Im accordion 1
+                    </Typography>
+                  </View>
+                </WholeContainer>
+              </View>
+            </AccordionItem>
+            <AccordionItem
+              title="Latest transactions"
+              iconColor="#E7038E"
+              iconSize={28}
+              IconLeft={() => (
+                <TransactionsLeftRightIcon color="#E7038E" size={18} />
+              )}
+            >
+              <View style={styles.accordionBodyContainer}>
+                <WholeContainer>
+                  <View style={{ paddingVertical: 6 }}>
+                    <Typography
+                      color={"accent-green"}
+                      fontWeight={800}
+                      fontSize={18}
+                    >
+                      Im accordion 2
+                    </Typography>
+                  </View>
+                </WholeContainer>
+              </View>
+            </AccordionItem>
+            {/* {_groupedByDateTransactions ? (
               <>
                 <View>
                   {_groupedByDateTransactions
@@ -302,7 +356,7 @@ export function MyAccount({ navigation }: any) {
                   No Transactions Found
                 </Typography>
               </View>
-            )}
+            )} */}
           </View>
           {/* Aristos: temp disabled this */}
           {/* <Pagination

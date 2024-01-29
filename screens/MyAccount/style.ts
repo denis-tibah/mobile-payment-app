@@ -164,4 +164,10 @@ export const styles: any = StyleSheet.create<any>({
     paddingBottom: 6,
     paddingLeft: 8,
   },
+  accordionBodyContainer: {
+    backgroundColor: "#F5F9FF",
+    shadowOpacity: 0.1,
+    elevation: 20,
+    shadowColor: "#000",
+  },
 });

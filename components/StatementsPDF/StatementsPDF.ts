@@ -185,6 +185,10 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
           </table>
         </div>
       </body>
+      <footer style="font-size: 12px; color: #0A0A0A">
+      © 2023 Zazoo is a brand name operated by IQGP Ltd, a company registered in Cyprus with its Registered address at Dimostheni Severi 12, 6th Floor, Office 601, Nicosia, 1080, Cyprus and with Company Registration number HE 435932. Zazoo is not a bank. Zazoo is a technical platform that facilitates the opening and operating of an electronic money accounts for both individuals and corporate customers.
+      Payment related services, debit card services, account opening and management services are provided through its relationship with regulated entity and electric money institution license holder, FinXP Ltd, a company registered in Malta with Registration number C 65783 which is regulated by the Malta Financial Services Authority and who has their registered office at Ardent Business Centre, No 4, Triq L-Oratorju, Naxxar NXR 2505, Malta.
+      </footer>
     </html>
   `
 }

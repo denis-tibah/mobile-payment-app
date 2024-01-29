@@ -544,18 +544,8 @@ const PayeeSendFunds = ({navigation, route}: any) => {
           elevation: 12,
           shadowColor: "#52006A",
         }}
-        draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
+        draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
       >
-      <View style={{
-        width: '30%',
-          alignSelf:'center',
-          backgroundColor: vars['grey'],
-          height: 5,
-          borderRadius: 10, 
-          zIndex: 999, 
-          marginBottom: 20, 
-          top: 0
-      }}></View>
       <View style={{
             borderColor: isPaymentSuccessful ? vars["accent-green"] : vars["heavy-red"],
             borderTopWidth: 60

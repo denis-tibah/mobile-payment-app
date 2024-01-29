@@ -60,19 +60,19 @@ export const CardView = ({
       <ImageBackground
         resizeMode="contain"
         style={styles.cardContainer}
-        imageStyle={{ borderRadius: 8, height: 255, width: 390, left: -23}}
+        imageStyle={{ borderRadius: 8, height: 239, width: 390, left: -23}}
         source={cardImage}
       >
-        <View style={{width: '75%', paddingTop: 35}}>
+        <View style={{width: '73%', paddingTop: 22}}>
           <Text style={styles.panTitle}>Card Number</Text>
           <Text style={styles.panText}>{pan}</Text>
         </View>
         <View style={styles.cardHolderAndExpiryDateContainer}>
-          <View style={{marginTop: 8, left: -8}}>
+          <View style={{marginTop: 6, left: -8}}>
             <Text style={styles.cardHolder}>Card holder</Text>
             <Text style={styles.cardHolderName}>{profileData.first_name} {profileData.last_name}</Text>
           </View>
-          <View style={{left: 20, marginTop: 7}}>
+          <View style={{left: 18, marginTop: 2}}>
             <Text style={styles.expiryDateTitle}>Expiry Date</Text>
             <Text style={styles.expiryDate}>{expiryMonth}/{expiryYear}</Text>
           </View>
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 60,
+    marginTop: 57,
   },
   panTitle: {
     color: "rgba(255, 255, 255, 0.5)",

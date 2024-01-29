@@ -26,6 +26,7 @@ import PinGPS from "../../assets/icons/PinGPS";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import IconQr from "../../assets/icons/IconsQr";
 import ArrowDownDotted from "../../assets/icons/ArrowDownDotted";
+import Typography from "../../components/Typography";
 
 export function Payment({ navigation }: any) {
   const dispatch = useDispatch();
@@ -184,7 +185,10 @@ export function Payment({ navigation }: any) {
                       flexDirection: 'row',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      marginBottom: 10,
+                      // marginTop: 10,
+                      borderTopColor: vars['grey'],
+                      borderTopWidth: selectedPayeeId === index ? 0 : 1,
+                      marginBottom: 5,
                       padding: 10,
                       borderBottomColor: vars['grey'],
                       borderBottomWidth: selectedPayeeId === index ? 0 : 1,
@@ -226,32 +230,52 @@ export function Payment({ navigation }: any) {
                     <View style={{display: 'flex', flexDirection: 'column', paddingHorizontal: 25}}>
                       <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
                         <View style={{display: 'flex', flexDirection:'column'}}>
-                          <Text style={{color: vars['accent-blue']}}>
+                          <Typography 
+                            color="accent-blue"
+                            fontSize={12}
+                            fontWeight={600}
+                            fontFamily="Nunito-SemiBold"
+                          >
                             IBAN
-                          </Text>
+                          </Typography>
                           <Text style={{color: '#000', fontSize: 12}}>
                             {item.iban}
                           </Text>
                         </View>
                         <View style={{display: 'flex', flexDirection:'column'}}>
-                          <Text style={{color: vars['accent-blue']}}>
+                        <Typography 
+                          color="accent-blue"
+                          fontSize={12}
+                          fontWeight={600}
+                          fontFamily="Nunito-SemiBold"
+                          >
                             BIC
-                          </Text>
-                          <Text style={{color: '#000', fontSize: 12}}>
+                          </Typography>
+                          <Typography 
+                            color="black"
+                            fontSize={12}
+                            fontWeight={400}
+                            fontFamily="Nunito-SemiBold"
+                            >
                             {item.bic}
-                          </Text>
+                          </Typography>
                         </View>
                       </View>
-                      <Divider style={{ marginVertical: 20 }} />
+                      <Divider style={{
+                        marginVertical: 20,
+                        height: 1,
+                        backgroundColor: vars['shade-grey'],
+                        opacity: .5,
+                      }} />
                       <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                        <View style={{display: 'flex', flexDirection:'column'}}>
+                        {/* <View style={{display: 'flex', flexDirection:'column'}}>
                           <Text style={{color: vars['accent-blue']}}>
                             BANK
                           </Text>
                           <Text style={{color: '#000', fontSize: 12}}>
                             ING Espana
                           </Text>
-                        </View>
+                        </View> */}
                         <View style={{display: 'flex', flexDirection:'column'}}>
                           <Text style={{color: vars['accent-blue']}}>
                             Added
@@ -260,8 +284,21 @@ export function Payment({ navigation }: any) {
                             {formatDateDayMonthYear(item.created_at)}
                           </Text>
                         </View>
+                        {/* delete button here */}
+                        <View style={{display: 'flex', flexDirection:'column'}}>
+                          <TouchableOpacity>
+                            <Text style={{top: 18, right: 8}}>
+                              <AntDesign name="delete" size={19} color={vars['accent-pink']} />
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
-                      <Divider style={{ marginVertical: 20 }} />
+                      <Divider style={{
+                        marginVertical: 20,
+                        // height: 1,
+                        // backgroundColor: vars['shade-grey'],
+                        opacity: 0,
+                      }} />
                     </View>
                   }
                 </Fragment>

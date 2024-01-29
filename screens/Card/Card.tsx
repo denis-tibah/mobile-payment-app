@@ -38,6 +38,7 @@ import { RootState } from "../../store";
 import { CodeModal } from "../../components/CodeModal/CodeModal";
 import { delayCode } from "../../utils/delay";
 import Carousel from "react-native-snap-carousel";
+
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { ICardDetails } from "../../models/interface";
 import vars from "../../styles/vars";
@@ -458,20 +459,31 @@ export function Card({ navigation, route }: any) {
           <View style={styles.cardSection}>
             <View style={styles.cardImages}>
               <Carousel
+                disableIntervalMomentum
                 data={cardDetails?.cardImage ? [cardDetails] : shownCardsOnCarousel}
                 renderItem={_renderItem}
                 refreshing={isLoading}
+                enableMomentum={false}
+                decelerationRate={0.25}
                 sliderWidth={370}
-                itemWidth={370}
+                snapToStart={isLoading}
+                removeClippedSubviews={false}
+                itemWidth={303}
+                initialScrollIndex={0}
+                inactiveSlideOpacity={.5}
+                //reset carousel index to zero when isTeminatedCardShown went to false from true
+                onSnapToItem={(index) => {
+                  if(isTerminatedCardShown) {
+                    setSelectedCard(shownCardsOnCarousel[index]);
+                  } else {
+                    setSelectedCard(cardsActiveList[index]);
+                  }
+                }}
+                onBeforeSnapToItem={(index) => {
+                  setSelectedCard(shownCardsOnCarousel[index]);
+                }}
                 layout="default"
                 lockScrollWhileSnapping={true}
-                onScroll={(value) => {
-                  const aaa = value.currentTarget.valueOf();
-                  console.log({ aaa });
-                }}
-                onSnapToItem={(index) => {
-                  setOnSnapEnd(index);
-                }}
               />
               {cardDetails?.cardNumber ? (
                 <TouchableOpacity onPress={handleCopyToClipboard}>
@@ -492,7 +504,14 @@ export function Card({ navigation, route }: any) {
                     }}
                     leftIcon={<EyeIcon color="blue" size={14} />}
                   >
-                    <Text style={{fontSize: 14, fontFamily: 'Nunito', fontWeight: "600"}}>Show Card</Text>
+                    <Typography
+                      fontSize={16}
+                      fontWeight={600}
+                      marginLeft={8}
+                      fontFamily={'Nunito-SemiBold'}
+                    >
+                      Show Card
+                    </Typography>
                   </Button>
                 </Pressable>
               </View>
@@ -531,42 +550,47 @@ export function Card({ navigation, route }: any) {
                     }}
                     disabled={freezeLoading}
                   >
-                    <Text style={{fontSize: 14,fontFamily: 'Nunito', fontWeight: "600"}}>
+                    <Typography
+                      fontSize={16}
+                      fontWeight={600}
+                      // marginLeft={8}
+                      fontFamily={'Nunito-SemiBold'}
+                    >
                       {selectedCard?.frozenYN === "Y" ? "Unfreeze Card" : "Freeze Card"}
-                    </Text>
+                    </Typography>
                   </Button>
                 </Pressable>
               </View>
             </View>
           </View>
           <Pressable>
-          <Divider style={{marginVertical: 10, paddingHorizontal: 15}} />
-            <View style={styles.cardActionsListContainer}>
-              <View style={styles.cardActionItem}>
-                <View style={{display: 'flex', flexDirection: 'row'}}>
-                  <View style={{paddingRight: 8, marginTop: 5}}>
-                    <ArrowSwitch color="heavy-blue" size={18}/>
+            <Divider style={{marginVertical: 10, paddingHorizontal: 15}} />
+              <View style={styles.cardActionsListContainer}>
+                <View style={styles.cardActionItem}>
+                  <View style={{display: 'flex', flexDirection: 'row'}}>
+                    <View style={{paddingRight: 8, marginTop: 5}}>
+                      <ArrowSwitch color="heavy-blue" size={18}/>
+                    </View>
+                    <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito-SemiBold'}>
+                      See Card Transactions
+                    </Typography>
                   </View>
-                  <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito'}>
-                    See Card Transactions
-                  </Typography>
+                  <TouchableOpacity style={{marginTop: 7}} onPress={() => {
+                    dispatch<any>(setIsCardTransactionShown(true));
+                    navigation.navigate('Transactions');
+                  }}>
+                    <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={{marginTop: 7}} onPress={() => {
-                  dispatch<any>(setIsCardTransactionShown(true));
-                  navigation.navigate('Transactions');
-                }}>
-                  <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
-                </TouchableOpacity>
               </View>
-            </View>
-          <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
+            <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
             <View style={styles.cardActionsListContainer}>
               <View style={styles.cardActionItem}>
                 <View style={{display: 'flex', flexDirection: 'row'}}>
                   <View style={{paddingRight: 8, marginTop: 5}}>
                     <MaterialCommunityIcons name="cog-outline" size={18} color={vars['accent-blue']} />
                   </View>
-                  <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito'}>
+                  <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito-SemiBold'}>
                     Manage Payment Method
                   </Typography>
                 </View>
@@ -578,14 +602,14 @@ export function Card({ navigation, route }: any) {
                 </TouchableOpacity>
               </View>
             </View>
-          <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
+            <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
             <View style={styles.cardActionsListContainer}>
               <View style={styles.cardActionItem}>
                 <View style={{display: 'flex', flexDirection: 'row'}}>
                   <View style={{paddingRight: 8, marginTop: 5}}>
                     <PinNumberCode color="heavy-blue" size={18} />
                   </View>
-                  <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito'}>
+                  <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito-SemiBold'}>
                     Lost Card
                   </Typography>
                 </View>
@@ -594,14 +618,14 @@ export function Card({ navigation, route }: any) {
                 </TouchableOpacity>
               </View>
             </View>
-          <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
+            <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
             <View style={styles.cardActionsListContainer}>
               <View style={styles.cardActionItem}>
                 <View style={{display: 'flex', flexDirection: 'row'}}>
                   <View style={{paddingRight: 8, marginTop: 5}}>
                     <BugIcon size={18} color={vars['accent-blue']} />
                   </View>
-                  <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito'}>
+                  <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito-SemiBold'}>
                     Show Terminated Cards
                   </Typography>
                 </View>
@@ -610,7 +634,7 @@ export function Card({ navigation, route }: any) {
                 </TouchableOpacity>
               </View>
             </View>
-          <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
+            <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
           </Pressable>
           <SwipableBottomSheet
             rbSheetRef={refRBSheet}
@@ -686,6 +710,7 @@ export function Card({ navigation, route }: any) {
               <Button
                 onPress={() => {
                   setIsTerminatedCardShown(true);
+                  
                   setSelectedCard(cardsActiveList[0]);
                   refRBSheetShowTerminatedCards?.current?.close();
                 }}
@@ -698,9 +723,12 @@ export function Card({ navigation, route }: any) {
               </Button>
               <Button
                 onPress={() => {
-                  setIsTerminatedCardShown(false);
-                  setSelectedCard(cardsActiveList[0]);
-                  setSelectedCard(null);
+                  setSelectedCard(shownCardsOnCarousel[0]);
+                  setIsloading(true);
+                  setTimeout(() => {
+                    setIsTerminatedCardShown(false);
+                    setIsloading(false);
+                  }, 500);
                   refRBSheetShowTerminatedCards?.current?.close()
                 }}
                 style={{color: '#fff', width: 140}}
@@ -797,9 +825,9 @@ export function Card({ navigation, route }: any) {
             }}
             draggableIconStyles={{ backgroundColor: "#DDD", width: 90 }}
           >
-              <Text style={{fontSize: 18, fontWeight: '600', marginBottom: 20, fontFamily: 'Nunito'}}>
+              <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito'}>
                 Show Card
-              </Text>
+              </Typography>
               <Typography fontSize={14} fontWeight={400} color={vars['shade-grey']} >
                 You will receive an sms to your mobile device. Please enter this code below.
               </Typography>

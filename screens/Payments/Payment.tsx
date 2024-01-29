@@ -27,6 +27,7 @@ import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import IconQr from "../../assets/icons/IconsQr";
 import ArrowDownDotted from "../../assets/icons/ArrowDownDotted";
 import Typography from "../../components/Typography";
+import { deleteBeneficiary } from "../../redux/beneficiary/beneficiarySlice";
 
 export function Payment({ navigation }: any) {
   const dispatch = useDispatch();
@@ -34,6 +35,7 @@ export function Payment({ navigation }: any) {
   const validationSchema = validationAddingPayeeSchema();
   const [isAddingPayeeShown, setIsAddingPayeeShown] = useState<boolean>(false);
   const [isModalSuccessOpen, setIsModalSuccessOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchName, setSearchName] = useState<string>("");
   const [isPayeeListShown, setIsPayeeListShown] = useState<boolean>(true);
   // const [isPayeeDetailsShown, setIsPayeeDetailsShown] = useState<boolean>(false);
@@ -49,7 +51,7 @@ export function Payment({ navigation }: any) {
   }] = useAddPayeeMutation();
 
   const { data: payeesList,
-  isLoading: isPayeesListLoading } = useGetPayeesQuery({
+    isLoading: isPayeesListLoading } = useGetPayeesQuery({
     accessToken: access_token,
     tokenZiyl: token_ziyl,
   });
@@ -188,7 +190,7 @@ export function Payment({ navigation }: any) {
                       // marginTop: 10,
                       borderTopColor: vars['grey'],
                       borderTopWidth: selectedPayeeId === index ? 0 : 1,
-                      marginBottom: 5,
+                      // marginBottom: 5,
                       padding: 10,
                       borderBottomColor: vars['grey'],
                       borderBottomWidth: selectedPayeeId === index ? 0 : 1,
@@ -201,18 +203,45 @@ export function Payment({ navigation }: any) {
                         setSelectedPayeeId(index);
                       }}>
                       <View style={{display: 'flex', flexDirection: 'row'}}>
-                          <View style={{padding: 10, borderRadius: 99, backgroundColor: '#F5F4F4', width: 40, height: 40}}>
-                            <Text style={{fontSize: 14}}>{getNameInitials(item.name)}</Text>
+                        <View style={{padding: 6, borderRadius: 99, backgroundColor: '#F5F4F4', width: 28, height: 28}}>
+                          <Typography 
+                            color="#000"
+                            fontSize={10}
+                            fontWeight={600}
+                            fontFamily="Nunito-Bold"
+                          >
+                            {getNameInitials(item.name)}
+                          </Typography>
                           </View>
                           <View style={{paddingLeft: 10}}>
-                            <Text style={{fontSize: 14}}>{item.name}</Text>
-                            <Text style={{fontSize: 12, color: vars['shade-grey']}}>{item.iban}</Text>
+                          <Typography 
+                            color="#000"
+                            fontSize={14}
+                            fontWeight={600}
+                            fontFamily="Nunito-Bold"
+                          >
+                            {item.name}
+                          </Typography>
+                          <Typography 
+                            color="#808080"
+                            fontSize={12}
+                            fontWeight={600}
+                            fontFamily="Nunito-Bold"
+                          >
+                            {item.iban}
+                          </Typography>
                           </View>
                         </View>
                     </TouchableOpacity>
                     <View style={{display: 'flex', flexDirection: 'row'}}>
                         <View>
-                          <Text style={{fontSize: 14}}>{formatDateDayMonthYear(item.created_at)}</Text>
+                        <Typography 
+                            color="#000"
+                            fontSize={14}
+                            fontWeight={600}
+                            fontFamily="Nunito-SemiBold"
+                          >{formatDateDayMonthYear(item.created_at)}
+                        </Typography>
                           {/* <Text style={{fontSize: 12, color: vars['accent-green']}}>{`+ € 1200`}</Text> */}
                         </View>
                         <View style={{ paddingTop: 3, paddingLeft: 8 }}>
@@ -234,28 +263,31 @@ export function Payment({ navigation }: any) {
                             color="accent-blue"
                             fontSize={12}
                             fontWeight={600}
-                            fontFamily="Nunito-SemiBold"
+                            fontFamily="Nunito-Bold"
                           >
                             IBAN
                           </Typography>
-                          <Text style={{color: '#000', fontSize: 12}}>
+                          <Typography
+                            color="#000"
+                            fontSize={14}
+                            fontWeight={600}
+                          >
                             {item.iban}
-                          </Text>
+                          </Typography>
                         </View>
                         <View style={{display: 'flex', flexDirection:'column'}}>
                         <Typography 
                           color="accent-blue"
                           fontSize={12}
                           fontWeight={600}
-                          fontFamily="Nunito-SemiBold"
+                          fontFamily="Nunito-Bold"
                           >
                             BIC
                           </Typography>
                           <Typography 
-                            color="black"
-                            fontSize={12}
+                            color="#000"
+                            fontSize={14}
                             fontWeight={400}
-                            fontFamily="Nunito-SemiBold"
                             >
                             {item.bic}
                           </Typography>
@@ -277,16 +309,39 @@ export function Payment({ navigation }: any) {
                           </Text>
                         </View> */}
                         <View style={{display: 'flex', flexDirection:'column'}}>
-                          <Text style={{color: vars['accent-blue']}}>
+                          <Typography 
+                            color="accent-blue"
+                            fontSize={12}
+                            fontWeight={600}
+                            fontFamily="Nunito-Bold"
+                            >
                             Added
-                          </Text>
-                          <Text style={{color:'#000', fontSize: 12}}>
+                          </Typography>
+                          <Typography 
+                          color="#000"
+                          fontSize={14}
+                          fontWeight={400}
+                          // fontFamily="Nunito-Bold"
+                          >
                             {formatDateDayMonthYear(item.created_at)}
-                          </Text>
+                          </Typography>
                         </View>
                         {/* delete button here */}
                         <View style={{display: 'flex', flexDirection:'column'}}>
-                          <TouchableOpacity>
+                          <TouchableOpacity onPress={() => {
+                            setIsLoading(true);
+                            console.log('item', item.uuid)
+                            dispatch<any>(deleteBeneficiary(item.uuid))
+                            .unwrap()
+                            .then((res) => {
+                              setIsLoading(false);
+                              console.log('res', res);
+                            })
+                            .catch((error: any) => {
+                              console.log('error', error);
+                              setIsLoading(false);
+                            });
+                          }}>
                             <Text style={{top: 18, right: 8}}>
                               <AntDesign name="delete" size={19} color={vars['accent-pink']} />
                             </Text>
@@ -425,6 +480,7 @@ export function Payment({ navigation }: any) {
                 }
           </ScrollView>
         </BottomSheet>
+        <Spinner visible={isLoading} />
     </MainLayout>
   )
 }

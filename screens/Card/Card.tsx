@@ -566,75 +566,103 @@ export function Card({ navigation, route }: any) {
           <Pressable>
             <Divider style={{marginVertical: 10, paddingHorizontal: 15}} />
               <View style={styles.cardActionsListContainer}>
-                <View style={styles.cardActionItem}>
+                <TouchableOpacity style={styles.cardActionItem} onPress={() => {
+                    dispatch<any>(setIsCardTransactionShown(true));
+                    navigation.navigate('Transactions');
+                  }}>
                   <View style={{display: 'flex', flexDirection: 'row'}}>
-                    <View style={{paddingRight: 8, marginTop: 5}}>
+                    <View style={{paddingRight: 8, marginTop: 2 }}>
                       <ArrowSwitch color="heavy-blue" size={18}/>
                     </View>
                     <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito-SemiBold'}>
                       See Card Transactions
                     </Typography>
                   </View>
-                  <TouchableOpacity style={{marginTop: 7}} onPress={() => {
-                    dispatch<any>(setIsCardTransactionShown(true));
-                    navigation.navigate('Transactions');
-                  }}>
+                  <TouchableOpacity style={{marginTop: 7}}>
                     <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
                   </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
               </View>
-            <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
+            <Divider style={{
+              marginVertical: 5,
+              paddingHorizontal: 15,
+              height: 1,
+              backgroundColor: vars['shade-grey'],
+              opacity: .2,
+              }}
+            />
             <View style={styles.cardActionsListContainer}>
-              <View style={styles.cardActionItem}>
+              <TouchableOpacity style={styles.cardActionItem} onPress={() => refRBSheet?.current?.open()}>
                 <View style={{display: 'flex', flexDirection: 'row'}}>
-                  <View style={{paddingRight: 8, marginTop: 5}}>
+                  <View style={{paddingRight: 8, marginTop: 2}}>
                     <MaterialCommunityIcons name="cog-outline" size={18} color={vars['accent-blue']} />
                   </View>
                   <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito-SemiBold'}>
                     Manage Payment Method
                   </Typography>
                 </View>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={{marginTop: 7}} 
-                  onPress={() => refRBSheet?.current?.open()}
+                  
                 >
-                  <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
+                  <ArrowRight color="heavy-blue" size={14} style={{ paddingRight: 14 }}/>
                 </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             </View>
-            <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
+            <Divider style={{
+              marginVertical: 5,
+              paddingHorizontal: 15,
+              height: 1,
+              backgroundColor: vars['shade-grey'],
+              opacity: .2,
+              }}
+            />
             <View style={styles.cardActionsListContainer}>
-              <View style={styles.cardActionItem}>
+              <TouchableOpacity style={styles.cardActionItem} onPress={() => refRBSTerminateThisCard?.current?.open()}>
                 <View style={{display: 'flex', flexDirection: 'row'}}>
-                  <View style={{paddingRight: 8, marginTop: 5}}>
+                  <View style={{paddingRight: 8, marginTop: 2}}>
                     <PinNumberCode color="heavy-blue" size={18} />
                   </View>
                   <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito-SemiBold'}>
                     Lost Card
                   </Typography>
                 </View>
-                <TouchableOpacity style={{marginTop: 7}} onPress={() => refRBSTerminateThisCard?.current?.open()}>
+                <TouchableOpacity style={{marginTop: 7}}>
                   <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
                 </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             </View>
-            <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
+            <Divider style={{
+              marginVertical: 5,
+              paddingHorizontal: 15,
+              height: 1,
+              backgroundColor: vars['shade-grey'],
+              opacity: .2,
+              }}
+            />
             <View style={styles.cardActionsListContainer}>
-              <View style={styles.cardActionItem}>
+              <TouchableOpacity style={styles.cardActionItem} onPress={() => refRBSheetShowTerminatedCards?.current?.open()}>
                 <View style={{display: 'flex', flexDirection: 'row'}}>
-                  <View style={{paddingRight: 8, marginTop: 5}}>
+                  <View style={{paddingRight: 8, marginTop: 2}}>
                     <BugIcon size={18} color={vars['accent-blue']} />
                   </View>
                   <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito-SemiBold'}>
-                    Show Terminated Cards
+                    {isShowTerminatedCard ? "Hide Terminated Cards" : "Show Terminated Cards"}
                   </Typography>
                 </View>
-                <TouchableOpacity style={{marginTop: 7}} onPress={() => refRBSheetShowTerminatedCards?.current?.open()}>
+                <TouchableOpacity style={{marginTop: 7}} >
                   <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
                 </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             </View>
-            <Divider style={{marginVertical: 5, paddingHorizontal: 15}} />
+            <Divider style={{
+              marginVertical: 5,
+              paddingHorizontal: 15,
+              height: 1,
+              backgroundColor: vars['shade-grey'],
+              opacity: .2,
+              }}
+            />
           </Pressable>
           <SwipableBottomSheet
             rbSheetRef={refRBSheet}
@@ -694,7 +722,7 @@ export function Card({ navigation, route }: any) {
             draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
           >
             <Typography fontSize={16} fontWeight={600}>
-              Show Terminated Cards
+              {isTerminatedCardShown ? "Hide Terminated Cards?" : "Show Terminated Cards?"}
             </Typography>
             <Divider style={{marginVertical: 15, paddingHorizontal: 15}} />
             <View style={{
@@ -709,9 +737,20 @@ export function Card({ navigation, route }: any) {
               }}>
               <Button
                 onPress={() => {
-                  setIsTerminatedCardShown(true);
-                  
-                  setSelectedCard(cardsActiveList[0]);
+                  if (isTerminatedCardShown) {
+                    setIsloading(prev => true);
+                    setIsShowTerminatedCard(false);
+                    setIsTerminatedCardShown(false);
+                    setSelectedCard(cardsActiveList[0]);
+                    return;
+                  } else {
+                    setIsShowTerminatedCard(true);
+                    setIsTerminatedCardShown(true);
+                    setSelectedCard(cardData[0]);
+                  }
+                  setTimeout(() => {
+                    setIsloading(prev => false);
+                  }, 500); 
                   refRBSheetShowTerminatedCards?.current?.close();
                 }}
                 style={{color: '#fff', width: 140}}
@@ -723,17 +762,10 @@ export function Card({ navigation, route }: any) {
               </Button>
               <Button
                 onPress={() => {
-                  setSelectedCard(shownCardsOnCarousel[0]);
-                  setIsloading(true);
-                  setTimeout(() => {
-                    setIsTerminatedCardShown(false);
-                    setIsloading(false);
-                  }, 500);
                   refRBSheetShowTerminatedCards?.current?.close()
                 }}
                 style={{color: '#fff', width: 140}}
                 color="grey"
-                // leftIcon={<EyeIcon color="pink" size={14} />}
               >
                 Cancel
               </Button>
@@ -755,7 +787,7 @@ export function Card({ navigation, route }: any) {
             }}
             draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
           >
-            <Typography fontSize={16} fontWeight={600}>
+            <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito-Bold'}>
               Terminate This Card?
             </Typography>
             <Divider style={{

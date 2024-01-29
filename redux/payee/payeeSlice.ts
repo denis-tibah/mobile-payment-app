@@ -58,19 +58,10 @@ export const payeeSlice = createApi({
         amount,
         currency,
         reason,
+        remarks,
+        purpose,
+        reference,
       }: any) => {
-        console.log({
-          access_token,
-          token_ziyl,
-          recipientFirstname,
-          recipientLastname,
-          debtor_iban,
-          creditor_iban,
-          creditor_name,
-          amount,
-          currency,
-          reason,
-        });
         return {
         url: `/initiatepaymentfinxp`,
         method: "POST",
@@ -83,6 +74,9 @@ export const payeeSlice = createApi({
           amount,
           currency,
           reason,
+          remarks,
+          purpose,
+          reference,
         },
         headers: {
           "Content-Type": "application/json",
@@ -135,7 +129,25 @@ export const payeeSlice = createApi({
         debtor_iban,
         creditor_iban,
         remarks,
-      }: any) => ({
+        reason,
+        reference,
+        purpose,
+      }: any) => {
+        console.log({
+          identifier,
+          code,
+          amount,
+          currency,
+          debtor_iban,
+          creditor_iban,
+          remarks,
+          access_token,
+          token_ziyl,
+          reason,
+          reference,
+          purpose,
+        });
+        return {
         url: `/processpaymentfinxp`,
         method: "POST",
         body: {
@@ -146,13 +158,16 @@ export const payeeSlice = createApi({
           debtor_iban,
           creditor_iban,
           remarks,
+          reason,
+          reference,
+          purpose,
         },
         headers: {
           "Content-Type": "application/json",
           AuthorizationFinxp: `Bearer ${access_token}`,
           Authorization: `Bearer ${token_ziyl}`,
         },
-      }),
+      }},
     }),
   }),
 });
@@ -165,3 +180,6 @@ export const {
   useSmsRequestVerificationMutation,
   useProcessPaymentMutation,
 } = payeeSlice;
+
+// reference = remarks
+// purpose = reason

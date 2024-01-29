@@ -3,6 +3,7 @@ import { View, Text, Switch } from "react-native";
 import { styles } from "../styles";
 import vars from "../../../styles/vars";
 import { managePaymentMethods } from "../../../utils/constants";
+import { Divider } from "react-native-paper";
 
 const ManagePaymentMethod: React.FC = () => {
   const [listOfChecks, setListOfChecks] = useState<string[]>([]);
@@ -12,6 +13,7 @@ const ManagePaymentMethod: React.FC = () => {
       {managePaymentMethods.map((item, index) => {
         const checkIfThisIsChecked = listOfChecks.find((check) => check === item.label);
         return (
+        <>
           <View style={styles.row} key={index}>
             <View style={{display: 'flex', flexDirection:'row'}}>
               <Text style={{paddingHorizontal: 5, fontSize: 16}}>
@@ -36,6 +38,15 @@ const ManagePaymentMethod: React.FC = () => {
               value={checkIfThisIsChecked ? true : false}
             />
           </View>
+          <Divider 
+            style={{
+              height: 1,
+              backgroundColor: vars['shade-grey'],
+              opacity: .2,
+              width: '100%',
+            }}
+          />
+          </>
           )
         }
       )}

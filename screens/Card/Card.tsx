@@ -67,6 +67,7 @@ export function Card({ navigation, route }: any) {
   const refRBSheet = useRef();
   const refRBSheetShowTerminatedCards = useRef();
   const refRBSTerminateThisCard = useRef();
+  const refRBSShowCard = useRef();
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
   const profile = useSelector((state: any) => state.profile?.profile);
@@ -90,6 +91,9 @@ export function Card({ navigation, route }: any) {
   const [isManagePaymentMethod, setIsManagePaymentMethod] = useState<boolean>(false);
   const [isShowTerminatedCard, setIsShowTerminatedCard] = useState<boolean>(false);
   const [isLostPinActionPressed, setIsLostPinActionPressed] = useState<boolean>(false);
+  const [timeRemaining, setTimeRemaining] = useState<number>(60);
+  const [isTimeToCountDown, setIsTimeToCountDown] = useState<boolean>(false);
+  const enableResend = timeRemaining === 0;
   const [onSnapEnd, setOnSnapEnd] = useState<any>(false);
   const [chosenCurrency, setChosenCurrency] = useState<string>("");
   // const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
@@ -113,7 +117,12 @@ export function Card({ navigation, route }: any) {
   const [terminatedThisCard] = useLazySendSmsLostCardVerificationQuery();
   const shownCardsOnCarousel = isTerminatedCardShown ? cardsActiveList ? [...cardsActiveList, ...cardData] : [] : cardsActiveList ? cardsActiveList : [];
 
-
+  const handlePinCodeChange = (value: string) => {
+    setCardPin(value);
+    if (value.length === 6) {
+      processEnrollmentAndShowPinCard({ code: value });
+    }
+  }
   const handleGetCards = async () => {
     try {
       await dispatch(getCards() as any);
@@ -140,7 +149,10 @@ export function Card({ navigation, route }: any) {
       .unwrap()
       .then((res: any) => {
         const updatedSelectedCard = res.find((card: any) => card.cardreferenceId === selectedCard?.cardreferenceId);
-        setSelectedCard(updatedSelectedCard);
+        setTimeout(() => {
+          setSelectedCard(updatedSelectedCard);
+          setIsloading(prev => false);
+        }, 500);
       })
       .catch((error: any) => {
         console.log({ error });
@@ -162,7 +174,7 @@ export function Card({ navigation, route }: any) {
   };
 
   const requestShowCard = async () => {
-    setIsEnrollingCard(false);
+
     setIsloading(prev => prev = true);
     dispatch(
       sendSmsShowCardVerification({
@@ -170,8 +182,9 @@ export function Card({ navigation, route }: any) {
       }) as any
     ).unwrap()
     .then((res: any) => {
-      console.log({ res });
-      setShowCardOtpModal(true);
+      if (res) {
+        refRBSShowCard?.current?.open();
+      }
     })
     .catch((error: any) => {
       console.log({ error });
@@ -186,34 +199,33 @@ export function Card({ navigation, route }: any) {
   };
 
   const processEnrollmentAndShowPinCard = async ({ code }: { code: string }) => {
-    if (isEnrollingCard) {
-      const orderCardPayload = {
-        cardType: "V",
-        accountUuid: userID,
-        currency: chosenCurrency,
-        email: userEmail,
-        otp: code,
-      };
-      console.log(
-        "🚀 ~ file: Card.tsx:267 ~ handlePinCode ~ orderCardPayload:",
-        orderCardPayload
-      );
-      orderCard(orderCardPayload)
-      .unwrap()
-      .then((res: any) => {
-        console.log({ res });
-        setShowCardOtpModal(false);
-        setIsloading(false);
-      })
-      .catch((error: any) => {
-        console.log({ error });
-      })
-      return;
-    } else {
-      setShowCardOtpLoading(true);
+    // if (isEnrollingCard) {
+    //   const orderCardPayload = {
+    //     cardType: "V",
+    //     accountUuid: userID,
+    //     currency: chosenCurrency,
+    //     email: userEmail,
+    //     otp: code,
+    //   };
+    //   console.log(
+    //     "🚀 ~ file: Card.tsx:267 ~ handlePinCode ~ orderCardPayload:",
+    //     orderCardPayload
+    //   );
+    //   orderCard(orderCardPayload)
+    //   .unwrap()
+    //   .then((res: any) => {
+    //     console.log({ res });
+    //     setShowCardOtpModal(false);
+    //     setIsloading(false);
+    //   })
+    //   .catch((error: any) => {
+    //     console.log({ error });
+    //   })
+    //   return;
+    // } else {
+      // setShowCardOtpLoading(true);
       // console.log({ account_id: userID, otp: code, card_id: selectedCard?.cardreferenceId });
-      showCardDetails({ account_id: userID, otp: code, card_id: selectedCard?.cardreferenceId })
-      ;
+
 
       // const payload = await dispatch(
       //   showCardDetails({
@@ -233,9 +245,9 @@ export function Card({ navigation, route }: any) {
       //     cardNumber: payload?.cardNumber,
       //   });
       // }
-      setShowCardOtpLoading(false);
-      setShowCardOtpModal(false);
-    }
+      // setShowCardOtpLoading(false);
+      // setShowCardOtpModal(false);
+    // }
   };
 
   // TODO: target each card when doing action on each card, right now it only targets the first card
@@ -376,7 +388,7 @@ export function Card({ navigation, route }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      <GetCardModal
+      {/* <GetCardModal
         onClose={() => setShowGetCardModal(false)}
         isModalVisible={showGetCardModal}
         onGetVirtualCard={({currency}: any) => {
@@ -401,7 +413,7 @@ export function Card({ navigation, route }: any) {
           setShowCardOtpModal(false);
           setIsloading(false);
         }}
-      />
+      /> */}
       { terminatedCardModal && (
         <TerminatingCardModal
           isOpen={terminatedCardModal}
@@ -474,7 +486,10 @@ export function Card({ navigation, route }: any) {
                 <Pressable>
                   <Button
                     color="light-blue"
-                    onPress={requestShowCard}
+                    onPress={() => {
+                      refRBSShowCard?.current?.open();
+                      requestShowCard();
+                    }}
                     leftIcon={<EyeIcon color="blue" size={14} />}
                   >
                     <Text style={{fontSize: 14, fontFamily: 'Nunito', fontWeight: "600"}}>Show Card</Text>
@@ -488,7 +503,7 @@ export function Card({ navigation, route }: any) {
                     color="light-blue"
                     leftIcon={
                       <FreezeIcon
-                        color={selectedCard?.frozenYN === "Y" ? "white" : "blue"}
+                        color={"blue"}
                         size={14}
                       />
                     }
@@ -601,7 +616,8 @@ export function Card({ navigation, route }: any) {
             rbSheetRef={refRBSheet}
             closeOnDragDown={true}
             closeOnPressMask={false}
-            height={480}
+            // onClose={() => refRBSheet?.current?.close()}
+            height={550}
             wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
             containerStyles={{
               backgroundColor: "#FFF",
@@ -611,51 +627,48 @@ export function Card({ navigation, route }: any) {
               shadowColor: "#52006A",
               paddingHorizontal: 15,
             }}
-            draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
+            draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
           >
-            <View style={{
-              width: '30%',
-                alignSelf:'center', 
-                backgroundColor: vars['grey'],
-                height: 5,
-                borderRadius: 10, 
-                zIndex: 999, 
-                marginBottom: 20, 
-                top: 0
-                }}></View>
-            <Typography fontSize={18} fontWeight={600}>
+            {/* <View style={{
+            width: '30%',
+              alignSelf:'center', 
+              backgroundColor: vars['grey'],
+              height: 5,
+              borderRadius: 10, 
+              zIndex: 999, 
+              marginBottom: 20, 
+              top: 0
+              }}></View> */}
+            <Typography fontSize={18} fontWeight={600} fontFamily={'Nunito'}>
               <MaterialCommunityIcons name="cog-outline" size={18} color={vars['accent-blue']} />
               {" "}Manage Payment Method
             </Typography>
-            <Divider style={{marginVertical: 8, paddingHorizontal: 15}} />
+            <Divider style={{
+              // marginBottom: 25,
+              marginTop: 20,
+              height: 1,
+              backgroundColor: vars['shade-grey'],
+              opacity: .2,
+              width: '100%',
+              }} />
             <ManagePaymentMethod />
           </SwipableBottomSheet>
-            <SwipableBottomSheet
-              rbSheetRef={refRBSheetShowTerminatedCards}
-              closeOnDragDown={true}
-              closeOnPressMask={false}
-              height={200}
-              wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
-              containerStyles={{
-                backgroundColor: "#FFF",
-                borderTopLeftRadius: 14,
-                borderTopRightRadius: 14,
-                elevation: 12,
-                shadowColor: "#52006A",
-                paddingHorizontal: 15,
-              }}
-              draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
-            >
-            <View style={{
-              width: '30%',
-                alignSelf:'center', 
-                backgroundColor: vars['grey'],
-                height: 5,
-                borderRadius: 10, 
-                zIndex: 999, 
-                marginBottom: 20, 
-                top: 0
-            }}></View>
+          <SwipableBottomSheet
+            rbSheetRef={refRBSheetShowTerminatedCards}
+            closeOnDragDown={true}
+            closeOnPressMask={false}
+            height={160}
+            wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+            containerStyles={{
+              backgroundColor: "#FFF",
+              borderTopLeftRadius: 14,
+              borderTopRightRadius: 14,
+              elevation: 12,
+              shadowColor: "#52006A",
+              paddingHorizontal: 15,
+            }}
+            draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
+          >
             <Typography fontSize={16} fontWeight={600}>
               Show Terminated Cards
             </Typography>
@@ -667,9 +680,9 @@ export function Card({ navigation, route }: any) {
                 justifyContent: "space-between",
                 alignItems: "center",
                 paddingVertical: 10,
-                marginBottom: 20,
+                bottom: '2%',
+                marginTop: 25
               }}>
-              {/* Yes and no button */}
               <Button
                 onPress={() => {
                   setIsTerminatedCardShown(true);
@@ -678,6 +691,7 @@ export function Card({ navigation, route }: any) {
                 }}
                 style={{color: '#fff', width: 140}}
                 color="light-pink"
+                fontFamily={'Nunito'}
                 leftIcon={<EyeIcon color="pink" size={14} />}
               >
                 Yes
@@ -701,7 +715,7 @@ export function Card({ navigation, route }: any) {
             rbSheetRef={refRBSTerminateThisCard}
             closeOnDragDown={true}
             closeOnPressMask={false}
-            height={280}
+            height={230}
             wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
             containerStyles={{
               backgroundColor: "#FFF",
@@ -711,31 +725,32 @@ export function Card({ navigation, route }: any) {
               shadowColor: "#52006A",
               paddingHorizontal: 15,
             }}
-            draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
+            draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
           >
-            <View style={{
-              width: '30%',
-                alignSelf:'center', 
-                backgroundColor: vars['grey'],
-                height: 5,
-                borderRadius: 10, 
-                zIndex: 999, 
-                marginBottom: 20, 
-                top: 0
-            }}></View>
             <Typography fontSize={16} fontWeight={600}>
               Terminate This Card?
             </Typography>
-            <Divider style={{marginVertical: 15, paddingHorizontal: 15, height: 1, backgroundColor: vars['shade-grey'], width: '100%', opacity: .4}} />
-            <View>
-              
-            </View>
-            <Typography fontSize={16} fontWeight={400} color={"#000"} >
+            <Divider style={{
+                marginBottom: 35,
+                marginTop: 10,
+                height: 1,
+                backgroundColor: vars['shade-grey'],
+                opacity: .1,
+                width: '100%',
+              }} />
+
+            <Typography fontSize={16} fontWeight={400} color={"#000"}>
               Are you sure you want to terminate this card?
             </Typography>
             {/* <Vie}}/> */}
-            <Divider style={{marginVertical: 15, paddingHorizontal: 15}} />
-            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+            <Divider style={{
+                marginTop: 35,
+                height: 1,
+                backgroundColor: vars['shade-grey'],
+                opacity: .1,
+                width: '100%',
+              }} />
+            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 20}}>
               <Button 
                 onPress={() => {
                   setIsloading(true);
@@ -766,7 +781,83 @@ export function Card({ navigation, route }: any) {
               </Button>
             </View>
           </SwipableBottomSheet>
-          {/* <Spinner visible={isLoading} /> */}
+          <SwipableBottomSheet
+            rbSheetRef={refRBSShowCard}
+            closeOnDragDown={true}
+            closeOnPressMask={false}
+            height={340}
+            wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+            containerStyles={{
+              backgroundColor: "#FFF",
+              borderTopLeftRadius: 14,
+              borderTopRightRadius: 14,
+              elevation: 12,
+              shadowColor: "#52006A",
+              paddingHorizontal: 15,
+            }}
+            draggableIconStyles={{ backgroundColor: "#DDD", width: 90 }}
+          >
+              <Text style={{fontSize: 18, fontWeight: '600', marginBottom: 20, fontFamily: 'Nunito'}}>
+                Show Card
+              </Text>
+              <Typography fontSize={14} fontWeight={400} color={vars['shade-grey']} >
+                You will receive an sms to your mobile device. Please enter this code below.
+              </Typography>
+              <Divider style={{marginVertical: 15, paddingHorizontal: 15}} />
+              <PinCodeInputBoxes fieldCount={6} onChange={handlePinCodeChange} />
+              <TouchableOpacity
+                onPress={() => console.log('resend')}
+                disabled={isTimeToCountDown}
+              >
+                {isTimeToCountDown ? (
+                  <Text style={styles.noCodeResend}>
+                    Wait for {timeRemaining}s to request again.
+                  </Text>
+                ) : (
+                  <Text style={styles.noCode}>Did not get a verification code?</Text>
+                )}
+              </TouchableOpacity>
+              <View style={{alignItems: 'center', paddingTop: 50}}>
+                <Button
+                  onPress={() => {
+                    if (!cardPin) {
+                      return;
+                    }
+                    setIsloading(true);
+                    showCardDetails({
+                      account_id: userID,
+                      otp: cardPin,
+                      card_id: selectedCard?.cardreferenceId,
+                    })
+                    .unwrap()
+                    .then((res: any) => {
+                      if (res) {
+                        setCardPin("");
+                        setRemainingTime(30);
+                        setCardDetails({
+                          cardreferenceId: cardsActiveList[0]?.cardreferenceId,
+                          card: cardsActiveList[0],
+                          cardImage: res.cardImageBase64,
+                          cardNumber: res?.cardNumber,
+                        });
+                      }})
+                      .catch((error: any) => {
+                        console.log({ error });
+                      })
+                      .finally(() => {
+                        setIsloading(false);
+                        refRBSShowCard?.current?.close();
+                      });
+                  }}
+                  style={{color: '#fff', width: 140}}
+                  color="light-pink"
+                  leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
+                  disabled={isLoading}
+                >
+                  Confirm
+                </Button>
+              </View>
+          </SwipableBottomSheet>
           <Spinner visible={orderCardIsLoading} />
         </ScrollView>
       </View>

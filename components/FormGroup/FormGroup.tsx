@@ -69,6 +69,7 @@ export function Input({
         </View>
       )}
       <TextInput
+        onFocus={() => console.log('focus')}
         editable={!disabled}
         style={input.input}
         value={value ? value.toString() : null}

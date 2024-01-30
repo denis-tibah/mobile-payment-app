@@ -2,12 +2,12 @@ import { StyleSheet } from "react-native";
 
 export const styles: any = StyleSheet.create<any>({
   listHead: {
-    backgroundColor: "white",
+    /* backgroundColor: "white", */
     display: "flex",
     flexDirection: "row",
-    paddingTop: 24,
+    paddingTop: 12,
     paddingBottom: 12,
-    paddingLeft: 19,
+    paddingLeft: 20,
     // paddingTop: 12,
     // paddingBottom: 12,
     // paddingLeft: 20,

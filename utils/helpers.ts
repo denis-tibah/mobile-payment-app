@@ -120,6 +120,25 @@ export const groupedByDateTransactions = (
     }, {});
   return groupedByDateTransactions;
 };
+export const groupedByNameTransactions = (
+  txData: Transaction[]
+): GroupedByDateTransactionObject => {
+  if (!txData) return {};
+  const sanitizedDate: Transaction[] = txData.map((tx: Transaction) => {
+    return {
+      ...tx,
+      transaction_datetime: dateFormatter(tx.transaction_datetime.toString()),
+      transaction_datetime_with_hour: tx.transaction_datetime.toString(),
+    };
+  });
+
+  const groupedByNameTransactions: GroupedByDateTransactionObject =
+    sanitizedDate.reduce((current: any, element) => {
+      (current[element.name] ??= []).push(element);
+      return current;
+    }, {});
+  return groupedByNameTransactions;
+};
 
 export function capitalizeFirstLetter(str: string): string {
   return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
@@ -354,4 +373,38 @@ export const fieldHasValue = (value: any) => {
     }
   }
   return "";
+};
+
+export const groupByDateAndSeveralProperties = ({
+  items,
+  groups,
+}: {
+  items: any;
+  groups: string[];
+}) => {
+  const grouped = {};
+  // formatted transaction_datetime
+  const mapedItems = items.map((param: any) => {
+    const newItems = {};
+    if (param?.transaction_datetime) {
+      Object.assign(newItems, {
+        ...param,
+        transaction_datetime: dateFormatter(
+          param?.transaction_datetime.toString()
+        ),
+        transaction_datetime_with_hour: param?.transaction_datetime.toString(),
+      });
+    }
+    return newItems;
+  });
+  mapedItems.forEach(function (a: any) {
+    groups
+      .reduce(function (o, g, i) {
+        // take existing object,
+        o[a[g]] = o[a[g]] || (i + 1 === groups.length ? [] : {}); // or generate new obj, or
+        return o[a[g]]; // at last, then an array
+      }, grouped)
+      .push(a);
+  });
+  return grouped;
 };

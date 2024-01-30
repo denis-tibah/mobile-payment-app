@@ -18,9 +18,15 @@ import Pagination from "../../components/Pagination/Pagination";
 import { SearchFilter } from "../../redux/transaction/transactionSlice";
 import { RootState } from "../../store";
 import Box from "../../components/Box";
-import { getCurrency, groupedByDateTransactions } from "../../utils/helpers";
+import {
+  getCurrency,
+  groupedByDateTransactions,
+  arrayChecker,
+  groupByDateAndSeveralProperties,
+} from "../../utils/helpers";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
+import TransactionByDateTwo from "../../components/TransactionItem/TransactionByDateTwo";
 import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
 import Button from "../../components/Button";
 import {
@@ -65,6 +71,7 @@ export function MyAccount({ navigation }: any) {
   const {
     data: dataTransactionsPending,
     isLoading: isloadingTransactionsPending,
+    isUninitialized: isUninitializedTransactionsPending,
     refetch: refetchTransactionsPending,
   } = useGetTransactionsQuery(transactionsParams({ status: "PROCESSING" }), {
     skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
@@ -73,14 +80,16 @@ export function MyAccount({ navigation }: any) {
   const groupedByDateTransactionsPending = groupedByDateTransactions(
     transactionsListPending
   );
-  console.log(
-    "🚀 ~ MyAccount ~ groupedByDateTransactionsPending:",
-    groupedByDateTransactionsPending
-  );
-
+  /* const groupedByDateTransactionsPendingAndProperties =
+    groupByDateAndSeveralProperties({
+      items: transactionsListPending,
+      groups: ["transaction_datetime", "name"],
+    });
+ */
   const {
     data: dataTransactionsCompleted,
     isLoading: isloadingTransactionsCompleted,
+    isUninitialized: isUninitializedTransactionsCompleted,
     refetch: refetchTransactionsCompleted,
   } = useGetTransactionsQuery(transactionsParams({ status: "SUCCESS" }), {
     skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
@@ -89,11 +98,12 @@ export function MyAccount({ navigation }: any) {
   const groupedByDateTransactionsCompleted = groupedByDateTransactions(
     transactionsListCompleted
   );
-  console.log(
-    "🚀 ~ MyAccount ~ groupedByDateTransactionsCompleted:",
-    groupedByDateTransactionsCompleted
-  );
-
+  /* const groupedByDateTransactionsCompletedAndProperties =
+    groupByDateAndSeveralProperties({
+      items: transactionsListCompleted,
+      groups: ["transaction_datetime", "name"],
+    });
+ */
   const { data: userAccountInformation } = useGetAccountDetailsQuery({
     accountId: userData?.id || 0,
     accessToken: userTokens?.access_token,
@@ -104,8 +114,8 @@ export function MyAccount({ navigation }: any) {
   /* const [sortByStatus, setSortByStatus] = useState<boolean>(false); */
   /* const [isLoading, setIsLoading] = useState<boolean>(false); */
   /* const [paginateRefresh, setPaginateRefresh] = useState<boolean>(false); */
-  /* const [isOneTransactionOpen, setIsOneTransactionOpen] =
-    useState<boolean>(false); */
+  const [isOneTransactionOpen, setIsOneTransactionOpen] =
+    useState<boolean>(false);
 
   /* const fetchTransactions = async (filterParams?: {
     pageNumber?: number;
@@ -159,6 +169,57 @@ export function MyAccount({ navigation }: any) {
   /* useEffect(() => {
     fetchTransactions();
   }, [userId]); */
+
+  const displayListItems = (isLoading: any, items: any): JSX.Element | null => {
+    if (isLoading) {
+      return (
+        <View style={styles.listHead}>
+          <Typography fontFamily="Nunito-Bold" fontWeight={600} fontSize={14}>
+            Loading...
+          </Typography>
+        </View>
+      );
+    }
+    if (!isLoading && Object.keys(items).length === 0) {
+      return (
+        <View style={styles.listHead}>
+          <Typography fontFamily="Nunito-Bold" fontWeight={600} fontSize={14}>
+            No Transactions Found
+          </Typography>
+        </View>
+      );
+    }
+    return (
+      <View style={{ paddingVertical: 6 }}>
+        <View>
+          {Object.keys(items).map((date: string) => {
+            let _amount: number = 0;
+            const transactionsByDate = items[date].map((tx: any) => {
+              const { amount } = tx;
+              _amount = Number(_amount) + Number(amount);
+
+              return tx;
+            });
+
+            const shownData = {
+              date,
+              totalAmount: _amount.toString(),
+              currency: items[date][0].currency,
+            };
+            return (
+              <TransactionByDateTwo
+                setIsOneTransactionOpen={setIsOneTransactionOpen}
+                key={items[date][0].transaction_uuid}
+                shownData={shownData}
+                transactionsByDate={transactionsByDate}
+                totalAmount={_amount.toString()}
+              />
+            );
+          })}
+        </View>
+      </View>
+    );
+  };
 
   return (
     <MainLayout navigation={navigation}>
@@ -273,42 +334,30 @@ export function MyAccount({ navigation }: any) {
               title="Pending"
               iconColor="#FBB445"
               iconSize={28}
+              isOpenByDefault
               IconLeft={() => <ProgressClock color="#FBB445" size={18} />}
             >
               <View style={styles.accordionBodyContainer}>
-                <WholeContainer>
-                  <View style={{ paddingVertical: 6 }}>
-                    <Typography
-                      color={"accent-green"}
-                      fontWeight={800}
-                      fontSize={18}
-                    >
-                      Im accordion 1
-                    </Typography>
-                  </View>
-                </WholeContainer>
+                {displayListItems(
+                  isloadingTransactionsPending,
+                  groupedByDateTransactionsPending
+                )}
               </View>
             </AccordionItem>
             <AccordionItem
               title="Latest transactions"
               iconColor="#E7038E"
               iconSize={28}
+              isOpenByDefault
               IconLeft={() => (
                 <TransactionsLeftRightIcon color="#E7038E" size={18} />
               )}
             >
               <View style={styles.accordionBodyContainer}>
-                <WholeContainer>
-                  <View style={{ paddingVertical: 6 }}>
-                    <Typography
-                      color={"accent-green"}
-                      fontWeight={800}
-                      fontSize={18}
-                    >
-                      Im accordion 2
-                    </Typography>
-                  </View>
-                </WholeContainer>
+                {displayListItems(
+                  isloadingTransactionsCompleted,
+                  groupedByDateTransactionsCompleted
+                )}
               </View>
             </AccordionItem>
             {/* {_groupedByDateTransactions ? (

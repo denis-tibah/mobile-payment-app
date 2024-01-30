@@ -17,7 +17,7 @@ const displayValue = ({ content }: { content: string | null }) => {
   return (
     <Typography
       color="#000"
-      fontFamily="Nunito-SemiBold"
+      fontFamily="Mukta-Regular"
       fontSize={14}
       fontWeight={600}
     >

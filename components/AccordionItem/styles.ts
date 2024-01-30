@@ -23,10 +23,7 @@ export const styles = StyleSheet.create({
   accordTitle: {
     fontSize: 20,
   },
-  accordBody: {
-    /* paddingTop: 12,
-    paddingBottom: 12, */
-  },
+  accordBody: {},
   textSmall: {
     fontSize: 16,
   },

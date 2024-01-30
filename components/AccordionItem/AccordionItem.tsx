@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { PropsWithChildren } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import Typography from "../Typography";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { styles } from "./styles";
@@ -11,6 +11,7 @@ type AccordionItemPros = PropsWithChildren<{
   IconRight?: React.ElementType | null;
   iconColor: string;
   iconSize?: number;
+  isOpenByDefault?: boolean;
 }>;
 
 export function AccordionItem({
@@ -19,8 +20,9 @@ export function AccordionItem({
   IconLeft,
   IconRight,
   iconColor,
+  isOpenByDefault,
 }: AccordionItemPros): JSX.Element {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(isOpenByDefault ? true : false);
 
   function toggleItem() {
     setExpanded(!expanded);

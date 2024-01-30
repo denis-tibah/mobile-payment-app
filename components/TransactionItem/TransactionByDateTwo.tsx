@@ -3,34 +3,35 @@ import { useNavigation } from "@react-navigation/native";
 import { Text, View, TouchableOpacity, Pressable } from "react-native";
 import { Divider } from "react-native-paper";
 import { useAtom } from "jotai";
+import VectorIcon from "react-native-vector-icons/AntDesign";
 
 import {
   formatAmountTableValue,
   getFormattedDate,
   getFormattedDateAndTime,
   fieldHasValue,
+  groupedByNameTransactions,
 } from "../../utils/helpers";
-import { styles } from "./styles";
+import { styles } from "./stylesTwo";
 import ArrowDown from "../../assets/icons/ArrowDown";
 import Button from "../Button";
 import { AntDesign } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
-import CalenderEmptyIcon from "../../assets/icons/CalenderEmpty";
 import Box from "../Box";
 import Typography from "../Typography";
 import EuroIcon from "../../assets/icons/Euro";
 import DollarIcon from "../../assets/icons/Dollar";
 import { Transaction } from "../../models/Transactions";
-import ArrowRight from "../../assets/icons/ArrowRight";
 import CardIcon from "../../assets/icons/Card";
 import vars from "../../styles/vars";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
 import { displayTitle, displayValue } from "./TransactionHelper";
 import { helpTabticketParams } from "../../utils/globalStates";
+import WholeContainer from "../../layout/WholeContainer";
+import { Seperator } from "../../components/Seperator/Seperator";
 
 interface TransactionItemProps {
   setIsOneTransactionOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-  // isOpen: boolean;
   transactionsByDate: Transaction[];
   totalAmount: string;
   shownData: any;
@@ -70,73 +71,87 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
         {transactions.map((transaction: Transaction, index: number) => {
           return (
             <>
-              <Box
+              <View
                 style={styles.detailMobileForEachTransactionContainer}
                 key={index}
               >
-                <Box style={styles.detailMobileForEachTransactionWrapper}>
-                  <View style={styles.nameContainer}>
-                    <CardIcon size={14} color={"heavy-grey"} />
-                    <Text numberOfLines={1} style={styles.valueDetailMobile}>
-                      {transaction.name}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flex: 1,
-                      display: "flex",
-                      flexDirection: "row",
-                      alignSelf: "auto",
-                      justifyContent: "flex-end",
-                    }}
-                  >
-                    <Box style={{ marginTop: 8 }}>
-                      {shownData.currency === "EUR" ? (
-                        <EuroIcon
-                          size={18}
-                          color={+transaction.amount > 0 ? "green" : "red"}
+                <TouchableOpacity onPress={() => handleToggleDetails(index)}>
+                  <View style={styles.detailMobileForEachTransactionWrapper}>
+                    <View style={styles.nameContainer}>
+                      <CardIcon size={14} color={"heavy-grey"} />
+                      <Typography
+                        fontSize={14}
+                        fontFamily="Mukta-SemiBold"
+                        fontWeight={400}
+                      >
+                        {transaction.name}
+                      </Typography>
+                    </View>
+                    <View
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 18,
+                        width: "30%",
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      <View
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        {shownData.currency === "EUR" ? (
+                          <EuroIcon
+                            size={14}
+                            color={+transaction.amount > 0 ? "green" : "red"}
+                          />
+                        ) : (
+                          <DollarIcon size={14} color="#278664" />
+                        )}
+                        <Typography
+                          marginLeft={2}
+                          fontWeight={400}
+                          fontSize={14}
+                          fontFamily="Mukta-SemiBold"
+                          /* color={Number(transaction.amount) > 0 ? "green" : "red"} */
+                        >
+                          {formatAmountTableValue(
+                            transaction.amount,
+                            shownData.currency
+                          )}
+                        </Typography>
+                      </View>
+                      {openTransactionIndex === index ? (
+                        <VectorIcon
+                          size={14}
+                          color="#000"
+                          name={"minuscircleo"}
                         />
                       ) : (
-                        <DollarIcon size={18} color="#278664" />
+                        <VectorIcon
+                          size={14}
+                          color="#000"
+                          name={"pluscircleo"}
+                        />
                       )}
-                    </Box>
-                    <Box>
-                      <Text
-                        style={[
-                          styles.amountDetailMobile,
-                          Number(transaction.amount) > 0
-                            ? styles.amountAddedDetail
-                            : styles.amountDeductedDetail,
-                        ]}
-                      >
-                        {formatAmountTableValue(
-                          transaction.amount,
-                          shownData.currency
-                        )}
-
-                        <TouchableOpacity
-                          onPress={() => handleToggleDetails(index)}
-                          style={{ paddingTop: 10, paddingLeft: 10 }}
-                        >
-                          {openTransactionIndex === index ? (
-                            <ArrowDown
-                              color="heavy-grey"
-                              size={12}
-                              style={{ paddingRight: 14 }}
-                            />
-                          ) : (
-                            <ArrowRight
-                              color="heavy-grey"
-                              size={12}
-                              style={{ paddingRight: 14 }}
-                            />
-                          )}
-                        </TouchableOpacity>
-                      </Text>
-                    </Box>
+                    </View>
                   </View>
-                </Box>
-              </Box>
+                </TouchableOpacity>
+              </View>
+              {openTransactionIndex !== index ? (
+                <View style={{ height: 1 }}>
+                  <Seperator
+                    backgroundColor="#F5F4F4"
+                    height={1}
+                    width={"100%"}
+                  />
+                </View>
+              ) : null}
+
               {openTransactionIndex === index ? (
                 <Pressable>
                   <View style={styles.containerDetailsInfo}>
@@ -356,80 +371,21 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
   };
 
   return (
-    <View style={{ backgroundColor: "#fff" }}>
-      <Pressable onPress={handleOnOpen}>
-        <View style={[styles.base, isOpen && styles.isOpen]}>
-          <Box
-            style={{
-              textAlign: "left",
-              // alignItems: 'start',
-              color: "white",
-              borderRadius: 5,
-              padding: 5,
-              display: "flex",
-              flexDirection: "row",
-              width: "45%",
-            }}
-          >
-            <CalenderEmptyIcon size={14} color="blue" />
-            <View style={{ top: -4, paddingLeft: 3 }}>
-              <Typography fontSize={14} textAlign="left">
-                {" "}
-                {getFormattedDate(shownData.date)}
-              </Typography>
-            </View>
-          </Box>
-          <Box
-            style={{
-              textAlign: "center",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              borderRadius: 5,
-              padding: 5,
-              display: "flex",
-              flexDirection: "row",
-              width: "45%",
-            }}
-          >
-            {shownData.currency === "EUR" ? (
-              <EuroIcon size={18} color={+totalAmount > 0 ? "green" : "red"} />
-            ) : (
-              <DollarIcon size={18} color="#278664" />
-            )}
-            <Typography fontSize={14}>
-              {formatAmountTableValue(totalAmount, shownData.currency)}
+    <View style={{ backgroundColor: "#F5F9FF" }}>
+      <Pressable>
+        <WholeContainer>
+          <View style={{ paddingVertical: 6 }}>
+            <Typography
+              fontSize={14}
+              fontWeight={500}
+              fontFamily="Mukta-SemiBold"
+            >
+              {getFormattedDate(shownData.date)}
             </Typography>
-          </Box>
-          <Box
-            style={{
-              textAlign: "center",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              borderRadius: 5,
-              padding: 5,
-              display: "flex",
-              flexDirection: "row",
-              width: "45%",
-            }}
-          >
-            <Box style={styles.arrowCell}>
-              {isOpen ? (
-                <ArrowDown color="blue" />
-              ) : (
-                <ArrowRight color="blue" />
-              )}
-            </Box>
-          </Box>
-        </View>
+          </View>
+        </WholeContainer>
+        <TransactionByDate transactions={transactionsByDate} />
       </Pressable>
-      {/* show list of all transactionsByDate */}
-      {isOpen && (
-        <>
-          <TransactionByDate transactions={transactionsByDate} />
-        </>
-      )}
     </View>
   );
 };

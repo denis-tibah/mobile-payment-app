@@ -28,7 +28,7 @@ import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
 import CloudMessage from "../../assets/icons/CloudMessage";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
-import { PinCodeInputBoxes } from "../../components/FormGroup/FormGroup";
+import { PinCodeInputBoxes, PinCodeInputClipBoard } from "../../components/FormGroup/FormGroup";
 import ChangeLimits from "../../assets/icons/ChangeLimits";
 
 const currencyOptions = [
@@ -499,27 +499,29 @@ const PayeeSendFunds = ({navigation, route}: any) => {
             fontSize: 18,
             // fontWeight: "bold",
             left: 20,
-            fontFamily: "Nunito",
+            fontFamily: "Nunito-SemiBold",
             color: "#000",
             textAlign:'left',
-            paddingTop: 20,
           }}>
             Verify your payment
           </Text>
-          <Text style={{
-              fontSize: 14,
-              // fontWeight: "bold",
-              left: 20,
-              fontFamily: "Nunito",
-              color: vars["shade-grey"],
-              textAlign:'left',
-              paddingTop: 20,
-            }}>
-            Please enter the 6-digit code sent to your mobile number.
-          </Text>
-          <Divider style={{marginVertical: 25}}/>
-          <View style={{alignItems: 'center', paddingHorizontal: 32}}>
-            <PinCodeInputBoxes fieldCount={6} onChange={handlePinCodeChange} />
+          <View style={{paddingRight: 24}}>
+            <Text style={{
+                fontSize: 14,
+                // fontWeight: "bold",
+                left: 20,
+                fontFamily: "Nunito",
+                color: vars["shade-grey"],
+                textAlign:'left',
+                paddingTop: 10,
+              }}>
+                You will receive an sms to your mobile device. 
+                Please enter this code below.
+            </Text>
+          </View>
+          <Divider style={{marginTop: 10, height: 1, backgroundColor: vars['shade-grey'], opacity: 0.2, marginBottom: 40}}/>
+          <View style={{alignItems: 'center', paddingHorizontal: 12}}>
+            <PinCodeInputClipBoard fieldCount={6} onChange={handlePinCodeChange} />
               <TouchableOpacity
                 onPress={_handleResendSMSVerificationCode}
                 disabled={isTimeToCountDown}
@@ -531,19 +533,20 @@ const PayeeSendFunds = ({navigation, route}: any) => {
                 ) : (
                   <Text style={styles.noCodeResend}>Did not get a verification code?</Text>
                 )}
-              <Button
-                onPress={() => {
-                  setIsLoading(true);
-                  handleProcessPayment({code});
-                }}
-                color="light-pink"
-                style={{width: '100%', alignSelf: 'center'}}
-                leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
-              >
-                Confirm
-              </Button>
             </TouchableOpacity>
           </View>
+          <Divider style={{marginVertical: 10, height: 1, backgroundColor: vars['shade-grey'], opacity: 0.2}}/>
+          <Button
+            onPress={() => {
+              setIsLoading(true);
+              handleProcessPayment({code});
+            }}
+            color="light-pink"
+            style={{width: '90%', bottom: 0, position: 'relative', alignItems: 'center', alignSelf: 'center', marginTop: 20}}
+            leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
+          >
+            Confirm payment
+          </Button>
         </View>
       </SwipableBottomSheet>
       <SwipableBottomSheet

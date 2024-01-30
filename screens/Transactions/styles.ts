@@ -13,7 +13,7 @@ export const styles:any = StyleSheet.create<any>({
     // backgroundColor: '#F5F9FF',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 20,
+    padding: 12,
     paddingBottom: 0,
   },
   containerDate: {

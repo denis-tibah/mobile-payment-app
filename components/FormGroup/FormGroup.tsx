@@ -1,6 +1,7 @@
 import { cloneElement, useEffect, useRef, useState } from "react";
 import { Picker, PickerIOS } from "@react-native-picker/picker";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import * as Clipboard from "expo-clipboard";
 import { Text, View, TextInput, Platform, Pressable } from "react-native";
 import Checkbox from "expo-checkbox";
 
@@ -228,7 +229,6 @@ export const PinCodeInputBoxes = ({
           returnKeyType="done"
           keyboardType="numeric"
           onChangeText={(text) => handleTextChange(text, i)}
-          // onSubmitEditing={() => focusInput(i + 1)}
           onKeyPress={(event) => handleKeyPress(event, i)}
           {...props}
         />
@@ -236,6 +236,82 @@ export const PinCodeInputBoxes = ({
     </View>
   );
 };
+
+export function PinCodeInputClipBoard({
+  fieldCount = 4,
+  onChange,
+  isNewPinCodeStyle = false,
+  ...props
+}: any) {
+  const inputs = useRef<any>([]);
+  const [code, setCode] = useState(["", "", "", "", "", ""]);
+
+  useEffect(() => {
+    onChange(code.join(""));
+  }, [code]);
+
+  const focusInput = (index: number) => {
+    if (index >= 0 && index < fieldCount) {
+      inputs.current[index].focus();
+    }
+  };
+
+  return (
+    <View
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
+      <View style={
+        {
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          width: 215,
+          height: 50,
+          borderWidth: 1,
+          borderRadius: 10,
+          borderColor: '#6BA6FD',
+          padding: 16,
+          marginTop: 10,
+        }
+      }>
+        <TextInput
+          style={{
+            width: 215,
+            letterSpacing: 22,
+            zIndex: 999,
+          }}
+          keyboardType="numeric"
+          underlineColorAndroid="transparent"
+          maxLength={6}
+          onChange={(event) => {
+            const codeArray = event.nativeEvent.text.split("");
+            setCode(codeArray);
+            onChange(codeArray.join(""));
+          }}
+          />
+          <View style={{display: 'flex', flexDirection: 'row'}}>
+            {[...Array(fieldCount)].map((item, i) => (
+            <Text 
+              key={i}
+              style={{
+                width: 18,
+                top: -12,
+                marginLeft: 6,
+                marginRight: 6,
+                borderBottomWidth: 1,
+              }}>
+            </Text>
+          ))}
+        </View>
+      </View>
+    </View>
+  );
+}
 
 export function SelectForArrOfObject({
   children,

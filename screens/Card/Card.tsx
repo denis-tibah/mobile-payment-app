@@ -52,7 +52,7 @@ import { PinNumberCode } from "../../assets/icons/PinNumber";
 import { BugIcon } from "../../assets/icons/BugIcon";
 import BottomSheet from "../../components/BottomSheet";
 import ManagePaymentMethod from "./Components/ManagePayment";
-import { PinCodeInputBoxes } from "../../components/FormGroup/FormGroup";
+import { PinCodeInputBoxes, PinCodeInputClipBoard } from "../../components/FormGroup/FormGroup";
 import { useLazyOrderCardQuery, useLazySendSmsLostCardVerificationQuery, useLazyShowCardDetailsQuery } from "../../redux/card/cardSliceV2";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 import { Seperator } from "../../components/Seperator/Seperator";
@@ -578,9 +578,7 @@ export function Card({ navigation, route }: any) {
                       See Card Transactions
                     </Typography>
                   </View>
-                  <TouchableOpacity style={{marginTop: 7}}>
-                    <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
-                  </TouchableOpacity>
+                  <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
                 </TouchableOpacity>
               </View>
             <Divider style={{
@@ -864,7 +862,7 @@ export function Card({ navigation, route }: any) {
                 You will receive an sms to your mobile device. Please enter this code below.
               </Typography>
               <Divider style={{marginVertical: 15, paddingHorizontal: 15}} />
-              <PinCodeInputBoxes fieldCount={6} onChange={handlePinCodeChange} />
+              <PinCodeInputClipBoard fieldCount={6} onChange={handlePinCodeChange} isNewPinCodeStyle />
               <TouchableOpacity
                 onPress={() => console.log('resend')}
                 disabled={isTimeToCountDown}

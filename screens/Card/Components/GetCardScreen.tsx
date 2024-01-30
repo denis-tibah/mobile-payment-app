@@ -16,7 +16,7 @@ import { screenNames } from "../../../utils/helpers";
 import Heading from "../../../components/Heading";
 import SwipableBottomSheet from "../../../components/SwipableBottomSheet";
 import Typography from "../../../components/Typography";
-import { PinCodeInputBoxes } from "../../../components/FormGroup/FormGroup";
+import { PinCodeInputBoxes, PinCodeInputClipBoard } from "../../../components/FormGroup/FormGroup";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Divider } from "react-native-paper";
 import { useLazyOrderCardQuery } from "../../../redux/card/cardSliceV2";
@@ -286,7 +286,7 @@ export const GetCardScreen = ({navigation}: any) => {
         </View>
         <Divider style={{width: '120%', height: 1, backgroundColor: vars['shade-grey'], marginVertical: 10, opacity: 0.5}} />
         <View style={styles.container}>
-          <PinCodeInputBoxes fieldCount={6} onChange={handlePinCodeChange} />
+          <PinCodeInputClipBoard fieldCount={6} onChange={handlePinCodeChange} />
           <TouchableOpacity
             onPress={_handleResendSMSVerificationCode}
             disabled={isTimeToCountDown}
@@ -299,14 +299,14 @@ export const GetCardScreen = ({navigation}: any) => {
               <Text style={styles.noCode}>Did not get a verification code?</Text>
             )}
           </TouchableOpacity>
-          <View style={styles.buttonContainer}>
+          <View style={[styles.buttonContainer, {marginTop: 10}]}>
             <Button
               style={[styles.confirmButton, {marginTop: 20}]}
               color="light-pink"
               disabled={loading}
               loading={loading}
               onPress={handleEnrollmentCard}
-              leftIcon={<TransactionIcon size={18} color="pink" />}
+              leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
             >
               Submit
             </Button>
@@ -338,6 +338,7 @@ const styles = StyleSheet.create<any>({
     flexDirection: "row",
     justifyContent: "center",
     shadowColor: "#000",
+    paddingTop: 10,
     shadowOffset: {
       width: 0,
       height: -2,

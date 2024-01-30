@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { View, ScrollView, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
@@ -44,6 +44,8 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { setIsCardTransactionShown } from "../../redux/card/cardSlice";
 import TransactionItem from "../../components/TransactionItem";
+import SwipableBottomSheet from "../../components/SwipableBottomSheet";
+import { ref } from "yup";
 
 interface DateRangeType {
   dateTo: {
@@ -82,6 +84,7 @@ export function Transactions({ navigation, route }: any) {
   const dispatch = useDispatch();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
+  const refRBSheet = useRef<any>(null);
   const isCardTransactionShown = useSelector(
     (state: RootState) => state?.card?.isCardTransactionShown
   );
@@ -334,27 +337,29 @@ export function Transactions({ navigation, route }: any) {
   //   return await printAsync({ uri: pdfUri });
   // };
 
-  useEffect(() => {
-    if (isCardTransactionShown) {
-      const activeCard = listOfActiveCards?.find(
-        (card: any) => card.cardStatus === CardStatus.ACTIVE
-      );
-      setSearchFieldData({
-        ...searchFieldData,
-        card_id:
-          searchFieldData.card_id || activeCard?.cardreferenceId.toString(),
-      });
-      handleFetchCardTransactions(activeCard?.cardreferenceId.toString());
-    }
-  }, [isCardTransactionShown]);
+  // if isCardTransactionShown is true, then fetch select 
 
-  useEffect(() => {
-    if (searchFieldData.card_id !== "") {
-      dispatch<any>(setIsCardTransactionShown(true));
-    } else {
-      dispatch<any>(setIsCardTransactionShown(false));
-    }
-  }, [searchFieldData.card_id]);
+  // useEffect(() => {
+  //   if (isCardTransactionShown) {
+  //     const activeCard = listOfActiveCards?.find(
+  //       (card: any) => card.cardStatus === CardStatus.ACTIVE
+  //     );
+  //     setSearchFieldData({
+  //       ...searchFieldData,
+  //       card_id:
+  //         searchFieldData.card_id || activeCard?.cardreferenceId.toString(),
+  //     });
+  //     handleFetchCardTransactions(activeCard?.cardreferenceId.toString());
+  //   }
+  // }, [isCardTransactionShown]);
+
+  // useEffect(() => {
+  //   if (searchFieldData.card_id !== "") {
+  //     dispatch<any>(setIsCardTransactionShown(true));
+  //   } else {
+  //     dispatch<any>(setIsCardTransactionShown(false));
+  //   }
+  // }, [searchFieldData.card_id]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -383,10 +388,9 @@ export function Transactions({ navigation, route }: any) {
                 <TouchableOpacity
                   style={styles.iconFilter}
                   onPress={() => {
-                    // setIsMobileFilterShown(!isMobileFilterShown);
                     //added by Aristos to fix issue with search being disabled
                     clearFilter();
-                    setIsSheetFilterOpen(!isSheetFilterOpen);
+                    refRBSheet?.current?.open();
                   }}
                 >
                   <Filter size={14} color="blue" />
@@ -499,12 +503,25 @@ export function Transactions({ navigation, route }: any) {
           )} */}
         </View>
       </ScrollView>
-      <BottomSheet
-        isVisible={isSheetFilterOpen}
-        onClose={() => setIsSheetFilterOpen(!isSheetFilterOpen)}
-      >
+      <SwipableBottomSheet
+        rbSheetRef={refRBSheet}
+        closeOnDragDown={true}
+        closeOnPressMask={false}
+        // onClose={() => refRBSheet?.current?.close()}
+        height={550}
+        wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+        containerStyles={{
+          backgroundColor: "#FFF",
+          borderTopLeftRadius: 14,
+          borderTopRightRadius: 14,
+          elevation: 12,
+          shadowColor: "#52006A",
+          paddingHorizontal: 15,
+        }}
+        draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
+        >
         <View style={styles.containerBottomSheetHeader}>
-          <Typography fontSize={18}>Filters</Typography>
+          <Typography fontSize={18} fontFamily={'Nunito-SemiBold'}>Filters</Typography>
           <TouchableOpacity
             onPress={() => clearFilter()}
             style={{ flexDirection: "row" }}
@@ -513,17 +530,18 @@ export function Transactions({ navigation, route }: any) {
               style={{
                 paddingRight: 5,
                 fontSize: 12,
+                fontFamily: "Nunito-SemiBold",
                 color: vars["accent-blue"],
               }}
             >
-              Refresh
+              Clear filter
             </Text>
-            <Ionicons name="refresh" size={14} color={vars["accent-blue"]} />
+            {/* <Ionicons name="refresh" size={14} color={vars["accent-blue"]} /> */}
           </TouchableOpacity>
         </View>
         <Divider style={{ marginVertical: 5 }} />
         <View style={{ display: "flex", flexDirection: "row" }}>
-          <View style={{ flex: 1, flexWrap: "wrap" }}>
+          <View style={{ flex: 1, flexWrap: "wrap"}}>
             <Typography fontSize={14} color="#696F7A">
               Start date
             </Typography>
@@ -592,6 +610,12 @@ export function Transactions({ navigation, route }: any) {
                 style={styles.dropdownIOSFrom}
               />
             )}
+
+          </View>
+          <View>
+            <Text style={{top: 28, right: 31, fontSize: 24}}>
+              _
+            </Text>
           </View>
           <View style={{ flex: 1 }}>
             <Typography fontSize={14} color="#696F7A">
@@ -693,6 +717,13 @@ export function Transactions({ navigation, route }: any) {
                 borderRadius: 99,
               }}
               onPress={() => {
+                if (searchFieldData.status === option.value) {
+                  setSearchFieldData({
+                    ...searchFieldData,
+                    status: "",
+                  });
+                  return;
+                }
                 setSearchFieldData({
                   ...searchFieldData,
                   status: option.value,
@@ -737,6 +768,11 @@ export function Transactions({ navigation, route }: any) {
               }}
             />
           </View>
+          <View>
+            <Text style={{top: 22, right: 0, fontSize: 18}}>
+              _
+            </Text>
+          </View>
           <View style={{ flex: 1, paddingLeft: 10 }}>
             <Typography fontSize={14} color="#696F7A">
               Amount to
@@ -776,6 +812,14 @@ export function Transactions({ navigation, route }: any) {
                 height: 40,
               }}
               onPress={() => {
+                if (searchFieldData.card_id === card.cardreferenceId) {
+                  setSearchFieldData({
+                    ...searchFieldData,
+                    card_id: "",
+                  });
+                  setIsCardTransactionShown(false);
+                  return;
+                }
                 setSearchFieldData({
                   ...searchFieldData,
                   card_id: card.cardreferenceId,
@@ -808,8 +852,8 @@ export function Transactions({ navigation, route }: any) {
             backgroundColor: "grey",
             marginTop: 10,
             lineHeight: 25,
-            borderWidth: 1,
-            borderColor: vars["accent-pink"],
+            // borderWidth: 1,
+            borderColor: 'none',
           }}
           color="light-pink"
           leftIcon={
@@ -821,7 +865,7 @@ export function Transactions({ navigation, route }: any) {
           }
           onPress={() => {
             setIsLoading(true);
-            setIsSheetFilterOpen(!isSheetFilterOpen);
+            refRBSheet?.current?.close();
             !isCardTransactionShown
               ? fetchTransactionsWithFilters(searchFieldData)
               : handleFetchCardTransactions(
@@ -833,7 +877,7 @@ export function Transactions({ navigation, route }: any) {
           Submit
         </Button>
         <Divider style={{ marginVertical: 15 }} />
-      </BottomSheet>
+      </SwipableBottomSheet>
       <LoadingScreen isLoading={isLoading} />
     </MainLayout>
   );

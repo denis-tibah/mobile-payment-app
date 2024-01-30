@@ -17,7 +17,7 @@ import { StatementTransactionsResponse } from "../../redux/transaction/transacti
 //   return `data:${mimeType};base64,${image}`;
 // };
 
-const convertImageToBase64 = async (): Promise<string | undefined> => {
+const convertImageToBase64 = async (): Promise<string> => {
   try {
     const asset = Asset.fromModule(ZazooLogo);
     await asset.downloadAsync(); // Ensure the asset is downloaded
@@ -30,8 +30,8 @@ const convertImageToBase64 = async (): Promise<string | undefined> => {
     
     return `data:${mimeType};base64,${image}`;
   } catch (error) {
-    console.error('Error converting image to base64', error);
-    return undefined;
+    console.log({ error });
+    return '';
   }
 };
 

@@ -20,6 +20,7 @@ import Feather from "react-native-vector-icons/Feather";
 /* import Ionicons from "react-native-vector-icons/Ionicons"; */
 import { useAtom } from "jotai";
 import { TouchableOpacity } from "react-native";
+import { Snackbar } from "react-native-paper";
 
 /* import { Tabs } from "../../components/Tabs/Tabs"; */
 import MainLayout from "../../layout/Main";
@@ -27,7 +28,6 @@ import MainLayout from "../../layout/Main";
 import Button from "../../components/Button";
 import { styles } from "./styles";
 import { Avatar } from "../../components/Avatar/Avatar";
-
 import ProfileIcon from "../../assets/icons/Profile";
 import vars from "../../styles/vars";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
@@ -125,7 +125,6 @@ export function Profile({ route, navigation }: any) {
   const biometricSetting = useSelector(
     (state: any) => state.auth.data.biometricYN
   );
-
   const [updateLimitToggles, setUpdateLimitToggles] = useState<{
     [key: string]: boolean;
   }>({});
@@ -134,6 +133,11 @@ export function Profile({ route, navigation }: any) {
   }>({});
   const [limitTypes, setLimitTypes] = useState<string>("");
   const [tabSelection, setTabSelection] = useState<string>("");
+  const [snackBarMessage, setSnackBarMessage] = useState({
+    open: false,
+    label: "Ok",
+    message: "",
+  });
   /* const [isEnabled, setIsEnabled] = useState(false);
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
   const [dropDownOpen, setDropDownOpen] = useState(false);
@@ -281,7 +285,12 @@ export function Profile({ route, navigation }: any) {
 
   const handleCopyToClipboard = async (textData: string) => {
     await Clipboard.setStringAsync(textData || "");
-    ToastAndroid.show("Copied text from clipboard", ToastAndroid.SHORT);
+    // ToastAndroid.show("Copied text from clipboard", ToastAndroid.SHORT);
+    setSnackBarMessage({
+      open: true,
+      label: "Ok",
+      message: "Copied text from clipboard",
+    });
   };
 
   const cleanUpTabSelection = () => setTabSelection("");
@@ -1286,6 +1295,25 @@ export function Profile({ route, navigation }: any) {
           </View>
         </ScrollView>
       </SafeAreaView>
+      <Snackbar
+        visible={snackBarMessage.open}
+        onDismiss={() =>
+          setSnackBarMessage({ open: false, label: "", message: "" })
+        }
+        action={{
+          label: "Ok",
+          onPress: () => {
+            setSnackBarMessage({ open: false, label: "", message: "" });
+          },
+        }}
+        style={{ backgroundColor: "blue" }}
+      >
+        <View>
+          <Typography fontFamily="Nunito-Regular" fontSize={12}>
+            {snackBarMessage.message}
+          </Typography>
+        </View>
+      </Snackbar>
     </MainLayout>
   );
 }

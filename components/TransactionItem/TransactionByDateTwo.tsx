@@ -94,7 +94,9 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         alignItems: "center",
                         gap: 18,
                         width: "30%",
-                        justifyContent: "flex-end",
+                        justifyContent: transaction?.amount
+                          ? "space-between"
+                          : "flex-end",
                       }}
                     >
                       <View
@@ -107,7 +109,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         {shownData.currency === "EUR" ? (
                           <EuroIcon
                             size={14}
-                            color={+transaction.amount > 0 ? "green" : "red"}
+                            color={+transaction?.amount > 0 ? "green" : "red"}
                           />
                         ) : (
                           <DollarIcon size={14} color="#278664" />
@@ -184,7 +186,6 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                             ]}
                           >
                             {transaction?.status}
-                            {/* add UI here to show the reason for a unsuccessfull transaction */}
                           </Text>
                         </View>
                       </View>

@@ -110,6 +110,7 @@ export const styles: any = StyleSheet.create<any>({
     flexDirection: "row",
     alignItems: "center",
     width: "70%",
+    paddingRight: 16,
     gap: 6,
   },
   valueDetailMobile: {

@@ -1,23 +1,23 @@
-import { useEffect, useState } from "react";
+import { /* useEffect,  */ useState } from "react";
 import {
   View,
   ScrollView,
   RefreshControl,
-  TouchableOpacity,
+  /*   TouchableOpacity, */
 } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+/* import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"; */
 
 import { useSelector } from "react-redux";
-import Heading from "../../components/Heading";
+/* import Heading from "../../components/Heading"; */
 import MainLayout from "../../layout/Main";
 import { styles } from "./style";
-import TransactionIcon from "../../assets/icons/Transaction";
+/* import TransactionIcon from "../../assets/icons/Transaction"; */
 import Typography from "../../components/Typography";
-import AccountIcon from "../../assets/icons/Account";
+/* import AccountIcon from "../../assets/icons/Account";
 import Pagination from "../../components/Pagination/Pagination";
-import { SearchFilter } from "../../redux/transaction/transactionSlice";
+import { SearchFilter } from "../../redux/transaction/transactionSlice"; */
 import { RootState } from "../../store";
-import Box from "../../components/Box";
+/* import Box from "../../components/Box"; */
 import {
   getCurrency,
   groupedByDateTransactions,
@@ -25,7 +25,7 @@ import {
   groupByDateAndSeveralProperties,
 } from "../../utils/helpers";
 import Spinner from "react-native-loading-spinner-overlay/lib";
-import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
+/* import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate"; */
 import TransactionByDateTwo from "../../components/TransactionItem/TransactionByDateTwo";
 import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
 import Button from "../../components/Button";
@@ -41,13 +41,13 @@ import WholeContainer from "../../layout/WholeContainer";
 
 const defaultStatus = "SUCCESS";
 export function MyAccount({ navigation }: any) {
-  const transactions: any = useSelector(
+  /* const transactions: any = useSelector(
     (state: RootState) => state?.transaction?.data
-  );
-  const currentPage = transactions?.current_page;
-  const lastPage = transactions?.last_page;
+  ); */
+  /* const currentPage = transactions?.current_page;
+  const lastPage = transactions?.last_page; */
   const userData = useSelector((state: RootState) => state?.auth?.userData);
-  const userId = userData?.id;
+  /* const userId = userData?.id; */
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
 
   /* const [getTransactionsWithFilter, { data: transactionsWithFilter }] =

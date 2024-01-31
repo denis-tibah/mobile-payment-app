@@ -174,7 +174,11 @@ export function MyAccount({ navigation }: any) {
     if (isLoading) {
       return (
         <View style={styles.listHead}>
-          <Typography fontFamily="Nunito-Bold" fontWeight={600} fontSize={14}>
+          <Typography
+            fontFamily="Nunito-Regular"
+            fontWeight={600}
+            fontSize={14}
+          >
             Loading...
           </Typography>
         </View>

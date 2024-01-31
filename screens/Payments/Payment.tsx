@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { View, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "react-native-loading-spinner-overlay/lib";
@@ -28,11 +28,14 @@ import IconQr from "../../assets/icons/IconsQr";
 import ArrowDownDotted from "../../assets/icons/ArrowDownDotted";
 import Typography from "../../components/Typography";
 import { deleteBeneficiary } from "../../redux/beneficiary/beneficiarySlice";
+import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 
 export function Payment({ navigation }: any) {
   const dispatch = useDispatch();
   const infoData = useSelector((state: any) => state.account.details);
   const validationSchema = validationAddingPayeeSchema();
+  const refRBSheet = useRef<any>(null);
+  const refRBSheetPayeesOrder = useRef<any>(null);
   const [isAddingPayeeShown, setIsAddingPayeeShown] = useState<boolean>(false);
   const [isModalSuccessOpen, setIsModalSuccessOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -111,7 +114,7 @@ export function Payment({ navigation }: any) {
           rightAction={
             <View style={{ flexDirection: "row", display: "flex" }}>
               <Button
-                onPress={() => setIsAddingPayeeShown(true)}
+                onPress={() => refRBSheet?.current?.open()}
                 color={"light-pink"}
                 leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
               >
@@ -147,7 +150,7 @@ export function Payment({ navigation }: any) {
             >
               <IconQr color={vars['accent-blue']} size={18} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setIsFilterForPayeeShown(!isFilterForPayeeShown)}
+            <TouchableOpacity onPress={() => refRBSheetPayeesOrder?.current?.open()}
               style={{
                 marginTop: 10, 
                 marginLeft: 10, 
@@ -361,17 +364,41 @@ export function Payment({ navigation }: any) {
           </View>
         </View>
       </ScrollView>
-      <BottomSheet
-        isVisible={isAddingPayeeShown}
-        onClose={toggleBottomSheet}
-        headerTitle="Add Payee"
-        leftHeaderIcon={<AntDesign name="pluscircleo" size={16} color={vars['accent-pink']} />}
-        isBottomSheetHeaderShown={true}
-      >
+      <SwipableBottomSheet
+        rbSheetRef={refRBSheet}
+        closeOnDragDown={true}
+        closeOnPressMask={false}
+        // onClose={() => refRBSheet?.current?.close()}
+        height={420}
+        wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+        containerStyles={{
+          backgroundColor: "#FFF",
+          borderTopLeftRadius: 14,
+          borderTopRightRadius: 14,
+          elevation: 12,
+          shadowColor: "#52006A",
+          paddingHorizontal: 15,
+        }}
+        draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
+        >
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Adjust the behavior based on platform
           style={styles.container}
         >
+        <View style={{display: 'flex', flexDirection: 'row', marginTop: 10, marginBottom: 40}}>
+          <AntDesign name="pluscircleo" size={16} color={vars['accent-pink']} />
+          <View style={{marginLeft: 15, top: -3}}>
+            <Typography
+              color="#000"
+              fontSize={16}
+              fontWeight={600}
+              fontFamily="Nunito-Bold"
+              // style={{marginLeft: 15, paddingLeft: 15, borderLeftWidth: 1, borderLeftColor: vars['grey']}}
+            >
+              Add Payee
+            </Typography>
+          </View>
+        </View>
         <View>
           <FormGroup
             validationError={
@@ -431,28 +458,66 @@ export function Payment({ navigation }: any) {
           </FormGroup>
         </View>
         <Divider style={{marginVertical: 15}} />
-        <Button
-          color={"light-pink"}
-            onPress={() => {
-              handleSubmit(
-                // @ts-ignore
-                values
-              )
-          }
-          }
-          style={{marginTop: 20}}
-          leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
-        >
-          Save Payee
-        </Button>
+        <View
+          style={{
+            // drop shadow top of this view
+            shadowColor: "#ACACAC",
+            shadowOffset: {
+              width: 0,
+              height: -2,
+            },
+            shadowOpacity: 0.23,
+            shadowRadius: 2.62,
+            elevation: 4,
+            
+          }}>
+          <Button
+            color={"light-pink"}
+              onPress={() => {
+                handleSubmit(
+                  // @ts-ignore
+                  values
+                )
+            }
+            }
+            style={{marginTop: 20}}
+            leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
+          >
+            Save Payee
+          </Button>
+        </View>
         </KeyboardAvoidingView>
-      </BottomSheet>
-      <BottomSheet
-        isVisible={isFilterForPayeeShown}
-        onClose={() => setIsPayeeListShown(false)}
-        headerTitle="Payees"
+      </SwipableBottomSheet>
+      <SwipableBottomSheet
+        rbSheetRef={refRBSheetPayeesOrder}
+        closeOnDragDown={true}
+        closeOnPressMask={false}
+        // onClose={() => refRBSheet?.current?.close()}
+        height={260}
+        wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+        containerStyles={{
+          backgroundColor: "#FFF",
+          borderTopLeftRadius: 14,
+          borderTopRightRadius: 14,
+          elevation: 12,
+          shadowColor: "#52006A",
+          paddingHorizontal: 15,
+        }}
+        draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
         >
-          <ScrollView 
+          <View style={{marginTop: 5, marginBottom: 10}}>
+            <Typography
+              color="#000"
+              fontSize={18}
+              fontWeight={600}
+              fontFamily="Nunito-Bold"
+              style={{marginTop: 10, marginBottom: 20}}
+            >
+              Payees Order
+            </Typography>
+          </View>
+          <Divider style={{marginVertical: 15, height: 1, backgroundColor: vars['shade-grey'], opacity: 0.2}} />
+          <ScrollView
             style={{height: 140}}
             decelerationRate={"fast"}
             snapToInterval={50}
@@ -469,7 +534,7 @@ export function Payment({ navigation }: any) {
                     onPress={() => {
                       setSelectedFilterForPayees(item.value);
                       setTimeout(() => {
-                        setIsFilterForPayeeShown(false);
+                        refRBSheetPayeesOrder?.current?.close();
                       }, 400);
                     }}
                     //leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
@@ -479,7 +544,7 @@ export function Payment({ navigation }: any) {
                 ))
                 }
           </ScrollView>
-        </BottomSheet>
+        </SwipableBottomSheet>
         <Spinner visible={isLoading} />
     </MainLayout>
   )

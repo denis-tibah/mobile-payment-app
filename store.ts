@@ -96,7 +96,7 @@ export const store = configureStore({
   devTools: process.env.NODE_ENV !== "production",
   middleware: (getDefaultMiddleware) => [
     ...getDefaultMiddleware({
-      immutableCheck: false,
+      /* immutableCheck: false, */
       serializableCheck: {
         ignoredActions: [
           "persist/PERSIST",

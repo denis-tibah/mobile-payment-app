@@ -99,7 +99,7 @@ export function Transactions({ navigation, route }: any) {
   const _groupedByDateTransactions =
     groupedByDateTransactions(transactionsList);
   const [isSearchTextOpen, setIsSearchTextOpen] = useState<boolean>(false);
-  const [isSheetFilterOpen, setIsSheetFilterOpen] = useState<boolean>(false);
+  // const [isSheetFilterOpen, setIsSheetFilterOpen] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchFieldData, setSearchFieldData] = useState<SearchFilter>(

@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState, useRef } from "react";
-import { ImageBackground, StyleSheet, Text, View } from "react-native";
+import { ImageBackground, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { AntDesign } from '@expo/vector-icons'; 
 import ZazooVirualCard from "../../../assets/images/card_background_images/virtual_card.png";
@@ -17,7 +17,6 @@ import Heading from "../../../components/Heading";
 import SwipableBottomSheet from "../../../components/SwipableBottomSheet";
 import Typography from "../../../components/Typography";
 import { PinCodeInputBoxes, PinCodeInputClipBoard } from "../../../components/FormGroup/FormGroup";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { Divider } from "react-native-paper";
 import { useLazyOrderCardQuery } from "../../../redux/card/cardSliceV2";
 import { RootState } from "../../../store";
@@ -56,8 +55,11 @@ export const GetCardScreen = ({navigation}: any) => {
   };
 
   const _handleResendSMSVerificationCode = () => {
+    console.log("Resend SMS Verification Code");
     setIsTimeToCountDown(true);
-    // process handle verification code
+    dispatch(sendSmsOrderCardVerification({
+      type: "trusted",
+    }) as any);
   };
 
   useEffect(() => {
@@ -224,21 +226,22 @@ export const GetCardScreen = ({navigation}: any) => {
               Select Currency
             </Typography>
           </View>
-          <View style={{minHeight: 100, zIndex: 999, overflow: 'visible', display: 'flex'}}>
+          <View style={{minHeight: 100, zIndex: 999, overflow: 'visible', display: 'flex', paddingTop: 20}}>
             <DropDownPicker
               placeholder="Currency"
               style={styles.dropdownCurrency}
               open={openCurrency}
               value={currency || null}
-              items={[{ label: "Euro €", value: "EUR" }, { label: "USD $", value: "USD" }]}
+              items={[{ label: "Euro €", value: "EUR" }]}
               setOpen={setOpenCurrency}
               setValue={setCurrency}
               listMode="SCROLLVIEW"
               dropDownContainerStyle={styles.dropdownContainer}
               zIndex={1}
+              disabled
             />
-        </View>
-        <View style={styles.buttonContainer}>
+          </View>
+        <View style={[styles.buttonContainer, {bottom: 0, position: 'relative', marginTop: 40}]}>
           <Button
             leftIcon={
               <AntDesign name="checkcircleo" size={14} color={vars['accent-pink']} />
@@ -286,10 +289,11 @@ export const GetCardScreen = ({navigation}: any) => {
         </View>
         <Divider style={{width: '120%', height: 1, backgroundColor: vars['shade-grey'], marginVertical: 10, opacity: 0.5}} />
         <View style={styles.container}>
-          <PinCodeInputClipBoard fieldCount={6} onChange={handlePinCodeChange} />
+          <PinCodeInputClipBoard fieldCount={6} onChange={handlePinCodeChange} isNewPinCodeStyle/>
           <TouchableOpacity
             onPress={_handleResendSMSVerificationCode}
             disabled={isTimeToCountDown}
+            style={{marginTop: 5}}
           >
             {isTimeToCountDown ? (
               <Text style={styles.noCodeResend}>
@@ -301,7 +305,7 @@ export const GetCardScreen = ({navigation}: any) => {
           </TouchableOpacity>
           <View style={[styles.buttonContainer, {marginTop: 10}]}>
             <Button
-              style={[styles.confirmButton, {marginTop: 20}]}
+              style={[styles.confirmButton, {marginTop: 15}]}
               color="light-pink"
               disabled={loading}
               loading={loading}

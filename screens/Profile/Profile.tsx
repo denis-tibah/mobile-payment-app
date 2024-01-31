@@ -7,6 +7,7 @@ import {
   Pressable,
   SafeAreaView,
   Platform,
+  ToastAndroid,
 } from "react-native";
 /* import { Formik } from "formik"; */
 import { useDispatch, useSelector } from "react-redux";
@@ -280,6 +281,7 @@ export function Profile({ route, navigation }: any) {
 
   const handleCopyToClipboard = async (textData: string) => {
     await Clipboard.setStringAsync(textData || "");
+    ToastAndroid.show("Copied text from clipboard", ToastAndroid.SHORT);
   };
 
   const cleanUpTabSelection = () => setTabSelection("");

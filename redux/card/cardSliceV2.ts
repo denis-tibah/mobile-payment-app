@@ -62,16 +62,17 @@ export const cardsV2 = createApi({
         },
       }),
     }),
-
     showCardDetails: builder.query({
-      query: ({ accountId, otp }) => ({
+      query: ({account_id, otp, card_id}) => {
+        return {
         url: `/showcardfinxpV2`,
         method: "POST",
         body: {
-          account_id: accountId,
+          account_id,
           otp,
+          card_id: Number(card_id),
         },
-      }),
+      }},
     }),
     sendSmsLostCardVerification: builder.query({
       query: ({ accountId, cardId }) => ({

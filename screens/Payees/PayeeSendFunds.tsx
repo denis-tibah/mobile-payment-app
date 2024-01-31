@@ -510,7 +510,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
                 fontSize: 14,
                 // fontWeight: "bold",
                 left: 20,
-                fontFamily: "Nunito",
+                fontFamily: "Nunito-SemiBold",
                 color: vars["shade-grey"],
                 textAlign:'left',
                 paddingTop: 10,

@@ -81,7 +81,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                       <CardIcon size={14} color={"heavy-grey"} />
                       <Typography
                         fontSize={14}
-                        fontFamily="Mukta-SemiBold"
+                        fontFamily="Mukta-Regular"
                         fontWeight={400}
                       >
                         {transaction.name}
@@ -118,7 +118,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           marginLeft={2}
                           fontWeight={400}
                           fontSize={14}
-                          fontFamily="Mukta-SemiBold"
+                          fontFamily="Mukta-Regular"
                           /* color={Number(transaction.amount) > 0 ? "green" : "red"} */
                         >
                           {formatAmountTableValue(
@@ -317,7 +317,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         <View style={styles.detailMobile}>
                           <Typography
                             color="#086AFB"
-                            fontFamily="Nunito-Bold"
+                            fontFamily="Nunito-SemiBold"
                             fontSize={12}
                             fontWeight={600}
                           >
@@ -325,9 +325,9 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           </Typography>
                           <Typography
                             color="#000"
-                            fontFamily="Nunito-SemiBold"
+                            fontFamily="Mukta-Regular"
                             fontSize={14}
-                            fontWeight={600}
+                            fontWeight={400}
                           >
                             {getFormattedDateAndTime(
                               transaction?.transaction_datetime_with_hour
@@ -379,7 +379,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
             <Typography
               fontSize={14}
               fontWeight={500}
-              fontFamily="Mukta-SemiBold"
+              fontFamily="Mukta-Regular"
             >
               {getFormattedDate(shownData.date)}
             </Typography>

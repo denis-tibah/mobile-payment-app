@@ -4,7 +4,7 @@ const displayTitle = ({ title }: { title: string }) => {
   return (
     <Typography
       color="#086AFB"
-      fontFamily="Nunito-Bold"
+      fontFamily="Nunito-SemiBold"
       fontSize={12}
       fontWeight={600}
     >

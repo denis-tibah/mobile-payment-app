@@ -183,7 +183,11 @@ export function MyAccount({ navigation }: any) {
     if (!isLoading && Object.keys(items).length === 0) {
       return (
         <View style={styles.listHead}>
-          <Typography fontFamily="Nunito-Bold" fontWeight={600} fontSize={14}>
+          <Typography
+            fontFamily="Nunito-Regular"
+            fontWeight={600}
+            fontSize={14}
+          >
             No Transactions Found
           </Typography>
         </View>

@@ -209,7 +209,7 @@ export const GetCardScreen = ({navigation}: any) => {
         rbSheetRef={refRBSheet}
         closeOnDragDown={true}
         closeOnPressMask={false}
-        height={270}
+        height={290}
         wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
         containerStyles={{
           backgroundColor: "#FFF",
@@ -219,29 +219,57 @@ export const GetCardScreen = ({navigation}: any) => {
           shadowColor: "#52006A",
           paddingHorizontal: 15,
         }}
-        draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
-      >
-        <View style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-start', alignSelf: 'flex-start', paddingBottom: 5}}>
-            <Typography color={vars['accent-grey']} fontSize={14}>
-              Select Currency
-            </Typography>
-          </View>
-          <View style={{minHeight: 100, zIndex: 999, overflow: 'visible', display: 'flex', paddingTop: 20}}>
-            <DropDownPicker
-              placeholder="Currency"
-              style={styles.dropdownCurrency}
-              open={openCurrency}
-              value={currency || null}
-              items={[{ label: "Euro €", value: "EUR" }]}
-              setOpen={setOpenCurrency}
-              setValue={setCurrency}
-              listMode="SCROLLVIEW"
-              dropDownContainerStyle={styles.dropdownContainer}
-              zIndex={1}
-              disabled
-            />
-          </View>
-        <View style={[styles.buttonContainer, {bottom: 0, position: 'relative', marginTop: 40}]}>
+        draggableIconStyles={{ backgroundColor: "#DDD", width: 90 }}
+      > 
+        <View
+        style={{marginTop: 10}}
+        >
+          <Typography
+            color="#000"
+            fontWeight={600}
+            fontFamily="Nunito-Bold"
+            fontSize={16}
+          >
+            Create Virtual Card
+          </Typography>
+        </View>
+        <Divider style={{width: '120%', height: 1, backgroundColor: vars['shade-grey'], marginVertical: 15, opacity: 0.5}} />
+        <View style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-start', alignSelf: 'flex-start'}}>
+          <Typography color={vars['accent-grey']} fontSize={14}>
+            Select Currency
+          </Typography>
+        </View>
+        <View style={{minHeight: 100, zIndex: 999, overflow: 'visible', display: 'flex', paddingTop: 10}}>
+          <DropDownPicker
+            placeholder="Currency"
+            style={styles.dropdownCurrency}
+            open={openCurrency}
+            value={currency || null}
+            items={[{ label: "Euro €", value: "EUR" }]}
+            setOpen={setOpenCurrency}
+            setValue={setCurrency}
+            listMode="SCROLLVIEW"
+            dropDownContainerStyle={styles.dropdownContainer}
+            zIndex={1}
+            disabled
+          />
+        </View>
+        <View style={[styles.buttonContainer, {
+          // drop shadow for ios
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: -2,
+          },
+          shadowOpacity: 0.23,
+          shadowRadius: 2.62,
+          // drop shadow for android
+          elevation: 4,
+          backgroundColor: '#fff',
+          bottom: 0,
+          position: 'relative',
+          marginTop: 15,
+          }]}>
           <Button
             leftIcon={
               <AntDesign name="checkcircleo" size={14} color={vars['accent-pink']} />
@@ -276,13 +304,13 @@ export const GetCardScreen = ({navigation}: any) => {
           shadowColor: "#52006A",
           paddingHorizontal: 15,
         }}
-        draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
+        draggableIconStyles={{ backgroundColor: "#DDD", width: 90 }}
       >
         <View style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', alignSelf: 'flex-start', paddingBottom: 5}}>
-          <Typography color="#000" fontSize={18}>
+          <Typography color="#000" fontSize={18} fontFamily={'Nunito-SemiBold'}>
             Card Enrollment
           </Typography>
-          <Typography color={vars['accent-grey']} fontSize={12}>
+          <Typography color={vars['accent-grey']} fontSize={12} fontFamily={'Nunito-SemiBold'} >
             {" "}
             Since your account doesnt have any card. You will receive an sms to your mobile device. Please enter this code below.
           </Typography>
@@ -391,6 +419,7 @@ const styles = StyleSheet.create<any>({
     color: vars["accent-pink"],
     textAlign: "center",
     marginTop: 10,
+    fontFamily: "Nunito-Regular",
   },
   confirmButton: {
     marginTop: 10,

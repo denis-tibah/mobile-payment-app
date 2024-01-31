@@ -42,7 +42,7 @@ import Carousel from "react-native-snap-carousel";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { ICardDetails } from "../../models/interface";
 import vars from "../../styles/vars";
-import { useDebounce } from "usehooks-ts";
+import { useDebounce, useTimeout } from "usehooks-ts";
 import { CardTransaction } from "../../models/Transactions";
 import TerminatingCardModal from "./TerminatingCardModal";
 import { Divider } from "react-native-paper";
@@ -88,7 +88,7 @@ export function Card({ navigation, route }: any) {
   const [showGetCardModal, setShowGetCardModal] = useState(false);
   const [showCardOtpLoading, setShowCardOtpLoading] = useState(false);
   const [selectedCard, setSelectedCard] = useState<any>(null);
-  const [isLoading, setIsloading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isManagePaymentMethod, setIsManagePaymentMethod] = useState<boolean>(false);
   const [isShowTerminatedCard, setIsShowTerminatedCard] = useState<boolean>(false);
   const [isLostPinActionPressed, setIsLostPinActionPressed] = useState<boolean>(false);
@@ -130,7 +130,7 @@ export function Card({ navigation, route }: any) {
     } catch (error) {
       console.log({ error });
     } finally {
-      setIsloading(false);
+      setIsLoading(false);
     }
   };
 
@@ -139,7 +139,7 @@ export function Card({ navigation, route }: any) {
       setSelectedCard(cardsActiveList[0]);
     }
     try {
-      setIsloading(prev => true);
+      setIsLoading(prev => true);
       await dispatch<any>(
         setCardAsFrozen({
           freezeYN: isCardToFreeze ? "Y" : "N",
@@ -152,7 +152,7 @@ export function Card({ navigation, route }: any) {
         const updatedSelectedCard = res.find((card: any) => card.cardreferenceId === selectedCard?.cardreferenceId);
         setTimeout(() => {
           setSelectedCard(updatedSelectedCard);
-          setIsloading(prev => false);
+          setIsLoading(prev => false);
         }, 500);
       })
       .catch((error: any) => {
@@ -163,7 +163,7 @@ export function Card({ navigation, route }: any) {
       console.log({ error });
     } finally {
       await dispatch<any>(getCards());
-      setIsloading(prev => false);
+      setIsLoading(prev => false);
       setFreezeLoading(false);
     }
   };
@@ -176,7 +176,7 @@ export function Card({ navigation, route }: any) {
 
   const requestShowCard = async () => {
 
-    setIsloading(prev => prev = true);
+    setIsLoading(prev => prev = true);
     dispatch(
       sendSmsShowCardVerification({
         type: "trusted",
@@ -191,7 +191,7 @@ export function Card({ navigation, route }: any) {
       console.log({ error });
     })
     .finally(() => {
-      setIsloading(prev => prev = false);
+      setIsLoading(prev => prev = false);
     });
     // if (payload?.status !== "success") {
     //   setShowCardOtpModal(true);
@@ -285,7 +285,7 @@ export function Card({ navigation, route }: any) {
         console.log({ error });
         Alert.alert("Error", "Something went wrong");
       } finally {
-        setIsloading(false);
+        setIsLoading(false);
         // handleGetCardsTransactions();
         setTerminatedCardModal(false);
         await dispatch<any>(getCards());
@@ -321,11 +321,11 @@ export function Card({ navigation, route }: any) {
         text: `Card Status: Success`,
         isError: false,
       });
-      setIsloading(false);
+      setIsLoading(false);
       setShowCardOtpModal(false);
     }
     if (orderCardIsError) {
-      setIsloading(false);
+      setIsLoading(false);
       setIsEnrollingCard(false);
       setShowCardOtpModal(false);
       // setEnrollmentStatus(true);
@@ -382,7 +382,7 @@ export function Card({ navigation, route }: any) {
   }, [shownCardsOnCarousel]);
 
   useEffect(() => {
-    setIsloading(true);
+    setIsLoading(true);
     handleGetCards();
     dispatch<any>(setIsCardTransactionShown(false));
   }, []);
@@ -420,7 +420,7 @@ export function Card({ navigation, route }: any) {
           isOpen={terminatedCardModal}
           title={"Card Terminated"}
           actionMethod={() => {
-            setIsloading(true);
+            setIsLoading(true);
             handleLostCard();
           }}
           onClose={() => {
@@ -471,7 +471,8 @@ export function Card({ navigation, route }: any) {
                 itemWidth={303}
                 initialScrollIndex={0}
                 inactiveSlideOpacity={.5}
-                //reset carousel index to zero when isTeminatedCardShown went to false from true
+                layout="default"
+                lockScrollWhileSnapping={true}
                 onSnapToItem={(index) => {
                   if(isTerminatedCardShown) {
                     setSelectedCard(shownCardsOnCarousel[index]);
@@ -482,8 +483,6 @@ export function Card({ navigation, route }: any) {
                 onBeforeSnapToItem={(index) => {
                   setSelectedCard(shownCardsOnCarousel[index]);
                 }}
-                layout="default"
-                lockScrollWhileSnapping={true}
               />
               {cardDetails?.cardNumber ? (
                 <TouchableOpacity onPress={handleCopyToClipboard}>
@@ -528,7 +527,7 @@ export function Card({ navigation, route }: any) {
                     }
                     onPress={() => {
                       setFreezeLoading(true);
-                      setIsloading(prev => true);
+                      setIsLoading(prev => true);
                       //card status === do_not_honor means frozen now, before it means pending from enrollment by aristos - arjay 1.23.2024
                       if( 
                         selectedCard?.cardStatus === "cancelled" ||
@@ -536,11 +535,11 @@ export function Card({ navigation, route }: any) {
                       ) {
                         Alert.alert("Card is not active", "Please activate your card first");
                         setFreezeLoading(false);
-                        setIsloading(prev => false);
+                        setIsLoading(prev => false);
                         return;
                       } else {
                         setFreezeLoading(false);
-                        setIsloading(prev => false);
+                        setIsLoading(prev => false);
                       }
                       freezeCard(
                         selectedCard?.frozenYN === "Y" &&
@@ -689,7 +688,7 @@ export function Card({ navigation, route }: any) {
               marginBottom: 20, 
               top: 0
               }}></View> */}
-            <Typography fontSize={18} fontWeight={600} fontFamily={'Nunito'}>
+            <Typography fontSize={18} fontWeight={600} fontFamily={'Nunito-SemiBold'}>
               <MaterialCommunityIcons name="cog-outline" size={18} color={vars['accent-blue']} />
               {" "}Manage Payment Method
             </Typography>
@@ -736,24 +735,22 @@ export function Card({ navigation, route }: any) {
               <Button
                 onPress={() => {
                   if (isTerminatedCardShown) {
-                    setIsloading(prev => true);
-                    setIsShowTerminatedCard(false);
+                    setIsLoading(prev => true);
+                    // setIsShowTerminatedCard(false);
                     setIsTerminatedCardShown(false);
                     setSelectedCard(cardsActiveList[0]);
-                    return;
                   } else {
-                    setIsShowTerminatedCard(true);
+                    setIsLoading(prev => true);
+                    // setIsShowTerminatedCard(true);
                     setIsTerminatedCardShown(true);
                     setSelectedCard(cardData[0]);
                   }
-                  setTimeout(() => {
-                    setIsloading(prev => false);
-                  }, 500); 
+                  setIsLoading(prev => false);
                   refRBSheetShowTerminatedCards?.current?.close();
                 }}
                 style={{color: '#fff', width: 140}}
                 color="light-pink"
-                fontFamily={'Nunito'}
+                fontFamily={"Nunito-SemiBold"}
                 leftIcon={<EyeIcon color="pink" size={14} />}
               >
                 Yes
@@ -811,14 +808,14 @@ export function Card({ navigation, route }: any) {
             <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 20}}>
               <Button 
                 onPress={() => {
-                  setIsloading(true);
+                  setIsLoading(true);
                   terminatedThisCard({
                     accountId: userID,
                     cardId: selectedCard?.cardreferenceId,
                   })
                   .unwrap()
                   .finally(() => {
-                    setIsloading(false);
+                    setIsLoading(false);
                     refRBSTerminateThisCard?.current?.close();
                   })
                 }}
@@ -878,14 +875,14 @@ export function Card({ navigation, route }: any) {
               <View style={{alignItems: 'center', paddingTop: 50}}>
                 <Button
                   onPress={() => {
-                    if (!cardPin) {
+                    if (!cardPin && !userID) {
                       return;
                     }
-                    setIsloading(true);
+                    setIsLoading(true);
                     showCardDetails({
                       account_id: userID,
                       otp: cardPin,
-                      card_id: selectedCard?.cardreferenceId,
+                      card_id: Number(selectedCard?.cardreferenceId),
                     })
                     .unwrap()
                     .then((res: any) => {
@@ -903,7 +900,7 @@ export function Card({ navigation, route }: any) {
                         console.log({ error });
                       })
                       .finally(() => {
-                        setIsloading(false);
+                        setIsLoading(false);
                         refRBSShowCard?.current?.close();
                       });
                   }}

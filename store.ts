@@ -94,8 +94,9 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
   reducer: persistedReducer,
   devTools: process.env.NODE_ENV !== "production",
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
+  middleware: (getDefaultMiddleware) => [
+    ...getDefaultMiddleware({
+      immutableCheck: false,
       serializableCheck: {
         ignoredActions: [
           "persist/PERSIST",
@@ -116,6 +117,7 @@ export const store = configureStore({
       profileV2.middleware,
       settingV2.middleware
     ),
+  ],
 });
 
 export const persistor = persistStore(store);

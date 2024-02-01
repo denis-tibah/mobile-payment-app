@@ -58,7 +58,6 @@ export function Statements({ navigation }: any) {
   const accountDetails = useSelector((state: RootState) => state?.account?.details);
   const currentBalance = accountDetails?.curbal;
   const [selectedPrint, setSelectedPrint] = useState<string>("pdf");
-  const [searchFilter, setSearchFilter] = useState<StatementFilter>();
 
   const [
     showStatementPickerDateToAndFrom,
@@ -76,9 +75,10 @@ export function Statements({ navigation }: any) {
   // };
 
   const handleGeneratePDF = async (
-    statements: StatementTransactionsResponse[]
+    statements: StatementTransactionsResponse[],
+    _searchFilter: StatementFilter
   ) => {
-    const pdfUri = await generateStatementsPDF({statements, accountData: {...userData, ...searchFilter, currentBalance}});
+    const pdfUri = await generateStatementsPDF({statements, accountData: {...userData, ..._searchFilter, currentBalance}});
     return await printAsync({ uri: pdfUri });
   };
 
@@ -124,30 +124,31 @@ export function Statements({ navigation }: any) {
       const { dateFrom, dateTo } = showStatementPickerDateToAndFrom;
       if (userData?.id && dateFrom.value && dateTo.value) {
         setLoading(true);
-        const _searchFilter: StatementFilter = {
+        const statementFilterWithDateRante: StatementFilter = {
           account_id: Number(userData?.id),
           from_date: dateFrom.value,
           to_date: dateTo.value,
         };
-        try {
-          await dispatch<any>(getStatementsfinxp(_searchFilter))
-            .unwrap()
-            .then((res: StatementResponse) => {
-              const { statements } = res;
-              if (statements.length > 0) {
-                setLoading(false);
-                setSearchFilter(_searchFilter);
-                return handleGeneratePDF(statements);
-              } else {
-                setLoading(false);
-                alert("You dont have transaction for selected dates");
-              }
-              setLoading(false);
-            });
-        } catch (error) {
+        console.log({ statementFilterWithDateRante });
+        dispatch<any>(getStatementsfinxp(statementFilterWithDateRante))
+        .unwrap()
+        .then(async (res: StatementResponse) => {
+          console.log({ res });
+          const { statements } = res;
+          if (statements.length > 0) {
+            setLoading(false);
+            await handleGeneratePDF(statements, statementFilterWithDateRante);
+          } else {
+            setLoading(false);
+            alert("You dont have transaction for selected dates");
+          }
           setLoading(false);
-          console.log({ error });
-        }
+        })
+        .catch((err: any) => {
+          setLoading(false);
+          alert("Something went wrong");
+          console.log({ err: `${err}. Statements generation file error` });
+        });
       } else {
         alert("Please select from and to date");
       }
@@ -182,31 +183,8 @@ export function Statements({ navigation }: any) {
             PDF Export
           </Button>
         </View>
-        {/* <View style={styles.downloadBtn}>
-          <Button
-            onPress={() => {
-              setSelectedPrint("excel");
-            }}
-            color={selectedPrint === "excel" ? "blue" : "light-blue"}
-            leftIcon={
-              <ExcelIcon
-                size={16}
-                color={selectedPrint === "excel" ? "white" : "blue"}
-              />
-            }
-          >
-            Excel Export
-          </Button>
-        </View> */}
       </View>
       <Box style={styles.dateContainer}>
-        {/* <Typography
-          fontSize={16}
-          fontFamily="Nunito-SemiBold"
-          color="shade-grey"
-        >
-          From
-        </Typography> */}
         <ScrollingButtons
           onScrollOptions={(formattedDate) => {
             if (!formattedDate) return;
@@ -228,115 +206,6 @@ export function Statements({ navigation }: any) {
           }
           }
         />
-        {/* <Typography
-          fontSize={16}
-          fontFamily="Nunito-SemiBold"
-          color="shade-grey"
-        >
-          To
-        </Typography>
-        <ScrollingButtons 
-          onScrollOptions={(formattedDate) => {
-            const _formattedDate = new Date(formattedDate).toISOString().split("T")[0];
-            handleOnChangeShowPickerDate(
-              _formattedDate,
-              setShowStatementPickerDateToAndFrom,
-              showStatementPickerDateToAndFrom,
-              "dateTo"
-              )
-          }}
-        /> */}
-        {/* <Typography fontSize={14} fontFamily="Nunito-Regular" color="black">
-          Please select the date range you want to export
-        </Typography> */}
-        {/* <View style={styles.buttonContainer}>
-          <Button
-            style={styles.buttonDate}
-            color="black-only"
-            onPress={() =>
-              setShowStatementPickerDateToAndFrom({
-                ...showStatementPickerDateToAndFrom,
-                dateFrom: {
-                  state: true,
-                  value: "",
-                },
-              })
-            }
-          >
-            {!showStatementPickerDateToAndFrom.dateFrom.value
-              ? `From Date`
-              : `${showStatementPickerDateToAndFrom.dateFrom.value}`}
-          </Button>
-          {showStatementPickerDateToAndFrom.dateFrom.state && (
-            <DateTimePicker
-              mode="date"
-              display="spinner"
-              maximumDate={new Date()}
-              value={
-                !showStatementPickerDateToAndFrom.dateFrom.value
-                  ? currentDate
-                  : new Date(showStatementPickerDateToAndFrom.dateFrom.value)
-              }
-              onChange={(event: any) => {
-                if (event.type == "set") {
-                  const formattedDate = new Date(event.nativeEvent.timestamp)
-                    .toISOString()
-                    .split("T")[0];
-                  handleOnChangeShowPickerDate(
-                    formattedDate,
-                    setShowStatementPickerDateToAndFrom,
-                    showStatementPickerDateToAndFrom,
-                    "dateFrom"
-                  );
-                }
-              }}
-              style={styles.datePicker}
-            />
-          )}
-          <Button
-            style={styles.buttonDate}
-            color="black-only"
-            onPress={() =>
-              setShowStatementPickerDateToAndFrom({
-                ...showStatementPickerDateToAndFrom,
-                dateTo: {
-                  state: !showPickerDateFilter.dateTo.state,
-                  value: "",
-                },
-              })
-            }
-          >
-            {!showStatementPickerDateToAndFrom.dateTo.value
-              ? `To Date`
-              : `${showStatementPickerDateToAndFrom.dateTo.value}`}
-          </Button>
-          {showStatementPickerDateToAndFrom.dateTo.state && (
-            <DateTimePicker
-              mode="date"
-              display="spinner"
-              maximumDate={new Date()}
-              value={
-                !showStatementPickerDateToAndFrom.dateTo.value
-                  ? currentDate
-                  : new Date(showStatementPickerDateToAndFrom.dateTo.value)
-              }
-              onChange={(event: any) => {
-                if (event.type == "set") {
-                  const formattedDate = new Date(event.nativeEvent.timestamp)
-                    .toISOString()
-                    .split("T")[0];
-                  handleOnChangeShowPickerDate(
-                    formattedDate,
-                    setShowStatementPickerDateToAndFrom,
-                    showStatementPickerDateToAndFrom,
-                    "dateTo"
-                  );
-                }
-              }}
-              style={styles.datePicker}
-            />
-          )}
-        </View> */}
       </Box>
       <View style={styles.footerContent}>
         <View style={styles.downloadBtnMain}>

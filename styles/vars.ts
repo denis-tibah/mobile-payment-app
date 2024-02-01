@@ -2,12 +2,12 @@ const vars: any = {
   "primary-blue": "#ddebff",
   orange: "#fbb445",
   green: "#0dca9d",
-  'light-green': '#E7FAF5',
-  'light-yellow': '#FFF9E5',
-  'light-red': '#FFF1F1',
-  'heavy-red': '#FF7171',
-  'heavy-yellow': '#FBB445',
-  'heavy-green': '#0DCA9D',
+  "light-green": "#E7FAF5",
+  "light-yellow": "#FFF9E5",
+  "light-red": "#FFF1F1",
+  "heavy-red": "#FF7171",
+  "heavy-yellow": "#FBB445",
+  "heavy-green": "#0DCA9D",
   red: "#ff7171",
   black: "#808080",
   "extra-light-grey": "#f8fbff",
@@ -23,11 +23,12 @@ const vars: any = {
   "accent-pink": "#e7038e",
   "accent-orange": "#fbb445",
   "accent-green": "#0dca9d",
-  "accent-grey": '#5A5A5A',
+  "accent-grey": "#5A5A5A",
   "soft-pink": "#ffc9e9",
   "lg-breakpoint": "1440px",
   "ios-default-text": "#a2a2a2",
-  "shade-grey" : '#808080'
+  "shade-grey": "#808080",
+  "v2-light-grey": "#F5F4F4",
 };
 
 export default vars;

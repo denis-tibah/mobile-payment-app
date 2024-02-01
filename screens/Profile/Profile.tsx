@@ -359,7 +359,11 @@ export function Profile({ route, navigation }: any) {
           }
         />
         <SafeAreaView style={{ flex: 1 }}>
-          <ScrollView bounces={false}>
+          <ScrollView
+            bounces={false}
+            style={{ backgroundColor: "#fff" }}
+            /* style={{ flexGrow: 1, backgroundColor: "#fff", height: "100%" }} */
+          >
             {/* <IncomeBox />
           <View style={styles.content}>
             <Tabs screen={getRedirectScreen}>
@@ -1257,7 +1261,6 @@ export function Profile({ route, navigation }: any) {
                   </Pressable>
                 </Fragment>
               )}
-
               {tabSelection !== "" ? (
                 <Fragment>
                   <View style={[styles.containerTab, { overflow: "hidden" }]}>
@@ -1297,10 +1300,10 @@ export function Profile({ route, navigation }: any) {
                   </View>
                 </Fragment>
               ) : null}
-              {displayTabSelection()}
             </View>
           </ScrollView>
         </SafeAreaView>
+        {displayTabSelection()}
       </MainLayout>
       <Snackbar
         visible={snackBarMessage.open}

@@ -1,8 +1,14 @@
-import { View, StyleSheet, TouchableOpacity, Text, Dimensions } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  Dimensions,
+} from "react-native";
 import { useSelector } from "react-redux";
-import { AntDesign } from '@expo/vector-icons';
-import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
+import { AntDesign } from "@expo/vector-icons";
+import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from "expo-file-system";
 import Euro from "../../assets/icons/Euro";
 import CheckBox from "expo-checkbox";
 import { useFormik } from "formik";
@@ -18,7 +24,11 @@ import StatementsIcon from "../../assets/icons/StatementsIcon";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useEffect, useRef, useState } from "react";
 import { validationPaymentSchema } from "../../utils/validation";
-import { useInitiatePaymentMutation, useProcessPaymentMutation, useSmsRequestVerificationMutation } from "../../redux/payee/payeeSlice";
+import {
+  useInitiatePaymentMutation,
+  useProcessPaymentMutation,
+  useSmsRequestVerificationMutation,
+} from "../../redux/payee/payeeSlice";
 import BottomSheet from "../../components/BottomSheet";
 import { CodeModal } from "../../components/CodeModal/CodeModal";
 import LoadingScreen from "../../components/Loader/LoadingScreen";
@@ -28,7 +38,10 @@ import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
 import CloudMessage from "../../assets/icons/CloudMessage";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
-import { PinCodeInputBoxes, PinCodeInputClipBoard } from "../../components/FormGroup/FormGroup";
+import {
+  PinCodeInputBoxes,
+  PinCodeInputClipBoard,
+} from "../../components/FormGroup/FormGroup";
 import ChangeLimits from "../../assets/icons/ChangeLimits";
 
 const currencyOptions = [
@@ -36,21 +49,19 @@ const currencyOptions = [
   { label: "USD", value: "USD" },
 ];
 
-const PayeeSendFunds = ({navigation, route}: any) => {
+const PayeeSendFunds = ({ navigation, route }: any) => {
   const { params }: any = route || { params: {} };
-  const accountData = useSelector(
-    (state: any) => state?.account?.details
-  );
+  const accountData = useSelector((state: any) => state?.account?.details);
   const refRBSheetCodeOTP = useRef();
   const refRBSheetSuccess = useRef();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
-  const accountIban = userData?.iban || '';
-  const accountName = `${userData?.first_name} ${userData?.last_name}` || '';
-  const receiverName: string = params?.item.name || '';
-  const receiverIban: string = params?.item.iban || '';
-  const receiverUuid: string = params?.item.uuid || '';
-  const windowHeight = Dimensions.get('window').height;
+  const accountIban = userData?.iban || "";
+  const accountName = `${userData?.first_name} ${userData?.last_name}` || "";
+  const receiverName: string = params?.item.name || "";
+  const receiverIban: string = params?.item.iban || "";
+  const receiverUuid: string = params?.item.uuid || "";
+  const windowHeight = Dimensions.get("window").height;
 
   const [initiatePayment] = useInitiatePaymentMutation();
   const [smsRequestVerification] = useSmsRequestVerificationMutation();
@@ -62,13 +73,16 @@ const PayeeSendFunds = ({navigation, route}: any) => {
   });
   const accountBalance = userAccountInformation?.data?.avlbal || 0;
   const [timeRemaining, setTimeRemaining] = useState<number>(60);
-  const [isDropDownCurrencyOpen, setIsDropDownCurrencyOpen] = useState<boolean>(false);
+  const [isDropDownCurrencyOpen, setIsDropDownCurrencyOpen] =
+    useState<boolean>(false);
   const [isOTPModalOpen, setIsOTPModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [base64File, setBase64File] = useState<string>("");
-  const [isPaymentResultBottomSheetOpen, setIsPaymentResultBottomSheetOpen] = useState<boolean>(false);
-  const [isPaymentSuccessful, setIsPaymentSuccessful] = useState<boolean>(false);
-  const [selectedCurrency, setSelectedCurrency] = useState<string>('EUR');
+  const [isPaymentResultBottomSheetOpen, setIsPaymentResultBottomSheetOpen] =
+    useState<boolean>(false);
+  const [isPaymentSuccessful, setIsPaymentSuccessful] =
+    useState<boolean>(false);
+  const [selectedCurrency, setSelectedCurrency] = useState<string>("EUR");
   const [smsPaymentRequest, setSmsPaymentRequest] = useState<any>({});
   const validationSchema = validationPaymentSchema(accountBalance);
   const [code, setCode] = useState("");
@@ -83,7 +97,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
     // handleResendHere
   };
 
-  const handleProcessPayment = async ({code}: {code: string}) => {
+  const handleProcessPayment = async ({ code }: { code: string }) => {
     if (!code) {
       return;
     }
@@ -102,32 +116,31 @@ const PayeeSendFunds = ({navigation, route}: any) => {
       access_token: userTokens?.access_token,
       token_ziyl: userTokens?.token_ziyl,
     })
-    .unwrap()
-    .then((res) => {
-      const { status } = res;
-      refRBSheetCodeOTP?.current.close();
-      refRBSheetSuccess?.current?.open();
-      setIsPaymentSuccessful(true);
-
-    })
-    .catch((err) => {
-      console.log(err);
-      refRBSheetCodeOTP?.current.close();
-      refRBSheetSuccess?.current?.open();
-      setIsPaymentSuccessful(false);
-    })
-    .finally(() => {
-      setIsLoading(false);
-    });
-  }
+      .unwrap()
+      .then((res) => {
+        const { status } = res;
+        refRBSheetCodeOTP?.current.close();
+        refRBSheetSuccess?.current?.open();
+        setIsPaymentSuccessful(true);
+      })
+      .catch((err) => {
+        console.log(err);
+        refRBSheetCodeOTP?.current.close();
+        refRBSheetSuccess?.current?.open();
+        setIsPaymentSuccessful(false);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
 
   const handleResendSMSVerificationCode = () => {
     smsRequestVerification(smsPaymentRequest);
-  }
+  };
 
   const handleInitiatepayment = (paymentValues: any) => {
-    const recipientFirstname = receiverName.split(' ')[0];
-    const recipientLastname = receiverName.split(' ')[1];
+    const recipientFirstname = receiverName.split(" ")[0];
+    const recipientLastname = receiverName.split(" ")[1];
     console.log({
       recipientFirstname,
       recipientLastname,
@@ -140,7 +153,9 @@ const PayeeSendFunds = ({navigation, route}: any) => {
       remarks: paymentValues.remarks,
       access_token: userTokens?.access_token,
       token_ziyl: userTokens?.token_ziyl,
-      ...(paymentValues.attachedFile && {attached_file: paymentValues.attachedFile}),
+      ...(paymentValues.attachedFile && {
+        attached_file: paymentValues.attachedFile,
+      }),
     });
     initiatePayment({
       recipientFirstname,
@@ -156,51 +171,53 @@ const PayeeSendFunds = ({navigation, route}: any) => {
       reference: paymentValues.remarks,
       access_token: userTokens?.access_token,
       token_ziyl: userTokens?.token_ziyl,
-      ...(paymentValues.attachedFile && {attached_file: paymentValues.attachedFile}),
+      ...(paymentValues.attachedFile && {
+        attached_file: paymentValues.attachedFile,
+      }),
     })
-    .unwrap()
-    .then((res) => {
-      let paymentRequest = {
-        identifier: res.transaction_id,
-        type: 'transfer',
-        amount: paymentValues.amount,
-        currency: paymentValues.currency,
-      }
-      console.log('res', res);
-      setIsLoading(false);
-      setSmsPaymentRequest({
-        ...res,
-        ...paymentRequest,
-        ...paymentValues,
-        token_ziyl: userTokens?.token_ziyl,
-        access_token: userTokens?.access_token,
-      });
-      smsRequestVerification({
-        ...paymentRequest,
-        token_ziyl: userTokens?.token_ziyl,
-        access_token: userTokens?.access_token
-      })
       .unwrap()
       .then((res) => {
-        const { status } = res;
-        if(status === 'success') {
-          refRBSheetCodeOTP?.current.open();
-        }
+        let paymentRequest = {
+          identifier: res.transaction_id,
+          type: "transfer",
+          amount: paymentValues.amount,
+          currency: paymentValues.currency,
+        };
+        console.log("res", res);
+        setIsLoading(false);
+        setSmsPaymentRequest({
+          ...res,
+          ...paymentRequest,
+          ...paymentValues,
+          token_ziyl: userTokens?.token_ziyl,
+          access_token: userTokens?.access_token,
+        });
+        smsRequestVerification({
+          ...paymentRequest,
+          token_ziyl: userTokens?.token_ziyl,
+          access_token: userTokens?.access_token,
+        })
+          .unwrap()
+          .then((res) => {
+            const { status } = res;
+            if (status === "success") {
+              refRBSheetCodeOTP?.current.open();
+            }
+          })
+          .catch((err) => {
+            console.log("Error2: ", err);
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
       })
       .catch((err) => {
-        console.log("Error2: ", err);
-      })
-      .finally(() => {
+        console.log("Error1: ", err);
         setIsLoading(false);
       });
-    }).
-    catch((err) => {
-      console.log("Error1: ", err);
-      setIsLoading(false);
-    });
-  }
+  };
 
-  const { 
+  const {
     handleSubmit,
     handleChange,
     handleBlur,
@@ -211,17 +228,17 @@ const PayeeSendFunds = ({navigation, route}: any) => {
     setValues,
   } = useFormik({
     initialValues: {
-      amount: '',
-      currency: 'EUR',
-      remarks: '',
-      purpose: '',
-      reference: '',
+      amount: "",
+      currency: "EUR",
+      remarks: "",
+      purpose: "",
+      reference: "",
       isManualProcessing: false,
-      reason: '',
+      reason: "",
     },
     onSubmit: (values: any) => {
       setIsLoading(true);
-      console.log('values', values);
+      console.log("values", values);
       handleInitiatepayment(values);
     },
     validationSchema: validationSchema,
@@ -230,9 +247,9 @@ const PayeeSendFunds = ({navigation, route}: any) => {
   const pickDocument = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: 'application/pdf',
+        type: "application/pdf",
       });
-      if (result.type === 'success') {
+      if (result.type === "success") {
         const { uri } = result;
         const fileContent = await FileSystem.readAsStringAsync(uri, {
           encoding: FileSystem.EncodingType.Base64,
@@ -243,7 +260,7 @@ const PayeeSendFunds = ({navigation, route}: any) => {
         });
       }
     } catch (err) {
-      console.error('Error picking document:', err);
+      console.error("Error picking document:", err);
     }
   };
 
@@ -268,97 +285,117 @@ const PayeeSendFunds = ({navigation, route}: any) => {
   }, [timeRemaining, isTimeToCountDown]);
 
   return (
-      <MainLayout>
-        <LoadingScreen isLoading={isLoading} />
-        <KeyboardAwareScrollView style={{height: '100%', backgroundColor: 'white'}}>
-          <View style={{paddingRight: 6}}>
-            <View style={styles.header}>
-              <View style={styles.headerLeft}>
-                <TouchableOpacity
-                  style={styles.headerLeftIcon}
-                  onPress={() => navigation.navigate(screenNames.payments)}
-                >
-                  <ArrowLeftLine size={14} color='blue'/>
-                </TouchableOpacity>
-                <View>
-                  <Text style={{fontSize: 14}}>{receiverName}</Text>
-                  <Text style={{fontSize: 12, color: vars['shade-grey']}}>{receiverIban}</Text>
-                </View>
-              </View>
+    <MainLayout>
+      <LoadingScreen isLoading={isLoading} />
+      <KeyboardAwareScrollView
+        style={{ height: "100%", backgroundColor: "white" }}
+      >
+        <View style={{ paddingRight: 6 }}>
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <TouchableOpacity
+                style={styles.headerLeftIcon}
+                onPress={() => navigation.navigate(screenNames.payments)}
+              >
+                <ArrowLeftLine size={14} color="blue" />
+              </TouchableOpacity>
               <View>
-                <Text>Your Balance</Text>
-                <Text style={{fontSize: 12, color: vars['shade-grey']}}>€ {accountBalance}</Text>
+                <Text style={{ fontSize: 14 }}>{receiverName}</Text>
+                <Text style={{ fontSize: 12, color: vars["shade-grey"] }}>
+                  {receiverIban}
+                </Text>
               </View>
             </View>
-            <View style={{paddingVertical: 15, backgroundColor: '#fff', paddingHorizontal: 18}}>
-              <Divider style={{marginBottom: 25}}/>
-              <View style={{marginBottom: 8, paddingBottom: 10}}>
-                <FormGroup
-                  validationError={
-                    errors.amount && touched.amount && errors.amount
-                  }
-                >
-                  <FormGroup.Input
-                    keyboardType="text"
-                    name="amount"
-                    onChangeText={handleChange("amount")}
-                    onBlur={handleBlur("amount")}
-                    value={values.amount}
-                    placeholderTextColor={vars["ios-default-text"]}
-                    placeholder="Amount to send"
-                    iconColor="blue"
-                    style={{height: 52}}
-                    icon={<Euro size={22} />}
-                  />
-                </FormGroup>
-                { errors.amount && touched.amount && <TouchableOpacity
-                    style={{
-                      position: 'absolute', 
-                      right: 0, 
-                      top: 56,
-                      bottom: 0,
-                      justifyContent: 'center', 
-                      paddingHorizontal: 10,
-                      backgroundColor: '#FFF1F1',
-                      borderRadius: 15,
-                      display: 'flex',
-                      flexDirection: 'row',
-                      padding: 5,
-                      height: 24,
-                    }}
-                    onPress={() => {
-                      console.log('change limits');
-                    }}
-                  >
-                    <ChangeLimits />
-                    <Text style={{color: '#FF7171', fontSize: 10, top: -2}}>
-                      Change your limits
-                    </Text>
-                  </TouchableOpacity>
-                }
-              </View>
+            <View>
+              <Text>Your Balance</Text>
+              <Text style={{ fontSize: 12, color: vars["shade-grey"] }}>
+                € {accountBalance}
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              paddingVertical: 15,
+              backgroundColor: "#fff",
+              paddingHorizontal: 18,
+            }}
+          >
+            <Divider style={{ marginBottom: 25 }} />
+            <View style={{ marginBottom: 8, paddingBottom: 10 }}>
               <FormGroup
                 validationError={
-                  errors.reason && touched.reason && errors.reason
+                  errors.amount && touched.amount && errors.amount
                 }
               >
                 <FormGroup.Input
                   keyboardType="text"
-                  name="reason"
-                  onChangeText={handleChange("reason")}
-                  onBlur={handleBlur("reason")}
-                  value={values.reason}
+                  name="amount"
+                  onChangeText={handleChange("amount")}
+                  onBlur={handleBlur("amount")}
+                  value={values.amount}
                   placeholderTextColor={vars["ios-default-text"]}
-                  placeholder="Reference"
+                  placeholder="Amount to send"
                   iconColor="blue"
-                  style={{height: 52}}
-                  icon={<CloudMessage />}
+                  style={{ height: 52 }}
+                  icon={<Euro size={22} />}
                 />
               </FormGroup>
-            <Divider style={{marginVertical: 15}}/>
+              {errors.amount && touched.amount && (
+                <TouchableOpacity
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    top: 56,
+                    bottom: 0,
+                    justifyContent: "center",
+                    paddingHorizontal: 10,
+                    backgroundColor: "#FFF1F1",
+                    borderRadius: 15,
+                    display: "flex",
+                    flexDirection: "row",
+                    padding: 5,
+                    height: 24,
+                  }}
+                  onPress={() => {
+                    console.log("change limits");
+                  }}
+                >
+                  <ChangeLimits />
+                  <Text style={{ color: "#FF7171", fontSize: 10, top: -2 }}>
+                    Change your limits
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+            <FormGroup
+              validationError={errors.reason && touched.reason && errors.reason}
+            >
+              <FormGroup.Input
+                keyboardType="text"
+                name="reason"
+                onChangeText={handleChange("reason")}
+                onBlur={handleBlur("reason")}
+                value={values.reason}
+                placeholderTextColor={vars["ios-default-text"]}
+                placeholder="Reference"
+                iconColor="blue"
+                style={{ height: 52 }}
+                icon={<CloudMessage />}
+              />
+            </FormGroup>
+            <Divider style={{ marginVertical: 15 }} />
             {/* purpose of your transfer input */}
-            <Text style={{fontSize: 12, color: vars['accent-grey'], alignSelf: 'center'}}>Please provide supporting information for all transfers above $5,000</Text>
-            <Divider style={{marginVertical: 15, backgroundColor: 'none'}}/>
+            <Text
+              style={{
+                fontSize: 12,
+                color: vars["accent-grey"],
+                alignSelf: "center",
+              }}
+            >
+              Please provide supporting information for all transfers above
+              $5,000
+            </Text>
+            <Divider style={{ marginVertical: 15, backgroundColor: "none" }} />
             <FormGroup
               validationError={
                 errors.remarks && touched.remarks && errors.remarks
@@ -377,51 +414,63 @@ const PayeeSendFunds = ({navigation, route}: any) => {
                 editable={values.reason === "N/A" ? false : true}
                 icon={<StatementsIcon size={16} />}
               /> */}
-                <FormGroup.Input
-                  keyboardType="text"
-                  name="remarks"
-                  onChangeText={handleChange("remarks")}
-                  onBlur={handleBlur("remarks")}
-                  value={values.remarks}
-                  placeholderTextColor={vars["ios-default-text"]}
-                  placeholder="Purpose of your transfer"
-                  iconColor="blue"
-                  style={{height: 52}}
-                  icon={<CloudMessage />}
+              <FormGroup.Input
+                keyboardType="text"
+                name="remarks"
+                onChangeText={handleChange("remarks")}
+                onBlur={handleBlur("remarks")}
+                value={values.remarks}
+                placeholderTextColor={vars["ios-default-text"]}
+                placeholder="Purpose of your transfer"
+                iconColor="blue"
+                style={{ height: 52 }}
+                icon={<CloudMessage />}
+              />
+            </FormGroup>
+            <View style={{ paddingHorizontal: 16 }}>
+              <TouchableOpacity
+                onPress={pickDocument}
+                style={{ display: "flex", flexDirection: "row" }}
+              >
+                <AntDesign
+                  name="pluscircleo"
+                  size={42}
+                  color={vars["accent-blue"]}
+                />
+                <Text
+                  style={{
+                    color: vars["shade-grey"],
+                    top: 10,
+                    paddingLeft: 15,
+                  }}
+                >
+                  Attach a file
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <Divider style={{ marginVertical: 15 }} />
+            <View style={{ display: "flex", flexDirection: "row" }}>
+              <FormGroup>
+                <FormGroup.CheckboxUI
+                  label="For manual processing outside my limits"
+                  value={values?.isManualProcessing}
+                  color={
+                    values?.isManualProcessing ? vars["accent-blue"] : undefined
+                  }
+                  onValueChange={() => {
+                    setFieldValue(
+                      "isManualProcessing",
+                      !values?.isManualProcessing
+                    );
+                  }}
                 />
               </FormGroup>
-              <View style={{paddingHorizontal: 16}}>
-                <TouchableOpacity onPress={pickDocument} style={{display: 'flex', flexDirection: 'row'}}>
-                  <AntDesign name="pluscircleo" size={42} color={vars['accent-blue']} />
-                  <Text style={{color: vars['shade-grey'], top: 10, paddingLeft: 15}}>Attach a file</Text>
-                </TouchableOpacity>
-              </View>
-              <Divider style={{marginVertical: 15}}/>
-              <View style={{display: 'flex', flexDirection: 'row'}}>
-                <FormGroup>
-                  <FormGroup.CheckboxUI
-                    label="For manual processing outside my limits"
-                    value={values?.isManualProcessing}
-                    color={
-                      values?.isManualProcessing
-                        ? vars["accent-blue"]
-                        : undefined
-                    }
-                    onValueChange={() => {
-                      setFieldValue(
-                        "isManualProcessing",
-                        !values?.isManualProcessing
-                      );
-                    }}
-                  />
-                </FormGroup>
-                <Text style={{backgroundColor: vars['shade-grey']}}>{` `}</Text>
-              </View>
+              <Text style={{ backgroundColor: vars["shade-grey"] }}>{` `}</Text>
             </View>
-
           </View>
-        </KeyboardAwareScrollView>
-        {/* <BottomSheet
+        </View>
+      </KeyboardAwareScrollView>
+      {/* <BottomSheet
           isVisible={isPaymentResultBottomSheetOpen}
           onClose={() => setIsPaymentResultBottomSheetOpen(false)}
           headerResponse={{
@@ -450,32 +499,40 @@ const PayeeSendFunds = ({navigation, route}: any) => {
             </>
           )}
         </BottomSheet> */}
-        <View style={{
-            position: 'relative',
-            width: '100%',
-            backgroundColor: '#fff',
-            paddingHorizontal: 16,
-            paddingVertical: 20,
-            shadowColor: "#ACACAC",
-            shadowOffset: {
-              width: 0,
-              height: -2,
-            },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            elevation: 5,
-            zIndex: 999,
-          }}>
-            <Button
-              onPress={handleSubmit}
-              color="light-pink"
-              style={{width: '80%', alignSelf: 'center'}}
-              leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
-            >
-              Send
-            </Button>
-          </View>
-        <SwipableBottomSheet
+      <View
+        style={{
+          position: "relative",
+          width: "100%",
+          backgroundColor: "#fff",
+          paddingHorizontal: 16,
+          paddingVertical: 20,
+          shadowColor: "#ACACAC",
+          shadowOffset: {
+            width: 0,
+            height: -2,
+          },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          elevation: 5,
+          zIndex: 999,
+        }}
+      >
+        <Button
+          onPress={handleSubmit}
+          color="light-pink"
+          style={{ width: "80%", alignSelf: "center" }}
+          leftIcon={
+            <AntDesign
+              name="checkcircleo"
+              size={16}
+              color={vars["accent-pink"]}
+            />
+          }
+        >
+          Send
+        </Button>
+      </View>
+      <SwipableBottomSheet
         rbSheetRef={refRBSheetCodeOTP}
         closeOnDragDown={true}
         closeOnPressMask={false}
@@ -490,60 +547,96 @@ const PayeeSendFunds = ({navigation, route}: any) => {
         }}
         onClose={() => {
           navigation.navigate(screenNames.payments);
-          }
-        }
+        }}
         draggableIconStyles={{ backgroundColor: "#DDD", width: 90 }}
       >
         <View style={styles.container}>
-          <Text style={{
-            fontSize: 18,
-            // fontWeight: "bold",
-            left: 20,
-            fontFamily: "Nunito-SemiBold",
-            color: "#000",
-            textAlign:'left',
-          }}>
+          <Text
+            style={{
+              fontSize: 18,
+              // fontWeight: "bold",
+              left: 20,
+              fontFamily: "Nunito-SemiBold",
+              color: "#000",
+              textAlign: "left",
+            }}
+          >
             Verify your payment
           </Text>
-          <View style={{paddingRight: 24}}>
-            <Text style={{
+          <View style={{ paddingRight: 24 }}>
+            <Text
+              style={{
                 fontSize: 14,
                 // fontWeight: "bold",
                 left: 20,
                 fontFamily: "Nunito-SemiBold",
                 color: vars["shade-grey"],
-                textAlign:'left',
+                textAlign: "left",
                 paddingTop: 10,
-              }}>
-                You will receive an sms to your mobile device. 
-                Please enter this code below.
+              }}
+            >
+              You will receive an sms to your mobile device. Please enter this
+              code below.
             </Text>
           </View>
-          <Divider style={{marginTop: 10, height: 1, backgroundColor: vars['shade-grey'], opacity: 0.2, marginBottom: 40}}/>
-          <View style={{alignItems: 'center', paddingHorizontal: 12}}>
-            <PinCodeInputClipBoard fieldCount={6} onChange={handlePinCodeChange} />
-              <TouchableOpacity
-                onPress={_handleResendSMSVerificationCode}
-                disabled={isTimeToCountDown}
-              >
-                {isTimeToCountDown ? (
-                  <Text style={styles.noCodeResend}>
-                    Wait for {timeRemaining}s to request again.
-                  </Text>
-                ) : (
-                  <Text style={styles.noCodeResend}>Did not get a verification code?</Text>
-                )}
+          <Divider
+            style={{
+              marginTop: 10,
+              height: 1,
+              backgroundColor: vars["shade-grey"],
+              opacity: 0.2,
+              marginBottom: 40,
+            }}
+          />
+          <View style={{ alignItems: "center", paddingHorizontal: 12 }}>
+            <PinCodeInputClipBoard
+              fieldCount={6}
+              onChange={handlePinCodeChange}
+            />
+            <TouchableOpacity
+              onPress={_handleResendSMSVerificationCode}
+              disabled={isTimeToCountDown}
+            >
+              {isTimeToCountDown ? (
+                <Text style={styles.noCodeResend}>
+                  Wait for {timeRemaining}s to request again.
+                </Text>
+              ) : (
+                <Text style={styles.noCodeResend}>
+                  Did not get a verification code?
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
-          <Divider style={{marginVertical: 10, height: 1, backgroundColor: vars['shade-grey'], opacity: 0.2}}/>
+          <Divider
+            style={{
+              marginVertical: 10,
+              height: 1,
+              backgroundColor: vars["shade-grey"],
+              opacity: 0.2,
+            }}
+          />
           <Button
             onPress={() => {
               setIsLoading(true);
-              handleProcessPayment({code});
+              handleProcessPayment({ code });
             }}
             color="light-pink"
-            style={{width: '90%', bottom: 0, position: 'relative', alignItems: 'center', alignSelf: 'center', marginTop: 20}}
-            leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
+            style={{
+              width: "90%",
+              bottom: 0,
+              position: "relative",
+              alignItems: "center",
+              alignSelf: "center",
+              marginTop: 20,
+            }}
+            leftIcon={
+              <AntDesign
+                name="checkcircleo"
+                size={16}
+                color={vars["accent-pink"]}
+              />
+            }
           >
             Confirm payment
           </Button>
@@ -564,35 +657,54 @@ const PayeeSendFunds = ({navigation, route}: any) => {
         }}
         draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
       >
-      <View style={{
-            borderColor: isPaymentSuccessful ? vars["accent-green"] : vars["heavy-red"],
-            borderTopWidth: 60
-          }}>
-        <Text style={{color: 'white', alignSelf: 'center', top: -45, fontSize: 18}}>
-            {isPaymentSuccessful ? 'Payment Successful' : 'Payment Failed'}
-        </Text>
-      </View>
-      { isPaymentSuccessful ? (
+        <View
+          style={{
+            borderColor: isPaymentSuccessful
+              ? vars["accent-green"]
+              : vars["heavy-red"],
+            borderTopWidth: 60,
+          }}
+        >
+          <Text
+            style={{
+              color: "white",
+              alignSelf: "center",
+              top: -45,
+              fontSize: 18,
+            }}
+          >
+            {isPaymentSuccessful ? "Payment Successful" : "Payment Failed"}
+          </Text>
+        </View>
+        {isPaymentSuccessful ? (
           <>
-            <Text style={styles.textConfirmation}>Your payment has been verified.</Text>
-            <Text style={styles.textConfirmation}>Check your notifications and transaction page.</Text>
+            <Text style={styles.textConfirmation}>
+              Your payment has been verified.
+            </Text>
+            <Text style={styles.textConfirmation}>
+              Check your notifications and transaction page.
+            </Text>
             <Image
-              source={require('../../assets/images/verified.png')}
+              source={require("../../assets/images/verified.png")}
               style={styles.imageContainer}
             />
           </>
         ) : (
           <>
-            <Text style={styles.textConfirmation}>Your payment failed to verify.</Text>
-            <Text style={styles.textConfirmation}>Check your notifications and transaction page.</Text>
+            <Text style={styles.textConfirmation}>
+              Your payment failed to verify.
+            </Text>
+            <Text style={styles.textConfirmation}>
+              Check your notifications and transaction page.
+            </Text>
             <Image
-              source={require('../../assets/images/failed.png')}
+              source={require("../../assets/images/failed.png")}
               style={styles.imageContainer}
             />
           </>
         )}
       </SwipableBottomSheet>
-      </MainLayout>
+    </MainLayout>
   );
 };
 export default PayeeSendFunds;
@@ -627,7 +739,7 @@ const styles = StyleSheet.create({
     height: 52,
     alignSelf: "center",
     backgroundColor: "#fff",
-    borderColor: vars['accent-blue'],
+    borderColor: vars["accent-blue"],
     borderWidth: 1,
     borderRadius: 40,
   },
@@ -635,7 +747,7 @@ const styles = StyleSheet.create({
     width: "93%",
     alignSelf: "center",
     backgroundColor: "#fff",
-    borderColor: '#fff',
+    borderColor: "#fff",
     borderWidth: 0,
     borderRadius: 40,
   },
@@ -646,19 +758,19 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   imageContainer: {
-    width: 200, 
-    height: 200, 
-    alignSelf: 'center', 
-    resizeMode: 'contain',
+    width: 200,
+    height: 200,
+    alignSelf: "center",
+    resizeMode: "contain",
     marginTop: 20,
-    right: -45
+    right: -45,
   },
   noCodeResend: {
     color: vars["accent-pink"],
     fontSize: 12,
     fontWeight: "400",
     marginTop: 12,
-    textAlign: 'center',
+    textAlign: "center",
     paddingBottom: 40,
   },
 });

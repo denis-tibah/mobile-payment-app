@@ -35,15 +35,11 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { CardView } from "../../components/Card/CardView";
 import { GetCardModal } from "./GetCardModal";
 import { RootState } from "../../store";
-import { CodeModal } from "../../components/CodeModal/CodeModal";
-import { delayCode } from "../../utils/delay";
 import Carousel from "react-native-snap-carousel";
 
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { ICardDetails } from "../../models/interface";
 import vars from "../../styles/vars";
-import { useDebounce, useTimeout } from "usehooks-ts";
-import { CardTransaction } from "../../models/Transactions";
 import TerminatingCardModal from "./TerminatingCardModal";
 import { Divider } from "react-native-paper";
 import ArrowRight from "../../assets/icons/ArrowRight";
@@ -69,6 +65,7 @@ export function Card({ navigation, route }: any) {
   const refRBSheetShowTerminatedCards = useRef();
   const refRBSTerminateThisCard = useRef();
   const refRBSShowCard = useRef();
+  const refCarousel = useRef(null);
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
   const profile = useSelector((state: any) => state.profile?.profile);
@@ -124,6 +121,11 @@ export function Card({ navigation, route }: any) {
       processEnrollmentAndShowPinCard({ code: value });
     }
   }
+
+  const handleDataChangeShownOnCards = (index?: number) => {
+    refCarousel.current.snapToItem(index ?? 0);
+  };
+
   const handleGetCards = async () => {
     try {
       await dispatch(getCards() as any);
@@ -138,34 +140,26 @@ export function Card({ navigation, route }: any) {
     if(!selectedCard) {
       setSelectedCard(cardsActiveList[0]);
     }
-    try {
-      setIsLoading(prev => true);
-      await dispatch<any>(
-        setCardAsFrozen({
-          freezeYN: isCardToFreeze ? "Y" : "N",
-          account_id: userData?.id,
-          card_id: !selectedCard ? cardsActiveList[0].cardreferenceId : selectedCard?.cardreferenceId,
-        })
-      )
+    setIsTerminatedCardShown(false);
+    setIsLoading(prev => true);
+    dispatch<any>(
+      setCardAsFrozen({
+        freezeYN: isCardToFreeze ? "Y" : "N",
+        account_id: userData?.id,
+        card_id: !selectedCard ? cardsActiveList[0].cardreferenceId : selectedCard?.cardreferenceId,
+      }))
       .unwrap()
       .then((res: any) => {
         const updatedSelectedCard = res.find((card: any) => card.cardreferenceId === selectedCard?.cardreferenceId);
-        setTimeout(() => {
-          setSelectedCard(updatedSelectedCard);
-          setIsLoading(prev => false);
-        }, 500);
+        handleGetCards();
+        setSelectedCard(updatedSelectedCard);
       })
       .catch((error: any) => {
         console.log({ error });
+      })
+      .finally(() => {
+        setIsLoading(prev => false);
       });
-      ;
-    } catch (error) {
-      console.log({ error });
-    } finally {
-      await dispatch<any>(getCards());
-      setIsLoading(prev => false);
-      setFreezeLoading(false);
-    }
   };
 
   const resetCard = () => {
@@ -459,6 +453,7 @@ export function Card({ navigation, route }: any) {
           <View style={styles.cardSection}>
             <View style={styles.cardImages}>
               <Carousel
+                ref={refCarousel}
                 disableIntervalMomentum
                 data={cardDetails?.cardImage ? [cardDetails] : shownCardsOnCarousel}
                 renderItem={_renderItem}
@@ -746,6 +741,7 @@ export function Card({ navigation, route }: any) {
                     setSelectedCard(cardData[0]);
                   }
                   setIsLoading(prev => false);
+                  handleDataChangeShownOnCards();
                   refRBSheetShowTerminatedCards?.current?.close();
                 }}
                 style={{color: '#fff', width: 140}}

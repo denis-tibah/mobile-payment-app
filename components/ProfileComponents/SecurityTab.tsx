@@ -132,38 +132,14 @@ const SecurityTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
     });
   };
 
-  /*   useFocusEffect(() => {
-    useCallback(() => {
-      return () => {
-        cleanUpTabSelection();
-      };
-    }, []);
-  }); */
-
   return (
     <View
       style={{
-        /*  flexGrow: 0,
-        backgroundColor: "#fff",
-
         ...Platform.select({
           ios: {
-            height: "74%",
-          },
-          android: {
-            height: "75.6%",
+            paddingTop: 4,
           },
         }),
-        paddingTop: 4, */
-        /* shadowColor: "#000",
-        shadowOffset: {
-          width: 0,
-          height: 3,
-        },
-        shadowOpacity: 0.27,
-        shadowRadius: 4.65,
-        elevation: 6, */
-        paddingTop: 4,
         backgroundColor: "#fff",
       }}
     >
@@ -179,7 +155,17 @@ const SecurityTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
         <ScrollView>
           <Pressable>
             <View>
-              <View style={{ paddingHorizontal: 18, paddingBottom: 12 }}>
+              <View
+                style={{
+                  paddingHorizontal: 18,
+                  paddingBottom: 8,
+                  ...Platform.select({
+                    ios: {
+                      paddingBottom: 12,
+                    },
+                  }),
+                }}
+              >
                 <View
                   style={{
                     marginLeft: 12,
@@ -321,7 +307,6 @@ const SecurityTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
           </Pressable>
         </ScrollView>
       </SafeAreaView>
-      {/* <FixedBottomAction isFullWidth> */}
       <View
         style={{
           shadowColor: "#000",
@@ -335,8 +320,8 @@ const SecurityTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
           marginTop: 28,
           paddingLeft: 12,
           paddingRight: 12,
-          paddingTop: 18,
-          paddingBottom: 18,
+          paddingTop: 22,
+          paddingBottom: 22,
           marginBottom: 1,
           backgroundColor: "#fff",
         }}
@@ -344,8 +329,6 @@ const SecurityTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
         <WholeContainer>
           <Button
             color="light-pink"
-            fontWeight="bold"
-            fontSize={30}
             leftIcon={
               <Ionicons
                 color="#e7038e"
@@ -355,11 +338,16 @@ const SecurityTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
             }
             onPress={handleSubmit}
           >
-            Save changes
+            <Typography
+              fontFamily="Nunito-SemiBold"
+              fontSize={16}
+              fontWeight={600}
+            >
+              Save changes
+            </Typography>
           </Button>
         </WholeContainer>
       </View>
-      {/* </FixedBottomAction> */}
     </View>
   );
 };

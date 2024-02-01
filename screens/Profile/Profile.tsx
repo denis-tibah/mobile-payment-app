@@ -1273,17 +1273,16 @@ export function Profile({ route, navigation }: any) {
                   >
                     <View
                       style={{
+                        backgroundColor: "#fff",
                         ...Platform.select({
                           ios: {
-                            backgroundColor: "#fff",
                             shadowColor: "#000",
                             shadowOffset: { width: 1, height: 3 },
                             shadowOpacity: 0.2,
                           },
                           android: {
-                            backgroundColor: "#fff",
                             shadowColor: "#000",
-                            shadowOpacity: 0.6,
+                            shadowOpacity: 0.2,
                             elevation: 5,
                           },
                         }),

@@ -361,8 +361,8 @@ export function Profile({ route, navigation }: any) {
         <SafeAreaView style={{ flex: 1 }}>
           <ScrollView
             bounces={false}
-            style={{ backgroundColor: "#fff" }}
-            /* style={{ flexGrow: 1, backgroundColor: "#fff", height: "100%" }} */
+            /* style={{ backgroundColor: "#fff" }} */
+            style={{ flexGrow: 1 }}
           >
             {/* <IncomeBox />
           <View style={styles.content}>
@@ -1263,19 +1263,26 @@ export function Profile({ route, navigation }: any) {
               )}
               {tabSelection !== "" ? (
                 <Fragment>
-                  <View style={[styles.containerTab, { overflow: "hidden" }]}>
+                  <View
+                    style={[
+                      styles.containerTab,
+                      {
+                        overflow: "hidden",
+                      },
+                    ]}
+                  >
                     <View
                       style={{
                         ...Platform.select({
                           ios: {
                             backgroundColor: "#fff",
-                            shadowColor: "grey",
+                            shadowColor: "#000",
                             shadowOffset: { width: 1, height: 3 },
                             shadowOpacity: 0.2,
                           },
                           android: {
                             backgroundColor: "#fff",
-                            shadowColor: "grey",
+                            shadowColor: "#000",
                             shadowOpacity: 0.6,
                             elevation: 5,
                           },
@@ -1298,12 +1305,13 @@ export function Profile({ route, navigation }: any) {
                       </TouchableOpacity>
                     </View>
                   </View>
+                  {displayTabSelection()}
                 </Fragment>
               ) : null}
             </View>
           </ScrollView>
         </SafeAreaView>
-        {displayTabSelection()}
+        {/* {displayTabSelection()} */}
       </MainLayout>
       <Snackbar
         visible={snackBarMessage.open}

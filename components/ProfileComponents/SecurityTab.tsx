@@ -5,6 +5,7 @@ import {
   Pressable,
   Switch,
   SafeAreaView,
+  Platform,
 } from "react-native";
 import { useSelector } from "react-redux";
 import { useFormik } from "formik";
@@ -140,7 +141,32 @@ const SecurityTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
   }); */
 
   return (
-    <View style={{ flexGrow: 0, backgroundColor: "#fff", height: "75%" }}>
+    <View
+      style={{
+        /*  flexGrow: 0,
+        backgroundColor: "#fff",
+
+        ...Platform.select({
+          ios: {
+            height: "74%",
+          },
+          android: {
+            height: "75.6%",
+          },
+        }),
+        paddingTop: 4, */
+        /* shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 3,
+        },
+        shadowOpacity: 0.27,
+        shadowRadius: 4.65,
+        elevation: 6, */
+        paddingTop: 4,
+        backgroundColor: "#fff",
+      }}
+    >
       <Spinner visible={isLoadingUpdatePassword} />
       <SuccessModal
         isOpen={statusMessage?.isOpen}
@@ -149,12 +175,8 @@ const SecurityTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
         isError={statusMessage.isError}
         onClose={onCloseModal}
       />
-      <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView
-          style={{
-            backgroundColor: "white",
-          }}
-        >
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+        <ScrollView>
           <Pressable>
             <View>
               <View style={{ paddingHorizontal: 18, paddingBottom: 12 }}>
@@ -166,6 +188,12 @@ const SecurityTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
                     flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "space-between",
+
+                    ...Platform.select({
+                      ios: {
+                        paddingVertical: 8,
+                      },
+                    }),
                   }}
                 >
                   <View
@@ -296,24 +324,21 @@ const SecurityTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
       {/* <FixedBottomAction isFullWidth> */}
       <View
         style={{
-          /* width: "100%",
-          paddingLeft: 12,
-          paddingRight: 12, */
-
-          position: "relative",
-          width: "100%",
-          backgroundColor: "#fff",
-          paddingHorizontal: 16,
-          paddingVertical: 20,
-          shadowColor: "#ACACAC",
+          shadowColor: "#000",
           shadowOffset: {
             width: 0,
-            height: -2,
+            height: 3,
           },
-          shadowOpacity: 0.25,
-          shadowRadius: 3.84,
-          elevation: 5,
-          zIndex: 999,
+          shadowOpacity: 0.27,
+          shadowRadius: 4.65,
+          elevation: 6,
+          marginTop: 28,
+          paddingLeft: 12,
+          paddingRight: 12,
+          paddingTop: 18,
+          paddingBottom: 18,
+          marginBottom: 1,
+          backgroundColor: "#fff",
         }}
       >
         <WholeContainer>

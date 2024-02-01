@@ -225,7 +225,7 @@ export const styles: any = StyleSheet.create<any>({
     gap: 2,
   },
   containerTab: {
-    height: 70,
+    height: 80,
     backgroundColor: "#fff",
   },
 
@@ -237,6 +237,7 @@ export const styles: any = StyleSheet.create<any>({
     paddingTop: 16,
     paddingBottom: 16,
     marginLeft: 20,
+    marginBottom: 4,
   },
   btnBack: {
     width: 35,

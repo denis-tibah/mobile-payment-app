@@ -1,4 +1,4 @@
-import { useState, useEffect, FC, useCallback } from "react";
+import { useState, useEffect, FC } from "react";
 import {
   View,
   ScrollView,
@@ -12,11 +12,8 @@ import { useFormik } from "formik";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Spinner from "react-native-loading-spinner-overlay/lib";
-import { useFocusEffect } from "@react-navigation/native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import Typography from "../Typography";
-import FixedBottomAction from "../../components/FixedBottomAction";
 import FormGroup from "../FormGroup";
 import Button from "../Button";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";

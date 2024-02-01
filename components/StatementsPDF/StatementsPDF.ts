@@ -27,16 +27,15 @@ const convertImageToBase64 = async (): Promise<string> => {
     });
     
   const mimeType = mime.lookup(asset.localUri || '');
-    
-    return `data:${mimeType};base64,${image}`;
+    return `data:${mimeType}/png;base64,${image}`;
   } catch (error) {
-    console.log({ error });
+    console.log({ error: `${error}. convert image error` });
     return '';
   }
 };
 
 const generateHTML = (transactions: StatementTransactionsResponse[]) => {
-  return transactions.map((transaction: StatementTransactionsResponse) => {
+  return transactions.map((transaction: StatementTransactionsResponse, index: number) => {
       let transaction_ref_no = "";
       let transfer_currency = "";
 
@@ -46,6 +45,42 @@ const generateHTML = (transactions: StatementTransactionsResponse[]) => {
       if (transaction.transfer_currency) {
         transfer_currency = `<p>BIC: ${transaction.transfer_currency}</p>`;
       }
+      if (index % 11 === 0 && index !== 0 && index !== 1) {
+        return `
+          <tr class="page-break">
+            <td>${
+              transaction?.transaction_ref_no || ""
+            }</td>
+            <td>
+              <p style="margin: 3px 15px; text-align: center; width: 85px;">  
+                ${getFormattedDateAndTimeV2(transaction.transaction_date)}
+              </p>
+            </td>
+            <td>${
+              transaction?.sender_receiver || ""
+            }</td>
+            <td>
+              <p style="width: 80px !important; text-align: center;">
+                ${formatAmountTableValue(
+                  transaction.balance,
+                  transaction.transfer_currency
+                )}
+              </p>
+            </td>
+            <td>
+              <p style="width: 70px !important; text-align: center;">
+                ${formatAmountTableValue(
+                  transaction.closing_balance,
+                  transaction.transfer_currency
+                )}
+              </p>
+            </td>
+            <td>${
+              transaction?.balance || ""
+            }</td>
+          </tr>
+        `;
+      }
 
       return `
       <tr>
@@ -53,7 +88,7 @@ const generateHTML = (transactions: StatementTransactionsResponse[]) => {
           transaction?.transaction_ref_no || ""
         }</td>
         <td style="border: none; padding: 5px;">
-          <p style="margin: 3px 15px; text-align: center; width: 85px;">  
+          <p style="margin=3px 15px; text-align=center; width=85px; height=70px !important;">  
             ${getFormattedDateAndTimeV2(transaction.transaction_date)}
           </p>
         </td>
@@ -94,58 +129,61 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
 
   return `
     <html>
+      <style>
+        table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+        th {
+          text-align: left;
+          background-color: #F9F9F9;
+          height: 65px;
+        }
+        th, td {
+          border: none;
+          padding: 5px;
+        }
+        .title {
+          color: #086AFB;
+          font-size: 18pt;
+          font-weight: bold;
+          margin-bottom: 10px;
+        }
+        .row-div {
+          display: flex;
+          flex-direction: row;
+        }
+        .column-div {
+          display: flex;
+          flex-direction: column;
+          line-height: 1;
+        }
+        .account-statement-header {
+          display: flex;
+          height: 100px;
+          flex-direction: row;
+          justify-content: space-between;
+          background-color: #F9F9F9;
+          width: 100%
+          padding: 20px;
+        }
+        .left-align-div {
+          text-align: left;
+        }
+        .page-break {
+          page-break-before: always;
+        }
+      </style>
       <head>
-        <style>
-          table {
-            border-collapse: collapse;
-            width: 100%;
-          }
-          th {
-            text-align: left;
-            background-color: #F9F9F9;
-            height: 65px;
-          }
-          th, td {
-            border: none;
-            padding: 5px;
-          }
-          .title {
-            color: #086AFB;
-            font-size: 18pt;
-            font-weight: bold;
-            margin-bottom: 10px;
-          }
-          .row-div {
-            display: flex;
-            flex-direction: row;
-          }
-          .column-div {
-            display: flex;
-            flex-direction: column;
-            line-height: 1;
-          }
-          .account-statement-header {
-            display: flex;
-            height: 100px;
-            flex-direction: row;
-            justify-content: space-between;
-            background-color: #F9F9F9;
-            width: 100%
-            padding: 20px;
-          }
-          .left-align-div {
-            text-align: left;
-          }
-          </style>
-          <div style="display: flex; flex-direction: row; justify-content: space-between;">
-            <div style="width: 50%; height: 50%;">
-              <img src="${image}" style="width: 200px; height: 50px;" alt="Zazoo2" />
-            </div>
-            <div style="width: 50%; text-align: right;">
-              <h3>Account Statement</h3>
-              <p>Generated on the ${convertDateToName(Date.now())}</p>
-            </div>
+        <div style="display: flex; flex-direction: row; justify-content: space-between;">
+          <div style="width: 50%; height: 50%;">
+            <img src="${image}" style="width: 200px; height: 50px;" alt="Zazoo2" />
           </div>
+          <div style="width: 50%; text-align: right;">
+            <h3>Account Statement</h3>
+            <p>Generated on the ${convertDateToName(Date.now())}</p>
+          </div>
+        </div>
       </head>
       <body style="flex-direction: column">
         <div class="account-statement-header">
@@ -185,7 +223,7 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
           </table>
         </div>
       </body>
-      <footer style="font-size: 12px; color: #0A0A0A">
+      <footer style="position: fixed; bottom: 0; left: 0; width: 100%; padding: 10px;">
       © 2023 Zazoo is a brand name operated by IQGP Ltd, a company registered in Cyprus with its Registered address at Dimostheni Severi 12, 6th Floor, Office 601, Nicosia, 1080, Cyprus and with Company Registration number HE 435932. Zazoo is not a bank. Zazoo is a technical platform that facilitates the opening and operating of an electronic money accounts for both individuals and corporate customers.
       Payment related services, debit card services, account opening and management services are provided through its relationship with regulated entity and electric money institution license holder, FinXP Ltd, a company registered in Malta with Registration number C 65783 which is regulated by the Malta Financial Services Authority and who has their registered office at Ardent Business Centre, No 4, Triq L-Oratorju, Naxxar NXR 2505, Malta.
       </footer>
@@ -194,8 +232,8 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
 }
 
 export const generateStatementsPDF = async ({statements, accountData}: any) => {
+  console.log({ statements, accountData });
   const getHTML = await statementsPDFGenerator({ statements, accountData});
-  console.log({accountData})
   const { uri } = await Print.printToFileAsync({ html: getHTML });
   return uri;
 }

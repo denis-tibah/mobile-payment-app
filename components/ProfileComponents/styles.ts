@@ -58,8 +58,8 @@ export const styles = StyleSheet.create({
   },
   downloadBtnMain: {
     width: "100%",
-    paddingBottom: 18,
-    paddingTop: 18,
+    paddingBottom: 16,
+    paddingTop: 16,
     paddingLeft: 8,
     paddingRight: 8,
   },

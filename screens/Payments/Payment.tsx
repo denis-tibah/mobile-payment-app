@@ -130,13 +130,17 @@ export function Payment({ navigation }: any) {
   }, [isAddPayeeSuccess, isAddPayeeError]);
 
   useEffect(() => {
-    if (access_token && token_ziyl && !transactionsData && transactionsData?.length === 0) {
+    if (access_token && token_ziyl) {
       (async () => {
         await handleGetTransactionsForPayments();
         }
       )();
     }
-  }, [access_token, token_ziyl, transactionsData]);
+  }, [access_token, token_ziyl]);
+
+  useEffect(() => {
+    handleGetTransactionsForPayments();
+  },[]);
 
   return (
     <MainLayout navigation={navigation}>

@@ -29,18 +29,18 @@ export const transactionStatusOptions = [
 ]
 
 export const managePaymentMethods = [
-    { label: "ATM Withdrawals", value: "atm_withdrawals",
-    icon: ATMWithdraw({size: 18, color: vars['accent-blue']}) },
+    // { label: "ATM Withdrawals", value: "atm_withdrawals",
+    // icon: ATMWithdraw({size: 18, color: vars['accent-blue']}) },
     { label: "Online Payment", value: "online_payment",
     icon: Globe({size: 18, color: vars['accent-blue']}) },
-    { label: "Chip & PIN Transactions", value: "chip_pin_transactions",
-    icon: ChipPinTransaction({size: 18, color: vars['accent-blue']}) },
-    { label: "Mobile Wallets", value: "mobile_wallets",
-    icon: MobileWalletIcon({size: 18, color: vars['accent-blue']}) },
-    { label: "Contactless Transactions", value: "contactless_transactions",
-    icon: ContactlessTransaction({size: 18, color: vars['accent-blue']}) },
-    { label: "Magnetic Stripe Transactions", value: "magnetic_stripe_transactions",
-    icon: CardIcon({size: 18, color: 'blue'}) },
+    // { label: "Chip & PIN Transactions", value: "chip_pin_transactions",
+    // icon: ChipPinTransaction({size: 18, color: vars['accent-blue']}) },
+    // { label: "Mobile Wallets", value: "mobile_wallets",
+    // icon: MobileWalletIcon({size: 18, color: vars['accent-blue']}) },
+    // { label: "Contactless Transactions", value: "contactless_transactions",
+    // icon: ContactlessTransaction({size: 18, color: vars['accent-blue']}) },
+    // { label: "Magnetic Stripe Transactions", value: "magnetic_stripe_transactions",
+    // icon: CardIcon({size: 18, color: 'blue'}) },
 ];
 export const searchOptions = [
     // { label: "BIC", value: 'bic' },

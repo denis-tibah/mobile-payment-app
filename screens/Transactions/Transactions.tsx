@@ -46,6 +46,7 @@ import { setIsCardTransactionShown } from "../../redux/card/cardSlice";
 import TransactionItem from "../../components/TransactionItem";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 import { ref } from "yup";
+import Euro from "../../assets/icons/Euro";
 
 interface DateRangeType {
   dateTo: {
@@ -521,7 +522,10 @@ export function Transactions({ navigation, route }: any) {
         draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
         >
         <View style={styles.containerBottomSheetHeader}>
-          <Typography fontSize={18} fontFamily={'Nunito-SemiBold'}>Filters</Typography>
+          <View style={{top: -15, left: -5}}>
+            <Typography fontSize={18} fontFamily={'Nunito-SemiBold'}>Filters</Typography>
+          </View>
+          <Divider style={{ marginVertical: 15 }} />
           <TouchableOpacity
             onPress={() => clearFilter()}
             style={{ flexDirection: "row" }}
@@ -762,6 +766,10 @@ export function Transactions({ navigation, route }: any) {
                 borderWidth: 1,
                 borderColor: vars["accent-blue"],
               }}
+              icon={
+                // icon EUR
+                <Euro />
+              }
               value={searchFieldData.min_amount}
               onChangeText={(event: string) => {
                 amountRangeFilter(Number(event), "min_amount");
@@ -792,6 +800,9 @@ export function Transactions({ navigation, route }: any) {
               onChangeText={(event: string) => {
                 amountRangeFilter(Number(event), "max_amount");
               }}
+              icon={
+                <Euro />
+              }
             />
           </View>
         </View>
@@ -874,7 +885,14 @@ export function Transactions({ navigation, route }: any) {
                 );
           }}
         >
-          Submit
+          <Typography
+            fontSize={16}
+            color={vars["accent-pink"]}
+            fontWeight="Nunito-Bold"
+            fontWeights="600"
+          >
+            Submit
+          </Typography>
         </Button>
         <Divider style={{ marginVertical: 15 }} />
       </SwipableBottomSheet>

@@ -1,6 +1,6 @@
 import Svg, { Circle, G, Line, Path } from "react-native-svg";
 import { getColor } from "../color";
-export function Euro({ size = 14, color }:any) {
+export function Euro({ size = 14, color = 'blue' }:any) {
   return (
     <Svg
       width={size}

@@ -431,10 +431,11 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
               <TouchableOpacity
                 onPress={pickDocument}
                 style={{ display: "flex", flexDirection: "row" }}
+                disabled={values.amount >= 5000 ? false : true}
               >
                 <AntDesign
                   name="pluscircleo"
-                  size={42}
+                  size={38}
                   color={vars["accent-blue"]}
                 />
                 <Text
@@ -442,6 +443,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                     color: vars["shade-grey"],
                     top: 10,
                     paddingLeft: 15,
+                    fontFamily: "Nunito-SemiBold",
                   }}
                 >
                   Attach a file
@@ -463,6 +465,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                       !values?.isManualProcessing
                     );
                   }}
+                  disabled={values.amount >= 5000 ? false : true}
                 />
               </FormGroup>
               <Text style={{ backgroundColor: vars["shade-grey"] }}>{` `}</Text>
@@ -654,6 +657,9 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           borderTopRightRadius: 14,
           elevation: 12,
           shadowColor: "#52006A",
+        }}
+        onClose={() => {
+          navigation.navigate(screenNames.payments);
         }}
         draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
       >

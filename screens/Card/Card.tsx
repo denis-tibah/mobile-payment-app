@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Pressable,
-  RefreshControl,
   View,
   ScrollView,
   TouchableOpacity,
   Alert,
   Text,
+  RefreshControl,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as Clipboard from "expo-clipboard";
@@ -427,7 +427,11 @@ export function Card({ navigation, route }: any) {
           bounces={true}
           style={{ flex: 1 }}
           refreshControl={
-            <RefreshControl refreshing={isLoading} onRefresh={handleGetCards} />
+            <RefreshControl
+              style={{ backgroundColor: "transparent", display: 'none' }}
+              refreshing={isLoading}
+              onRefresh={handleGetCards}
+            />
           }
         >
           <Pressable>
@@ -661,7 +665,7 @@ export function Card({ navigation, route }: any) {
             closeOnDragDown={true}
             closeOnPressMask={false}
             // onClose={() => refRBSheet?.current?.close()}
-            height={550}
+            height={250}
             wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
             containerStyles={{
               backgroundColor: "#FFF",

@@ -232,7 +232,6 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
 }
 
 export const generateStatementsPDF = async ({statements, accountData}: any) => {
-  console.log({ statements, accountData });
   const getHTML = await statementsPDFGenerator({ statements, accountData});
   const { uri } = await Print.printToFileAsync({ html: getHTML });
   return uri;

@@ -20,6 +20,11 @@ export function formatAmountTableValue(amount: any = "", currency = "") {
   ).toFixed(2)}`;
 }
 
+// if theres a + sign return true otherwise return false
+export function isPositiveAmount(amount: any = "") {
+  return amount.toString().includes("+");
+}
+
 export function formatAmountTableValue_old(amount: any = "", currency = "") {
   if (!amount || !currency) return;
   // if (!amount.split(".")[1]) return
@@ -152,6 +157,17 @@ export const transactionStatusOptions = Object.keys(TRANSACTIONS_STATUS).map(
     };
   }
 );
+
+export const formatTransactionsForPaymentScreen = (transactions: Transaction[]) => {
+  if (!transactions) return [];
+  return transactions
+    .filter((transaction) => transaction.service !== "DEBIT CARD")
+    .map((transaction) => ({
+      ...transaction,
+      amount: formatAmountTableValue(transaction.amount, transaction.currency),
+      date: formatDateTableValue(transaction.transaction_datetime.toString()),
+    }));
+};
 
 export const screenNames: any = {
   login: "login",

@@ -1,9 +1,9 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { View, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
+import { View, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { RootState } from "../../store";
-import { useAddPayeeMutation, useGetPayeesQuery } from "../../redux/payee/payeeSlice";
+import { useAddPayeeMutation, useGetPayeesQuery, useLazyGetPayeesQuery } from "../../redux/payee/payeeSlice";
 import { Divider, Text } from "react-native-paper";
 import { AntDesign } from '@expo/vector-icons';
 import Search from "../../assets/icons/Search";
@@ -15,24 +15,37 @@ import { styles } from "./styles";
 import { useFormik } from "formik";
 import EuroIcon from "../../assets/icons/Euro";
 import CodeIcon from "../../assets/icons/Code";
-import { formatDateDayMonthYear, getCurrency, getNameInitials, screenNames } from "../../utils/helpers";
+import { 
+  formatAmountTableValue,
+  formatAmountTableValue_old,
+  formatDateDayMonthYear,
+  formatTransactionsForPaymentScreen,
+  // getCurrency,
+  getNameInitials,
+  isPositiveAmount,
+  screenNames
+} from "../../utils/helpers";
 import vars from "../../styles/vars";
 import { validationAddingPayeeSchema, validationPaymentSchema } from "../../utils/validation";
 import ArrowRight from "../../assets/icons/ArrowRight";
-import BottomSheet from "../../components/BottomSheet";
+// import BottomSheet from "../../components/BottomSheet";
 import FaceIcon from "../../assets/icons/FaceIcon";
-import BuildingIcon from "../../assets/icons/Building";
-import PinGPS from "../../assets/icons/PinGPS";
+// import BuildingIcon from "../../assets/icons/Building";
+// import PinGPS from "../../assets/icons/PinGPS";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import IconQr from "../../assets/icons/IconsQr";
 import ArrowDownDotted from "../../assets/icons/ArrowDownDotted";
 import Typography from "../../components/Typography";
 import { deleteBeneficiary } from "../../redux/beneficiary/beneficiarySlice";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
+import { RefreshControl } from "react-native";
+import { SearchFilter } from "../../redux/transaction/transactionSlice";
+import { useLazyGetTransactionsQuery } from "../../redux/transaction/transactionV2Slice";
 
 export function Payment({ navigation }: any) {
   const dispatch = useDispatch();
   const infoData = useSelector((state: any) => state.account.details);
+  const userData = useSelector((state: RootState) => state?.auth?.userData);
   const validationSchema = validationAddingPayeeSchema();
   const refRBSheet = useRef<any>(null);
   const refRBSheetPayeesOrder = useRef<any>(null);
@@ -44,7 +57,7 @@ export function Payment({ navigation }: any) {
   // const [isPayeeDetailsShown, setIsPayeeDetailsShown] = useState<boolean>(false);
   const [selectedPayeeId, setSelectedPayeeId] = useState<number>(0);
   const [isFilterForPayeeShown, setIsFilterForPayeeShown] = useState<boolean>(false);
-  const [selectedFilterForPayees, setSelectedFilterForPayees] = useState<string>("1");
+  const [selectedFilterForPayees, setSelectedFilterForPayees] = useState<string>("2");
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const { access_token, token_ziyl } = userTokens || {};
   const [ addNewPayee, {
@@ -53,19 +66,32 @@ export function Payment({ navigation }: any) {
     isLoading: isAddPayeeLoading,
   }] = useAddPayeeMutation();
 
-  const { data: payeesList,
-    isLoading: isPayeesListLoading } = useGetPayeesQuery({
-    accessToken: access_token,
-    tokenZiyl: token_ziyl,
-  });
+  const [getPayees,{ data: payeesList,
+    isLoading: isPayeesListLoading }] = useLazyGetPayeesQuery();
+  const [getTransactionsWithFilter, {data: transactionsData}] = useLazyGetTransactionsQuery();
+  const formattedTransactionsForPayments = formatTransactionsForPaymentScreen(transactionsData);
 
   const filteredPayeesList = payeesList?.filter((item: any) => {
     return item.name.toLowerCase().includes(searchName.toLowerCase());
   });
 
-  const toggleBottomSheet = () => {
-    setIsAddingPayeeShown(!isAddingPayeeShown);
-  };
+  const handleGetTransactionsForPayments = async () => {
+    let search: SearchFilter = {
+      accountId: `${userData?.id}`,
+      accessToken: userTokens?.access_token,
+      tokenZiyl: userTokens?.token_ziyl,
+      direction: "desc",
+      status: "SUCCESS",
+    };
+    setIsLoading(true);
+    getTransactionsWithFilter(search)
+    .then((res) => {
+      setIsLoading(false);
+    })
+    .catch((err) => {
+      setIsLoading(false);
+    });
+  }
 
   const { handleChange, handleBlur, values, touched, errors, handleSubmit } = useFormik({
     initialValues: {
@@ -75,6 +101,7 @@ export function Payment({ navigation }: any) {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
+      setIsLoading(true);
       addNewPayee({
         beneficiary_name: values.beneficiaryName,
         beneficiary_iban: values.beneficiaryIban,
@@ -83,6 +110,10 @@ export function Payment({ navigation }: any) {
         token_ziyl,
       })
       .unwrap()
+      .then((res) => { 
+        setIsLoading(false);
+        setIsModalSuccessOpen(true);
+      })
       .finally(() => {
         setIsModalSuccessOpen(true);
       });
@@ -98,16 +129,25 @@ export function Payment({ navigation }: any) {
     }
   }, [isAddPayeeSuccess, isAddPayeeError]);
 
+  useEffect(() => {
+    if (access_token && token_ziyl && !transactionsData && transactionsData?.length === 0) {
+      (async () => {
+        await handleGetTransactionsForPayments();
+        }
+      )();
+    }
+  }, [access_token, token_ziyl, transactionsData]);
+
   return (
     <MainLayout navigation={navigation}>
-      <SuccessModal
+      {/* <SuccessModal
         isError={isAddPayeeError}
         isOpen={isModalSuccessOpen}
         title={isAddPayeeError ? "Error" : "Success"}
         text={isAddPayeeError ? "Something went wrong" : "Payee added successfully"}
         onClose={() => setIsModalSuccessOpen(false)}
-      />
-      <Spinner visible={isPayeesListLoading || isAddPayeeLoading} />
+      /> */}
+      <Spinner visible={isLoading} />
       <Heading
           icon={<EuroIcon color="pink" size={25} />}
           title={"Make Payment"}
@@ -123,7 +163,16 @@ export function Payment({ navigation }: any) {
             </View>
           }
         />
-      <ScrollView bounces={true} style={{backgroundColor: '#fff'}}>
+      <ScrollView 
+        bounces={true} 
+        style={{backgroundColor: '#fff'}}
+        refreshControl={
+          <RefreshControl 
+            style={{ backgroundColor: "transparent", display: 'none', }}
+            refreshing={false} onRefresh={ async () => await handleGetTransactionsForPayments()} />
+        }
+      >
+      <Pressable>
         <View style={styles.content}>
           <Divider style={{ marginBottom: 1 }} />
           <View style={{display: 'flex', flexDirection: 'row', padding: 10}}>
@@ -169,22 +218,28 @@ export function Payment({ navigation }: any) {
           <Divider style={{ marginVertical: 20 }} /> */}
           {/* <Divider style={{ marginBottom: 10 }} /> */}
           <View style={{display: 'flex', flexDirection: 'column', borderTopColor: vars['grey'], borderTopWidth: 1}}>
-              { filteredPayeesList?.length > 0 && filteredPayeesList
+              { formattedTransactionsForPayments?.length > 0 && formattedTransactionsForPayments
               .sort((a: any, b: any) => {
                 if (selectedFilterForPayees === '1') {
                   return a.name.localeCompare(b.name);
                 }
                 if (selectedFilterForPayees === '2') {
-                  return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                  return new Date(b.transaction_datetime).getTime() - new Date(a.transaction_datetime).getTime();
                 }
                 if (selectedFilterForPayees === '3') {
-                  return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+                  return new Date(a.transaction_datetime).getTime() - new Date(b.transaction_datetime).getTime();
                 }
                 return a.name.localeCompare(b.name);
               })
               .map((item: any, index: number) => (
                 <Fragment key={index}>
-                  <View key={index} style={{
+                  <TouchableOpacity 
+                  onPress={() => {
+                    navigation.navigate(screenNames.payeeSendFunds, {
+                      item,
+                    });
+                  }}
+                  key={index} style={{
                       // borderTopWidth: selectedPayeeId ? 0 : 1,
                       display: 'flex',
                       flexDirection: 'row',
@@ -198,171 +253,64 @@ export function Payment({ navigation }: any) {
                       borderBottomColor: vars['grey'],
                       borderBottomWidth: selectedPayeeId === index ? 0 : 1,
                     }}>
-                      <TouchableOpacity onPress={() => {
-                        if (selectedPayeeId === index) {
-                          setSelectedPayeeId(-1);
-                          return;
-                        }
-                        setSelectedPayeeId(index);
-                      }}>
-                      <View style={{display: 'flex', flexDirection: 'row'}}>
-                        <View style={{padding: 6, borderRadius: 99, backgroundColor: '#F5F4F4', width: 28, height: 28}}>
-                          <Typography 
-                            color="#000"
-                            fontSize={10}
-                            fontWeight={600}
-                            fontFamily="Nunito-Bold"
-                          >
-                            {getNameInitials(item.name)}
-                          </Typography>
-                          </View>
-                          <View style={{paddingLeft: 10}}>
-                          <Typography 
-                            color="#000"
-                            fontSize={14}
-                            fontWeight={600}
-                            fontFamily="Nunito-Bold"
-                          >
-                            {item.name}
-                          </Typography>
-                          <Typography 
-                            color="#808080"
-                            fontSize={12}
-                            fontWeight={600}
-                            fontFamily="Nunito-Bold"
-                          >
-                            {item.iban}
-                          </Typography>
-                          </View>
-                        </View>
-                    </TouchableOpacity>
                     <View style={{display: 'flex', flexDirection: 'row'}}>
-                        <View>
+                      <View style={{padding: 6, borderRadius: 99, backgroundColor: '#F5F4F4', width: 28, height: 28}}>
+                        <Typography 
+                          color="#000"
+                          fontSize={10}
+                          fontWeight={600}
+                          fontFamily="Nunito-Bold"
+                        >
+                          {getNameInitials(item.name)}
+                        </Typography>
+                        </View>
+                        <View style={{paddingLeft: 10}}>
+                        <Typography 
+                          color="#000"
+                          fontSize={14}
+                          fontWeight={600}
+                          fontFamily="Nunito-Bold"
+                        >
+                          {item.name}
+                        </Typography>
+                        <Typography 
+                          color="#808080"
+                          fontSize={12}
+                          fontWeight={600}
+                          fontFamily="Nunito-Bold"
+                        >
+                          {item.iban}
+                        </Typography>
+                        </View>
+                      </View>
+                    <View style={{display: 'flex', flexDirection: 'row'}}>
+                      <View>
                         <Typography 
                             color="#000"
                             fontSize={14}
                             fontWeight={600}
                             fontFamily="Nunito-SemiBold"
-                          >{formatDateDayMonthYear(item.created_at)}
+                          >{formatDateDayMonthYear(item.transaction_datetime)}
                         </Typography>
-                          {/* <Text style={{fontSize: 12, color: vars['accent-green']}}>{`+ € 1200`}</Text> */}
-                        </View>
-                        <View style={{ paddingTop: 3, paddingLeft: 8 }}>
-                          <TouchableOpacity onPress={() => {
-                            navigation.navigate(screenNames.payeeSendFunds, {
-                              item,
-                            });
-                          }}>
-                            <ArrowRight color="blue" />
-                          </TouchableOpacity>
-                        </View>
-                    </View>
-                  </View>
-                  { selectedPayeeId === index &&
-                    <View style={{display: 'flex', flexDirection: 'column', paddingHorizontal: 25}}>
-                      <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                        <View style={{display: 'flex', flexDirection:'column'}}>
-                          <Typography 
-                            color="accent-blue"
-                            fontSize={12}
-                            fontWeight={600}
-                            fontFamily="Nunito-Bold"
-                          >
-                            IBAN
-                          </Typography>
-                          <Typography
-                            color="#000"
-                            fontSize={14}
-                            fontWeight={600}
-                          >
-                            {item.iban}
-                          </Typography>
-                        </View>
-                        <View style={{display: 'flex', flexDirection:'column'}}>
                         <Typography 
-                          color="accent-blue"
+                          color={isPositiveAmount(item.amount) ? "green" : "red"}
                           fontSize={12}
                           fontWeight={600}
-                          fontFamily="Nunito-Bold"
-                          >
-                            BIC
+                          textAlign="right"
+                          fontFamily="Nunito-SemiBold">
+                            {formatAmountTableValue_old(item.amount, item.currency)}
                           </Typography>
-                          <Typography 
-                            color="#000"
-                            fontSize={14}
-                            fontWeight={400}
-                            >
-                            {item.bic}
-                          </Typography>
-                        </View>
                       </View>
-                      <Divider style={{
-                        marginVertical: 20,
-                        height: 1,
-                        backgroundColor: vars['shade-grey'],
-                        opacity: .5,
-                      }} />
-                      <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                        {/* <View style={{display: 'flex', flexDirection:'column'}}>
-                          <Text style={{color: vars['accent-blue']}}>
-                            BANK
-                          </Text>
-                          <Text style={{color: '#000', fontSize: 12}}>
-                            ING Espana
-                          </Text>
-                        </View> */}
-                        <View style={{display: 'flex', flexDirection:'column'}}>
-                          <Typography 
-                            color="accent-blue"
-                            fontSize={12}
-                            fontWeight={600}
-                            fontFamily="Nunito-Bold"
-                            >
-                            Added
-                          </Typography>
-                          <Typography 
-                          color="#000"
-                          fontSize={14}
-                          fontWeight={400}
-                          // fontFamily="Nunito-Bold"
-                          >
-                            {formatDateDayMonthYear(item.created_at)}
-                          </Typography>
-                        </View>
-                        {/* delete button here */}
-                        <View style={{display: 'flex', flexDirection:'column'}}>
-                          <TouchableOpacity onPress={() => {
-                            setIsLoading(true);
-                            console.log('item', item.uuid)
-                            dispatch<any>(deleteBeneficiary(item.uuid))
-                            .unwrap()
-                            .then((res) => {
-                              setIsLoading(false);
-                              console.log('res', res);
-                            })
-                            .catch((error: any) => {
-                              console.log('error', error);
-                              setIsLoading(false);
-                            });
-                          }}>
-                            <Text style={{top: 18, right: 8}}>
-                              <AntDesign name="delete" size={19} color={vars['accent-pink']} />
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
+                      <View style={{ paddingTop: 10, paddingLeft: 8 }}>
+                        <ArrowRight color="blue" />
                       </View>
-                      <Divider style={{
-                        marginVertical: 20,
-                        // height: 1,
-                        // backgroundColor: vars['shade-grey'],
-                        opacity: 0,
-                      }} />
                     </View>
-                  }
+                  </TouchableOpacity>
                 </Fragment>
               ))}
           </View>
         </View>
+      </Pressable>
       </ScrollView>
       <SwipableBottomSheet
         rbSheetRef={refRBSheet}
@@ -513,7 +461,7 @@ export function Payment({ navigation }: any) {
               fontFamily="Nunito-Bold"
               style={{marginTop: 10, marginBottom: 20}}
             >
-              Payees Order
+              Payment History Order
             </Typography>
           </View>
           <Divider style={{marginVertical: 15, height: 1, backgroundColor: vars['shade-grey'], opacity: 0.2}} />
@@ -522,7 +470,8 @@ export function Payment({ navigation }: any) {
             decelerationRate={"fast"}
             snapToInterval={50}
             >
-              {[{ label: 'Aplabetic', value: '1' },
+              {[
+                // { label: 'Aplabetic', value: '1' },
                 { label: 'Latest transaction first', value: '2' },
                 { label: 'Oldest transaction first', value: '3' }
               ]

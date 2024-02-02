@@ -173,13 +173,15 @@ export function Payees({ navigation }: any) {
               .sort((a: any, b: any) => {
                 if (selectedFilterForPayees === '1') {
                   return a.name.localeCompare(b.name);
+                  // return a.name.localeCompare(b.name);
                 }
                 if (selectedFilterForPayees === '2') {
-                  return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                  return b.name.localeCompare(a.name);
+                  // return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
                 }
-                if (selectedFilterForPayees === '3') {
-                  return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-                }
+                // if (selectedFilterForPayees === '3') {
+                //   return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+                // }
                 return a.name.localeCompare(b.name);
               })
               .map((item: any, index: number) => (
@@ -522,27 +524,27 @@ export function Payees({ navigation }: any) {
             decelerationRate={"fast"}
             snapToInterval={50}
             >
-              {[{ label: 'Aplabetic', value: '1' },
-                { label: 'Latest transaction first', value: '2' },
-                { label: 'Oldest transaction first', value: '3' }
-              ]
-                .map((item, index) => (
-                  <Button
-                    key={index}
-                    color={ selectedFilterForPayees === item.value ? "blue" : "light-blue" }
-                    style={{marginBottom: 10}}
-                    onPress={() => {
-                      setSelectedFilterForPayees(item.value);
-                      setTimeout(() => {
-                        refRBSheetPayeesOrder?.current?.close();
-                      }, 400);
-                    }}
-                    //leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
-                  >
-                    {item.label}
-                  </Button>
-                ))
-                }
+            {[{ label: 'Alphabetic A - Z', value: '1' },
+              { label: 'Alphabetic Z - A', value: '2' },
+              // { label: 'Oldest transaction first', value: '3' }
+            ]
+              .map((item, index) => (
+                <Button
+                  key={index}
+                  color={ selectedFilterForPayees === item.value ? "blue" : "light-blue" }
+                  style={{marginBottom: 10}}
+                  onPress={() => {
+                    setSelectedFilterForPayees(item.value);
+                    setTimeout(() => {
+                      refRBSheetPayeesOrder?.current?.close();
+                    }, 400);
+                  }}
+                  //leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
+                >
+                  {item.label}
+                </Button>
+              ))
+            }
           </ScrollView>
         </SwipableBottomSheet>
         <Spinner visible={isLoading} />

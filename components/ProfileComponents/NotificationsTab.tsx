@@ -1,5 +1,5 @@
 import { useState, useEffect, FC } from "react";
-import { View, ScrollView, Pressable, Switch } from "react-native";
+import { View, ScrollView, Pressable, Switch, Platform } from "react-native";
 import { useSelector } from "react-redux";
 import { useFormik } from "formik";
 import Fontisto from "react-native-vector-icons/Fontisto";
@@ -132,7 +132,18 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
         <Pressable>
           <View>
             <WholeContainer>
-              <View style={styles.toggleSliderContainer}>
+              <View
+                style={[
+                  styles.toggleSliderContainer,
+                  {
+                    ...Platform.select({
+                      ios: {
+                        marginVertical: 8,
+                      },
+                    }),
+                  },
+                ]}
+              >
                 <View style={styles.toggleSliderContainerText}>
                   <Fontisto color="#086AFB" size={22} name={"email"} />
                   <Typography fontSize={16} marginLeft={6}>
@@ -154,7 +165,18 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
                 marginBottom={12}
               />
 
-              <View style={styles.toggleSliderContainer}>
+              <View
+                style={[
+                  styles.toggleSliderContainer,
+                  {
+                    ...Platform.select({
+                      ios: {
+                        marginVertical: 8,
+                      },
+                    }),
+                  },
+                ]}
+              >
                 <View style={styles.toggleSliderContainerText}>
                   <Feather color="#086AFB" size={22} name={"bell"} />
                   <Typography fontSize={16} marginLeft={6}>

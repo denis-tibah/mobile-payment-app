@@ -8,7 +8,7 @@ export function Limit({ size = 24, color = "pink" }) {
       viewBox="0 0 18 18"
       fill={getColor(color) || color}
     >
-      <G clipPath="url(#clip0_4976_5556)">
+      <G /* clipPath="url(#clip0_4976_5556)" */>
         <Path
           fillRule="evenodd"
           clipRule="evenodd"
@@ -17,11 +17,11 @@ export function Limit({ size = 24, color = "pink" }) {
           fillOpacity="1"
         />
       </G>
-      <Defs>
+      {/* <Defs>
         <ClipPath id="clip0_4976_5556">
           <Rect width={size} height={size} fill={getColor(color) || color} />
         </ClipPath>
-      </Defs>
+      </Defs> */}
     </Svg>
   );
 }

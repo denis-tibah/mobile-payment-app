@@ -228,7 +228,6 @@ export const styles: any = StyleSheet.create<any>({
     height: 80,
     backgroundColor: "#fff",
   },
-
   containerBackBtn: {
     display: "flex",
     flexDirection: "row",

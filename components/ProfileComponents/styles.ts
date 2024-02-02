@@ -58,8 +58,8 @@ export const styles = StyleSheet.create({
   },
   downloadBtnMain: {
     width: "100%",
-    paddingBottom: 12,
-    paddingTop: 12,
+    paddingBottom: 18,
+    paddingTop: 18,
     paddingLeft: 8,
     paddingRight: 8,
   },
@@ -121,5 +121,15 @@ export const styles = StyleSheet.create({
   },
   dobTextDefault: {
     color: vars["medium-grey"],
+  },
+  shadowBorder: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.37,
+    shadowRadius: 7.49,
+    elevation: 12,
   },
 });

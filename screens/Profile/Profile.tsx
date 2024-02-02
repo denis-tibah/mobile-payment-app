@@ -307,15 +307,13 @@ export function Profile({ route, navigation }: any) {
   const displayTabSelection = () => {
     switch (tabSelection) {
       case "Edit profile": {
-        return <ProfileTab cleanUpTabSelection={cleanUpTabSelection} />;
+        return <ProfileTab />;
       }
       case "Security": {
-        return <SecurityTab cleanUpTabSelection={cleanUpTabSelection} />;
+        return <SecurityTab />;
       }
       case "Financial data": {
-        return (
-          <FinancialDetailsTab cleanUpTabSelection={cleanUpTabSelection} />
-        );
+        return <FinancialDetailsTab />;
       }
       case "Notifications": {
         return <NotificationsTab cleanUpTabSelection={cleanUpTabSelection} />;

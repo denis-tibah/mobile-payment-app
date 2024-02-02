@@ -19,17 +19,14 @@ import { financialDataTabSchema } from "../../utils/formikSchema";
 import { sourceOfWealth, employmentStatus } from "../../data/options";
 import { useCreateTicketRequestMutation } from "../../redux/profile/profileSliceV2";
 import { RootState } from "../../store";
+import WholeContainer from "../../layout/WholeContainer";
+import Typography from "../Typography";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
-import FixedBottomAction from "../../components/FixedBottomAction";
 
-interface IFinancialDetailsTab {
-  cleanUpTabSelection: () => void;
-}
+interface IFinancialDetailsTab {}
 
-const FinancialDetailsTab: FC<IFinancialDetailsTab> = ({
-  cleanUpTabSelection,
-}) => {
+const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
   const profileData = useSelector(
     (state: RootState) => state?.profile?.profile
   )?.data;
@@ -125,12 +122,6 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = ({
     });
   };
 
-  /*   useFocusEffect(() => {
-    return () => {
-      cleanUpTabSelection();
-    };
-  }); */
-
   return (
     <Fragment>
       <View style={{ flexGrow: 0, backgroundColor: "#fff", height: "75%" }}>
@@ -147,134 +138,125 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = ({
               />
               <Pressable>
                 <View style={{ paddingBottom: 12, paddingTop: 16 }}>
-                  <View
-                    style={[
-                      styles.formContainer,
-                      { paddingLeft: 22, paddingRight: 22 },
-                    ]}
-                  >
-                    <FormGroup
-                      validationError={
-                        errors.annualSalary &&
-                        touched.annualSalary &&
-                        errors.annualSalary
-                      }
-                    >
-                      <FormGroup.Input
-                        keyboardType="numeric"
-                        returnKeyType={"done"}
-                        onChangeText={handleChange("annualSalary")}
-                        onBlur={handleBlur("annualSalary")}
-                        value={values.annualSalary}
-                        placeholder="Monthly account deposits"
-                        placeholderTextColor={vars["ios-default-text"]}
-                        iconColor="#086AFB"
-                        icon={<PigIcon size={16} color="blue" />}
+                  <View style={[styles.formContainer]}>
+                    <WholeContainer>
+                      <FormGroup
+                        validationError={
+                          errors.annualSalary &&
+                          touched.annualSalary &&
+                          errors.annualSalary
+                        }
+                      >
+                        <FormGroup.Input
+                          keyboardType="numeric"
+                          returnKeyType={"done"}
+                          onChangeText={handleChange("annualSalary")}
+                          onBlur={handleBlur("annualSalary")}
+                          value={values.annualSalary}
+                          placeholder="Monthly account deposits"
+                          placeholderTextColor={vars["ios-default-text"]}
+                          iconColor="#086AFB"
+                          icon={<PigIcon size={16} color="blue" />}
+                        />
+                      </FormGroup>
+                      <Seperator
+                        backgroundColor={vars["v2-light-grey"]}
+                        marginBottom={16}
                       />
-                    </FormGroup>
+                    </WholeContainer>
                   </View>
-                  <Seperator
-                    backgroundColor={vars["grey"]}
-                    marginBottom={16}
-                    width="100%"
-                  />
-                  <View
-                    style={[
-                      styles.formContainer,
-                      { paddingLeft: 22, paddingRight: 22 },
-                    ]}
-                  >
-                    <FormGroup
-                      validationError={
-                        errors.sourceOfDeposit &&
-                        touched.sourceOfDeposit &&
-                        errors.sourceOfDeposit
-                      }
-                    >
-                      <View style={styles.dropdownWrapper}>
-                        <View style={styles.dropDownIconContainerLeft}>
-                          <MaterialCommunityIcons
-                            size={20}
-                            color="#086AFB"
-                            name={"storefront-outline"}
-                          />
-                        </View>
-                        <View>
-                          <DropDownPicker
-                            schema={{ label: "label", value: "value" }}
-                            onSelectItem={(value: any) => {
-                              const { value: sourceOfWealthValue } = value;
 
-                              setValues({
-                                ...values,
-                                sourceOfDeposit: sourceOfWealthValue,
-                              });
-                            }}
-                            listMode="MODAL"
-                            items={sourceOfWealth}
-                            value={values?.sourceOfDeposit}
-                            setOpen={setOpenListForSourceOfDeposits}
-                            open={openListForSourceOfDeposits}
-                            style={styles.dropdown}
-                            dropDownContainerStyle={styles.dropdownContainer}
-                            placeholder="Source of deposit"
-                            placeholderStyle={{
-                              color: vars["medium-grey"],
-                            }}
-                          />
+                  <View style={[styles.formContainer]}>
+                    <WholeContainer>
+                      <FormGroup
+                        validationError={
+                          errors.sourceOfDeposit &&
+                          touched.sourceOfDeposit &&
+                          errors.sourceOfDeposit
+                        }
+                      >
+                        <View style={styles.dropdownWrapper}>
+                          <View style={styles.dropDownIconContainerLeft}>
+                            <MaterialCommunityIcons
+                              size={20}
+                              color="#086AFB"
+                              name={"storefront-outline"}
+                            />
+                          </View>
+                          <View>
+                            <DropDownPicker
+                              schema={{ label: "label", value: "value" }}
+                              onSelectItem={(value: any) => {
+                                const { value: sourceOfWealthValue } = value;
+
+                                setValues({
+                                  ...values,
+                                  sourceOfDeposit: sourceOfWealthValue,
+                                });
+                              }}
+                              listMode="MODAL"
+                              items={sourceOfWealth}
+                              value={values?.sourceOfDeposit}
+                              setOpen={setOpenListForSourceOfDeposits}
+                              open={openListForSourceOfDeposits}
+                              style={styles.dropdown}
+                              dropDownContainerStyle={styles.dropdownContainer}
+                              placeholder="Source of deposit"
+                              placeholderStyle={{
+                                color: vars["medium-grey"],
+                              }}
+                            />
+                          </View>
+                          <View style={styles.dropDownIconContainerRight}>
+                            <ArrowRightIcon size={16} color="blue" />
+                          </View>
                         </View>
-                        <View style={styles.dropDownIconContainerRight}>
-                          <ArrowRightIcon size={16} color="blue" />
-                        </View>
-                      </View>
-                    </FormGroup>
+                      </FormGroup>
+                    </WholeContainer>
                   </View>
-                  <View
-                    style={[
-                      styles.formContainer,
-                      { paddingLeft: 22, paddingRight: 22 },
-                    ]}
-                  >
-                    <FormGroup
-                      validationError={
-                        errors.employmentStatus &&
-                        touched.employmentStatus &&
-                        errors.employmentStatus
-                      }
-                    >
-                      <View style={styles.dropdownWrapper}>
-                        <View style={styles.dropDownIconContainerLeft}>
-                          <BusinessBagIcon size={16} color="blue" />
-                        </View>
-                        <View>
-                          <DropDownPicker
-                            schema={{ label: "label", value: "value" }}
-                            onSelectItem={(value: any) => {
-                              const { value: employmentStatusValue } = value;
+                  <View style={[styles.formContainer]}>
+                    <WholeContainer>
+                      <FormGroup
+                        validationError={
+                          errors.employmentStatus &&
+                          touched.employmentStatus &&
+                          errors.employmentStatus
+                        }
+                      >
+                        <View style={styles.dropdownWrapper}>
+                          <View style={styles.dropDownIconContainerLeft}>
+                            <BusinessBagIcon size={16} color="blue" />
+                          </View>
+                          <View>
+                            <DropDownPicker
+                              schema={{ label: "label", value: "value" }}
+                              onSelectItem={(value: any) => {
+                                const { value: employmentStatusValue } = value;
 
-                              setValues({
-                                ...values,
-                                employmentStatus: employmentStatusValue,
-                              });
-                            }}
-                            listMode="MODAL"
-                            items={employmentStatus}
-                            value={values?.employmentStatus}
-                            setOpen={setOpenListForEmploymentStatus}
-                            open={openListForEmploymentStatus}
-                            style={styles.dropdown}
-                            dropDownContainerStyle={styles.dropdownContainer}
-                            placeholder="Employment status"
-                            placeholderStyle={{
-                              color: vars["medium-grey"],
-                            }}
-                          />
+                                setValues({
+                                  ...values,
+                                  employmentStatus: employmentStatusValue,
+                                });
+                              }}
+                              listMode="MODAL"
+                              items={employmentStatus}
+                              value={values?.employmentStatus}
+                              setOpen={setOpenListForEmploymentStatus}
+                              open={openListForEmploymentStatus}
+                              style={styles.dropdown}
+                              dropDownContainerStyle={styles.dropdownContainer}
+                              placeholder="Employment status"
+                              placeholderStyle={{
+                                color: vars["medium-grey"],
+                              }}
+                            />
+                          </View>
+                          <View style={styles.dropDownIconContainerRight}>
+                            <ArrowRightIcon size={16} color="blue" />
+                          </View>
                         </View>
-                        <View style={styles.dropDownIconContainerRight}>
-                          <ArrowRightIcon size={16} color="blue" />
-                        </View>
-                      </View>
-                    </FormGroup>
+                      </FormGroup>
+                    </WholeContainer>
                   </View>
                 </View>
               </Pressable>
@@ -283,19 +265,27 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = ({
         </SafeAreaView>
         <View style={styles.footerContent}>
           <View style={styles.downloadBtnMain}>
-            <Button
-              color="light-pink"
-              leftIcon={
-                <Ionicons
-                  color="#e7038e"
-                  size={20}
-                  name={"checkmark-circle-outline"}
-                />
-              }
-              onPress={handleSubmit}
-            >
-              Save changes
-            </Button>
+            <WholeContainer>
+              <Button
+                color="light-pink"
+                leftIcon={
+                  <Ionicons
+                    color="#e7038e"
+                    size={20}
+                    name={"checkmark-circle-outline"}
+                  />
+                }
+                onPress={handleSubmit}
+              >
+                <Typography
+                  fontFamily="Nunito-SemiBold"
+                  fontSize={16}
+                  fontWeight={600}
+                >
+                  Save changes
+                </Typography>
+              </Button>
+            </WholeContainer>
           </View>
         </View>
       </View>

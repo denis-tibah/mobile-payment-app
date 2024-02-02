@@ -23,13 +23,12 @@ import { securityTabSchema } from "../../utils/formikSchema";
 import { useUpdatePasswordMutation } from "../../redux/profile/profileSliceV2";
 import WholeContainer from "../../layout/WholeContainer";
 import { RootState } from "../../store";
+import { styles } from "./styles";
 import vars from "../../styles/vars";
 
-interface ISecurityTab {
-  cleanUpTabSelection: () => void;
-}
+interface ISecurityTab {}
 
-const SecurityTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
+const SecurityTab: FC<ISecurityTab> = () => {
   const profileData = useSelector(
     (state: RootState) => state?.profile?.profile
   )?.data;
@@ -305,23 +304,18 @@ const SecurityTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
         </ScrollView>
       </SafeAreaView>
       <View
-        style={{
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 3,
+        style={[
+          styles.shadowBorder,
+          {
+            marginTop: 28,
+            paddingLeft: 12,
+            paddingRight: 12,
+            paddingTop: 22,
+            paddingBottom: 22,
+            marginBottom: 1,
+            backgroundColor: "#fff",
           },
-          shadowOpacity: 0.27,
-          shadowRadius: 4.65,
-          elevation: 6,
-          marginTop: 28,
-          paddingLeft: 12,
-          paddingRight: 12,
-          paddingTop: 22,
-          paddingBottom: 22,
-          marginBottom: 1,
-          backgroundColor: "#fff",
-        }}
+        ]}
       >
         <WholeContainer>
           <Button

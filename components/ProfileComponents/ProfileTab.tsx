@@ -40,11 +40,9 @@ import vars from "../../styles/vars";
 import { styles } from "./styles";
 import WholeContainer from "../../layout/WholeContainer";
 
-interface IProfileTab {
-  cleanUpTabSelection: () => void;
-}
+interface IProfileTab {}
 
-const ProfileTab: FC<IProfileTab> = ({ cleanUpTabSelection }) => {
+const ProfileTab: FC<IProfileTab> = () => {
   const profileData = useSelector(
     (state: RootState) => state?.profile?.profile
   )?.data;

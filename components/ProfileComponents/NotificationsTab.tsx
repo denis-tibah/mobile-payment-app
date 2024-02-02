@@ -13,6 +13,7 @@ import FormGroup from "../FormGroup";
 import Button from "../Button";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { Seperator } from "../Seperator/Seperator";
+import WholeContainer from "../../layout/WholeContainer";
 import TwoFactorAuthenticationIcon from "../../assets/icons/TwoFactorAuthentication";
 import { securityTabSchema } from "../../utils/formikSchema";
 import {
@@ -130,7 +131,7 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
         />
         <Pressable>
           <View>
-            <View>
+            <WholeContainer>
               <View style={styles.toggleSliderContainer}>
                 <View style={styles.toggleSliderContainerText}>
                   <Fontisto color="#086AFB" size={22} name={"email"} />
@@ -148,12 +149,16 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
                   value={emailNotifications}
                 />
               </View>
-              <Seperator backgroundColor={vars["grey"]} marginBottom={12} />
+              <Seperator
+                backgroundColor={vars["v2-light-grey"]}
+                marginBottom={12}
+              />
+
               <View style={styles.toggleSliderContainer}>
                 <View style={styles.toggleSliderContainerText}>
                   <Feather color="#086AFB" size={22} name={"bell"} />
                   <Typography fontSize={16} marginLeft={6}>
-                    Notification when limit is reached
+                    Notifications when limit is reached
                   </Typography>
                 </View>
                 <Switch
@@ -164,7 +169,7 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
                   value={notificationLimit}
                 />
               </View>
-            </View>
+            </WholeContainer>
           </View>
         </Pressable>
       </View>

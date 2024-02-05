@@ -299,24 +299,12 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                       </View>
                       <View style={styles.detailMobileInnerDetail}>
                         <View style={styles.detailMobile}>
-                          <Typography
-                            color="#086AFB"
-                            fontFamily="Nunito-Bold"
-                            fontSize={12}
-                            fontWeight={600}
-                          >
-                            Date & Time
-                          </Typography>
-                          <Typography
-                            color="#000"
-                            fontFamily="Nunito-SemiBold"
-                            fontSize={14}
-                            fontWeight={600}
-                          >
-                            {getFormattedDateAndTime(
+                          {displayTitle({ title: "Date & Time" })}
+                          {displayValue({
+                            content: getFormattedDateAndTime(
                               transaction?.transaction_datetime_with_hour
-                            )}
-                          </Typography>
+                            ),
+                          })}
                         </View>
                       </View>
                     </View>

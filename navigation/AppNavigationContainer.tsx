@@ -15,7 +15,6 @@ import AppNavigationWrapper from "./AppNavigationWrapper";
 import ErrorFallback from "../components/ErrorFallback";
 import { signout } from "../redux/auth/authSlice";
 import { setInActivityState } from "../redux/account/accountSlice";
-import CustomNavigator from "./CustomNavigator";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 const AppNavigationContainer = () => {
@@ -37,6 +36,11 @@ const AppNavigationContainer = () => {
   };
 
   const authData = useSelector((state: any) => state?.auth?.data);
+
+  const expiresInConvertToSeconds = authData?.expires_in
+    ? parseInt(authData?.expires_in, 10) * 1000
+    : 60000;
+
   const dispatch = useDispatch();
 
   const navigationRef = createNavigationContainerRef();
@@ -81,7 +85,7 @@ const AppNavigationContainer = () => {
 
   return (
     <UserInactivity
-      timeForInactivity={5000}
+      timeForInactivity={expiresInConvertToSeconds}
       onAction={(isActive) => {
         if (authData?.access_token) {
           if (!isActive) {

@@ -27,7 +27,7 @@ export const input: any = StyleSheet.create({
   wrapper: {
     width: "100%",
     height: 42,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#fff",
     borderRadius: 999,
     display: "flex",
     flexDirection: "row",

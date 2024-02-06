@@ -129,7 +129,7 @@ export function LoginScreen({ navigation }: any) {
     return compatible;
   };
 
-  const checkSavedBiometrics = async () => {
+  const checkSavedBiometrics = async (): Promise<boolean> => {
     const savedBiometric = await LocalAuthentication.isEnrolledAsync().then(
       (isEnrolled: boolean) => {
         if (!isEnrolled) {

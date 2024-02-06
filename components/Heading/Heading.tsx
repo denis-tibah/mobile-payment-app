@@ -9,7 +9,7 @@ export function Heading({ icon, children, title, rightAction, leftAction }: any)
       <View style={styles.innerContainer}>
         <View style={styles.icon}>{icon && icon}</View>
         <Typography
-          fontFamily="Nunito-SemiBold"
+          fontFamily="Nunito-Bold"
           fontWeight={600}
           fontSize={18}
         >

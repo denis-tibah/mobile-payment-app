@@ -1,6 +1,6 @@
 import { getColor } from "../color";
 import Svg, { Path } from "react-native-svg";
-export function Document({ size = 24, color = "pink" }) {
+export function Document({ size = 24, color = "blue" }) {
   return (
     <Svg
       width={size}

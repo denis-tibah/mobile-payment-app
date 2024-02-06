@@ -58,6 +58,7 @@ export function Input({
   iconColor,
   iconSize = 16,
   type = "text",
+  keyboardType = "default",
   value,
   disabled,
   ...props
@@ -74,6 +75,7 @@ export function Input({
         style={input.input}
         value={value ? value.toString() : null}
         type={type}
+        keyboardType={keyboardType}
         actionText={actionText}
         actionHandler={actionHandler}
         {...props}

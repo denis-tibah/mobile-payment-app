@@ -43,6 +43,8 @@ import {
   PinCodeInputClipBoard,
 } from "../../components/FormGroup/FormGroup";
 import ChangeLimits from "../../assets/icons/ChangeLimits";
+import Document from "../../assets/icons/Document";
+import Typography from "../../components/Typography";
 
 const currencyOptions = [
   { label: "EUR", value: "EUR" },
@@ -235,10 +237,14 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
       reference: "",
       isManualProcessing: false,
       reason: "",
+      attachedFile: "",
     },
     onSubmit: (values: any) => {
       setIsLoading(true);
-      console.log("values", values);
+      if (values.amount >= 5000 && !values?.attachedFile) {
+        setIsLoading(false);
+        return;
+      }
       handleInitiatepayment(values);
     },
     validationSchema: validationSchema,
@@ -297,20 +303,20 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                 style={styles.headerLeftIcon}
                 onPress={() => navigation.navigate(screenNames.payments)}
               >
-                <ArrowLeftLine size={14} color="blue" />
+                <ArrowLeftLine size={14} color="blue"/>
               </TouchableOpacity>
               <View>
                 <Text style={{ fontSize: 14 }}>{receiverName}</Text>
-                <Text style={{ fontSize: 12, color: vars["shade-grey"] }}>
+                <Typography fontSize={12} color={vars["shade-grey"]} textAlign="right">
                   {receiverIban}
-                </Text>
+                </Typography>
               </View>
             </View>
-            <View>
+            <View style={{paddingRight:5}}>
               <Text>Your Balance</Text>
-              <Text style={{ fontSize: 12, color: vars["shade-grey"] }}>
+              <Typography fontSize={12} color={vars["shade-grey"]} textAlign="right">
                 € {accountBalance}
-              </Text>
+              </Typography>
             </View>
           </View>
           <View
@@ -328,19 +334,19 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                 }
               >
                 <FormGroup.Input
-                  keyboardType="text"
                   name="amount"
+                  keyboardType="numeric"
                   onChangeText={handleChange("amount")}
                   onBlur={handleBlur("amount")}
                   value={values.amount}
                   placeholderTextColor={vars["ios-default-text"]}
                   placeholder="Amount to send"
                   iconColor="blue"
-                  style={{ height: 52 }}
+                  style={{ height: 42 }}
                   icon={<Euro size={22} />}
                 />
               </FormGroup>
-              {errors.amount && touched.amount && (
+              {errors.amount === "This amount is above your daily limit" && touched.amount && (
                 <TouchableOpacity
                   style={{
                     position: "absolute",
@@ -379,7 +385,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                 placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Reference"
                 iconColor="blue"
-                style={{ height: 52 }}
+                style={{ height: 42 }}
                 icon={<CloudMessage />}
               />
             </FormGroup>
@@ -423,8 +429,8 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                 placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Purpose of your transfer"
                 iconColor="blue"
-                style={{ height: 52 }}
-                icon={<CloudMessage />}
+                style={{ height: 42 }}
+                icon={<Document size={18} color={vars['accent-blue']} />}
               />
             </FormGroup>
             <View style={{ paddingHorizontal: 16 }}>
@@ -523,7 +529,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
         <Button
           onPress={handleSubmit}
           color="light-pink"
-          style={{ width: "80%", alignSelf: "center" }}
+          style={{ width: "100%", alignSelf: "center" }}
           leftIcon={
             <AntDesign
               name="checkcircleo"
@@ -736,9 +742,10 @@ const styles = StyleSheet.create({
     height: 35,
     width: 35,
     borderRadius: 20,
+    top: -7,
     margin: 7,
     backgroundColor: "#F5F9FF",
-    padding: 10,
+    padding: 11,
   },
   dropdown: {
     width: "93%",

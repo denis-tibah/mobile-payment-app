@@ -10,6 +10,7 @@ import * as Linking from "expo-linking";
 import { useDispatch, useSelector } from "react-redux";
 import ErrorBoundary from "react-native-error-boundary";
 import UserInactivity from "react-native-user-inactivity";
+import { PaperProvider } from "react-native-paper";
 
 import AppNavigationWrapper from "./AppNavigationWrapper";
 import ErrorFallback from "../components/ErrorFallback";
@@ -105,9 +106,11 @@ const AppNavigationContainer = () => {
           linking={linking}
           fallback={<Text>Loading...</Text>}
         >
-          <RootSiblingParent>
-            <AppNavigationWrapper />
-          </RootSiblingParent>
+          <PaperProvider>
+            <RootSiblingParent>
+              <AppNavigationWrapper />
+            </RootSiblingParent>
+          </PaperProvider>
         </NavigationContainer>
       </ErrorBoundary>
     </UserInactivity>

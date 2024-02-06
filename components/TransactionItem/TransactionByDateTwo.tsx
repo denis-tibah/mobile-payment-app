@@ -4,16 +4,15 @@ import { Text, View, TouchableOpacity, Pressable } from "react-native";
 import { Divider } from "react-native-paper";
 import { useAtom } from "jotai";
 import VectorIcon from "react-native-vector-icons/AntDesign";
+import { Snackbar, Portal } from "react-native-paper";
 
 import {
   formatAmountTableValue,
   getFormattedDate,
   getFormattedDateAndTime,
   fieldHasValue,
-  groupedByNameTransactions,
 } from "../../utils/helpers";
 import { styles } from "./stylesTwo";
-import ArrowDown from "../../assets/icons/ArrowDown";
 import Button from "../Button";
 import { AntDesign } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
@@ -48,24 +47,31 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
 
   const [, setTicketParams] = useAtom(helpTabticketParams);
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [openTransactionIndex, setOpenTransactionIndex] = useState<
+    number | null
+  >(null);
+  const [snackBarMessage, setSnackBarMessage] = useState({
+    open: false,
+    label: "",
+    message: "",
+  });
 
-  const handleOnOpen = (): void => {
-    setIsOpen(!isOpen);
-    setIsOneTransactionOpen && setIsOneTransactionOpen(!isOpen);
+  const handleToggleDetails = (index: number) => {
+    setOpenTransactionIndex((prevIndex) =>
+      prevIndex === index ? null : index
+    );
+  };
+
+  const handleCopyToClipboard = async (iban: string) => {
+    await Clipboard.setStringAsync(iban);
+    setSnackBarMessage({
+      open: true,
+      label: "Ok",
+      message: "Copied text from clipboard",
+    });
   };
 
   const TransactionByDate = ({ transactions }: any) => {
-    const [openTransactionIndex, setOpenTransactionIndex] = useState<
-      number | null
-    >(null);
-
-    const handleToggleDetails = (index: number) => {
-      setOpenTransactionIndex((prevIndex) =>
-        prevIndex === index ? null : index
-      );
-    };
-
     return (
       <>
         {transactions.map((transaction: Transaction, index: number) => {
@@ -269,10 +275,8 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                                   `${transaction?.iban.substring(0, 14)}...`,
                               })}
                               <TouchableOpacity
-                                onPress={async () =>
-                                  await Clipboard.setStringAsync(
-                                    transaction?.iban || ""
-                                  )
+                                onPress={() =>
+                                  handleCopyToClipboard(transaction?.iban)
                                 }
                                 style={{ paddingLeft: 10, paddingTop: 3 }}
                               >
@@ -360,22 +364,49 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
   };
 
   return (
-    <View style={{ backgroundColor: "#F5F9FF" }}>
-      <Pressable>
-        <WholeContainer>
-          <View style={{ paddingVertical: 6 }}>
-            <Typography
-              fontSize={14}
-              fontWeight={500}
-              fontFamily="Mukta-Regular"
-            >
-              {getFormattedDate(shownData.date)}
+    <Fragment>
+      <View style={{ backgroundColor: "#F5F9FF" }}>
+        <Pressable>
+          <WholeContainer>
+            <View style={{ paddingVertical: 6 }}>
+              <Typography
+                fontSize={14}
+                fontWeight={500}
+                fontFamily="Mukta-Regular"
+              >
+                {getFormattedDate(shownData.date)}
+              </Typography>
+            </View>
+          </WholeContainer>
+          <TransactionByDate transactions={transactionsByDate} />
+        </Pressable>
+      </View>
+      <Portal>
+        <Snackbar
+          visible={snackBarMessage.open}
+          onDismiss={() =>
+            setSnackBarMessage({ open: false, label: "", message: "" })
+          }
+          action={{
+            label: "Ok",
+            onPress: () => {
+              setSnackBarMessage({
+                open: false,
+                label: "",
+                message: "",
+              });
+            },
+          }}
+          duration={3000}
+        >
+          <View>
+            <Typography fontFamily="Nunito-Regular" fontSize={14} color="#fff">
+              {snackBarMessage.message}
             </Typography>
           </View>
-        </WholeContainer>
-        <TransactionByDate transactions={transactionsByDate} />
-      </Pressable>
-    </View>
+        </Snackbar>
+      </Portal>
+    </Fragment>
   );
 };
 export default TransactionsByDateTwo;

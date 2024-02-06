@@ -335,6 +335,18 @@ export function getFormattedDateFromUnix(dateToFormat: any) {
   return formattedDate;
 }
 
+export function getFormattedDateFromUnixDotted(dateToFormat: any) {
+  const date = new Date(dateToFormat);
+
+  const formattedDate = `${date.getDate().toString().padStart(2, "0")}.${(
+    date.getMonth() + 1
+  )
+    .toString()
+    .padStart(2, "0")}.${date.getFullYear()}`;
+
+  return formattedDate;
+}
+
 export function convertDateToName(timestamp: any) {
   let currentTimestamp = new Date(parseInt(timestamp));
 

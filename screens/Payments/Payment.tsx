@@ -20,6 +20,8 @@ import {
   formatAmountTableValue_old,
   formatDateDayMonthYear,
   formatTransactionsForPaymentScreen,
+  getFormattedDateFromUnix,
+  getFormattedDateFromUnixDotted,
   // getCurrency,
   getNameInitials,
   isPositiveAmount,
@@ -294,7 +296,7 @@ export function Payment({ navigation }: any) {
                             fontSize={14}
                             fontWeight={600}
                             fontFamily="Nunito-SemiBold"
-                          >{formatDateDayMonthYear(item.transaction_datetime)}
+                          >{getFormattedDateFromUnixDotted(item.transaction_datetime)}
                         </Typography>
                         <Typography 
                           color={isPositiveAmount(item.amount) ? "green" : "red"}

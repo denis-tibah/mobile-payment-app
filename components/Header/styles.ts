@@ -4,8 +4,8 @@ export const styles: any = StyleSheet.create({
   header: {
     paddingTop: 24,
     paddingBottom: 18,
-    paddingLeft: 24,
-    paddingRight: 24,
+    paddingLeft: 18,
+    paddingRight: 18,
     backgroundColor: "white",
     display: "flex",
     flexDirection: "row",
@@ -24,6 +24,16 @@ export const styles: any = StyleSheet.create({
     alignItems: "center",
   },
   action__iconMargin: {
-    marginRight: 16,
+    marginRight: 14,
+  },
+  iconContainer: {
+    height: 36,
+    width: 36,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFF0F9",
+    borderRadius: 999,
   },
 });

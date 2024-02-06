@@ -643,7 +643,7 @@ export function Card({ navigation, route }: any) {
                     <BugIcon size={18} color={vars['accent-blue']} />
                   </View>
                   <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito-SemiBold'}>
-                    {isShowTerminatedCard ? "Hide Terminated Cards" : "Show Terminated Cards"}
+                    {isTerminatedCardShown ? "Hide Terminated Cards" : "Show Terminated Cards"}
                   </Typography>
                 </View>
                 <TouchableOpacity style={{marginTop: 7}} >

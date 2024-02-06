@@ -9,6 +9,7 @@ import {
   getFormattedDate,
   getFormattedDateAndTime,
   fieldHasValue,
+  getFormattedDateFromUnixDotted,
 } from "../../utils/helpers";
 import { styles } from "./styles";
 import ArrowDown from "../../assets/icons/ArrowDown";
@@ -363,7 +364,7 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
             <View style={{ top: -4, paddingLeft: 3 }}>
               <Typography fontSize={14} textAlign="left">
                 {" "}
-                {getFormattedDate(shownData.date)}
+                {getFormattedDateFromUnixDotted(shownData.date)}
               </Typography>
             </View>
           </Box>

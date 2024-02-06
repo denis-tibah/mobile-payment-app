@@ -28,6 +28,7 @@ import {
   useInitiatePaymentMutation,
   useProcessPaymentMutation,
   useSmsRequestVerificationMutation,
+  useSubmitProcessPaymentMutation,
 } from "../../redux/payee/payeeSlice";
 import BottomSheet from "../../components/BottomSheet";
 import { CodeModal } from "../../components/CodeModal/CodeModal";
@@ -68,6 +69,8 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
   const [initiatePayment] = useInitiatePaymentMutation();
   const [smsRequestVerification] = useSmsRequestVerificationMutation();
   const [processPayment] = useProcessPaymentMutation();
+  const [submitProcessPayment] = useSubmitProcessPaymentMutation();
+
   const { data: userAccountInformation } = useGetAccountDetailsQuery({
     accountId: userData?.id || 0,
     accessToken: userTokens?.access_token,
@@ -124,6 +127,22 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
         refRBSheetCodeOTP?.current.close();
         refRBSheetSuccess?.current?.open();
         setIsPaymentSuccessful(true);
+        submitProcessPayment({
+          access_token: userTokens?.access_token,
+          token_ziyl: userTokens?.token_ziyl,
+          email: userData?.email,
+          reference: smsPaymentRequest?.remarks,
+          purpose: smsPaymentRequest?.reason,
+          ticketValue: {
+            processpaymentupload: [ // for improvement - arjay
+              {
+                filename:"test.pdf", 
+                data: smsPaymentRequest?.attached_file,
+                type: "application/pdf",
+              }
+            ]
+          },
+        });
       })
       .catch((err) => {
         console.log(err);

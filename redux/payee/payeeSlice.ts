@@ -133,20 +133,6 @@ export const payeeSlice = createApi({
         reference,
         purpose,
       }: any) => {
-        console.log({
-          identifier,
-          code,
-          amount,
-          currency,
-          debtor_iban,
-          creditor_iban,
-          remarks,
-          access_token,
-          token_ziyl,
-          reason,
-          reference,
-          purpose,
-        });
         return {
         url: `/processpaymentfinxp`,
         method: "POST",
@@ -169,6 +155,33 @@ export const payeeSlice = createApi({
         },
       }},
     }),
+    submitProcessPayment: builder.mutation({
+      query: ({ 
+        access_token,
+        token_ziyl,
+        email,
+        ticketValue,
+        reference,
+        purpose,
+      }: any) => {
+        return {
+        url: `/submitprocesspaymentticket `,
+        method: "POST",
+        body: {
+          type: "ProcessPaymentFileUpload",
+          email,
+          subject: "Process Payment",
+          reference,
+          purposeoftransfer: purpose,
+          ticketValue
+        },
+        headers: {
+          "Content-Type": "application/json",
+          AuthorizationFinxp: `Bearer ${access_token}`,
+          Authorization: `Bearer ${token_ziyl}`,
+        },
+      }},
+    }),
   }),
 });
 
@@ -179,6 +192,7 @@ export const {
   useInitiatePaymentMutation,
   useSmsRequestVerificationMutation,
   useProcessPaymentMutation,
+  useSubmitProcessPaymentMutation,
 } = payeeSlice;
 
 // reference = remarks

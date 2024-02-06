@@ -1,7 +1,6 @@
 import React, { useState, Fragment } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Text, View, TouchableOpacity, Pressable } from "react-native";
-import { Divider } from "react-native-paper";
 import { useAtom } from "jotai";
 import VectorIcon from "react-native-vector-icons/AntDesign";
 import { Snackbar, Portal } from "react-native-paper";
@@ -164,40 +163,44 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                 <Pressable>
                   <View style={styles.containerDetailsInfo}>
                     <View style={{ paddingTop: 12, paddingBottom: 16 }}>
-                      <View
-                        style={[
-                          styles.detailMobile,
-                          styles.marginerDetailMobile,
-                        ]}
-                      >
-                        {displayTitle({ title: "Transaction Reference" })}
-                        {displayValue({ content: transaction?.reference_no })}
-                      </View>
-                      <View style={styles.detailMobile}>
-                        {displayTitle({ title: "Transaction Status" })}
+                      {fieldHasValue(transaction?.reference_no) ? (
                         <View
-                          style={{
-                            marginTop: 4,
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "flex-start",
-                          }}
+                          style={[
+                            styles.detailMobile,
+                            styles.marginerDetailMobile,
+                          ]}
                         >
-                          <Text
-                            style={[
-                              styles.transactionStatus,
-                              transaction?.status === defaultStatus
-                                ? styles.valueDetailMobileStatusSuccess
-                                : styles.valueDetailMobileStatusFailed,
-                            ]}
-                          >
-                            {transaction?.status}
-                          </Text>
+                          {displayTitle({ title: "Transaction Reference" })}
+                          {displayValue({ content: transaction?.reference_no })}
                         </View>
-                      </View>
+                      ) : null}
+                      {fieldHasValue(transaction?.status) ? (
+                        <View style={styles.detailMobile}>
+                          {displayTitle({ title: "Transaction Status" })}
+                          <View
+                            style={{
+                              marginTop: 4,
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "flex-start",
+                            }}
+                          >
+                            <Text
+                              style={[
+                                styles.transactionStatus,
+                                transaction?.status === defaultStatus
+                                  ? styles.valueDetailMobileStatusSuccess
+                                  : styles.valueDetailMobileStatusFailed,
+                              ]}
+                            >
+                              {transaction?.status}
+                            </Text>
+                          </View>
+                        </View>
+                      ) : null}
                     </View>
                     {fieldHasValue(transaction?.description) ? (
-                      <Divider />
+                      <Seperator backgroundColor={vars["v2-light-grey"]} />
                     ) : null}
                     {fieldHasValue(transaction?.description) ? (
                       <View
@@ -218,10 +221,9 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                     ) : null}
                     {!fieldHasValue(transaction?.description) &&
                     transaction?.service === "DEBIT CARD" ? (
-                      <Divider /* style={{ marginTop: 10, marginBottom: 15 }}  */
-                      />
+                      <Seperator backgroundColor={vars["v2-light-grey"]} />
                     ) : null}
-                    {transaction?.service === "DEBIT CARD" ? (
+                    {/* {transaction?.service === "DEBIT CARD" ? (
                       <View
                         style={{
                           paddingTop: 16,
@@ -231,22 +233,19 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         <View style={styles.cardContainer}>
                           <View style={styles.cardContentContainer}>
                             {displayTitle({ title: "Card" })}
-                            {/* {displayValue({ content: "**** **** 5566" })} */}
                           </View>
                           <View style={styles.cardContentContainer}>
                             {displayTitle({ title: "FX" })}
-                            {/* {displayValue({ content: "$266.00" })} */}
                           </View>
                           <View style={styles.cardContentContainer}>
                             {displayTitle({ title: "Fees" })}
-                            {/* {displayValue({ content: "$0.86" })} */}
                           </View>
                         </View>
                       </View>
-                    ) : null}
-                    {transaction?.service != "DEBIT CARD" ? (
-                      <Divider style={{ marginVertical: 5 }} />
-                    ) : null}
+                    ) : null} */}
+                    {/* {transaction?.service != "DEBIT CARD" ? (
+                      <Seperator backgroundColor={vars["v2-light-grey"]} />
+                    ) : null} */}
                     {/* only show Iban and Bic for sepa transfer */}
                     {transaction?.service != "DEBIT CARD" ? (
                       <View
@@ -259,33 +258,34 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           paddingBottom: 16,
                         }}
                       >
-                        <View style={styles.detailMobileInnerDetail}>
-                          <Box style={styles.detailMobile}>
-                            {displayTitle({ title: "IBAN" })}
-                            <View
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                backgroundColor: "none",
-                              }}
-                            >
-                              {displayValue({
-                                content:
-                                  transaction?.iban &&
-                                  `${transaction?.iban.substring(0, 14)}...`,
-                              })}
-                              <TouchableOpacity
-                                onPress={() =>
-                                  handleCopyToClipboard(transaction?.iban)
-                                }
-                                style={{ paddingLeft: 10, paddingTop: 3 }}
+                        {fieldHasValue(transaction?.iban) ? (
+                          <View style={styles.detailMobileInnerDetail}>
+                            <Box style={styles.detailMobile}>
+                              {displayTitle({ title: "IBAN" })}
+                              <View
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  backgroundColor: "none",
+                                }}
                               >
-                                <CopyClipboard color="heavy-blue" size={14} />
-                              </TouchableOpacity>
-                            </View>
-                          </Box>
-                        </View>
-                        {/* do not show bic if the value is null */}
+                                {displayValue({
+                                  content:
+                                    transaction?.iban &&
+                                    `${transaction?.iban.substring(0, 14)}...`,
+                                })}
+                                <TouchableOpacity
+                                  onPress={() =>
+                                    handleCopyToClipboard(transaction?.iban)
+                                  }
+                                  style={{ paddingLeft: 10, paddingTop: 3 }}
+                                >
+                                  <CopyClipboard color="heavy-blue" size={14} />
+                                </TouchableOpacity>
+                              </View>
+                            </Box>
+                          </View>
+                        ) : null}
                         {fieldHasValue(transaction?.bic) ? (
                           <View style={styles.detailMobileInnerDetail}>
                             <Box style={styles.detailMobile}>
@@ -298,7 +298,8 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         ) : null}
                       </View>
                     ) : null}
-                    <Divider />
+
+                    <Seperator backgroundColor={vars["v2-light-grey"]} />
                     <View
                       style={{
                         display: "flex",
@@ -309,24 +310,30 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         paddingBottom: 16,
                       }}
                     >
-                      <View style={styles.detailMobileInnerDetail}>
-                        <Box style={styles.detailMobile}>
-                          {displayTitle({ title: "Type" })}
-                          {displayValue({
-                            content: transaction?.service,
-                          })}
-                        </Box>
-                      </View>
-                      <View style={styles.detailMobileInnerDetail}>
-                        <View style={styles.detailMobile}>
-                          {displayTitle({ title: "Date & Time" })}
-                          {displayValue({
-                            content: getFormattedDateAndTime(
-                              transaction?.transaction_datetime_with_hour
-                            ),
-                          })}
+                      {fieldHasValue(transaction?.service) ? (
+                        <View style={styles.detailMobileInnerDetail}>
+                          <Box style={styles.detailMobile}>
+                            {displayTitle({ title: "Type" })}
+                            {displayValue({
+                              content: transaction?.service,
+                            })}
+                          </Box>
                         </View>
-                      </View>
+                      ) : null}
+                      {fieldHasValue(
+                        transaction?.transaction_datetime_with_hour
+                      ) ? (
+                        <View style={styles.detailMobileInnerDetail}>
+                          <View style={styles.detailMobile}>
+                            {displayTitle({ title: "Date & Time" })}
+                            {displayValue({
+                              content: getFormattedDateAndTime(
+                                transaction?.transaction_datetime_with_hour
+                              ),
+                            })}
+                          </View>
+                        </View>
+                      ) : null}
                     </View>
                     <View style={{ marginTop: 10 }}>
                       <Button

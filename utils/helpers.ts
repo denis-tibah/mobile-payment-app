@@ -158,7 +158,9 @@ export const transactionStatusOptions = Object.keys(TRANSACTIONS_STATUS).map(
   }
 );
 
-export const formatTransactionsForPaymentScreen = (transactions: Transaction[]) => {
+export const formatTransactionsForPaymentScreen = (
+  transactions: Transaction[]
+) => {
   if (!transactions) return [];
   return transactions
     .filter((transaction) => transaction.service !== "DEBIT CARD")
@@ -257,11 +259,11 @@ export function formatDateDayMonthYear(dateToFormat: number) {
 export function getFormattedDate(dateToFormat: any) {
   const date = new Date(dateToFormat);
 
-  const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(
+  const formattedDate = `${date.getDate().toString().padStart(2, "0")}.${(
     date.getMonth() + 1
   )
     .toString()
-    .padStart(2, "0")}/${date.getFullYear()}`;
+    .padStart(2, "0")}.${date.getFullYear()}`;
 
   return formattedDate;
 }

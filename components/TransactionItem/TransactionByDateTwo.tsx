@@ -88,6 +88,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         fontSize={14}
                         fontFamily="Mukta-Regular"
                         fontWeight={400}
+                        paddingRight={24}
                       >
                         {transaction.name}
                       </Typography>
@@ -97,11 +98,11 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         display: "flex",
                         flexDirection: "row",
                         alignItems: "center",
-                        gap: 18,
-                        width: "30%",
-                        justifyContent: transaction?.amount
+                        width: "35%",
+                        /* justifyContent: transaction?.amount
                           ? "space-between"
-                          : "flex-end",
+                          : "flex-end", */
+                        justifyContent: "space-between",
                       }}
                     >
                       <View
@@ -132,19 +133,27 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           )}
                         </Typography>
                       </View>
-                      {openTransactionIndex === index ? (
-                        <VectorIcon
-                          size={14}
-                          color="#000"
-                          name={"minuscircleo"}
-                        />
-                      ) : (
-                        <VectorIcon
-                          size={14}
-                          color="#000"
-                          name={"pluscircleo"}
-                        />
-                      )}
+                      <View
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "flex-end",
+                        }}
+                      >
+                        {openTransactionIndex === index ? (
+                          <VectorIcon
+                            size={14}
+                            color="#000"
+                            name={"minuscircleo"}
+                          />
+                        ) : (
+                          <VectorIcon
+                            size={14}
+                            color="#000"
+                            name={"pluscircleo"}
+                          />
+                        )}
+                      </View>
                     </View>
                   </View>
                 </TouchableOpacity>

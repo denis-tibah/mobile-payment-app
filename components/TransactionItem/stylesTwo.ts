@@ -109,7 +109,7 @@ export const styles: any = StyleSheet.create<any>({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    width: "70%",
+    width: "65%",
     paddingRight: 16,
     gap: 6,
   },

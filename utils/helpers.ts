@@ -1,8 +1,16 @@
+import { Dimensions } from 'react-native';
 import { dateFormatter } from "./dates";
 import { Transaction } from "../models/Transactions";
 import { TRANSACTIONS_STATUS } from "./constants";
 import { err } from "react-native-svg/lib/typescript/xml";
 import dateFns from "date-fns";
+
+export const { 
+  width: widthGlobal, 
+  height: heightGlobal,
+} = Dimensions.get("window");
+export const globalWidthUnit = widthGlobal / 100;
+export const globalHeightUnit = heightGlobal / 100;
 
 export interface GroupedByDateTransactionObject {
   [date: string]: Transaction[];

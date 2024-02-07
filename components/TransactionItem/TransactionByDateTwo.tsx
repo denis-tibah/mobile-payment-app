@@ -74,6 +74,23 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
     return (
       <>
         {transactions.map((transaction: Transaction, index: number) => {
+          /* delete transaction?.status;
+          Object.assign(transaction, { status: "PENDING" }); */
+          const amount = transaction?.amount
+            ? parseInt(transaction?.amount, 10)
+            : 0;
+          let amountColor = "red";
+          if (transaction?.status) {
+            if (transaction?.status === "SUCCESS") {
+              if (amount > 0) {
+                amountColor = "green";
+              }
+            }
+            if (transaction?.status === "PENDING") {
+              amountColor = "#fcc774";
+            }
+          }
+
           return (
             <>
               <View
@@ -113,12 +130,9 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         }}
                       >
                         {shownData.currency === "EUR" ? (
-                          <EuroIcon
-                            size={14}
-                            color={+transaction?.amount > 0 ? "green" : "red"}
-                          />
+                          <EuroIcon size={14} color={amountColor} />
                         ) : (
-                          <DollarIcon size={14} color="#278664" />
+                          <DollarIcon size={14} color={amountColor} />
                         )}
                         <Typography
                           marginLeft={2}

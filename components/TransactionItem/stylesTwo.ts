@@ -185,6 +185,8 @@ export const styles: any = StyleSheet.create<any>({
     paddingHorizontal: 18,
     borderTopColor: "#DDD",
     borderTopWidth: 1,
+    /* borderTopBottomColor: "green",
+    borderBottomWidth: 1, */
     paddingTop: 16,
     paddingBottom: 28,
   },

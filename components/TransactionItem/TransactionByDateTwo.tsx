@@ -370,6 +370,13 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                       </Button>
                     </View>
                   </View>
+                  <View style={{ height: 1 }}>
+                    <Seperator
+                      backgroundColor="#F5F4F4"
+                      height={1}
+                      width={"100%"}
+                    />
+                  </View>
                 </Pressable>
               ) : null}
             </>

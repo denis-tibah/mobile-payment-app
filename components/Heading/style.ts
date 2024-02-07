@@ -11,6 +11,12 @@ export const styles: any = StyleSheet.create({
     paddingRight: 12,
     backgroundColor: "white",
     alignItems: "center",
+    shadowColor: "black",
+    shadowOffset: { width: -1, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    zIndex: 1,
+    elevation: 5,
   },
   title: {
     fontStyle: "normal",

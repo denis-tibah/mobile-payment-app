@@ -315,7 +315,9 @@ export default function AppNavigationWrapper() {
       />
 
       <Inactivity
-        isOpen={isUserInavtive}
+        isOpen={
+          isUserInavtive
+        }
         closePopup={() => dispatch(signout())}
       />
 

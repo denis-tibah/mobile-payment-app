@@ -15,7 +15,9 @@ export function Header({ navigation }: any): any {
   const route = useRoute();
 
   useEffect(() => {
-    dispatch<any>(getProfile());
+    if (auth?.data?.access_token) {
+      dispatch<any>(getProfile());
+    }
   }, []);
 
   const dispatch = useDispatch();

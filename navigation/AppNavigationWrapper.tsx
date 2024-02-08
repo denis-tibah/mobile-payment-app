@@ -66,11 +66,11 @@ function CardScreenStack() {
       screenOptions={{
         headerShown: false,
       }}
-      >
-        <CardStack.Screen name={screenNames.card} component={CardScreen} />
-        <CardStack.Screen name={screenNames.getCard} component={GetCardScreen} />
-      </CardStack.Navigator>
-  )
+    >
+      <CardStack.Screen name={screenNames.card} component={CardScreen} />
+      <CardStack.Screen name={screenNames.getCard} component={GetCardScreen} />
+    </CardStack.Navigator>
+  );
 }
 
 function PayeeStack() {
@@ -81,7 +81,10 @@ function PayeeStack() {
       }}
     >
       <Payee.Screen name={screenNames.payments} component={PaymentScreen} />
-      <Payee.Screen name={screenNames.payeeSendFunds} component={PayeeSendFunds} />
+      <Payee.Screen
+        name={screenNames.payeeSendFunds}
+        component={PayeeSendFunds}
+      />
     </Payee.Navigator>
   );
 }
@@ -112,6 +115,7 @@ export default function AppNavigationWrapper() {
   const isUserInavtive = useSelector(
     (state: RootState) => state.account.inactivityState
   );
+
   const [lastNotification, setLastNotification] = useState("");
   const [showApproval, setShowApproval] = useState({ show: false, data: {} });
   const [showReceivedPayment, setShowReceivedPayment] = useState({
@@ -212,8 +216,8 @@ export default function AppNavigationWrapper() {
   };
 
   const isBiometric = async () => {
-    const email = await SecureStore.getItemAsync("email");
-    const password = await SecureStore.getItemAsync("password");
+    const email = await SecureStore.getItemAsync("user_email");
+    const password = await SecureStore.getItemAsync("user_password");
     if (email && password) {
       return true;
     }
@@ -315,9 +319,7 @@ export default function AppNavigationWrapper() {
       />
 
       <Inactivity
-        isOpen={
-          isUserInavtive
-        }
+        isOpen={isUserInavtive}
         closePopup={() => dispatch(signout())}
       />
 

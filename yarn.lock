@@ -8227,6 +8227,11 @@ react-native-gradle-plugin@^0.71.18:
   resolved "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.19.tgz"
   integrity sha512-1dVk9NwhoyKHCSxcrM6vY6cxmojeATsBobDicX0ZKr7DgUF2cBQRTKsimQFvzH8XhOVXyH8p4HyDSZNIFI8OlQ==
 
+react-native-hookbox@^1.8.1:
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/react-native-hookbox/-/react-native-hookbox-1.8.1.tgz#e4f00c8e6bae021665b1518fa5397ba722264798"
+  integrity sha512-p2SwHdXJG59mAU/rseU0w1oNSCnzHyF0xAO+ABK1eSVNKlArFcuXmY0h+UU+Ompw7x/glit73hPww93fsbrnfA==
+
 react-native-inappbrowser-reborn@^3.7.0:
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/react-native-inappbrowser-reborn/-/react-native-inappbrowser-reborn-3.7.0.tgz#849a43c3c7da22b65147649fe596836bcb494083"

@@ -109,7 +109,7 @@ export const styles: any = StyleSheet.create<any>({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    width: "70%",
+    width: "65%",
     paddingRight: 16,
     gap: 6,
   },
@@ -185,6 +185,8 @@ export const styles: any = StyleSheet.create<any>({
     paddingHorizontal: 18,
     borderTopColor: "#DDD",
     borderTopWidth: 1,
+    /* borderTopBottomColor: "green",
+    borderBottomWidth: 1, */
     paddingTop: 16,
     paddingBottom: 28,
   },

@@ -146,13 +146,6 @@ export function Payment({ navigation }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      {/* <SuccessModal
-        isError={isAddPayeeError}
-        isOpen={isModalSuccessOpen}
-        title={isAddPayeeError ? "Error" : "Success"}
-        text={isAddPayeeError ? "Something went wrong" : "Payee added successfully"}
-        onClose={() => setIsModalSuccessOpen(false)}
-      /> */}
       <Spinner visible={isLoading} />
       <Heading
           icon={<EuroIcon color="pink" size={25} />}
@@ -304,7 +297,7 @@ export function Payment({ navigation }: any) {
                           fontWeight={600}
                           textAlign="right"
                           fontFamily="Nunito-SemiBold">
-                            {formatAmountTableValue_old(item.amount, item.currency)}
+                            {`€ ${formatAmountTableValue_old(item.amount, item.currency)}`}
                           </Typography>
                       </View>
                       <View style={{ paddingTop: 10, paddingLeft: 8 }}>

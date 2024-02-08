@@ -1,8 +1,16 @@
+import { Dimensions } from 'react-native';
 import { dateFormatter } from "./dates";
 import { Transaction } from "../models/Transactions";
 import { TRANSACTIONS_STATUS } from "./constants";
 import { err } from "react-native-svg/lib/typescript/xml";
 import dateFns from "date-fns";
+
+export const { 
+  width: widthGlobal, 
+  height: heightGlobal,
+} = Dimensions.get("window");
+export const globalWidthUnit = widthGlobal / 100;
+export const globalHeightUnit = heightGlobal / 100;
 
 export interface GroupedByDateTransactionObject {
   [date: string]: Transaction[];
@@ -158,7 +166,9 @@ export const transactionStatusOptions = Object.keys(TRANSACTIONS_STATUS).map(
   }
 );
 
-export const formatTransactionsForPaymentScreen = (transactions: Transaction[]) => {
+export const formatTransactionsForPaymentScreen = (
+  transactions: Transaction[]
+) => {
   if (!transactions) return [];
   return transactions
     .filter((transaction) => transaction.service !== "DEBIT CARD")
@@ -257,11 +267,11 @@ export function formatDateDayMonthYear(dateToFormat: number) {
 export function getFormattedDate(dateToFormat: any) {
   const date = new Date(dateToFormat);
 
-  const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(
+  const formattedDate = `${date.getDate().toString().padStart(2, "0")}.${(
     date.getMonth() + 1
   )
     .toString()
-    .padStart(2, "0")}/${date.getFullYear()}`;
+    .padStart(2, "0")}.${date.getFullYear()}`;
 
   return formattedDate;
 }

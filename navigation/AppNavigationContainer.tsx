@@ -4,7 +4,7 @@ import {
   NavigationContainer,
 } from "@react-navigation/native";
 import { RootSiblingParent } from "react-native-root-siblings";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import * as Linking from "expo-linking";
 /* import UserInactivity from "react-native-user-detector-active-inactive"; */
 import { useDispatch, useSelector } from "react-redux";
@@ -17,6 +17,7 @@ import ErrorFallback from "../components/ErrorFallback";
 import { signout } from "../redux/auth/authSlice";
 import { setInActivityState } from "../redux/account/accountSlice";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import Spinner from "react-native-loading-spinner-overlay/lib";
 
 const AppNavigationContainer = () => {
   const prefix = Linking.createURL("/");
@@ -104,7 +105,12 @@ const AppNavigationContainer = () => {
           ref={navigationRef}
           onStateChange={onStateChange}
           linking={linking}
-          fallback={<Text>Loading...</Text>}
+          fallback={
+            <View>
+              {/* <Spinner visible={true} /> */}
+              <Text>Loading...</Text>
+            </View>
+          }
         >
           <PaperProvider>
             <RootSiblingParent>

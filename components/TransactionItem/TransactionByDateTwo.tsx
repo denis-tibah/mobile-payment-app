@@ -74,6 +74,23 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
     return (
       <>
         {transactions.map((transaction: Transaction, index: number) => {
+          /* delete transaction?.status;
+          Object.assign(transaction, { status: "PENDING" }); */
+          const amount = transaction?.amount
+            ? parseInt(transaction?.amount, 10)
+            : 0;
+          let amountColor = "red";
+          if (transaction?.status) {
+            if (transaction?.status === "SUCCESS") {
+              if (amount > 0) {
+                amountColor = "green";
+              }
+            }
+            if (transaction?.status === "PENDING") {
+              amountColor = "#fcc774";
+            }
+          }
+
           return (
             <>
               <View
@@ -88,6 +105,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         fontSize={14}
                         fontFamily="Mukta-Regular"
                         fontWeight={400}
+                        paddingRight={24}
                       >
                         {transaction.name}
                       </Typography>
@@ -97,11 +115,11 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         display: "flex",
                         flexDirection: "row",
                         alignItems: "center",
-                        gap: 18,
-                        width: "30%",
-                        justifyContent: transaction?.amount
+                        width: "35%",
+                        /* justifyContent: transaction?.amount
                           ? "space-between"
-                          : "flex-end",
+                          : "flex-end", */
+                        justifyContent: "space-between",
                       }}
                     >
                       <View
@@ -112,12 +130,9 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         }}
                       >
                         {shownData.currency === "EUR" ? (
-                          <EuroIcon
-                            size={14}
-                            color={+transaction?.amount > 0 ? "green" : "red"}
-                          />
+                          <EuroIcon size={14} color={amountColor} />
                         ) : (
-                          <DollarIcon size={14} color="#278664" />
+                          <DollarIcon size={14} color={amountColor} />
                         )}
                         <Typography
                           marginLeft={2}
@@ -132,19 +147,27 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           )}
                         </Typography>
                       </View>
-                      {openTransactionIndex === index ? (
-                        <VectorIcon
-                          size={14}
-                          color="#000"
-                          name={"minuscircleo"}
-                        />
-                      ) : (
-                        <VectorIcon
-                          size={14}
-                          color="#000"
-                          name={"pluscircleo"}
-                        />
-                      )}
+                      <View
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "flex-end",
+                        }}
+                      >
+                        {openTransactionIndex === index ? (
+                          <VectorIcon
+                            size={14}
+                            color="#000"
+                            name={"minuscircleo"}
+                          />
+                        ) : (
+                          <VectorIcon
+                            size={14}
+                            color="#000"
+                            name={"pluscircleo"}
+                          />
+                        )}
+                      </View>
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -360,6 +383,13 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         Customer Service
                       </Button>
                     </View>
+                  </View>
+                  <View style={{ height: 1 }}>
+                    <Seperator
+                      backgroundColor="#F5F4F4"
+                      height={1}
+                      width={"100%"}
+                    />
                   </View>
                 </Pressable>
               ) : null}

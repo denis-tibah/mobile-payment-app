@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import { StatusBar, View } from "react-native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { Provider } from "react-redux";
@@ -99,6 +100,7 @@ export default function App() {
               </RootSiblingParent>
             </NavigationContainer>
           </UserInactivity> */}
+          <StatusBar backgroundColor="#4089e4" barStyle="light-content" />
           <AppNavigationContainer />
         </SafeAreaProvider>
       </PersistGate>

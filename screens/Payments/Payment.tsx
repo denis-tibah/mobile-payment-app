@@ -2,6 +2,7 @@ import React, { Fragment, useEffect, useRef, useState } from "react";
 import { View, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "react-native-loading-spinner-overlay/lib";
+import VectorIcon from "react-native-vector-icons/AntDesign";
 import { RootState } from "../../store";
 import { useAddPayeeMutation, useGetPayeesQuery, useLazyGetPayeesQuery } from "../../redux/payee/payeeSlice";
 import { Divider, Text } from "react-native-paper";
@@ -18,14 +19,19 @@ import CodeIcon from "../../assets/icons/Code";
 import { 
   formatAmountTableValue,
   formatAmountTableValue_old,
+  formatAmountWithCurrency,
   formatDateDayMonthYear,
   formatTransactionsForPaymentScreen,
   getFormattedDateFromUnix,
   getFormattedDateFromUnixDotted,
   // getCurrency,
   getNameInitials,
+  globalWidthUnit,
+  hp,
   isPositiveAmount,
-  screenNames
+  screenNames,
+  widthGlobal,
+  wp
 } from "../../utils/helpers";
 import vars from "../../styles/vars";
 import { validationAddingPayeeSchema, validationPaymentSchema } from "../../utils/validation";
@@ -162,6 +168,17 @@ export function Payment({ navigation }: any) {
             </View>
           }
         />
+      <View style={{
+        backgroundColor: '#fff',
+        height: 1,
+        width: widthGlobal, 
+        shadowColor: "black",
+        shadowOffset: { width: -1, height: 3 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        zIndex: .5,
+        elevation: 5
+      }}/>
       <ScrollView 
         bounces={true} 
         style={{backgroundColor: '#fff'}}
@@ -230,7 +247,9 @@ export function Payment({ navigation }: any) {
                 }
                 return a.name.localeCompare(b.name);
               })
-              .map((item: any, index: number) => (
+              .map((item: any, index: number) => {
+
+                return (
                 <Fragment key={index}>
                   <TouchableOpacity 
                   onPress={() => {
@@ -239,24 +258,27 @@ export function Payment({ navigation }: any) {
                     });
                   }}
                   key={index} style={{
-                      // borderTopWidth: selectedPayeeId ? 0 : 1,
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      // marginTop: 10,
-                      borderTopColor: vars['grey'],
-                      borderTopWidth: selectedPayeeId === index ? 0 : 1,
-                      // marginBottom: 5,
-                      padding: 10,
-                      borderBottomColor: vars['grey'],
-                      borderBottomWidth: selectedPayeeId === index ? 0 : 1,
-                    }}>
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    borderTopColor: vars['grey'],
+                    borderTopWidth: selectedPayeeId === index ? 0 : 1,
+                    padding: 10,
+                    borderBottomColor: vars['grey'],
+                    borderBottomWidth: selectedPayeeId === index ? 0 : 1,
+                  }}>
                     <View style={{display: 'flex', flexDirection: 'row'}}>
-                      <View style={{padding: 6, borderRadius: 99, backgroundColor: '#F5F4F4', width: 28, height: 28}}>
+                      <View style={{
+                        padding: wp(5.5),
+                        borderRadius: 99,
+                        backgroundColor: '#F5F4F4',
+                        width: wp(20),
+                        height: wp(20),
+                        }}>
                         <Typography 
                           color="#000"
-                          fontSize={10}
+                          fontSize={12}
                           fontWeight={600}
                           fontFamily="Nunito-Bold"
                         >
@@ -296,17 +318,23 @@ export function Payment({ navigation }: any) {
                           fontSize={12}
                           fontWeight={600}
                           textAlign="right"
-                          fontFamily="Nunito-SemiBold">
-                            {`€ ${formatAmountTableValue_old(item.amount, item.currency)}`}
+                          fontFamily="Nunito-SemiBold"
+                          top={hp(-1)}
+                          > 
+                            {`${formatAmountWithCurrency(item.amount)}`}
                           </Typography>
                       </View>
                       <View style={{ paddingTop: 10, paddingLeft: 8 }}>
-                        <ArrowRight color="blue" />
+                        <VectorIcon
+                          size={14}
+                          color={vars['accent-blue']}
+                          name={"pluscircleo"}
+                        />
                       </View>
                     </View>
                   </TouchableOpacity>
                 </Fragment>
-              ))}
+              )})}
           </View>
         </View>
       </Pressable>

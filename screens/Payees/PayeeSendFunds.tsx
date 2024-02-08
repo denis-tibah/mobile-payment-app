@@ -325,15 +325,15 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                 <ArrowLeftLine size={14} color="blue"/>
               </TouchableOpacity>
               <View>
-                <Text style={{ fontSize: 14 }}>{receiverName}</Text>
-                <Typography fontSize={12} color={vars["shade-grey"]} textAlign="right">
+                <Typography fontSize={14} color='#000' textAlign="left" fontFamily="Nunito-SemiBold">{receiverName}</Typography>
+                <Typography fontSize={12} color={vars["shade-grey"]} textAlign="left" fontFamily="Nunito-SemiBold">
                   {receiverIban}
                 </Typography>
               </View>
             </View>
             <View style={{paddingRight:5}}>
-              <Text>Your Balance</Text>
-              <Typography fontSize={12} color={vars["shade-grey"]} textAlign="right">
+              <Typography fontSize={14} color='#000' textAlign="left" fontFamily="Nunito-SemiBold">Your Balance</Typography>
+              <Typography fontSize={12} color={vars["shade-grey"]} textAlign="right" fontFamily="Nunito-SemiBold" top={-5}>
                 € {accountBalance}
               </Typography>
             </View>

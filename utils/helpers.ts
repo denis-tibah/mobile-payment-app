@@ -12,6 +12,8 @@ export const {
 export const globalWidthUnit = widthGlobal / 100;
 export const globalHeightUnit = heightGlobal / 100;
 
+export const wp = (unit: number) => (globalWidthUnit / 2) * unit;
+export const hp = (unit: number) => (globalHeightUnit / 2) * unit;
 export interface GroupedByDateTransactionObject {
   [date: string]: Transaction[];
 }
@@ -35,11 +37,7 @@ export function isPositiveAmount(amount: any = "") {
 
 export function formatAmountTableValue_old(amount: any = "", currency = "") {
   if (!amount || !currency) return;
-  // if (!amount.split(".")[1]) return
 
-  // console.log('***amount****',amount);
-
-  // if the amount is a whole number, for example, "+10"
   if (!amount.split(".")[1]) {
     if (amount > 0) {
       console.log("Positive number amount.slice(1)", amount);
@@ -47,7 +45,6 @@ export function formatAmountTableValue_old(amount: any = "", currency = "") {
         "Postive Decimal number amount",
         Number.parseFloat(amount).toFixed(2)
       );
-      // return `${amount.slice(1)}`;
       return `${amount}`;
     } else {
       console.log(
@@ -57,25 +54,16 @@ export function formatAmountTableValue_old(amount: any = "", currency = "") {
       return `${amount.slice(0, 1)} ${amount.slice(1)}`;
     }
   }
+}
 
-  // is the amount is a decimal number, for example, "-0.5"
-  if (amount > 0) {
-    if (amount.split(".")[1].length > 1) {
-      // console.log('Decimal number amount.slice(1)',amount.slice(1))
-      // return `${amount.slice(1)}`;
-      return `${amount}`;
+export function formatAmountWithCurrency(amount: any = "") {
+  if (!amount) return 0;
+  const _amount = amount.split(" ");
+  if (_amount.length === 2) {
+    if (_amount[0] === "+") {
+      return `+ € ${Number(_amount[1])}`;
     } else {
-      // console.log('Decimal number amount.slice(1)0',amount);
-      // return `${amount.slice(1)}0`;
-      return `${amount}`;
-    }
-  } else {
-    if (amount.split(".")[1].length > 1) {
-      // console.log('amount.slice(0, 1),amount.slice(1)',amount.slice(0, 1),amount.slice(1))
-      return `${amount.slice(0, 1)} ${amount.slice(1)}`;
-    } else {
-      // console.log('amount.slice(0, 1),amount.slice(1)}0',amount.slice(0, 1),amount.slice(1),'0')
-      return `${amount.slice(0, 1)} ${amount.slice(1)}0`;
+      return `- € ${Number(_amount[1])}`;
     }
   }
 }

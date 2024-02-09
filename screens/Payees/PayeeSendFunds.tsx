@@ -13,7 +13,7 @@ import Euro from "../../assets/icons/Euro";
 import CheckBox from "expo-checkbox";
 import { useFormik } from "formik";
 import MainLayout from "../../layout/Main";
-import { screenNames } from "../../utils/helpers";
+import { globalWidthUnit, screenNames, widthGlobal } from "../../utils/helpers";
 import ArrowLeftLine from "../../assets/icons/ArrowLeftLine";
 import vars from "../../styles/vars";
 import { Divider, overlay } from "react-native-paper";
@@ -325,27 +325,34 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                 <ArrowLeftLine size={14} color="blue"/>
               </TouchableOpacity>
               <View>
-                <Text style={{ fontSize: 14 }}>{receiverName}</Text>
-                <Typography fontSize={12} color={vars["shade-grey"]} textAlign="right">
+                <Typography fontSize={14} color='#000' textAlign="left" fontFamily="Nunito-SemiBold">{receiverName}</Typography>
+                <Typography fontSize={12} color={vars["shade-grey"]} textAlign="left" fontFamily="Nunito-SemiBold">
                   {receiverIban}
                 </Typography>
               </View>
             </View>
             <View style={{paddingRight:5}}>
-              <Text>Your Balance</Text>
-              <Typography fontSize={12} color={vars["shade-grey"]} textAlign="right">
+              <Typography fontSize={14} color='#000' textAlign="left" fontFamily="Nunito-SemiBold">Your Balance</Typography>
+              <Typography fontSize={12} color={vars["shade-grey"]} textAlign="right" fontFamily="Nunito-SemiBold">
                 € {accountBalance}
               </Typography>
             </View>
           </View>
           <View
             style={{
-              paddingVertical: 15,
+              paddingTop: 8,
               backgroundColor: "#fff",
               paddingHorizontal: 18,
             }}
           >
-            <Divider style={{ marginBottom: 25 }} />
+            <Divider style={{
+              marginBottom: 26,
+              width: widthGlobal,
+              left: -18,
+              height: 1,
+              backgroundColor: '#ACACAC',
+              opacity: 0.4
+            }} />
             <View style={{ marginBottom: 8, paddingBottom: 10 }}>
               <FormGroup
                 validationError={
@@ -408,7 +415,14 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                 icon={<CloudMessage />}
               />
             </FormGroup>
-            <Divider style={{ marginVertical: 15 }} />
+            <Divider style={{
+              marginVertical: 15,
+              width: widthGlobal,
+              left: -18,
+              height: 1,
+              backgroundColor: '#ACACAC',
+              opacity: 0.4
+            }} />
             {/* purpose of your transfer input */}
             <Text
               style={{
@@ -475,7 +489,14 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                 </Text>
               </TouchableOpacity>
             </View>
-            <Divider style={{ marginVertical: 15 }} />
+            <Divider style={{
+              marginVertical: 26,
+              width: widthGlobal,
+              left: -18,
+              height: 1,
+              backgroundColor: '#ACACAC',
+              opacity: 0.4
+            }} />
             <View style={{ display: "flex", flexDirection: "row" }}>
               <FormGroup>
                 <FormGroup.CheckboxUI
@@ -752,6 +773,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingTop: 20,
     paddingHorizontal: 10,
+    // backgroundColor: "#ACACAC",
   },
   headerLeft: {
     display: "flex",

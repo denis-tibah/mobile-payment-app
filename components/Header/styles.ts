@@ -15,7 +15,7 @@ export const styles: any = StyleSheet.create({
     shadowOffset: { width: -2, height: 5 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    zIndex: 1,
+    zIndex: 99,
     elevation: 10,
   },
   actions: {

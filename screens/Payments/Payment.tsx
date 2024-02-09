@@ -168,7 +168,7 @@ export function Payment({ navigation }: any) {
             </View>
           }
         />
-      <View style={{
+      {/* <View style={{
         backgroundColor: '#fff',
         height: 1,
         width: widthGlobal, 
@@ -178,7 +178,7 @@ export function Payment({ navigation }: any) {
         shadowRadius: 3,
         zIndex: .5,
         elevation: 5
-      }}/>
+      }}/> */}
       <ScrollView 
         bounces={true} 
         style={{backgroundColor: '#fff'}}

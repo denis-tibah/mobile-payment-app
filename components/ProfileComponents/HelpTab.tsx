@@ -245,7 +245,7 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
         }}
         wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
         containerStyles={{
-          height: dimensions.window.height - 130,
+          height: dimensions.window.height - 145,
           backgroundColor: "#ffffff",
           borderTopLeftRadius: 14,
           borderTopRightRadius: 14,

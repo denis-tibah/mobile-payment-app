@@ -7,7 +7,6 @@ import DropDownPicker from "react-native-dropdown-picker";
 import FormGroup from "../../components/FormGroup";
 import ArrowRightLong from "../../assets/icons/ArrowRightLong";
 import ArrowLeft from "../../assets/icons/ArrowLeft";
-import FixedBottomAction from "../../components/FixedBottomAction";
 import ButtonSubmit from "../../components/Button";
 import MapIcon from "../../assets/icons/Map";
 import KeyIcon from "../../assets/icons/Key";
@@ -17,7 +16,7 @@ import ArrowRightIcon from "../../assets/icons/ArrowRight";
 import Typography from "../../components/Typography";
 import { countries } from "../../data/ISO3166";
 import { noOfMonthsObj, noOfYearsObj } from "../../data/options";
-
+import WholeContainer from "../../layout/WholeContainer";
 import { Seperator } from "../../components/Seperator/Seperator";
 import { setRegistrationData } from "../../redux/registration/registrationSlice";
 import { addressDetailsSchema } from "../../utils/formikSchema";
@@ -731,24 +730,28 @@ const AddressDetails: FC<IAddressDetails> = ({
                 </View>
               </View>
             )}
-          <FixedBottomAction rounded isNoTopMargin>
-            <View style={styles.bottomButtonContainer}>
-              <ButtonSubmit
-                color="light-pink"
-                onPress={handlePrevStep}
-                leftIcon={<ArrowLeft size={14} />}
-              >
-                Back
-              </ButtonSubmit>
-              <ButtonSubmit
-                color="light-pink"
-                onPress={handleSubmit}
-                leftIcon={<ArrowRightLong size={14} />}
-              >
-                Continue
-              </ButtonSubmit>
+          <View style={styles.footerContent}>
+            <View style={styles.downloadBtnMain}>
+              <WholeContainer>
+                <View style={styles.bottomButtonContainer}>
+                  <ButtonSubmit
+                    color="light-pink"
+                    onPress={handlePrevStep}
+                    leftIcon={<ArrowLeft size={14} />}
+                  >
+                    Back
+                  </ButtonSubmit>
+                  <ButtonSubmit
+                    color="light-pink"
+                    onPress={handleSubmit}
+                    leftIcon={<ArrowRightLong size={14} />}
+                  >
+                    Continue
+                  </ButtonSubmit>
+                </View>
+              </WholeContainer>
             </View>
-          </FixedBottomAction>
+          </View>
         </View>
       </View>
     </View>

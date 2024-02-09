@@ -8,6 +8,7 @@ import { Seperator } from "../../components/Seperator/Seperator";
 import ProfileIcon from "../../assets/icons/Profile";
 import WebcamIcon from "../../assets/icons/Webcam";
 import FixedBottomAction from "../../components/FixedBottomAction";
+import WholeContainer from "../../layout/WholeContainer";
 import ArrowRightLong from "../../assets/icons/ArrowRightLong";
 import {
   /* sendSubsubToMobile, */
@@ -253,43 +254,28 @@ const VerificationLast: FC<IVerificationLast> = ({
               policy.
             </Typography>
           </View>
-          <FixedBottomAction rounded>
-            <View
-              style={{
-                width: "100%",
-                /* alignItems: "center", */
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyContent: "space-between",
-                paddingRight: 20,
-                gap: 8,
-                paddingBottom: 34,
-              }}
-            >
-              {/* <Button
-                color="light-pink"
-                onPress={handleSendToMobile}
-                leftIcon={<ArrowRightLong size={14} />}
-              >
-                Send to Mobile
-              </Button> */}
-
-              <Button
-                color="light-pink"
-                onPress={handleDoItLater}
-                leftIcon={<ArrowRightLong size={14} />}
-              >
-                Do it later
-              </Button>
-              <Button
-                color="light-pink"
-                onPress={handleContinue}
-                leftIcon={<ArrowRightLong size={14} />}
-              >
-                Continue
-              </Button>
+          <View style={styles.footerContent}>
+            <View style={styles.downloadBtnMain}>
+              <WholeContainer>
+                <View style={styles.bottomButtonContainer}>
+                  <Button
+                    color="light-pink"
+                    onPress={handleDoItLater}
+                    leftIcon={<ArrowRightLong size={14} />}
+                  >
+                    Do it later
+                  </Button>
+                  <Button
+                    color="light-pink"
+                    onPress={handleContinue}
+                    leftIcon={<ArrowRightLong size={14} />}
+                  >
+                    Continue
+                  </Button>
+                </View>
+              </WholeContainer>
             </View>
-          </FixedBottomAction>
+          </View>
         </View>
       </View>
     </View>

@@ -1,10 +1,9 @@
-import { FC, useState, Fragment } from "react";
+import { FC, Fragment } from "react";
 import { View, Text } from "react-native";
 import { useFormik } from "formik";
 import { useSelector, useDispatch } from "react-redux";
 
 import Typography from "../../components/Typography";
-import FixedBottomAction from "../../components/FixedBottomAction";
 import ButtonSubmit from "../../components/Button";
 import ArrowLeft from "../../assets/icons/ArrowLeft";
 import ArrowRightLong from "../../assets/icons/ArrowRightLong";
@@ -12,6 +11,7 @@ import { Seperator } from "../../components/Seperator/Seperator";
 import { termsAndConditionSchema } from "../../utils/formikSchema";
 import { setRegistrationData } from "../../redux/registration/registrationSlice";
 import FormGroup from "../../components/FormGroup";
+import WholeContainer from "../../layout/WholeContainer";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
 
@@ -127,33 +127,29 @@ const TermsAndSecurity: FC<ITermsAndSecurity> = ({
               </FormGroup>
             </View>
           </View>
-          <FixedBottomAction rounded>
-            <View
-              style={{
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                paddingRight: 20,
-              }}
-            >
-              <ButtonSubmit
-                color="light-pink"
-                onPress={handlePrevStep}
-                leftIcon={<ArrowLeft size={14} />}
-              >
-                Back
-              </ButtonSubmit>
-              <ButtonSubmit
-                color="light-pink"
-                onPress={handleSubmit}
-                leftIcon={<ArrowRightLong size={14} />}
-              >
-                Continue
-              </ButtonSubmit>
+
+          <View style={styles.footerContent}>
+            <View style={styles.downloadBtnMain}>
+              <WholeContainer>
+                <View style={styles.bottomButtonContainer}>
+                  <ButtonSubmit
+                    color="light-pink"
+                    onPress={handlePrevStep}
+                    leftIcon={<ArrowLeft size={14} />}
+                  >
+                    Back
+                  </ButtonSubmit>
+                  <ButtonSubmit
+                    color="light-pink"
+                    onPress={handleSubmit}
+                    leftIcon={<ArrowRightLong size={14} />}
+                  >
+                    Continue
+                  </ButtonSubmit>
+                </View>
+              </WholeContainer>
             </View>
-          </FixedBottomAction>
+          </View>
         </View>
       </View>
     </View>

@@ -16,13 +16,11 @@ import { salutations } from "../../data/options";
 import FormGroup from "../../components/FormGroup";
 import { profileDetailsSchema } from "../../utils/formikSchema";
 import { countries, nationalities } from "../../data/ISO3166";
-
 import { setRegistrationData } from "../../redux/registration/registrationSlice";
 import Typography from "../../components/Typography";
 import { Seperator } from "../../components/Seperator/Seperator";
-import FixedBottomAction from "../../components/FixedBottomAction";
-import { arrayChecker } from "../../utils/helpers";
 import ButtonSubmit from "../../components/Button";
+import WholeContainer from "../../layout/WholeContainer";
 
 import vars from "../../styles/vars";
 import { styles } from "./styles";
@@ -427,33 +425,36 @@ const ProfileDetails: FC<IProfileDetails> = ({
               </View>
             </FormGroup>
           </View>
-          <FixedBottomAction rounded>
-            <View
-              style={{
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                paddingRight: 20,
-              }}
-            >
-              <ButtonSubmit
-                color="light-pink"
-                onPress={handlePrevStep}
-                leftIcon={<ArrowLeft size={14} />}
-              >
-                Back
-              </ButtonSubmit>
-              <ButtonSubmit
-                color="light-pink"
-                onPress={handleSubmit}
-                leftIcon={<ArrowRightLong size={14} />}
-              >
-                Continue
-              </ButtonSubmit>
+          <View style={styles.footerContent}>
+            <View style={styles.downloadBtnMain}>
+              <WholeContainer>
+                <View
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <ButtonSubmit
+                    color="light-pink"
+                    onPress={handlePrevStep}
+                    leftIcon={<ArrowLeft size={14} />}
+                  >
+                    Back
+                  </ButtonSubmit>
+                  <ButtonSubmit
+                    color="light-pink"
+                    onPress={handleSubmit}
+                    leftIcon={<ArrowRightLong size={14} />}
+                  >
+                    Continue
+                  </ButtonSubmit>
+                </View>
+              </WholeContainer>
             </View>
-          </FixedBottomAction>
+          </View>
         </View>
       </View>
     </View>

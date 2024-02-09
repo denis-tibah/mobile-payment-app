@@ -194,7 +194,6 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingRight: 20,
   },
   listItemLabelStyle: {
     textAlign: "center",
@@ -213,5 +212,24 @@ export const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "flex-start",
+  },
+  footerContent: {
+    backgroundColor: "white",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    shadowOpacity: 0.1,
+    shadowRadius: 15,
+    shadowColor: "black",
+    elevation: 8,
+    paddingVertical: 8,
+    marginTop: 14,
+    borderBottomLeftRadius: 18,
+    borderBottomRightRadius: 18,
+  },
+  downloadBtnMain: {
+    width: "100%",
+    paddingBottom: 16,
+    paddingTop: 16,
   },
 });

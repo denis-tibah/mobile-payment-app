@@ -15,7 +15,6 @@ import ArrowRightLong from "../../assets/icons/ArrowRightLong";
 import SalutationIcon from "../../assets/icons/Salutation";
 import ArrowRightIcon from "../../assets/icons/ArrowRight";
 import FormGroup from "../../components/FormGroup";
-import FixedBottomAction from "../../components/FixedBottomAction";
 import Button from "../../components/Button";
 import { SuccessModal } from "../SuccessModal/SuccessModal";
 import { setRegistrationData } from "../../redux/registration/registrationSlice";
@@ -337,11 +336,11 @@ const LoginDetails: FC<ILoginDetails> = ({
                 />
               </FormGroup>
             </View>
-            <Seperator
+            {/* <Seperator
               backgroundColor={vars["input-light-grey"]}
               marginTop={8}
               marginBottom={20}
-            />
+            /> */}
             {isValidEmail ? (
               <View>
                 {!isChangeEmail ? (
@@ -398,12 +397,8 @@ const LoginDetails: FC<ILoginDetails> = ({
               </View>
             ) : null}
 
-            <FixedBottomAction rounded isNoPaddingLeft isNoInlineStyle>
-              <View
-                style={{
-                  width: "100%",
-                }}
-              >
+            <View style={styles.footerContent}>
+              <View style={styles.downloadBtnMain}>
                 <WholeContainer>
                   <Button
                     isTextAtEnd
@@ -417,7 +412,7 @@ const LoginDetails: FC<ILoginDetails> = ({
                   </Button>
                 </WholeContainer>
               </View>
-            </FixedBottomAction>
+            </View>
           </View>
         </View>
       </View>

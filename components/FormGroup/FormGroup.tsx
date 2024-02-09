@@ -1,6 +1,6 @@
 import { cloneElement, useEffect, useRef, useState } from "react";
 import { Picker, PickerIOS } from "@react-native-picker/picker";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as Clipboard from "expo-clipboard";
 import { Text, View, TextInput, Platform, Pressable } from "react-native";
 import Checkbox from "expo-checkbox";
@@ -88,10 +88,10 @@ export function Label({ children }: any) {
   return <Text style={input.label}>{children}</Text>;
 }
 
-export function TextArea({ ...props }) {
+export function TextArea({ wrapperHeight, ...props }: any) {
   return (
-    <View style={textarea.wrapper}>
-      <TextInput style={textarea.input} {...props} />
+    <View style={[textarea.wrapper, { height: wrapperHeight }]}>
+      <TextInput textAlign="left" style={textarea.input} {...props} multiline />
     </View>
   );
 }
@@ -267,8 +267,8 @@ export function PinCodeInputClipBoard({
         alignItems: "center",
       }}
     >
-      <View style={
-        {
+      <View
+        style={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -276,11 +276,11 @@ export function PinCodeInputClipBoard({
           height: 50,
           borderWidth: 1,
           borderRadius: 10,
-          borderColor: '#6BA6FD',
+          borderColor: "#6BA6FD",
           padding: 16,
           marginTop: 10,
-        }
-      }>
+        }}
+      >
         <TextInput
           style={{
             width: 215,
@@ -295,10 +295,10 @@ export function PinCodeInputClipBoard({
             setCode(codeArray);
             onChange(codeArray.join(""));
           }}
-          />
-          <View style={{display: 'flex', flexDirection: 'row'}}>
-            {[...Array(fieldCount)].map((item, i) => (
-            <Text 
+        />
+        <View style={{ display: "flex", flexDirection: "row" }}>
+          {[...Array(fieldCount)].map((item, i) => (
+            <Text
               key={i}
               style={{
                 width: 18,
@@ -306,8 +306,8 @@ export function PinCodeInputClipBoard({
                 marginLeft: 6,
                 marginRight: 6,
                 borderBottomWidth: 1,
-              }}>
-            </Text>
+              }}
+            ></Text>
           ))}
         </View>
       </View>

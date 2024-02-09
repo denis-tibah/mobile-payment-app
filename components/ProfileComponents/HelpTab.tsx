@@ -1,5 +1,5 @@
 import { useState, FC, useRef, Fragment, useEffect } from "react";
-import { View, ScrollView, Pressable, Image } from "react-native";
+import { View, ScrollView, Pressable, Image, Dimensions } from "react-native";
 import { useSelector } from "react-redux";
 import { useFormik } from "formik";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -21,6 +21,7 @@ import { RootState } from "../../store";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
 import Typography from "../Typography";
+import WholeContainer from "../../layout/WholeContainer";
 import SwipableBottomSheet from "../SwipableBottomSheet";
 
 interface IFinancialDetailsTab {
@@ -29,7 +30,8 @@ interface IFinancialDetailsTab {
   transactionReferenceNumber?: string;
   handleCloseBottomSheet: () => void;
 }
-
+const windowDimensions = Dimensions.get("window");
+const screenDimensions = Dimensions.get("screen");
 const HelpTab: FC<IFinancialDetailsTab> = ({
   isOpenBottomSheet,
   passedTicketType,
@@ -51,6 +53,10 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
     isOpen: boolean;
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
+  const [dimensions, setDimensions] = useState({
+    window: windowDimensions,
+    screen: screenDimensions,
+  });
 
   const [
     createTicketFreshDesk,
@@ -109,22 +115,25 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
       });
     },
   });
-  console.log("🚀 ~ values:", values);
 
   useEffect(() => {
     if (isOpenBottomSheet) {
       refRBSheet.current.open();
+    } else {
+      refRBSheet.current.close();
     }
   }, [isOpenBottomSheet]);
 
   useEffect(() => {
-    setFieldValue("type", passedTicketType);
-    setFieldValue(
-      "ticketValue",
-      transactionReferenceNumber
-        ? `Transaction Reference: ${transactionReferenceNumber}`
-        : ""
-    );
+    if (passedTicketType && transactionReferenceNumber) {
+      setFieldValue("type", passedTicketType);
+      setFieldValue(
+        "ticketValue",
+        transactionReferenceNumber
+          ? `Transaction Reference: ${transactionReferenceNumber}`
+          : ""
+      );
+    }
   }, [passedTicketType, transactionReferenceNumber]);
 
   const onCloseModal = (): void => {
@@ -231,12 +240,12 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
         rbSheetRef={refRBSheet}
         closeOnDragDown={true}
         closeOnPressMask={false}
-        height={560}
         onClose={() => {
           handleCloseBottomSheet();
         }}
         wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
         containerStyles={{
+          height: dimensions.window.height - 130,
           backgroundColor: "#ffffff",
           borderTopLeftRadius: 14,
           borderTopRightRadius: 14,
@@ -342,12 +351,15 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
                     values.ticketValue === "N/A" ? false : true
                   }
                   placeholder="Type here your issue"
+                  wrapperHeight={dimensions.window.height - 480}
                 />
               </FormGroup>
             </View>
           </View>
-          <View style={styles.footerContent}>
-            <View style={styles.downloadBtnMain}>
+        </View>
+        <View style={styles.footerContent}>
+          <View style={styles.downloadBtnMain}>
+            <WholeContainer>
               <Button
                 color="light-pink"
                 leftIcon={
@@ -359,9 +371,15 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
                 }
                 onPress={handleSubmit}
               >
-                Send ticket
+                <Typography
+                  fontFamily="Nunito-SemiBold"
+                  fontSize={16}
+                  fontWeight={600}
+                >
+                  Send ticket
+                </Typography>
               </Button>
-            </View>
+            </WholeContainer>
           </View>
         </View>
       </SwipableBottomSheet>

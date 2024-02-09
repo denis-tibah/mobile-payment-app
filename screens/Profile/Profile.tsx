@@ -295,7 +295,6 @@ export function Profile({ route, navigation }: any) {
   const cleanUpTabSelection = () => setTabSelection("");
 
   const handleCloseBottomSheet = (): void => {
-    console.log("trigger this");
     setTicketParams({
       tabSelectionRoute: "",
       isOpenBottomSheet: false,

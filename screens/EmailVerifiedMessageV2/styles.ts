@@ -14,7 +14,7 @@ export const styles: any = StyleSheet.create<any>({
     zIndex: 2,
   },
   contentWrapper: {
-    height: 450,
+    height: 380,
   },
   headerContainer: {
     backgroundColor: "#0DCA9D",
@@ -34,15 +34,19 @@ export const styles: any = StyleSheet.create<any>({
     justifyContent: "space-around",
     alignItems: "center",
   },
-  buttonOK: {
-    height: 30,
-    width: 90,
-    marginTop: 24,
+  okWrapper: {
+    backgroundColor: "#fff",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
   },
+  buttonOK: { backgroundColor: "#fff", height: 30, width: 90, marginTop: 24 },
   imageWrapper: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-around",
+    backgroundColor: "#fff",
   },
   image: {
     height: 200,

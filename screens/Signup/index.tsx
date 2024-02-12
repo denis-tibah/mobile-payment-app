@@ -59,6 +59,8 @@ export function SignupScreen({ navigation, route }: any) {
     if (route?.params?.stepIndex === 1) {
       setIsOpenModal(false);
       setNavIndex(route?.params?.stepIndex);
+    } else {
+      setNavIndex(0);
     }
   }, [route?.params]);
 

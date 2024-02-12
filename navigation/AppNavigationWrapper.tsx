@@ -379,6 +379,7 @@ export default function AppNavigationWrapper() {
               options={{
                 headerShown: false,
               }}
+              initialParams={{ stepIndex: 0 }}
             />
             <Root.Screen
               name={"forgottenPassword"}

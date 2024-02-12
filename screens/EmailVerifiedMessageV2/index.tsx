@@ -1,5 +1,11 @@
+import React, {
+  Fragment,
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
 import { useNavigation } from "@react-navigation/native";
-import React, { Fragment, useEffect, useState, useCallback } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 /* import { useDispatch, useSelector } from "react-redux"; */
 
@@ -14,6 +20,7 @@ import Typography from "../../components/Typography";
 import CheckIcon from "../../assets/icons/Check";
 import { styles } from "./styles";
 import ModalBottomSheet from "../../components/ModalBottomSheet/ModalBottomSheet";
+import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 
 export default function EmailVerifiedMessageV2({
   isOpen,
@@ -23,6 +30,7 @@ export default function EmailVerifiedMessageV2({
   route,
 }: any) {
   const { navigate }: any = useNavigation();
+  const refRBSheet = useRef();
   /* const dispatch = useDispatch(); */
   /* const userData = useSelector((state: RootState) => state?.auth?.userData); */
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
@@ -30,6 +38,14 @@ export default function EmailVerifiedMessageV2({
   useEffect(() => {
     setIsOpenModal(isOpen);
   }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpenModal) {
+      refRBSheet?.current?.open();
+    } else {
+      refRBSheet?.current?.close();
+    }
+  }, [isOpenModal]);
 
   // console.log('*****data*****', data?.emailverificationData);
 
@@ -77,7 +93,7 @@ export default function EmailVerifiedMessageV2({
 
   return (
     <Fragment>
-      {isOpenModal ? (
+      {/* {isOpenModal ? (
         <ModalBottomSheet
           isOpen={isOpenModal}
           hasNoHeaderPadding
@@ -112,6 +128,61 @@ export default function EmailVerifiedMessageV2({
             />
           </View>
         </ModalBottomSheet>
+      ) : null} */}
+      {isOpenModal ? (
+        <SwipableBottomSheet
+          rbSheetRef={refRBSheet}
+          closeOnDragDown={true}
+          closeOnPressMask={false}
+          onClose={() => {
+            navigate(screenNames.signup, {
+              stepIndex: 1,
+            });
+          }}
+          height={380}
+          wrapperStyles={{
+            backgroundColor: "rgba(255, 255, 255, 0.5)",
+            zIndex: 2,
+          }}
+          containerStyles={{
+            backgroundColor: "#0DCA9D",
+            borderTopLeftRadius: 14,
+            borderTopRightRadius: 14,
+            elevation: 12,
+            shadowColor: "#52006A",
+            zIndex: 2,
+          }}
+          draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
+        >
+          <View style={styles.headerContainer}>
+            <View style={styles.headerWrapper}>
+              <CheckIcon color="white" size={18} />
+              <Typography
+                color="#FFFF"
+                fontSize={18}
+                marginLeft={6}
+                fontWeight={600}
+              >
+                Email address verified
+              </Typography>
+            </View>
+          </View>
+          <View style={styles.okWrapper}>
+            <Button
+              color={"green"}
+              onPress={() => closePopup()}
+              style={styles.buttonOK}
+            >
+              <Text>OK</Text>
+            </Button>
+          </View>
+          <View style={styles.imageWrapper}>
+            <Image
+              source={require('("../../../assets/images/verified.png')}
+              style={styles.image}
+            />
+          </View>
+        </SwipableBottomSheet>
       ) : null}
     </Fragment>
   );

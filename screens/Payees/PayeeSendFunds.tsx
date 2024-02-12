@@ -13,7 +13,7 @@ import Euro from "../../assets/icons/Euro";
 import CheckBox from "expo-checkbox";
 import { useFormik } from "formik";
 import MainLayout from "../../layout/Main";
-import { globalWidthUnit, screenNames, widthGlobal } from "../../utils/helpers";
+import { globalWidthUnit, hp, screenNames, widthGlobal, wp } from "../../utils/helpers";
 import ArrowLeftLine from "../../assets/icons/ArrowLeftLine";
 import vars from "../../styles/vars";
 import { Divider, overlay } from "react-native-paper";
@@ -322,7 +322,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                 style={styles.headerLeftIcon}
                 onPress={() => navigation.navigate(screenNames.payments)}
               >
-                <ArrowLeftLine size={14} color="blue"/>
+                <ArrowLeftLine size={18} color="blue"/>
               </TouchableOpacity>
               <View>
                 <Typography fontSize={14} color='#000' textAlign="left" fontFamily="Nunito-SemiBold">{receiverName}</Typography>
@@ -780,13 +780,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   headerLeftIcon: {
-    height: 35,
-    width: 35,
-    borderRadius: 20,
-    top: -7,
+    height: wp(23),
+    width: wp(23),
+    borderRadius: wp(23),
+    top: hp(-2.7),
     margin: 7,
     backgroundColor: "#F5F9FF",
-    padding: 11,
+    padding: wp(7.5),
   },
   dropdown: {
     width: "93%",

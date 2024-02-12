@@ -5,13 +5,31 @@ import vars from "../../../styles/vars";
 import { managePaymentMethods } from "../../../utils/constants";
 import { Divider } from "react-native-paper";
 
-const ManagePaymentMethod: React.FC = () => {
-  const [listOfChecks, setListOfChecks] = useState<string[]>([]);
+type ManagePaymentMethodProps = {
+  handleOnlinePayment: () => void;
+  listOfCheckedOptions: string[];
+  setListOfCheckedOptions: React.Dispatch<React.SetStateAction<string[]>>;
+}
+
+const ManagePaymentMethod: React.FC<ManagePaymentMethodProps> = ({
+  handleOnlinePayment,
+  listOfCheckedOptions,
+  setListOfCheckedOptions,
+  }) => {
+  const handleActionPerItem = (item: string) => {
+    switch (item) {
+      case 'online_payment':
+        handleOnlinePayment();
+        break;
+      default:
+        break;
+    }
+  }
 
   return (
     <View style={styles.container}>
       {managePaymentMethods.map((item, index) => {
-        const checkIfThisIsChecked = listOfChecks.find((check) => check === item.label);
+        const isThisIndexDefaultChecked = listOfCheckedOptions.includes(item.value);
         return (
         <>
           <View style={styles.row} key={index}>
@@ -25,17 +43,18 @@ const ManagePaymentMethod: React.FC = () => {
             </View>
             <Switch
               trackColor={{ false: "#767577", true: "#81b0ff" }}
-              thumbColor={checkIfThisIsChecked ? vars['accent-blue'] : "#f4f3f4"}
+              thumbColor={isThisIndexDefaultChecked ? vars['accent-blue'] : "#f4f3f4"}
               ios_backgroundColor="#3e3e3e"
               onValueChange={() => {
-                if (checkIfThisIsChecked) {
-                  setListOfChecks(listOfChecks.filter((check) => check !== item.label));
+                if (isThisIndexDefaultChecked) {
+                  setListOfCheckedOptions(listOfCheckedOptions.filter((check) => check !== item.value));
                 } else {
-                  setListOfChecks([...listOfChecks, item.label]);
+                  setListOfCheckedOptions([...listOfCheckedOptions, item.value]);
                 }
+                handleActionPerItem(item.value);
               }}
               style={{top: -9}}
-              value={checkIfThisIsChecked ? true : false}
+              value={!!(isThisIndexDefaultChecked)}
             />
           </View>
           <Divider 

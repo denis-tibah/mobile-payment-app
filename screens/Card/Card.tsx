@@ -52,12 +52,15 @@ import { PinCodeInputBoxes, PinCodeInputClipBoard } from "../../components/FormG
 import { useLazyOrderCardQuery, useLazySendSmsLostCardVerificationQuery, useLazyShowCardDetailsQuery } from "../../redux/card/cardSliceV2";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 import { Seperator } from "../../components/Seperator/Seperator";
+import { managePaymentMethods } from "../../utils/constants";
 
 const DEFAULT_CARD_ENROLLMENT_STATUS = {
   title: "",
   text: "",
   isError: false,
 };
+
+const paymentManageOptions = managePaymentMethods.map((option: any) => option.value);
 
 export function Card({ navigation, route }: any) {
   const dispatch = useDispatch();
@@ -81,31 +84,34 @@ export function Card({ navigation, route }: any) {
   const [terminatedCardModal, setTerminatedCardModal] = useState<boolean>(false);
   const [cardDetails, setCardDetails] = useState<ICardDetails>({});
   const [freezeLoading, setFreezeLoading] = useState(false);
-  const [showCardOtpModal, setShowCardOtpModal] = useState(false);
-  const [showGetCardModal, setShowGetCardModal] = useState(false);
-  const [showCardOtpLoading, setShowCardOtpLoading] = useState(false);
+  // const [showCardOtpModal, setShowCardOtpModal] = useState(false);
+  // const [showGetCardModal, setShowGetCardModal] = useState(false);
+  // const [showCardOtpLoading, setShowCardOtpLoading] = useState(false);  
+  // const [isManagePaymentMethod, setIsManagePaymentMethod] = useState<boolean>(false);
+  // const [isShowTerminatedCard, setIsShowTerminatedCard] = useState<boolean>(false);
+  // const [isLostPinActionPressed, setIsLostPinActionPressed] = useState<boolean>(false);  
+  // const [timeRemaining, setTimeRemaining] = useState<number>(60);
+  // const enableResend = timeRemaining === 0;
+  // const [onSnapEnd, setOnSnapEnd] = useState<any>(false);
+  // const [chosenCurrency, setChosenCurrency] = useState<string>("");
+
   const [selectedCard, setSelectedCard] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isManagePaymentMethod, setIsManagePaymentMethod] = useState<boolean>(false);
-  const [isShowTerminatedCard, setIsShowTerminatedCard] = useState<boolean>(false);
-  const [isLostPinActionPressed, setIsLostPinActionPressed] = useState<boolean>(false);
-  const [timeRemaining, setTimeRemaining] = useState<number>(60);
+  const [listOfCheckedOptions, setListOfCheckedOptions] = useState<string[]>([]);
   const [isTimeToCountDown, setIsTimeToCountDown] = useState<boolean>(false);
-  const enableResend = timeRemaining === 0;
-  const [onSnapEnd, setOnSnapEnd] = useState<any>(false);
-  const [chosenCurrency, setChosenCurrency] = useState<string>("");
+  const timeRemaining = 30;
   // const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
-  const [isEnrollingCard, setIsEnrollingCard] = useState<boolean>(false);
+  // const [isEnrollingCard, setIsEnrollingCard] = useState<boolean>(false);
   const [enrollmentCardStatus, setEnrollmentCardStatus] = useState<{
     title: string;
     text: string;
     isError: boolean;
   }>(DEFAULT_CARD_ENROLLMENT_STATUS);
-  const [orderCard, {
-    isLoading: orderCardIsLoading, 
-    isSuccess: orderCardIsSuccess,
-    isError: orderCardIsError,
-  }] = useLazyOrderCardQuery();
+  // const [orderCard, {
+  //   isLoading: orderCardIsLoading, 
+  //   isSuccess: orderCardIsSuccess,
+  //   isError: orderCardIsError,
+  // }] = useLazyOrderCardQuery();
   const [showCardDetails, {
     isLoading: showCardDetailsIsLoading,
     isSuccess: showCardDetailsIsSuccess,
@@ -117,9 +123,6 @@ export function Card({ navigation, route }: any) {
 
   const handlePinCodeChange = (value: string) => {
     setCardPin(value);
-    if (value.length === 6) {
-      processEnrollmentAndShowPinCard({ code: value });
-    }
   }
 
   const handleDataChangeShownOnCards = (index?: number) => {
@@ -152,7 +155,9 @@ export function Card({ navigation, route }: any) {
       .then((res: any) => {
         const updatedSelectedCard = res.find((card: any) => card.cardreferenceId === selectedCard?.cardreferenceId);
         handleGetCards();
-        setSelectedCard(updatedSelectedCard);
+        setTimeout(() => {
+          setSelectedCard(updatedSelectedCard);
+        }, 1000);
       })
       .catch((error: any) => {
         console.log({ error });
@@ -193,7 +198,31 @@ export function Card({ navigation, route }: any) {
     // }
   };
 
-  const processEnrollmentAndShowPinCard = async ({ code }: { code: string }) => {
+  const handleOnlinePayment = async () => {
+    console.log("ONLINE payment");
+    setFreezeLoading(true);
+    setIsLoading(prev => true);
+    //card status === do_not_honor means frozen now, before it means pending from enrollment by aristos - arjay 1.23.2024
+    if( 
+      selectedCard?.cardStatus === "cancelled" ||
+      selectedCard?.cardStatus === "terminated"
+    ) {
+      Alert.alert("Card is not active", "Please activate your card first");
+      setFreezeLoading(false);
+      setIsLoading(prev => false);
+      return;
+    } else {
+      setFreezeLoading(false);
+      setIsLoading(prev => false);
+    }
+    freezeCard(
+      selectedCard?.frozenYN === "Y" &&
+      selectedCard?.cardStatus === "do_not_honor"
+        ? false : true
+    );
+  }
+
+  // const processEnrollmentAndShowPinCard = async ({ code }: { code: string }) => {
     // if (isEnrollingCard) {
     //   const orderCardPayload = {
     //     cardType: "V",
@@ -243,7 +272,7 @@ export function Card({ navigation, route }: any) {
       // setShowCardOtpLoading(false);
       // setShowCardOtpModal(false);
     // }
-  };
+  // };
 
   // TODO: target each card when doing action on each card, right now it only targets the first card
   const _renderItem = ({ item, index }: any) => {
@@ -263,10 +292,6 @@ export function Card({ navigation, route }: any) {
   };
 
   const handleLostCard = async () => {
-    console.log({
-      account_id: Number(userData?.id),
-      card_id: Number(selectedCard?.cardreferenceId),
-    })
     if (userID && selectedCard?.cardreferenceId) {
       try {
         await dispatch<any>(
@@ -307,29 +332,29 @@ export function Card({ navigation, route }: any) {
     }
   }, [showCardDetailsIsSuccess, showCardDetailsIsError]);
 
-  useEffect( () => {
-    if (orderCardIsSuccess) {
-      // setEnrollmentStatus(true);
-      setEnrollmentCardStatus({
-        title: "Card Enrollment",
-        text: `Card Status: Success`,
-        isError: false,
-      });
-      setIsLoading(false);
-      setShowCardOtpModal(false);
-    }
-    if (orderCardIsError) {
-      setIsLoading(false);
-      setIsEnrollingCard(false);
-      setShowCardOtpModal(false);
-      // setEnrollmentStatus(true);
-      setEnrollmentCardStatus({
-        title: "Card Enrollment",
-        text: `Error while ordering card`,
-        isError: true,
-      });
-    }
-  }, [orderCardIsSuccess, orderCardIsError]);
+  // useEffect( () => {
+  //   if (orderCardIsSuccess) {
+  //     // setEnrollmentStatus(true);
+  //     setEnrollmentCardStatus({
+  //       title: "Card Enrollment",
+  //       text: `Card Status: Success`,
+  //       isError: false,
+  //     });
+  //     setIsLoading(false);
+  //     // setShowCardOtpModal(false);
+  //   }
+  //   if (orderCardIsError) {
+  //     setIsLoading(false);
+  //     // setIsEnrollingCard(false);
+  //     // setShowCardOtpModal(false);
+  //     // setEnrollmentStatus(true);
+  //     setEnrollmentCardStatus({
+  //       title: "Card Enrollment",
+  //       text: `Error while ordering card`,
+  //       isError: true,
+  //     });
+  //   }
+  // }, [orderCardIsSuccess, orderCardIsError]);
 
   // this lifecycle auto order
   // useEffect(() => {
@@ -354,6 +379,18 @@ export function Card({ navigation, route }: any) {
   //   })();
   // }, [cardData]);
 
+  const checkIfCardIsFrozen = (card: any) => {
+    if (card.frozenYN === "N" && card.cardStatus === "active") { // means the card is not frozen
+      setListOfCheckedOptions([
+        ...listOfCheckedOptions,
+        "online_payment"
+      ])
+    } else {
+      const removeOnlinePaymentOption = listOfCheckedOptions.filter((option) => option !== "online_payment");
+      setListOfCheckedOptions(removeOnlinePaymentOption);
+    }
+  }
+
   // triggered when cardDetails image is truthy
   useEffect(() => {
     let interval: any;
@@ -374,6 +411,18 @@ export function Card({ navigation, route }: any) {
       setSelectedCard(cardsActiveList[0]);
     }
   }, [shownCardsOnCarousel]);
+
+  // useEffect(() => {
+  //   if(selectedCard?.frozenYN === "N" && selectedCard?.cardStatus === "active") {
+  //     setListOfCheckedOptions([...listOfCheckedOptions, "online_payment"]);
+  //   } else {
+  //     const getOnlinePaymentIndex = listOfCheckedOptions.findIndex((option) => option === "online_payment");
+  //     const filteredOptions = listOfCheckedOptions.splice(getOnlinePaymentIndex, 1);
+  //     setListOfCheckedOptions(filteredOptions);
+  //   }
+  // }, [selectedCard]);
+
+  console.log("listOfCheckedOptionssss", listOfCheckedOptions);
 
   useEffect(() => {
     setIsLoading(true);
@@ -588,7 +637,13 @@ export function Card({ navigation, route }: any) {
               }}
             />
             <View style={styles.cardActionsListContainer}>
-              <TouchableOpacity style={styles.cardActionItem} onPress={() => refRBSheet?.current?.open()}>
+              <TouchableOpacity style={styles.cardActionItem} onPress={() => {
+                if (!selectedCard) {
+                  return;
+                }
+                checkIfCardIsFrozen(selectedCard);
+                refRBSheet?.current?.open()
+              }}>
                 <View style={{display: 'flex', flexDirection: 'row'}}>
                   <View style={{paddingRight: 8, marginTop: 2}}>
                     <MaterialCommunityIcons name="cog-outline" size={18} color={vars['accent-blue']} />
@@ -699,7 +754,11 @@ export function Card({ navigation, route }: any) {
               opacity: .2,
               width: '100%',
               }} />
-            <ManagePaymentMethod />
+            <ManagePaymentMethod 
+              handleOnlinePayment={handleOnlinePayment}
+              listOfCheckedOptions={listOfCheckedOptions}
+              setListOfCheckedOptions={setListOfCheckedOptions}
+            />
           </SwipableBottomSheet>
           <SwipableBottomSheet
             rbSheetRef={refRBSheetShowTerminatedCards}
@@ -913,7 +972,7 @@ export function Card({ navigation, route }: any) {
                 </Button>
               </View>
           </SwipableBottomSheet>
-          <Spinner visible={orderCardIsLoading} />
+          {/* <Spinner visible={orderCardIsLoading} /> */}
         </ScrollView>
       </View>
     </MainLayout>

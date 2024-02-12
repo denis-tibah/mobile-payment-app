@@ -42,7 +42,8 @@ export const CardView = ({
       />
     );
   }
-
+  console.log("cardDetails", cardDetails);
+  // return <TimerCard timer={timer} card={cardDetails.cardImage} />
   if (cardDetails.cardImage) {
     return <TimerCard timer={timer} card={cardDetails.cardImage} />;
   }

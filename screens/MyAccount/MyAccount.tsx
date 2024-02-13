@@ -23,6 +23,7 @@ import {
   groupedByDateTransactions,
   arrayChecker,
   groupByDateAndSeveralProperties,
+  formatCurrencyToLocalEnTwo,
 } from "../../utils/helpers";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 /* import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate"; */
@@ -266,7 +267,9 @@ export function MyAccount({ navigation }: any) {
             </Typography>
             <Typography color={"accent-pink"} fontWeight={800} fontSize={18}>
               {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
-                userAccountInformation?.data?.curbal || 0
+                formatCurrencyToLocalEnTwo(
+                  userAccountInformation?.data?.curbal
+                ) || "0.00"
               }`}
             </Typography>
           </View>
@@ -287,7 +290,9 @@ export function MyAccount({ navigation }: any) {
             </Typography>
             <Typography color={"accent-orange"} fontWeight={800} fontSize={18}>
               {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
-                userAccountInformation?.data?.blocked_amount || 0
+                formatCurrencyToLocalEnTwo(
+                  userAccountInformation?.data?.blocked_amount
+                ) || "0.00"
               }`}
             </Typography>
           </View>
@@ -308,7 +313,9 @@ export function MyAccount({ navigation }: any) {
             </Typography>
             <Typography color={"accent-green"} fontWeight={800} fontSize={18}>
               {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
-                userAccountInformation?.data?.avlbal || 0
+                formatCurrencyToLocalEnTwo(
+                  userAccountInformation?.data?.avlbal
+                ) || "0.00"
               }`}
             </Typography>
           </View>

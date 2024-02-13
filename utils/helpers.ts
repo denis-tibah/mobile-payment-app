@@ -1,14 +1,12 @@
-import { Dimensions } from 'react-native';
+import { Dimensions } from "react-native";
 import { dateFormatter } from "./dates";
 import { Transaction } from "../models/Transactions";
 import { TRANSACTIONS_STATUS } from "./constants";
 import { err } from "react-native-svg/lib/typescript/xml";
 import dateFns from "date-fns";
 
-export const { 
-  width: widthGlobal, 
-  height: heightGlobal,
-} = Dimensions.get("window");
+export const { width: widthGlobal, height: heightGlobal } =
+  Dimensions.get("window");
 export const globalWidthUnit = widthGlobal / 100;
 export const globalHeightUnit = heightGlobal / 100;
 
@@ -373,9 +371,10 @@ export const formatCurrencyToLocalEn = (currency: string) => {
 };
 
 export const formatCurrencyToLocalEnTwo = (currency: string) => {
-  if (currency && isNumeric(currency)) {
+  if (currency) {
     const trimString = currency.replace(/[^0-9.-]+/g, "");
-    if (trimString) {
+    const convertedAmount = Number(trimString);
+    if (convertedAmount) {
       return parseFloat(trimString).toLocaleString("en-US", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
@@ -383,7 +382,7 @@ export const formatCurrencyToLocalEnTwo = (currency: string) => {
     }
   }
 
-  return 0;
+  return "0.00";
 };
 
 export const arrayChecker = (arr: any[]): Boolean => {

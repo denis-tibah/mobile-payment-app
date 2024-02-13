@@ -24,7 +24,7 @@ export const styles: any = StyleSheet.create({
     alignItems: "center",
   },
   action__iconMargin: {
-    marginRight: 14,
+    /* marginRight: 14, */
   },
   iconContainer: {
     height: 36,

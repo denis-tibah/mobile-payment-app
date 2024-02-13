@@ -31,7 +31,11 @@ export function Header({ navigation }: any): any {
         />
       </View>
       <View
-        style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "flex-end",
+        }}
       >
         {auth?.isAuthenticated && (
           <View style={styles.actions}>
@@ -49,9 +53,9 @@ export function Header({ navigation }: any): any {
             </TouchableWithoutFeedback>
           </View>
         )}
-        <View style={styles.iconContainer}>
+        {/* <View style={styles.iconContainer}>
           <ZazooIcon size={14} />
-        </View>
+        </View> */}
       </View>
       {/* <SubMenu navigation={navigation} /> */}
     </View>

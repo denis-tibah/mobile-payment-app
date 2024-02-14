@@ -10,6 +10,7 @@ import {
   getFormattedDate,
   getFormattedDateAndTime,
   fieldHasValue,
+  isPositiveAmountWithSign,
 } from "../../utils/helpers";
 import { styles } from "./stylesTwo";
 import Button from "../Button";
@@ -21,6 +22,7 @@ import EuroIcon from "../../assets/icons/Euro";
 import DollarIcon from "../../assets/icons/Dollar";
 import { Transaction } from "../../models/Transactions";
 import CardIcon from "../../assets/icons/Card";
+import BankIcon from "../../assets/icons/Bank";
 import vars from "../../styles/vars";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
 import { displayTitle, displayValue } from "./TransactionHelper";
@@ -76,13 +78,10 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
         {transactions.map((transaction: Transaction, index: number) => {
           /* delete transaction?.status;
           Object.assign(transaction, { status: "PENDING" }); */
-          const amount = transaction?.amount
-            ? parseInt(transaction?.amount, 10)
-            : 0;
           let amountColor = "red";
           if (transaction?.status) {
             if (transaction?.status === "SUCCESS") {
-              if (amount > 0) {
+              if (isPositiveAmountWithSign(transaction?.amount) === 1) {
                 amountColor = "green";
               }
             }
@@ -100,7 +99,14 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                 <TouchableOpacity onPress={() => handleToggleDetails(index)}>
                   <View style={styles.detailMobileForEachTransactionWrapper}>
                     <View style={styles.nameContainer}>
-                      <CardIcon size={14} color={"heavy-grey"} />
+                      {transaction?.service === "DEBIT CARD" ? (
+                        <CardIcon size={14} color={"heavy-grey"} />
+                      ) : null}
+                      {transaction?.service === "SEPA CT IN" ||
+                      transaction?.service === "SEPA CT OUT" ||
+                      transaction?.service === "SEPA INST IN" ? (
+                        <BankIcon size={14} color={"heavy-grey"} />
+                      ) : null}
                       <Typography
                         fontSize={14}
                         fontFamily="Mukta-Regular"

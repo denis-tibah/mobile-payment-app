@@ -33,6 +33,14 @@ export function isPositiveAmount(amount: any = "") {
   return amount.toString().includes("+");
 }
 
+export function isPositiveAmountWithSign(amount: any) {
+  /* If the number is positive, this method returns 1.
+  If the number is negative, it returns -1.
+  If the number is zero, it returns 0. */
+  const parsedAmount = amount ? Number(amount) : 0;
+  return Math.sign(parsedAmount);
+}
+
 export function formatAmountTableValue_old(amount: any = "", currency = "") {
   if (!amount || !currency) return;
 

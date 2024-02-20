@@ -27,6 +27,14 @@ export const styles = StyleSheet.create({
     right: 15,
     top: 13,
   },
+  dropDownIconContainerRightDOB: {
+    position: "absolute",
+    right: 15,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
   dropdown: {
     backgroundColor: "#fffff",
     borderColor: "transparent",

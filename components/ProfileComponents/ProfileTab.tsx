@@ -39,6 +39,7 @@ import { RootState } from "../../store";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
 import WholeContainer from "../../layout/WholeContainer";
+import { getFormattedDateAndTimeAndSeconds } from "../../utils/helpers";
 
 interface IProfileTab {}
 
@@ -59,11 +60,17 @@ const ProfileTab: FC<IProfileTab> = () => {
   }>({ header: "", body: "", isOpen: false, isError: false });
   const [isDatePickerVisible, setDatePickerVisibility] =
     useState<boolean>(false);
+  const [displayedDOB, setDisplayedDOB] = useState<string>("");
 
   const formatDOBToDash = (paramDOB: string): string | null => {
-    const arrDOB: string[] | boolean = paramDOB ? paramDOB.split("-") : false;
-    const [year, month, day] = arrDOB ? arrDOB : [];
-    return year && month && day ? `${month}/${day}/${year}` : null;
+    const splitTimeAndDate: string[] | boolean = paramDOB
+      ? paramDOB.split(" ")
+      : false;
+    const [date, time] = splitTimeAndDate ? splitTimeAndDate : [];
+    const arrDate: string[] | boolean = date ? date.split("-") : false;
+    const [year, month, day] = arrDate ? arrDate : [];
+    const dateStr = year && month && day ? `${day}.${month}.${year}` : null;
+    return `${dateStr || ""} ${time || ""}`;
   };
 
   // ASK SANTI FOR STATUS CODES OF /createticketfinxp
@@ -102,7 +109,7 @@ const ProfileTab: FC<IProfileTab> = () => {
       salutation: profileData?.salutation || "",
       firstName: profileData?.first_name || "",
       lastName: profileData?.last_name || "",
-      dob: formatDOBToDash(profileData?.dob) || "",
+      dob: profileData?.dob || "",
       street: profileData?.address_line_1 || "",
       subStreet: profileData?.address_line_2 || "",
       town: profileData?.town || "",
@@ -176,6 +183,19 @@ const ProfileTab: FC<IProfileTab> = () => {
     },
   });
 
+  useEffect(() => {
+    if (profileData?.dob) {
+      // data gets from db
+      const formattedDob = formatDOBToDash(profileData?.dob);
+      setDisplayedDOB(formattedDob || "");
+    }
+    if (values?.dob) {
+      // data gets from form
+      const formattedDob = getFormattedDateAndTimeAndSeconds(values?.dob);
+      setDisplayedDOB(formattedDob || "");
+    }
+  }, [profileData?.dob, values?.dob]);
+
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
@@ -185,7 +205,7 @@ const ProfileTab: FC<IProfileTab> = () => {
   };
 
   const handleConfirm = (date: any) => {
-    setFieldValue("dob", date.toLocaleDateString());
+    setFieldValue("dob", date);
     hideDatePicker();
   };
 
@@ -348,12 +368,9 @@ const ProfileTab: FC<IProfileTab> = () => {
                             : styles.dobTextDefault,
                         ]}
                       >
-                        {values?.dob ? values?.dob : "Date of birth"}
+                        {values?.dob ? displayedDOB : "Date of birth"}
                       </Text>
-                      <View
-                        style={[styles.dropDownIconContainerRight, { top: 3 }]}
-                      >
-                        {/* <ArrowRightIcon size={16} color="blue" /> */}
+                      <View style={styles.dropDownIconContainerRightDOB}>
                         <MaterialCommunityIcons
                           size={20}
                           color="#086AFB"

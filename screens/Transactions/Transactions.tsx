@@ -27,7 +27,10 @@ import {
   formatDateDayMonthYear,
   getUserActiveCards,
   groupedByDateTransactions,
+  hp,
   sortUserActiveToInactiveCards,
+  widthGlobal,
+  wp,
 } from "../../utils/helpers";
 import { CardStatus, transactionStatusOptions } from "../../utils/constants";
 import { Text } from "react-native";
@@ -522,10 +525,10 @@ export function Transactions({ navigation, route }: any) {
         draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
         >
         <View style={styles.containerBottomSheetHeader}>
-          <View style={{top: -15, left: -5}}>
+          <View style={{top: hp(-3), left: wp(-3)}}>
             <Typography fontSize={18} fontFamily={'Nunito-SemiBold'}>Filters</Typography>
           </View>
-          <Divider style={{ marginVertical: 15 }} />
+          {/* <Divider style={{ marginVertical: 15 }} /> */}
           <TouchableOpacity
             onPress={() => clearFilter()}
             style={{ flexDirection: "row" }}
@@ -534,6 +537,7 @@ export function Transactions({ navigation, route }: any) {
               style={{
                 paddingRight: 5,
                 fontSize: 12,
+                top: hp(-2),
                 fontFamily: "Nunito-SemiBold",
                 color: vars["accent-blue"],
               }}
@@ -543,7 +547,15 @@ export function Transactions({ navigation, route }: any) {
             {/* <Ionicons name="refresh" size={14} color={vars["accent-blue"]} /> */}
           </TouchableOpacity>
         </View>
-        <Divider style={{ marginVertical: 5 }} />
+      <Divider style={{ 
+        marginVertical: 8, 
+        width: widthGlobal,
+        backgroundColor: vars["accent-grey"],
+        height: 1,
+        opacity: 0.3,
+        // zIndex: 9999,
+        overflow: "visible"
+        }} />
         <View style={{ display: "flex", flexDirection: "row" }}>
           <View style={{ flex: 1, flexWrap: "wrap"}}>
             <Typography fontSize={14} color="#696F7A">
@@ -553,7 +565,7 @@ export function Transactions({ navigation, route }: any) {
               style={{
                 width: 131,
                 backgroundColor: "gey",
-                marginTop: 10,
+                marginTop: 1,
                 lineHeight: 25,
                 borderWidth: 1,
                 borderColor: vars["accent-blue"],
@@ -616,11 +628,11 @@ export function Transactions({ navigation, route }: any) {
             )}
 
           </View>
-          <View>
+          {/* <View>
             <Text style={{top: 28, right: 31, fontSize: 24}}>
               _
             </Text>
-          </View>
+          </View> */}
           <View style={{ flex: 1 }}>
             <Typography fontSize={14} color="#696F7A">
               Finish date
@@ -629,7 +641,7 @@ export function Transactions({ navigation, route }: any) {
               style={{
                 width: 131,
                 backgroundColor: "grey",
-                marginTop: 10,
+                marginTop: 1,
                 lineHeight: 25,
                 borderWidth: 1,
                 borderColor: vars["accent-blue"],
@@ -695,7 +707,15 @@ export function Transactions({ navigation, route }: any) {
         <Typography fontSize={10} color="#696F7A">
           maximum date range is 60 days
         </Typography>
-        <Divider style={{ marginVertical: 15 }} />
+        <Divider style={{
+          marginVertical: 15, 
+          width: widthGlobal,
+          backgroundColor: vars["accent-grey"],
+          height: 1,
+          opacity: 0.2,
+          // zIndex: 9999,
+          overflow: "visible"
+        }} />
         <Typography fontSize={14} color="#696F7A">
           Status
         </Typography>
@@ -776,11 +796,11 @@ export function Transactions({ navigation, route }: any) {
               }}
             />
           </View>
-          <View>
+          {/* <View>
             <Text style={{top: 22, right: 0, fontSize: 18}}>
               _
             </Text>
-          </View>
+          </View> */}
           <View style={{ flex: 1, paddingLeft: 10 }}>
             <Typography fontSize={14} color="#696F7A">
               Amount to
@@ -806,7 +826,14 @@ export function Transactions({ navigation, route }: any) {
             />
           </View>
         </View>
-        <Divider style={{ marginVertical: 10 }} />
+        <Divider style={{ 
+          marginVertical: 15,
+          width: widthGlobal,
+          backgroundColor: vars["accent-grey"],
+          height: 1,
+          opacity: 0.2,
+          overflow: "visible"
+        }} />
         <Typography fontSize={14} color="#696F7A">
           Your cards
         </Typography>
@@ -856,14 +883,23 @@ export function Transactions({ navigation, route }: any) {
             </TouchableOpacity>
           ))}
         </ScrollView>
-        <Divider style={{ marginVertical: 15 }} />
+        <Divider style={{
+          marginVertical: 15, 
+          width: widthGlobal,
+          backgroundColor: vars["accent-grey"],
+          height: 1,
+          opacity: 0.2,
+          overflow: "visible" 
+          }} />
         <Button
           style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
             width: "100%",
             backgroundColor: "grey",
             marginTop: 10,
             lineHeight: 25,
-            // borderWidth: 1,
             borderColor: 'none',
           }}
           color="light-pink"
@@ -894,7 +930,8 @@ export function Transactions({ navigation, route }: any) {
             Submit
           </Typography>
         </Button>
-        <Divider style={{ marginVertical: 15 }} />
+        
+        {/* <Divider style={{ marginVertical: 15 }} /> */}
       </SwipableBottomSheet>
       <LoadingScreen isLoading={isLoading} />
     </MainLayout>

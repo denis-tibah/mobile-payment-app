@@ -12,7 +12,7 @@ import Button from "../../../components/Button";
 import vars from "../../../styles/vars";
 import MainLayout from "../../../layout/Main";
 import CardIcon from "../../../assets/icons/Card";
-import { screenNames } from "../../../utils/helpers";
+import { hp, screenNames, wp } from "../../../utils/helpers";
 import Heading from "../../../components/Heading";
 import SwipableBottomSheet from "../../../components/SwipableBottomSheet";
 import Typography from "../../../components/Typography";
@@ -20,6 +20,7 @@ import { PinCodeInputBoxes, PinCodeInputClipBoard } from "../../../components/Fo
 import { Divider } from "react-native-paper";
 import { useLazyOrderCardQuery } from "../../../redux/card/cardSliceV2";
 import { RootState } from "../../../store";
+import Euro from "../../../assets/icons/Euro";
 
 interface GerCardModalProps {
   onClose: () => void;
@@ -173,27 +174,39 @@ export const GetCardScreen = ({navigation}: any) => {
         />
         <ImageBackground
           resizeMode="contain"
-          imageStyle={{ borderRadius: 8, height: 225, width: 340 }}
+          imageStyle={{ 
+            borderRadius: 8, 
+            height: hp(65), 
+            width: wp(250), 
+            alignSelf: "center", 
+            alignItems: "center", 
+            justifyContent: "center",
+          }}
           source={ZazooVirualCard}
           style={{
-              height: 225,
-              width: 340,
+              height: hp(65),
+              width: wp(250),
               borderRadius: 70,
               justifyContent: "center",
               alignItems: "center",
               alignSelf: "center",
             }}
           >
-            <Text style={{color: '#fff', fontSize: 17, lineHeight: 22}}>
-              This could be your virtual card
-            </Text>
+            <Typography
+              fontWeight={600}
+              // fontFamily="Nunito-Bold"
+              fontSize={22}
+              color="#fff"
+            >
+              This could be your virtual cards
+            </Typography>
         </ImageBackground>
         <View style={styles.buttonContainer}>
           <Button
             leftIcon={
               <AntDesign name="pluscircleo" size={18} color={vars['accent-blue']} />
             }
-            style={{ width: '100%' }}
+            style={{ width: wp(180) }}
             disabled={loading}
             loading={loading}
             color="light-blue"
@@ -245,10 +258,11 @@ export const GetCardScreen = ({navigation}: any) => {
             style={styles.dropdownCurrency}
             open={openCurrency}
             value={currency || null}
-            items={[{ label: "Euro €", value: "EUR" }]}
+            items={[{ label: `Euro €`, value: "EUR", icon: () => <Euro size={22} color={vars['accent-blue']} /> }]}
             setOpen={setOpenCurrency}
             setValue={setCurrency}
             listMode="SCROLLVIEW"
+            textStyle={{color: '#000', fontFamily: 'Nunito-Bold', fontSize: 14, fontWeight: '600'}}
             dropDownContainerStyle={styles.dropdownContainer}
             zIndex={1}
             disabled
@@ -274,7 +288,7 @@ export const GetCardScreen = ({navigation}: any) => {
             leftIcon={
               <AntDesign name="checkcircleo" size={14} color={vars['accent-pink']} />
             }
-            style={{ width: '100%' }}
+            style={{ width: wp(180) }}
             disabled={loading}
             loading={loading}
             color="light-pink"

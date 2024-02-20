@@ -422,7 +422,7 @@ export function Card({ navigation, route }: any) {
   //   }
   // }, [selectedCard]);
 
-  console.log("listOfCheckedOptionssss", listOfCheckedOptions);
+  // console.log("listOfCheckedOptionssss", listOfCheckedOptions);
 
   useEffect(() => {
     setIsLoading(true);

@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import VectorIcon from "react-native-vector-icons/AntDesign";
 import { RootState } from "../../store";
-import { useAddPayeeMutation, useGetPayeesQuery, useLazyGetPayeesQuery } from "../../redux/payee/payeeSlice";
-import { Divider, Text } from "react-native-paper";
+import { useAddPayeeMutation, useLazyGetPayeesQuery } from "../../redux/payee/payeeSlice";
+import { Divider } from "react-native-paper";
 import { AntDesign } from '@expo/vector-icons';
 import Search from "../../assets/icons/Search";
 import Heading from "../../components/Heading";
@@ -17,34 +17,21 @@ import { useFormik } from "formik";
 import EuroIcon from "../../assets/icons/Euro";
 import CodeIcon from "../../assets/icons/Code";
 import { 
-  formatAmountTableValue,
-  formatAmountTableValue_old,
   formatAmountWithCurrency,
-  formatDateDayMonthYear,
   formatTransactionsForPaymentScreen,
-  getFormattedDateFromUnix,
   getFormattedDateFromUnixDotted,
-  // getCurrency,
   getNameInitials,
-  globalWidthUnit,
   hp,
   isPositiveAmount,
   screenNames,
-  widthGlobal,
   wp
 } from "../../utils/helpers";
 import vars from "../../styles/vars";
 import { validationAddingPayeeSchema, validationPaymentSchema } from "../../utils/validation";
-import ArrowRight from "../../assets/icons/ArrowRight";
-// import BottomSheet from "../../components/BottomSheet";
 import FaceIcon from "../../assets/icons/FaceIcon";
-// import BuildingIcon from "../../assets/icons/Building";
-// import PinGPS from "../../assets/icons/PinGPS";
-import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import IconQr from "../../assets/icons/IconsQr";
 import ArrowDownDotted from "../../assets/icons/ArrowDownDotted";
 import Typography from "../../components/Typography";
-import { deleteBeneficiary } from "../../redux/beneficiary/beneficiarySlice";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 import { RefreshControl } from "react-native";
 import { SearchFilter } from "../../redux/transaction/transactionSlice";

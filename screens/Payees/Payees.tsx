@@ -16,7 +16,7 @@ import { styles } from "./styles";
 import { useFormik } from "formik";
 import EuroIcon from "../../assets/icons/Euro";
 import CodeIcon from "../../assets/icons/Code";
-import { formatDateDayMonthYear, getCurrency, getNameInitials, hp, screenNames, widthGlobal, wp } from "../../utils/helpers";
+import { formatDateDayMonthYear, getCurrency, getFormattedDateFromUnixDotted, getNameInitials, hp, screenNames, widthGlobal, wp } from "../../utils/helpers";
 import vars from "../../styles/vars";
 import { validationAddingPayeeSchema, validationPaymentSchema } from "../../utils/validation";
 import ArrowRight from "../../assets/icons/ArrowRight";
@@ -244,7 +244,7 @@ export function Payees({ navigation }: any) {
                               fontSize={14}
                               fontWeight={600}
                               fontFamily="Nunito-SemiBold"
-                            >{formatDateDayMonthYear(item.created_at)}
+                            >{getFormattedDateFromUnixDotted(item.created_at)}
                           </Typography>
                           {/* <Text style={{fontSize: 12, color: vars['accent-green']}}>{`+ € 1200`}</Text> */}
                         </View>
@@ -308,14 +308,6 @@ export function Payees({ navigation }: any) {
                         opacity: .5,
                       }} />
                       <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                        {/* <View style={{display: 'flex', flexDirection:'column'}}>
-                          <Text style={{color: vars['accent-blue']}}>
-                            BANK
-                          </Text>
-                          <Text style={{color: '#000', fontSize: 12}}>
-                            ING Espana
-                          </Text>
-                        </View> */}
                         <View style={{display: 'flex', flexDirection:'column'}}>
                           <Typography 
                             color="accent-blue"
@@ -329,9 +321,8 @@ export function Payees({ navigation }: any) {
                           color="#000"
                           fontSize={14}
                           fontWeight={400}
-                          // fontFamily="Nunito-Bold"
                           >
-                            {formatDateDayMonthYear(item.created_at)}
+                            {getFormattedDateFromUnixDotted(item.created_at)}
                           </Typography>
                         </View>
                         {/* delete button here */}
@@ -342,13 +333,14 @@ export function Payees({ navigation }: any) {
                               borderRadius: 25,
                               paddingVertical: 5,
                               paddingHorizontal: 18,
+                              top: hp(2),
                             }}
                             onPress={() => {
                               setIsLoading(true);
                               console.log('item', item.uuid)
                               dispatch<any>(deleteBeneficiary(item.uuid))
                               .unwrap()
-                              .then((res) => {
+                              .then((res: any) => {
                                 setIsLoading(false);
                                 console.log('res', res);
                               })
@@ -365,14 +357,13 @@ export function Payees({ navigation }: any) {
                                 alignItems: 'center',
                               }}
                             >
-                              <AntDesign name="delete" size={19} color={'#FF7171'} />
+                              <AntDesign name="delete" size={14} color={'#FF7171'} />
                               <Typography 
                                 color={'#FF7171'}
-                                fontSize={14}
+                                fontSize={12}
                                 fontWeight={600}
                                 fontFamily="Nunito-Bold"
                                 paddingLeft={5}
-                                // style={{padding: 10}}
                               > 
                                   
                                 Delete payee
@@ -383,8 +374,6 @@ export function Payees({ navigation }: any) {
                       </View>
                       <Divider style={{
                         marginVertical: 20,
-                        // height: 1,
-                        // backgroundColor: vars['shade-grey'],
                         opacity: 0,
                       }} />
                     </View>
@@ -490,7 +479,6 @@ export function Payees({ navigation }: any) {
         <Divider style={{marginVertical: 15}} />
         <View
           style={{
-            // drop shadow top of this view
             shadowColor: "#ACACAC",
             shadowOffset: {
               width: 0,
@@ -513,7 +501,14 @@ export function Payees({ navigation }: any) {
             style={{marginTop: 20}}
             leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
           >
-            Save Payee
+            <Typography
+              color={vars['accent-pink']}
+              fontSize={16}
+              fontWeight={600}
+              fontFamily="Nunito-Bold"
+            >
+              Save Payee
+            </Typography>
           </Button>
         </View>
         </KeyboardAvoidingView>

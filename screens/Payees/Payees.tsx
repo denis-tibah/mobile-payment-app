@@ -15,7 +15,7 @@ import { styles } from "./styles";
 import { useFormik } from "formik";
 import EuroIcon from "../../assets/icons/Euro";
 import CodeIcon from "../../assets/icons/Code";
-import { formatDateDayMonthYear, getCurrency, getNameInitials, screenNames } from "../../utils/helpers";
+import { formatDateDayMonthYear, getCurrency, getNameInitials, hp, screenNames, widthGlobal, wp } from "../../utils/helpers";
 import vars from "../../styles/vars";
 import { validationAddingPayeeSchema, validationPaymentSchema } from "../../utils/validation";
 import ArrowRight from "../../assets/icons/ArrowRight";
@@ -29,6 +29,7 @@ import ArrowDownDotted from "../../assets/icons/ArrowDownDotted";
 import Typography from "../../components/Typography";
 import { deleteBeneficiary } from "../../redux/beneficiary/beneficiarySlice";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
+import Payee from "../../assets/icons/Payee";
 
 export function Payees({ navigation }: any) {
   const dispatch = useDispatch();
@@ -41,6 +42,7 @@ export function Payees({ navigation }: any) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchName, setSearchName] = useState<string>("");
   const [isPayeeListShown, setIsPayeeListShown] = useState<boolean>(true);
+  const [isSearchFilterShown, setIsSearchFilterShown] = useState<boolean>(false);
   // const [isPayeeDetailsShown, setIsPayeeDetailsShown] = useState<boolean>(false);
   const [selectedPayeeId, setSelectedPayeeId] = useState<number>(0);
   const [isFilterForPayeeShown, setIsFilterForPayeeShown] = useState<boolean>(false);
@@ -109,66 +111,63 @@ export function Payees({ navigation }: any) {
       />
       <Spinner visible={isPayeesListLoading || isAddPayeeLoading} />
       <Heading
-          icon={<EuroIcon color="pink" size={25} />}
-          title={"Payees"}
-          rightAction={
-            <View style={{ flexDirection: "row", display: "flex" }}>
-              <Button
-                onPress={() => refRBSheet?.current?.open()}
-                color={"light-pink"}
-                leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
-              >
-                Add Payee
-              </Button>
-            </View>
+        icon={<Payee color="pink" size={18} />}
+        title={"Payees"}
+        rightAction={
+          <View style={{ flexDirection: "row", display: "flex"}}>
+            <Button
+              style={{
+                marginHorizontal: wp(2)
+              }}
+              onPress={() => refRBSheet?.current?.open()}
+              color={"light-pink"}
+              leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
+            >
+              Add Payee
+            </Button>
+            <TouchableOpacity onPress={() => setIsSearchFilterShown(!isSearchFilterShown)}
+              style={{
+                backgroundColor: '#F5F9FF', 
+                height: wp(18),
+                width: wp(18),
+                padding: wp(5.1),
+                borderRadius: 99,
+                marginHorizontal: wp(2)
+              }}
+            >
+              <Search color={vars['accent-blue']} size={16}/>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => refRBSheetPayeesOrder?.current?.open()}
+              style={{
+                backgroundColor: '#F5F9FF', 
+                height: wp(18),
+                width: wp(18),
+                padding: wp(5.1),
+                borderRadius: 99,
+                marginHorizontal: wp(2)
+              }}
+            >
+              <ArrowDownDotted color={vars['accent-blue']} size={16} />
+            </TouchableOpacity>
+          </View>
           }
         />
       <ScrollView bounces={true} style={{backgroundColor: '#fff'}}>
         <View style={styles.content}>
-          <Divider style={{ marginBottom: 1 }} />
-          <View style={{display: 'flex', flexDirection: 'row', padding: 10}}>
+          { !!isSearchFilterShown && <View style={{display: 'flex', flexDirection: 'row', padding: 10}}>
             <FormGroup.Input
               icon={<Search color={vars['accent-blue']} size={18}/>}
               placeholder={"Search payee"}
               color={vars["black"]}
               fontSize={14}
               fontWeight={"400"}
-              style={{ alignSelf: "center", marginTop: 10, marginBottom: 10, width: '70%'}}
+              style={{ alignSelf: "center", marginTop: 10, marginBottom: 10, width: widthGlobal - 25 }}
               value={searchName}
               onChangeText={(event: string) => setSearchName(event)}
             />
-            <TouchableOpacity onPress={() => setIsPayeeListShown(!isPayeeListShown)}
-              style={{
-                marginTop: 10, 
-                marginLeft: 10, 
-                backgroundColor: '#F5F9FF', 
-                height: 45,
-                width: 45,
-                padding: 14,
-                borderRadius: 99,
-              }}
-            >
-              <IconQr color={vars['accent-blue']} size={18} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => refRBSheetPayeesOrder?.current?.open()}
-              style={{
-                marginTop: 10, 
-                marginLeft: 10, 
-                backgroundColor: '#F5F9FF', 
-                height: 45,
-                width: 45,
-                padding: 14,
-                borderRadius: 99,
-              }}
-            >
-              <ArrowDownDotted color={vars['accent-blue']} size={18} />
-            </TouchableOpacity>
           </View>
-          {/* <Divider style={{ marginVertical: 20 }} />
-          <DropdownComponent />
-          <Divider style={{ marginVertical: 20 }} /> */}
-          {/* <Divider style={{ marginBottom: 10 }} /> */}
-          <View style={{display: 'flex', flexDirection: 'column', borderTopColor: vars['grey'], borderTopWidth: 1}}>
+          }
+          <View style={{display: 'flex', flexDirection: 'column'}}>
               { filteredPayeesList?.length > 0 && filteredPayeesList
               .sort((a: any, b: any) => {
                 if (selectedFilterForPayees === '1') {

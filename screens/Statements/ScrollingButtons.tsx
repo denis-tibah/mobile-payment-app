@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, ScrollView, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { format, subMonths, addMonths } from 'date-fns';
+import { format, subMonths, addMonths, set } from 'date-fns';
 import vars from '../../styles/vars';
 
 type ScrollingButtonsProps = {
@@ -67,6 +67,10 @@ const ScrollingButtons: React.FC<ScrollingButtonsProps> = ({
     }
     return buttons;
   };
+
+  useEffect(() => {
+    handleButtonPress(1);
+  }, []);
 
   return (
     <ScrollView

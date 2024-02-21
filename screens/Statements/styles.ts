@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { hp } from "../../utils/helpers";
 
 export const styles: any = StyleSheet.create<any>({
   heading: {
@@ -36,9 +37,10 @@ export const styles: any = StyleSheet.create<any>({
   },
   dateContainer: {
     backgroundColor: "#ffffff",
-    paddingLeft: 20,
+    // paddingLeft: 20,
     paddingBottom: 20,
     paddingTop: 20,
+    height: hp(46),
     display: "flex",
     flexDirection: "column",
   },

@@ -199,7 +199,6 @@ export function Card({ navigation, route }: any) {
   };
 
   const handleOnlinePayment = async () => {
-    console.log("ONLINE payment");
     setFreezeLoading(true);
     setIsLoading(prev => true);
     //card status === do_not_honor means frozen now, before it means pending from enrollment by aristos - arjay 1.23.2024

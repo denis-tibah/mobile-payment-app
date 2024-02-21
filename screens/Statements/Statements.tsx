@@ -133,9 +133,8 @@ export function Statements({ navigation }: any) {
         dispatch<any>(getStatementsfinxp(statementFilterWithDateRante))
         .unwrap()
         .then(async (res: StatementResponse) => {
-          console.log({ res });
           const { statements } = res;
-          if (statements.length > 0) {
+          if (statements && statements?.length > 0) {
             setLoading(false);
             await handleGeneratePDF(statements, statementFilterWithDateRante);
           } else {

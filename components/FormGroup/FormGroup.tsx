@@ -272,42 +272,92 @@ export function PinCodeInputClipBoard({
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          width: 215,
+          ...Platform.select({
+            ios: {
+              paddingVertical: 18,
+              width: 215,
+            },
+            android: {
+              padding: 16,
+              width: 215,
+            },
+          }),
           height: 50,
           borderWidth: 1,
           borderRadius: 10,
           borderColor: "#6BA6FD",
-          padding: 16,
           marginTop: 10,
         }}
       >
-        <TextInput
+        <View
           style={{
-            width: 215,
-            letterSpacing: 22,
-            zIndex: 999,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "100%",
           }}
-          keyboardType="numeric"
-          underlineColorAndroid="transparent"
-          maxLength={6}
-          onChange={(event) => {
-            const codeArray = event.nativeEvent.text.split("");
-            setCode(codeArray);
-            onChange(codeArray.join(""));
+        >
+          <TextInput
+            style={{
+              ...Platform.select({
+                ios: {
+                  width: "100%",
+                  letterSpacing: 24,
+                  paddingLeft: 23,
+                },
+                android: {
+                  width: 215,
+                  letterSpacing: 22,
+                },
+              }),
+
+              zIndex: 999,
+            }}
+            keyboardType="numeric"
+            underlineColorAndroid="transparent"
+            maxLength={6}
+            onChange={(event) => {
+              const codeArray = event.nativeEvent.text.split("");
+              setCode(codeArray);
+              onChange(codeArray.join(""));
+            }}
+          />
+        </View>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            ...Platform.select({
+              ios: {
+                marginLeft: 6,
+                justifyContent: "space-evenly",
+              },
+            }),
           }}
-        />
-        <View style={{ display: "flex", flexDirection: "row" }}>
+        >
           {[...Array(fieldCount)].map((item, i) => (
             <Text
               key={i}
               style={{
                 width: 18,
-                top: -12,
-                marginLeft: 6,
-                marginRight: 6,
-                borderBottomWidth: 1,
+                ...Platform.select({
+                  ios: {
+                    borderWidth: 0.5,
+                    height: 1,
+                    top: 4,
+                    marginBottom: 6,
+                    /* marginLeft: 12,
+                    marginTop: 4, */
+                  },
+                  android: {
+                    top: -12,
+                    marginLeft: 6,
+                    marginRight: 6,
+                    borderBottomWidth: 1,
+                  },
+                }),
               }}
-            ></Text>
+            />
           ))}
         </View>
       </View>

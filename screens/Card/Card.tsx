@@ -97,6 +97,7 @@ export function Card({ navigation, route }: any) {
 
   const [selectedCard, setSelectedCard] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSelectedCardTerminated, setIsSelectedCardTerminated] = useState<boolean>(false);
   const [listOfCheckedOptions, setListOfCheckedOptions] = useState<string[]>([]);
   const [isTimeToCountDown, setIsTimeToCountDown] = useState<boolean>(false);
   const timeRemaining = 30;
@@ -192,10 +193,6 @@ export function Card({ navigation, route }: any) {
     .finally(() => {
       setIsLoading(prev => prev = false);
     });
-    // if (payload?.status !== "success") {
-    //   setShowCardOtpModal(true);
-    //   return;
-    // }
   };
 
   const handleOnlinePayment = async () => {
@@ -220,58 +217,6 @@ export function Card({ navigation, route }: any) {
         ? false : true
     );
   }
-
-  // const processEnrollmentAndShowPinCard = async ({ code }: { code: string }) => {
-    // if (isEnrollingCard) {
-    //   const orderCardPayload = {
-    //     cardType: "V",
-    //     accountUuid: userID,
-    //     currency: chosenCurrency,
-    //     email: userEmail,
-    //     otp: code,
-    //   };
-    //   console.log(
-    //     "🚀 ~ file: Card.tsx:267 ~ handlePinCode ~ orderCardPayload:",
-    //     orderCardPayload
-    //   );
-    //   orderCard(orderCardPayload)
-    //   .unwrap()
-    //   .then((res: any) => {
-    //     console.log({ res });
-    //     setShowCardOtpModal(false);
-    //     setIsloading(false);
-    //   })
-    //   .catch((error: any) => {
-    //     console.log({ error });
-    //   })
-    //   return;
-    // } else {
-      // setShowCardOtpLoading(true);
-      // console.log({ account_id: userID, otp: code, card_id: selectedCard?.cardreferenceId });
-
-
-      // const payload = await dispatch(
-      //   showCardDetails({
-      //     account_id: userID,
-      //     otp: code,
-      //     card_id: selectedCard?.cardreferenceId,
-      //   }) as any
-      // ).unwrap();
-      // setIsloading(false);
-      // if (payload) {
-      //   setCardPin("");
-      //   setRemainingTime(30);
-      //   setCardDetails({
-      //     cardreferenceId: cardsActiveList[0]?.cardreferenceId,
-      //     card: cardsActiveList[0],
-      //     cardImage: payload.cardImageBase64,
-      //     cardNumber: payload?.cardNumber,
-      //   });
-      // }
-      // setShowCardOtpLoading(false);
-      // setShowCardOtpModal(false);
-    // }
-  // };
 
   // TODO: target each card when doing action on each card, right now it only targets the first card
   const _renderItem = ({ item, index }: any) => {
@@ -331,53 +276,6 @@ export function Card({ navigation, route }: any) {
     }
   }, [showCardDetailsIsSuccess, showCardDetailsIsError]);
 
-  // useEffect( () => {
-  //   if (orderCardIsSuccess) {
-  //     // setEnrollmentStatus(true);
-  //     setEnrollmentCardStatus({
-  //       title: "Card Enrollment",
-  //       text: `Card Status: Success`,
-  //       isError: false,
-  //     });
-  //     setIsLoading(false);
-  //     // setShowCardOtpModal(false);
-  //   }
-  //   if (orderCardIsError) {
-  //     setIsLoading(false);
-  //     // setIsEnrollingCard(false);
-  //     // setShowCardOtpModal(false);
-  //     // setEnrollmentStatus(true);
-  //     setEnrollmentCardStatus({
-  //       title: "Card Enrollment",
-  //       text: `Error while ordering card`,
-  //       isError: true,
-  //     });
-  //   }
-  // }, [orderCardIsSuccess, orderCardIsError]);
-
-  // this lifecycle auto order
-  // useEffect(() => {
-  //   (async () => {
-  //     if (!selectedCard && cardsActiveList.length > 0) {
-  //       setPrimaryCardID(cardsActiveList[0]?.cardreferenceId);
-  //       setSelectedCard(shownCardsOnCarousel[0]);
-  //     }
-  //     if (cardsActiveList.length === 0 && cardData.length > 0) {
-  //       try {
-  //         await dispatch<any>(
-  //           sendSmsShowCardVerification({
-  //             type: "trusted",
-  //           }))
-  //         setIsEnrollingCard(true);
-  //         setShowCardOtpModal(true);
-  //       } catch(error) {
-  //         console.log({error});
-  //       }
-  //     }
-  //     setSelectedCard(shownCardsOnCarousel[0]);
-  //   })();
-  // }, [cardData]);
-
   const checkIfCardIsFrozen = (card: any) => {
     if (card.frozenYN === "N" && card.cardStatus === "active") { // means the card is not frozen
       setListOfCheckedOptions([
@@ -411,15 +309,13 @@ export function Card({ navigation, route }: any) {
     }
   }, [shownCardsOnCarousel]);
 
-  // useEffect(() => {
-  //   if(selectedCard?.frozenYN === "N" && selectedCard?.cardStatus === "active") {
-  //     setListOfCheckedOptions([...listOfCheckedOptions, "online_payment"]);
-  //   } else {
-  //     const getOnlinePaymentIndex = listOfCheckedOptions.findIndex((option) => option === "online_payment");
-  //     const filteredOptions = listOfCheckedOptions.splice(getOnlinePaymentIndex, 1);
-  //     setListOfCheckedOptions(filteredOptions);
-  //   }
-  // }, [selectedCard]);
+  useEffect(() => {
+    if (selectedCard?.cardStatus === "cancelled" && selectedCard?.lostYN === "Y") {
+      setIsSelectedCardTerminated(true);
+    } else {
+      setIsSelectedCardTerminated(false);
+    }
+  }, [selectedCard]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -429,32 +325,6 @@ export function Card({ navigation, route }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      {/* <GetCardModal
-        onClose={() => setShowGetCardModal(false)}
-        isModalVisible={showGetCardModal}
-        onGetVirtualCard={({currency}: any) => {
-          setShowGetCardModal(false);
-          setIsEnrollingCard(true);
-          setShowCardOtpModal(true);
-          setChosenCurrency(currency);
-          }
-        }
-      />
-      <CodeModal
-        confirmButtonText={isEnrollingCard ? "Submit" : "Show Card"}
-        title={isEnrollingCard ? "Card Enrollment" : "Show Card"}
-        subtitle={ isEnrollingCard ?
-          "Since your account doesnt have any card. You will receive an sms to your mobile device. Please enter this code below." :
-          "You will receive an sms to your mobile device. Please enter this code below."
-        }
-        isOpen={showCardOtpModal}
-        loading={showCardOtpLoading}
-        onSubmit={processEnrollmentAndShowPinCard}
-        onCancel={() => {
-          setShowCardOtpModal(false);
-          setIsloading(false);
-        }}
-      /> */}
       { terminatedCardModal && (
         <TerminatingCardModal
           isOpen={terminatedCardModal}
@@ -592,7 +462,7 @@ export function Card({ navigation, route }: any) {
                           ? false : true
                         );
                     }}
-                    disabled={freezeLoading}
+                    disabled={freezeLoading || isSelectedCardTerminated}
                   >
                     <Typography
                       fontSize={16}
@@ -870,6 +740,11 @@ export function Card({ navigation, route }: any) {
                     cardId: selectedCard?.cardreferenceId,
                   })
                   .unwrap()
+                  .then((res: any) => {
+                    if (res) {
+                      setSelectedCard(shownCardsOnCarousel[0]);
+                    }
+                  })
                   .finally(() => {
                     setIsLoading(false);
                     refRBSTerminateThisCard?.current?.close();

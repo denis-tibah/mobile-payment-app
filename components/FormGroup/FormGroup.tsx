@@ -346,8 +346,6 @@ export function PinCodeInputClipBoard({
                     height: 1,
                     top: 4,
                     marginBottom: 6,
-                    /* marginLeft: 12,
-                    marginTop: 4, */
                   },
                   android: {
                     top: -12,

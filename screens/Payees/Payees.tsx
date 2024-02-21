@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { View, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import VectorIcon from "react-native-vector-icons/AntDesign";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { RootState } from "../../store";
 import { useAddPayeeMutation, useGetPayeesQuery } from "../../redux/payee/payeeSlice";
@@ -30,6 +31,7 @@ import Typography from "../../components/Typography";
 import { deleteBeneficiary } from "../../redux/beneficiary/beneficiarySlice";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 import Payee from "../../assets/icons/Payee";
+import CalenderEmpty from "../../assets/icons/CalenderEmpty";
 
 export function Payees({ navigation }: any) {
   const dispatch = useDispatch();
@@ -41,7 +43,7 @@ export function Payees({ navigation }: any) {
   const [isModalSuccessOpen, setIsModalSuccessOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchName, setSearchName] = useState<string>("");
-  const [isPayeeListShown, setIsPayeeListShown] = useState<boolean>(true);
+  // const [isPayeeListShown, setIsPayeeListShown] = useState<boolean>(true);
   const [isSearchFilterShown, setIsSearchFilterShown] = useState<boolean>(false);
   // const [isPayeeDetailsShown, setIsPayeeDetailsShown] = useState<boolean>(false);
   const [selectedPayeeId, setSelectedPayeeId] = useState<number>(0);
@@ -64,10 +66,6 @@ export function Payees({ navigation }: any) {
   const filteredPayeesList = payeesList?.filter((item: any) => {
     return item.name.toLowerCase().includes(searchName.toLowerCase());
   });
-
-  const toggleBottomSheet = () => {
-    setIsAddingPayeeShown(!isAddingPayeeShown);
-  };
 
   const { handleChange, handleBlur, values, touched, errors, handleSubmit } = useFormik({
     initialValues: {
@@ -139,7 +137,7 @@ export function Payees({ navigation }: any) {
             </TouchableOpacity>
             <TouchableOpacity onPress={() => refRBSheetPayeesOrder?.current?.open()}
               style={{
-                backgroundColor: '#F5F9FF', 
+                backgroundColor: '#F5F9FF',
                 height: wp(18),
                 width: wp(18),
                 padding: wp(5.1),
@@ -186,16 +184,14 @@ export function Payees({ navigation }: any) {
               .map((item: any, index: number) => (
                 <Fragment key={index}>
                   <View key={index} style={{
-                      // borderTopWidth: selectedPayeeId ? 0 : 1,
                       display: 'flex',
                       flexDirection: 'row',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      // marginTop: 10,
                       borderTopColor: vars['grey'],
                       borderTopWidth: selectedPayeeId === index ? 0 : 1,
-                      // marginBottom: 5,
                       padding: 10,
+                      height: hp(14),
                       borderBottomColor: vars['grey'],
                       borderBottomWidth: selectedPayeeId === index ? 0 : 1,
                     }}>
@@ -209,52 +205,60 @@ export function Payees({ navigation }: any) {
                       <View style={{display: 'flex', flexDirection: 'row'}}>
                         <View style={{padding: 6, borderRadius: 99, backgroundColor: '#F5F4F4', width: 28, height: 28}}>
                           <Typography 
-                            color="#000"
+                            color={vars['accent-blue']}
                             fontSize={10}
                             fontWeight={600}
                             fontFamily="Nunito-Bold"
                           >
                             {getNameInitials(item.name)}
                           </Typography>
-                          </View>
-                          <View style={{paddingLeft: 10}}>
-                          <Typography 
-                            color="#000"
-                            fontSize={14}
-                            fontWeight={600}
-                            fontFamily="Nunito-Bold"
-                          >
-                            {item.name}
-                          </Typography>
-                          <Typography 
-                            color="#808080"
-                            fontSize={12}
-                            fontWeight={600}
-                            fontFamily="Nunito-Bold"
-                          >
-                            {item.iban}
-                          </Typography>
+                        </View>
+                        <View style={{
+                          paddingLeft: 10,
+                          top: hp(1)
+                        }}>
+                            <Typography 
+                              color="#000"
+                              fontSize={14}
+                              fontWeight={600}
+                              fontFamily="Nunito-Bold"
+                            >
+                              {item.name}
+                            </Typography>
                           </View>
                         </View>
                     </TouchableOpacity>
                     <View style={{display: 'flex', flexDirection: 'row'}}>
-                        <View>
-                        <Typography 
-                            color="#000"
-                            fontSize={14}
-                            fontWeight={600}
-                            fontFamily="Nunito-SemiBold"
-                          >{formatDateDayMonthYear(item.created_at)}
-                        </Typography>
+                        <View style={{
+                          top: hp(.2),
+                          display: 'flex',
+                          flexDirection: 'row',
+                          marginRight: wp(5),
+                        }}>
+                          <View style={{top: hp(.7)}}>
+                            <CalenderEmpty color={vars['accent-grey']} size={14}/>
+                          </View>
+                          <Typography
+                              paddingLeft={wp(3)}
+                              color="#000"
+                              fontSize={14}
+                              fontWeight={600}
+                              fontFamily="Nunito-SemiBold"
+                            >{formatDateDayMonthYear(item.created_at)}
+                          </Typography>
                           {/* <Text style={{fontSize: 12, color: vars['accent-green']}}>{`+ € 1200`}</Text> */}
                         </View>
                         <View style={{ paddingTop: 3, paddingLeft: 8 }}>
                           <TouchableOpacity onPress={() => {
-                            navigation.navigate(screenNames.payeeSendFunds, {
-                              item,
-                            });
+                            // navigation.navigate(screenNames.payeeSendFunds, {
+                            //   item,
+                            // });
                           }}>
-                            <ArrowRight color="blue" />
+                            <VectorIcon
+                              size={14}
+                              color={vars['accent-blue']}
+                              name={"pluscircleo"}
+                            />
                           </TouchableOpacity>
                         </View>
                     </View>
@@ -332,23 +336,48 @@ export function Payees({ navigation }: any) {
                         </View>
                         {/* delete button here */}
                         <View style={{display: 'flex', flexDirection:'column'}}>
-                          <TouchableOpacity onPress={() => {
-                            setIsLoading(true);
-                            console.log('item', item.uuid)
-                            dispatch<any>(deleteBeneficiary(item.uuid))
-                            .unwrap()
-                            .then((res) => {
-                              setIsLoading(false);
-                              console.log('res', res);
-                            })
-                            .catch((error: any) => {
-                              console.log('error', error);
-                              setIsLoading(false);
-                            });
-                          }}>
-                            <Text style={{top: 18, right: 8}}>
-                              <AntDesign name="delete" size={19} color={vars['accent-pink']} />
-                            </Text>
+                          <TouchableOpacity
+                            style={{
+                              backgroundColor: '#FFF1F1',
+                              borderRadius: 25,
+                              paddingVertical: 5,
+                              paddingHorizontal: 18,
+                            }}
+                            onPress={() => {
+                              setIsLoading(true);
+                              console.log('item', item.uuid)
+                              dispatch<any>(deleteBeneficiary(item.uuid))
+                              .unwrap()
+                              .then((res) => {
+                                setIsLoading(false);
+                                console.log('res', res);
+                              })
+                              .catch((error: any) => {
+                                console.log('error', error);
+                                setIsLoading(false);
+                              });
+                            }}>
+                            <View
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                              }}
+                            >
+                              <AntDesign name="delete" size={19} color={'#FF7171'} />
+                              <Typography 
+                                color={'#FF7171'}
+                                fontSize={14}
+                                fontWeight={600}
+                                fontFamily="Nunito-Bold"
+                                paddingLeft={5}
+                                // style={{padding: 10}}
+                              > 
+                                  
+                                Delete payee
+                              </Typography>
+                            </View>
                           </TouchableOpacity>
                         </View>
                       </View>

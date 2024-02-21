@@ -275,7 +275,7 @@ export function PinCodeInputClipBoard({
           ...Platform.select({
             ios: {
               paddingVertical: 18,
-              width: 215,
+              width: 218,
             },
             android: {
               padding: 16,
@@ -303,7 +303,7 @@ export function PinCodeInputClipBoard({
                 ios: {
                   width: "100%",
                   letterSpacing: 24,
-                  paddingLeft: 23,
+                  paddingLeft: 24,
                 },
                 android: {
                   width: 215,

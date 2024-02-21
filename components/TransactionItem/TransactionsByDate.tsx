@@ -17,6 +17,7 @@ import Button from "../Button";
 import { AntDesign } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import CalenderEmptyIcon from "../../assets/icons/CalenderEmpty";
+import BankIcon from "../../assets/icons/Bank";
 import Box from "../Box";
 import Typography from "../Typography";
 import EuroIcon from "../../assets/icons/Euro";
@@ -77,7 +78,14 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
               >
                 <Box style={styles.detailMobileForEachTransactionWrapper}>
                   <View style={styles.nameContainer}>
-                    <CardIcon size={14} color={"heavy-grey"} />
+                    {transaction?.service === "DEBIT CARD" ? (
+                      <CardIcon size={14} color={"heavy-grey"} />
+                    ) : null}
+                    {transaction?.service === "SEPA CT IN" ||
+                    transaction?.service === "SEPA CT OUT" ||
+                    transaction?.service === "SEPA INST IN" ? (
+                      <BankIcon size={14} color={"heavy-grey"} />
+                    ) : null}
                     <Text numberOfLines={1} style={styles.valueDetailMobile}>
                       {transaction.name}
                     </Text>

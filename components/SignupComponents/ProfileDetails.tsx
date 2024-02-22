@@ -1,10 +1,9 @@
-import { FC, Fragment, useState } from "react";
+import { FC, useState } from "react";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import {
   View,
   Text,
-  Button,
   TouchableOpacity,
   Dimensions,
   ScrollView,
@@ -52,7 +51,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
   const dispatch = useDispatch();
   const registration = useSelector((state: any) => state.registration);
 
-  const windowDimensionsHeight = Dimensions.get("window").height - 390;
+  const windowDimensionsHeight = Dimensions.get("window").height - 395;
 
   const [isDatePickerVisible, setDatePickerVisibility] =
     useState<boolean>(false);

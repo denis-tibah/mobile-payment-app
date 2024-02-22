@@ -486,54 +486,53 @@ const Verifications: FC<IVerifications> = ({
               </View>
             ) : null} */}
           </View>
-
-          <View style={styles.footerContent}>
-            <View style={styles.downloadBtnMain}>
-              <WholeContainer>
-                <View style={styles.bottomButtonContainer}>
-                  <View
-                    style={{
-                      width: "100%",
-                      display: "flex",
-                      alignItems: "center",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    <View style={{ marginBottom: 6 }}>
-                      <Button
-                        color="light-pink"
-                        onPress={handlePrevStep}
-                        leftIcon={<ArrowLeft size={12} />}
-                      >
-                        Back
-                      </Button>
-                    </View>
+        </View>
+        <View style={styles.footerContent}>
+          <View style={styles.downloadBtnMain}>
+            <WholeContainer>
+              <View style={styles.bottomButtonContainer}>
+                <View
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <View style={{ marginBottom: 6 }}>
                     <Button
-                      loading={isLoading}
-                      color={isDisabledOtp || isLoading ? "grey" : "light-pink"}
-                      onPress={handleVerifyPhoneNumber}
-                      leftIcon={
-                        <TickIcon
-                          size={12}
-                          color={
-                            vars[
-                              isDisabledOtp || isLoading
-                                ? "medium-grey2"
-                                : "accent-pink"
-                            ]
-                          }
-                        />
-                      }
-                      disabled={isDisabledOtp}
+                      color="light-pink"
+                      onPress={handlePrevStep}
+                      leftIcon={<ArrowLeft size={12} />}
                     >
-                      Verify your phone number
+                      Back
                     </Button>
                   </View>
+                  <Button
+                    loading={isLoading}
+                    color={isDisabledOtp || isLoading ? "grey" : "light-pink"}
+                    onPress={handleVerifyPhoneNumber}
+                    leftIcon={
+                      <TickIcon
+                        size={12}
+                        color={
+                          vars[
+                            isDisabledOtp || isLoading
+                              ? "medium-grey2"
+                              : "accent-pink"
+                          ]
+                        }
+                      />
+                    }
+                    disabled={isDisabledOtp}
+                  >
+                    Verify your phone number
+                  </Button>
                 </View>
-              </WholeContainer>
-            </View>
+              </View>
+            </WholeContainer>
           </View>
         </View>
       </View>

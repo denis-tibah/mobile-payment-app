@@ -127,28 +127,27 @@ const TermsAndSecurity: FC<ITermsAndSecurity> = ({
               </FormGroup>
             </View>
           </View>
-
-          <View style={styles.footerContent}>
-            <View style={styles.downloadBtnMain}>
-              <WholeContainer>
-                <View style={styles.bottomButtonContainer}>
-                  <ButtonSubmit
-                    color="light-pink"
-                    onPress={handlePrevStep}
-                    leftIcon={<ArrowLeft size={14} />}
-                  >
-                    Back
-                  </ButtonSubmit>
-                  <ButtonSubmit
-                    color="light-pink"
-                    onPress={handleSubmit}
-                    leftIcon={<ArrowRightLong size={14} />}
-                  >
-                    Continue
-                  </ButtonSubmit>
-                </View>
-              </WholeContainer>
-            </View>
+        </View>
+        <View style={styles.footerContent}>
+          <View style={styles.downloadBtnMain}>
+            <WholeContainer>
+              <View style={styles.bottomButtonContainer}>
+                <ButtonSubmit
+                  color="light-pink"
+                  onPress={handlePrevStep}
+                  leftIcon={<ArrowLeft size={14} />}
+                >
+                  Back
+                </ButtonSubmit>
+                <ButtonSubmit
+                  color="light-pink"
+                  onPress={handleSubmit}
+                  leftIcon={<ArrowRightLong size={14} />}
+                >
+                  Continue
+                </ButtonSubmit>
+              </View>
+            </WholeContainer>
           </View>
         </View>
       </View>

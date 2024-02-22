@@ -254,27 +254,27 @@ const VerificationLast: FC<IVerificationLast> = ({
               policy.
             </Typography>
           </View>
-          <View style={styles.footerContent}>
-            <View style={styles.downloadBtnMain}>
-              <WholeContainer>
-                <View style={styles.bottomButtonContainer}>
-                  <Button
-                    color="light-pink"
-                    onPress={handleDoItLater}
-                    leftIcon={<ArrowRightLong size={14} />}
-                  >
-                    Do it later
-                  </Button>
-                  <Button
-                    color="light-pink"
-                    onPress={handleContinue}
-                    leftIcon={<ArrowRightLong size={14} />}
-                  >
-                    Continue
-                  </Button>
-                </View>
-              </WholeContainer>
-            </View>
+        </View>
+        <View style={styles.footerContent}>
+          <View style={styles.downloadBtnMain}>
+            <WholeContainer>
+              <View style={styles.bottomButtonContainer}>
+                <Button
+                  color="light-pink"
+                  onPress={handleDoItLater}
+                  leftIcon={<ArrowRightLong size={14} />}
+                >
+                  Do it later
+                </Button>
+                <Button
+                  color="light-pink"
+                  onPress={handleContinue}
+                  leftIcon={<ArrowRightLong size={14} />}
+                >
+                  Continue
+                </Button>
+              </View>
+            </WholeContainer>
           </View>
         </View>
       </View>

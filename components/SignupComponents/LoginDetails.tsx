@@ -238,7 +238,7 @@ const LoginDetails: FC<ILoginDetails> = ({
           <Typography
             fontSize={18}
             fontFamily="Nunito-SemiBold"
-            fontWeight="600"
+            fontWeight={600}
           >
             Login Credentials
           </Typography>

@@ -1,7 +1,16 @@
 import { FC, Fragment, useState } from "react";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { View, Text, Button, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Button,
+  TouchableOpacity,
+  Dimensions,
+  ScrollView,
+  Pressable,
+  SafeAreaView,
+} from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import DropDownPicker from "react-native-dropdown-picker";
 
@@ -42,6 +51,9 @@ const ProfileDetails: FC<IProfileDetails> = ({
 }) => {
   const dispatch = useDispatch();
   const registration = useSelector((state: any) => state.registration);
+
+  const windowDimensionsHeight = Dimensions.get("window").height - 390;
+  console.log("🚀 ~ windowDimensionsHeight:", windowDimensionsHeight);
 
   const [isDatePickerVisible, setDatePickerVisibility] =
     useState<boolean>(false);
@@ -126,335 +138,339 @@ const ProfileDetails: FC<IProfileDetails> = ({
   return (
     <View style={styles.card}>
       <View style={styles.cardTitle}>
-        <Typography fontSize={18} fontFamily="Nunito-SemiBold" fontWeight="600">
+        <Typography fontSize={18} fontFamily="Nunito-SemiBold" fontWeight={600}>
           Profile Details
         </Typography>
       </View>
       <Seperator backgroundColor={vars["grey"]} marginBottom={24} />
-      <View>
-        <View style={styles.cardBody}>
-          <View>
-            <FormGroup
-              validationError={
-                errors.salutation && touched.salutation && errors.salutation
-              }
-            >
-              {/* <View>
-                <DropDownPicker
-                  schema={{ label: "label", value: "value" }}
-                  onSelectItem={(value: any) => {
-                    const { value: salutationValue } = value;
-                    setValues({
-                      ...values,
-                      salutation: salutationValue,
-                    });
-                  }}
-                  listMode="SCROLLVIEW"
-                  // setValue={setSelectedSalutation}
-                  items={salutations}
-                  value={values?.salutation}
-                  setOpen={setOpenListForSalutation}
-                  open={openListForSalutation}
-                  style={styles.dropdown}
-                  dropDownContainerStyle={styles.dropdownContainer}
-                  dropDownDirection="TOP"
-                  placeholder="Salutation"
-                  scrollViewProps={{
-                    nestedScrollEnabled: true,
-                  }}
-                />
-              </View> */}
-              <View style={styles.dropdownWrapper}>
-                <View style={styles.dropDownIconContainerLeft}>
-                  <SalutationIcon size={16} color="blue" />
-                </View>
+      <View style={{ height: windowDimensionsHeight }}>
+        <SafeAreaView style={{ flex: 1 }}>
+          <ScrollView
+            bounces={false}
+            nestedScrollEnabled
+            style={{ flexGrow: 1 }}
+          >
+            <Pressable>
+              <View style={[styles.cardBody, {}]}>
                 <View>
-                  <DropDownPicker
-                    schema={{ label: "label", value: "value" }}
-                    onSelectItem={(value: any) => {
-                      const { value: salutationValue } = value;
-                      setValues({
-                        ...values,
-                        salutation: salutationValue,
-                      });
-                    }}
-                    listMode="MODAL"
-                    // setValue={setSelectedSalutation}
-                    items={salutations}
-                    value={values?.salutation}
-                    setOpen={setOpenListForSalutation}
-                    open={openListForSalutation}
-                    style={styles.dropdown}
-                    dropDownContainerStyle={styles.dropdownContainer}
-                    placeholder="Salutation"
-                    placeholderStyle={{
-                      color: vars["medium-grey"],
-                    }}
-                  />
-                </View>
-                <View style={styles.dropDownIconContainerRight}>
-                  <ArrowRightIcon size={16} color="blue" />
-                </View>
-              </View>
-            </FormGroup>
-          </View>
-          <View>
-            <FormGroup
-              validationError={
-                errors.firstName && touched.firstName && errors.firstName
-              }
-            >
-              <FormGroup.Input
-                keyboardType="default"
-                returnKeyType={"done"}
-                onChangeText={handleChange("firstName")}
-                onBlur={handleBlur("firstName")}
-                value={values.firstName}
-                placeholder="First Name"
-                placeholderTextColor={vars["ios-default-text"]}
-                iconColor="blue"
-                icon={<ProfileIcon />}
-              />
-            </FormGroup>
-          </View>
-          <View>
-            <FormGroup
-              validationError={
-                errors.lastName && touched.lastName && errors.lastName
-              }
-            >
-              <FormGroup.Input
-                keyboardType="default"
-                returnKeyType={"done"}
-                onChangeText={handleChange("lastName")}
-                onBlur={handleBlur("lastName")}
-                value={values.lastName}
-                placeholder="Last Name"
-                placeholderTextColor={vars["ios-default-text"]}
-                iconColor="blue"
-                icon={<ProfileIcon />}
-              />
-            </FormGroup>
-          </View>
-          <View>
-            <FormGroup
-              validationError={errors.dob && touched.dob && errors.dob}
-            >
-              <View style={styles.dobWrapper}>
-                <DobIcon size={18} color="blue" />
-                <TouchableOpacity onPress={showDatePicker}>
-                  <Text
-                    style={[
-                      styles.dobText,
-                      values?.dob
-                        ? styles.dobTextSelected
-                        : styles.dobTextDefault,
-                    ]}
+                  <FormGroup
+                    validationError={
+                      errors.salutation &&
+                      touched.salutation &&
+                      errors.salutation
+                    }
                   >
-                    {values?.dob ? values?.dob : "Date of birth"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <DateTimePickerModal
-                isVisible={isDatePickerVisible}
-                mode="date"
-                onConfirm={handleConfirm}
-                onCancel={hideDatePicker}
-              />
-            </FormGroup>
-          </View>
-          <View>
-            <FormGroup
-              validationError={
-                errors.placeOfBirth &&
-                touched.placeOfBirth &&
-                errors.placeOfBirth
-              }
-            >
-              <FormGroup.Input
-                keyboardType="default"
-                returnKeyType={"done"}
-                onChangeText={handleChange("placeOfBirth")}
-                onBlur={handleBlur("placeOfBirth")}
-                value={values.placeOfBirth}
-                placeholderTextColor={vars["ios-default-text"]}
-                placeholder="Place of birth"
-                iconColor="blue"
-                icon={<ProfileIcon />}
-              />
-            </FormGroup>
-          </View>
-          <View>
-            <FormGroup
-              validationError={
-                errors.countryOfBirth &&
-                touched.countryOfBirth &&
-                errors.countryOfBirth
-              }
-            >
-              {/* <View>
-                <DropDownPicker
-                  schema={{
-                    label: "name",
-                    value: "alpha3",
-                  }}
-                  onSelectItem={(value: any) => {
-                    const { alpha3: contryOfBirthValue } = value;
-                    setValues({
-                      ...values,
-                      countryOfBirth: contryOfBirthValue,
-                    });
-                  }}
-                  listMode="SCROLLVIEW"
-                  // setValue={setSelectedSalutation}
-                  items={countries}
-                  value={values?.countryOfBirth || ""}
-                  setOpen={setOpenListForCountryOfBirth}
-                  open={openListForCountryOfBirth}
-                  style={styles.dropdown}
-                  dropDownContainerStyle={styles.dropdownContainer}
-                  dropDownDirection="TOP"
-                  placeholder="Country of birth"
-                  scrollViewProps={{
-                    nestedScrollEnabled: true,
-                  }}
-                />
-              </View> */}
-              <View style={styles.dropdownWrapper}>
-                <View style={styles.dropDownIconContainerLeft}>
-                  <CityIcon size={16} color="blue" />
+                    <View style={styles.dropdownWrapper}>
+                      <View style={styles.dropDownIconContainerLeft}>
+                        <SalutationIcon size={16} color="blue" />
+                      </View>
+                      <View>
+                        <DropDownPicker
+                          schema={{ label: "label", value: "value" }}
+                          onSelectItem={(value: any) => {
+                            const { value: salutationValue } = value;
+                            setValues({
+                              ...values,
+                              salutation: salutationValue,
+                            });
+                          }}
+                          listMode="MODAL"
+                          // setValue={setSelectedSalutation}
+                          items={salutations}
+                          value={values?.salutation}
+                          setOpen={setOpenListForSalutation}
+                          open={openListForSalutation}
+                          style={styles.dropdown}
+                          dropDownContainerStyle={styles.dropdownContainer}
+                          placeholder="Salutation"
+                          placeholderStyle={{
+                            color: vars["medium-grey"],
+                          }}
+                        />
+                      </View>
+                      <View style={styles.dropDownIconContainerRight}>
+                        <ArrowRightIcon size={16} color="blue" />
+                      </View>
+                    </View>
+                  </FormGroup>
+                </View>
+                <WholeContainer>
+                  <Seperator
+                    backgroundColor={vars["v2-light-grey"]}
+                    marginBottom={16}
+                  />
+                </WholeContainer>
+                <View>
+                  <FormGroup
+                    validationError={
+                      errors.firstName && touched.firstName && errors.firstName
+                    }
+                  >
+                    <FormGroup.Input
+                      keyboardType="default"
+                      returnKeyType={"done"}
+                      onChangeText={handleChange("firstName")}
+                      onBlur={handleBlur("firstName")}
+                      value={values.firstName}
+                      placeholder="First Name"
+                      placeholderTextColor={vars["ios-default-text"]}
+                      iconColor="blue"
+                      icon={<ProfileIcon />}
+                    />
+                  </FormGroup>
                 </View>
                 <View>
-                  <DropDownPicker
-                    schema={{
-                      label: "name",
-                      value: "alpha3",
-                    }}
-                    onSelectItem={(value: any) => {
-                      const { alpha3: contryOfBirthValue } = value;
-                      setValues({
-                        ...values,
-                        countryOfBirth: contryOfBirthValue,
-                      });
-                    }}
-                    listMode="MODAL"
-                    items={countries}
-                    value={values?.countryOfBirth || ""}
-                    setOpen={setOpenListForCountryOfBirth}
-                    open={openListForCountryOfBirth}
-                    style={styles.dropdown}
-                    dropDownContainerStyle={styles.dropdownContainer}
-                    placeholder="Country of birth"
-                    placeholderStyle={{
-                      color: vars["medium-grey"],
-                    }}
+                  <FormGroup
+                    validationError={
+                      errors.lastName && touched.lastName && errors.lastName
+                    }
+                  >
+                    <FormGroup.Input
+                      keyboardType="default"
+                      returnKeyType={"done"}
+                      onChangeText={handleChange("lastName")}
+                      onBlur={handleBlur("lastName")}
+                      value={values.lastName}
+                      placeholder="Last Name"
+                      placeholderTextColor={vars["ios-default-text"]}
+                      iconColor="blue"
+                      icon={<ProfileIcon />}
+                    />
+                  </FormGroup>
+                </View>
+                <WholeContainer>
+                  <Seperator
+                    backgroundColor={vars["v2-light-grey"]}
+                    marginBottom={16}
                   />
-                </View>
-                <View style={styles.dropDownIconContainerRight}>
-                  <ArrowRightIcon size={16} color="blue" />
-                </View>
-              </View>
-            </FormGroup>
-          </View>
-          <View>
-            <FormGroup
-              validationError={
-                errors.nationality && touched.nationality && errors.nationality
-              }
-            >
-              {/* <View>
-                <DropDownPicker
-                  schema={{
-                    label: "name",
-                    value: "alpha3",
-                  }}
-                  onSelectItem={(value: any) => {
-                    const { alpha3: nationalityValue } = value;
-                    setValues({
-                      ...values,
-                      nationality: nationalityValue,
-                    });
-                  }}
-                  listMode="SCROLLVIEW"
-                  items={nationalities}
-                  value={values?.nationality || ""}
-                  setOpen={setOpenListForNationality}
-                  open={openListForNationality}
-                  style={styles.dropdown}
-                  dropDownContainerStyle={styles.dropdownContainer}
-                  dropDownDirection="TOP"
-                  placeholder="Nationality"
-                  scrollViewProps={{
-                    nestedScrollEnabled: true,
-                  }}
-                />
-              </View> */}
-              <View style={styles.dropdownWrapper}>
-                <View style={styles.dropDownIconContainerLeft}>
-                  <CityIcon size={16} color="blue" />
+                </WholeContainer>
+                <View>
+                  <FormGroup
+                    validationError={errors.dob && touched.dob && errors.dob}
+                  >
+                    <View style={styles.dobWrapper}>
+                      <DobIcon size={18} color="blue" />
+                      <TouchableOpacity onPress={showDatePicker}>
+                        <Text
+                          style={[
+                            styles.dobText,
+                            values?.dob
+                              ? styles.dobTextSelected
+                              : styles.dobTextDefault,
+                          ]}
+                        >
+                          {values?.dob ? values?.dob : "Date of birth"}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                    <DateTimePickerModal
+                      isVisible={isDatePickerVisible}
+                      mode="date"
+                      onConfirm={handleConfirm}
+                      onCancel={hideDatePicker}
+                    />
+                  </FormGroup>
                 </View>
                 <View>
-                  <DropDownPicker
-                    schema={{
-                      label: "name",
-                      value: "alpha3",
-                    }}
-                    onSelectItem={(value: any) => {
-                      const { alpha3: nationalityValue } = value;
-                      setValues({
-                        ...values,
-                        nationality: nationalityValue,
-                      });
-                    }}
-                    listMode="MODAL"
-                    items={nationalities}
-                    value={values?.nationality || ""}
-                    setOpen={setOpenListForNationality}
-                    open={openListForNationality}
-                    style={styles.dropdown}
-                    dropDownContainerStyle={styles.dropdownContainer}
-                    placeholderStyle={{
-                      color: vars["medium-grey"],
-                    }}
-                    placeholder="Nationality"
-                  />
+                  <FormGroup
+                    validationError={
+                      errors.placeOfBirth &&
+                      touched.placeOfBirth &&
+                      errors.placeOfBirth
+                    }
+                  >
+                    <FormGroup.Input
+                      keyboardType="default"
+                      returnKeyType={"done"}
+                      onChangeText={handleChange("placeOfBirth")}
+                      onBlur={handleBlur("placeOfBirth")}
+                      value={values.placeOfBirth}
+                      placeholderTextColor={vars["ios-default-text"]}
+                      placeholder="Place of birth"
+                      iconColor="blue"
+                      icon={<ProfileIcon />}
+                    />
+                  </FormGroup>
                 </View>
-                <View style={styles.dropDownIconContainerRight}>
-                  <ArrowRightIcon size={16} color="blue" />
+                <View>
+                  <FormGroup
+                    validationError={
+                      errors.countryOfBirth &&
+                      touched.countryOfBirth &&
+                      errors.countryOfBirth
+                    }
+                  >
+                    <View style={styles.dropdownWrapper}>
+                      <View style={styles.dropDownIconContainerLeft}>
+                        <CityIcon size={16} color="blue" />
+                      </View>
+                      <View>
+                        <DropDownPicker
+                          schema={{
+                            label: "name",
+                            value: "alpha3",
+                          }}
+                          onSelectItem={(value: any) => {
+                            const { alpha3: contryOfBirthValue } = value;
+                            setValues({
+                              ...values,
+                              countryOfBirth: contryOfBirthValue,
+                            });
+                          }}
+                          listMode="MODAL"
+                          items={countries}
+                          value={values?.countryOfBirth || ""}
+                          setOpen={setOpenListForCountryOfBirth}
+                          open={openListForCountryOfBirth}
+                          style={styles.dropdown}
+                          dropDownContainerStyle={styles.dropdownContainer}
+                          placeholder="Country of birth"
+                          placeholderStyle={{
+                            color: vars["medium-grey"],
+                          }}
+                        />
+                      </View>
+                      <View style={styles.dropDownIconContainerRight}>
+                        <ArrowRightIcon size={16} color="blue" />
+                      </View>
+                    </View>
+                  </FormGroup>
                 </View>
+                <View>
+                  <FormGroup
+                    validationError={
+                      errors.nationality &&
+                      touched.nationality &&
+                      errors.nationality
+                    }
+                  >
+                    <View style={styles.dropdownWrapper}>
+                      <View style={styles.dropDownIconContainerLeft}>
+                        <CityIcon size={16} color="blue" />
+                      </View>
+                      <View>
+                        <DropDownPicker
+                          schema={{
+                            label: "name",
+                            value: "alpha3",
+                          }}
+                          onSelectItem={(value: any) => {
+                            const { alpha3: nationalityValue } = value;
+                            setValues({
+                              ...values,
+                              nationality: nationalityValue,
+                            });
+                          }}
+                          listMode="MODAL"
+                          items={nationalities}
+                          value={values?.nationality || ""}
+                          setOpen={setOpenListForNationality}
+                          open={openListForNationality}
+                          style={styles.dropdown}
+                          dropDownContainerStyle={styles.dropdownContainer}
+                          placeholderStyle={{
+                            color: vars["medium-grey"],
+                          }}
+                          placeholder="Nationality"
+                        />
+                      </View>
+                      <View style={styles.dropDownIconContainerRight}>
+                        <ArrowRightIcon size={16} color="blue" />
+                      </View>
+                    </View>
+                  </FormGroup>
+                </View>
+                {/* <View style={styles.footerContent}>
+                  <View style={styles.downloadBtnMain}>
+                    <WholeContainer>
+                      <View
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <ButtonSubmit
+                          color="light-pink"
+                          onPress={handlePrevStep}
+                          leftIcon={<ArrowLeft size={14} />}
+                        >
+                          <Typography
+                            fontSize={16}
+                            fontWeight={600}
+                            fontFamily="Nunito-SemiBold"
+                            marginLeft={8}
+                          >
+                            Back
+                          </Typography>
+                        </ButtonSubmit>
+                        <ButtonSubmit
+                          color="light-pink"
+                          onPress={handleSubmit}
+                          rightIcon={<ArrowRightLong size={14} />}
+                        >
+                          <Typography
+                            fontSize={16}
+                            fontWeight={600}
+                            fontFamily="Nunito-SemiBold"
+                            marginLeft={8}
+                          >
+                            Next
+                          </Typography>
+                        </ButtonSubmit>
+                      </View>
+                    </WholeContainer>
+                  </View>
+                </View> */}
               </View>
-            </FormGroup>
-          </View>
-          <View style={styles.footerContent}>
-            <View style={styles.downloadBtnMain}>
-              <WholeContainer>
-                <View
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
+            </Pressable>
+          </ScrollView>
+        </SafeAreaView>
+      </View>
+      <View style={styles.footerContent}>
+        <View style={styles.downloadBtnMain}>
+          <WholeContainer>
+            <View
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <ButtonSubmit
+                color="light-pink"
+                onPress={handlePrevStep}
+                leftIcon={<ArrowLeft size={14} />}
+              >
+                <Typography
+                  fontSize={16}
+                  fontWeight={600}
+                  fontFamily="Nunito-SemiBold"
+                  marginLeft={8}
                 >
-                  <ButtonSubmit
-                    color="light-pink"
-                    onPress={handlePrevStep}
-                    leftIcon={<ArrowLeft size={14} />}
-                  >
-                    Back
-                  </ButtonSubmit>
-                  <ButtonSubmit
-                    color="light-pink"
-                    onPress={handleSubmit}
-                    leftIcon={<ArrowRightLong size={14} />}
-                  >
-                    Continue
-                  </ButtonSubmit>
-                </View>
-              </WholeContainer>
+                  Back
+                </Typography>
+              </ButtonSubmit>
+              <ButtonSubmit
+                color="light-pink"
+                onPress={handleSubmit}
+                rightIcon={<ArrowRightLong size={14} />}
+              >
+                <Typography
+                  fontSize={16}
+                  fontWeight={600}
+                  fontFamily="Nunito-SemiBold"
+                  marginLeft={8}
+                >
+                  Next
+                </Typography>
+              </ButtonSubmit>
             </View>
-          </View>
+          </WholeContainer>
         </View>
       </View>
     </View>

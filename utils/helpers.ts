@@ -67,9 +67,9 @@ export function formatAmountWithCurrency(amount: any = "") {
   const _amount = amount.split(" ");
   if (_amount.length === 2) {
     if (_amount[0] === "+") {
-      return `+ € ${Number(_amount[1])}`;
+      return `+ € ${Number(_amount[1]).toFixed(2)}`;
     } else {
-      return `- € ${Number(_amount[1])}`;
+      return `- € ${Number(_amount[1]).toFixed(2)}`;
     }
   }
 }

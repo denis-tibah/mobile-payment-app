@@ -53,7 +53,6 @@ const ProfileDetails: FC<IProfileDetails> = ({
   const registration = useSelector((state: any) => state.registration);
 
   const windowDimensionsHeight = Dimensions.get("window").height - 390;
-  console.log("🚀 ~ windowDimensionsHeight:", windowDimensionsHeight);
 
   const [isDatePickerVisible, setDatePickerVisibility] =
     useState<boolean>(false);

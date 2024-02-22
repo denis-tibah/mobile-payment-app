@@ -336,11 +336,6 @@ const LoginDetails: FC<ILoginDetails> = ({
                 />
               </FormGroup>
             </View>
-            {/* <Seperator
-              backgroundColor={vars["input-light-grey"]}
-              marginTop={8}
-              marginBottom={20}
-            /> */}
             {isValidEmail ? (
               <View>
                 {!isChangeEmail ? (
@@ -396,22 +391,21 @@ const LoginDetails: FC<ILoginDetails> = ({
                 ) : null}
               </View>
             ) : null}
-
-            <View style={styles.footerContent}>
-              <View style={styles.downloadBtnMain}>
-                <WholeContainer>
-                  <Button
-                    isTextAtEnd
-                    loading={isLoadingLogin}
-                    disabled={isLoadingLogin}
-                    color="light-pink"
-                    onPress={handleSubmit}
-                    rightIcon={<ArrowRightLong size={14} />}
-                  >
-                    {isLoadingLogin ? "Authenticating..." : "Next"}
-                  </Button>
-                </WholeContainer>
-              </View>
+          </View>
+          <View style={styles.footerContent}>
+            <View style={styles.downloadBtnMain}>
+              <WholeContainer>
+                <Button
+                  isTextAtEnd
+                  loading={isLoadingLogin}
+                  disabled={isLoadingLogin}
+                  color="light-pink"
+                  onPress={handleSubmit}
+                  rightIcon={<ArrowRightLong size={14} />}
+                >
+                  {isLoadingLogin ? "Authenticating..." : "Next"}
+                </Button>
+              </WholeContainer>
             </View>
           </View>
         </View>

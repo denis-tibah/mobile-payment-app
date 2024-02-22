@@ -150,7 +150,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
             style={{ flexGrow: 1 }}
           >
             <Pressable>
-              <View style={[styles.cardBody, {}]}>
+              <View style={styles.cardBody}>
                 <View>
                   <FormGroup
                     validationError={

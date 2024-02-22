@@ -21,7 +21,7 @@ export const styles = StyleSheet.create({
     paddingLeft: 24,
     paddingRight: 24,
   },
-  cardBody: {},
+  cardBody: { padding: 12, paddingRight: 12 },
   emailVerifiedContainer: {
     alignItems: "center",
     marginTop: 5,

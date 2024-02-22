@@ -25,6 +25,7 @@ import LoadingScreen from "../../components/Loader/LoadingScreen";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 import {
   formatDateDayMonthYear,
+  getFormattedDateFromUnixDotted,
   getUserActiveCards,
   groupedByDateTransactions,
   hp,
@@ -599,7 +600,7 @@ export function Transactions({ navigation, route }: any) {
               disabled={searchFieldData.card_id !== ""}
             >
               {showPickerDateFilter.dateFrom.value &&
-                formatDateDayMonthYear(showPickerDateFilter.dateFrom.value)}
+                getFormattedDateFromUnixDotted(showPickerDateFilter.dateFrom.value)}
             </Button>
             {showPickerDateFilter.dateFrom.state && (
               <DateTimePicker
@@ -675,7 +676,7 @@ export function Transactions({ navigation, route }: any) {
               disabled={searchFieldData.card_id !== ""}
             >
               {showPickerDateFilter.dateTo.value &&
-                formatDateDayMonthYear(showPickerDateFilter.dateTo.value)}
+                getFormattedDateFromUnixDotted(showPickerDateFilter.dateTo.value)}
             </Button>
             {showPickerDateFilter.dateTo.state && (
               <DateTimePicker

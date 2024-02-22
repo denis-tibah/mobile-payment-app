@@ -413,7 +413,7 @@ export function Transactions({ navigation, route }: any) {
           <View style={styles.searchBar}>
             <FormGroup.Input
               icon={<SearchIcon color="blue" size={18} />}
-              placeholder={"Search text ..."}
+              placeholder={"Search for transactions ..."}
               color={vars["black"]}
               fontSize={14}
               fontWeight={"400"}
@@ -493,6 +493,19 @@ export function Transactions({ navigation, route }: any) {
                   );
                 })
               : null}
+              {!isCardTransactionShown && Object.keys(_groupedByDateTransactions).length === 0 && (
+                <Fragment>
+                  <View style={{ padding: 30, backgroundColor: '#fff', height: hp(150), alignItems: 'center' }}>
+                    <Typography
+                      fontSize={16}
+                      color={vars["black"]}
+                      fontWeight="Nunito-Bold"
+                    >
+                      Don't have any transactions found
+                    </Typography>
+                  </View>
+                </Fragment>
+            )}
           </View>
           {/* <Seperator backgroundColor={vars["grey"]} />
           {!isCardTransactionShown && (

@@ -16,8 +16,8 @@ export const styles = StyleSheet.create({
     width: "100%",
   },
   cardTitle: {
-    paddingTop: 20,
-    paddingBottom: 26,
+    paddingTop: 16,
+    paddingBottom: 16,
     paddingLeft: 24,
     paddingRight: 24,
   },
@@ -73,7 +73,6 @@ export const styles = StyleSheet.create({
   },
   textSeparator: {
     fontSize: 12,
-    marginLeft: 20,
   },
   textSeparatorContainer: {
     marginTop: 10,

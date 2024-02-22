@@ -8,11 +8,13 @@ import FormGroup from "../../components/FormGroup";
 import ArrowRightLong from "../../assets/icons/ArrowRightLong";
 import ArrowLeft from "../../assets/icons/ArrowLeft";
 import ButtonSubmit from "../../components/Button";
-import MapIcon from "../../assets/icons/Map";
+
 import KeyIcon from "../../assets/icons/Key";
 import LocationIcon from "../../assets/icons/Location";
 import CityIcon from "../../assets/icons/City";
 import ArrowRightIcon from "../../assets/icons/ArrowRight";
+import MapIcon from "../../assets/icons/Map";
+import GlobeIcon from "../../assets/icons/Globe";
 import Typography from "../../components/Typography";
 import { countries } from "../../data/ISO3166";
 import { noOfMonthsObj, noOfYearsObj } from "../../data/options";
@@ -20,6 +22,7 @@ import WholeContainer from "../../layout/WholeContainer";
 import { Seperator } from "../../components/Seperator/Seperator";
 import { setRegistrationData } from "../../redux/registration/registrationSlice";
 import { addressDetailsSchema } from "../../utils/formikSchema";
+import SignupScrollableBodyWrapper from "./SignupScrollableBodyWrapper";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
 
@@ -223,9 +226,17 @@ const AddressDetails: FC<IAddressDetails> = ({
         <Typography fontSize={18} fontFamily="Nunito-SemiBold" fontWeight="600">
           Address Details
         </Typography>
+        <Typography
+          fontSize={14}
+          fontFamily="Mukta-Regular"
+          fontWeight={400}
+          color="#696F7A"
+        >
+          We require 3 years of address history
+        </Typography>
       </View>
-      <Seperator backgroundColor={vars["grey"]} marginBottom={24} />
-      <View>
+      <Seperator backgroundColor={vars["grey"]} marginBottom={16} />
+      <SignupScrollableBodyWrapper>
         <View style={styles.cardBody}>
           <View>
             <FormGroup
@@ -240,7 +251,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                 placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Address"
                 iconColor="blue"
-                icon={<KeyIcon />}
+                icon={<CityIcon size={16} color="blue" />}
               />
             </FormGroup>
           </View>
@@ -324,7 +335,7 @@ const AddressDetails: FC<IAddressDetails> = ({
             >
               <View style={styles.dropdownWrapper}>
                 <View style={styles.dropDownIconContainerLeft}>
-                  <CityIcon size={16} color="blue" />
+                  <GlobeIcon size={16} color="blue" />
                 </View>
                 <View>
                   <DropDownPicker
@@ -487,7 +498,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                       placeholderTextColor={vars["ios-default-text"]}
                       placeholder="Address"
                       iconColor="blue"
-                      icon={<KeyIcon />}
+                      icon={<CityIcon size={16} color="blue" />}
                     />
                   </FormGroup>
                 </View>
@@ -508,7 +519,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                       placeholderTextColor={vars["ios-default-text"]}
                       placeholder="Address 2"
                       iconColor="blue"
-                      icon={<KeyIcon />}
+                      icon={<KeyIcon size={16} color="blue" />}
                     />
                   </FormGroup>
                 </View>
@@ -585,7 +596,7 @@ const AddressDetails: FC<IAddressDetails> = ({
                   >
                     <View style={styles.dropdownWrapper}>
                       <View style={styles.dropDownIconContainerLeft}>
-                        <CityIcon size={16} color="blue" />
+                        <GlobeIcon size={16} color="blue" />
                       </View>
                       <View>
                         <DropDownPicker
@@ -731,27 +742,41 @@ const AddressDetails: FC<IAddressDetails> = ({
               </View>
             )}
         </View>
-        <View style={styles.footerContent}>
-          <View style={styles.downloadBtnMain}>
-            <WholeContainer>
-              <View style={styles.bottomButtonContainer}>
-                <ButtonSubmit
-                  color="light-pink"
-                  onPress={handlePrevStep}
-                  leftIcon={<ArrowLeft size={14} />}
+      </SignupScrollableBodyWrapper>
+      <View style={styles.footerContent}>
+        <View style={styles.downloadBtnMain}>
+          <WholeContainer>
+            <View style={styles.bottomButtonContainer}>
+              <ButtonSubmit
+                color="light-pink"
+                onPress={handlePrevStep}
+                leftIcon={<ArrowLeft size={14} />}
+              >
+                <Typography
+                  fontSize={16}
+                  fontWeight={600}
+                  fontFamily="Nunito-SemiBold"
+                  marginLeft={8}
                 >
                   Back
-                </ButtonSubmit>
-                <ButtonSubmit
-                  color="light-pink"
-                  onPress={handleSubmit}
-                  leftIcon={<ArrowRightLong size={14} />}
+                </Typography>
+              </ButtonSubmit>
+              <ButtonSubmit
+                color="light-pink"
+                onPress={handleSubmit}
+                rightIcon={<ArrowRightLong size={14} />}
+              >
+                <Typography
+                  fontSize={16}
+                  fontWeight={600}
+                  fontFamily="Nunito-SemiBold"
+                  marginLeft={8}
                 >
-                  Continue
-                </ButtonSubmit>
-              </View>
-            </WholeContainer>
-          </View>
+                  Next
+                </Typography>
+              </ButtonSubmit>
+            </View>
+          </WholeContainer>
         </View>
       </View>
     </View>

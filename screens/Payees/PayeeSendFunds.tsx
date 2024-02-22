@@ -342,7 +342,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           </View>
           <View
             style={{
-              paddingTop: 8,
+              // paddingTop: 8,
               backgroundColor: "#fff",
               paddingHorizontal: 18,
             }}
@@ -438,35 +438,6 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           </View>
         </View>
       </KeyboardAwareScrollView>
-      {/* <BottomSheet
-          isVisible={isPaymentResultBottomSheetOpen}
-          onClose={() => setIsPaymentResultBottomSheetOpen(false)}
-          headerResponse={{
-            isShown: true,
-            isSuccessful: isPaymentSuccessful,
-            message: isPaymentSuccessful ? 'Payment Successful' : 'Payment Failed',
-          }}
-        >
-          { isPaymentSuccessful ? (
-            <>
-              <Text style={styles.textConfirmation}>Your payment has been verified.</Text>
-              <Text style={styles.textConfirmation}>Check your notifications and transaction page.</Text>
-              <Image
-                source={require('../../assets/images/verified.png')}
-                style={styles.imageContainer}
-              />
-            </>
-          ) : (
-            <>
-              <Text style={styles.textConfirmation}>Your payment failed to verify.</Text>
-              <Text style={styles.textConfirmation}>Check your notifications and transaction page.</Text>
-              <Image
-                source={require('../../assets/images/failed.png')}
-                style={styles.imageContainer}
-              />
-            </>
-          )}
-        </BottomSheet> */}
       <View
         style={{
           position: "relative",
@@ -690,7 +661,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     backgroundColor: "#fff",
-    paddingTop: 20,
+    paddingTop: 22,
     paddingHorizontal: 10,
     // backgroundColor: "#ACACAC",
   },

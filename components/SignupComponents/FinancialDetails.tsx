@@ -3,9 +3,9 @@ import { View, Dimensions } from "react-native";
 import { useFormik } from "formik";
 import { useSelector, useDispatch } from "react-redux";
 import DropDownPicker from "react-native-dropdown-picker";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import ButtonSubmit from "../../components/Button";
-import FixedBottomAction from "../../components/FixedBottomAction";
 import FormGroup from "../../components/FormGroup";
 import { setRegistrationData } from "../../redux/registration/registrationSlice";
 import { financialDetailsSchema } from "../../utils/formikSchema";
@@ -17,6 +17,8 @@ import ProfileIcon from "../../assets/icons/Profile";
 import SalutationIcon from "../../assets/icons/Salutation";
 import Typography from "../../components/Typography";
 import WholeContainer from "../../layout/WholeContainer";
+import BusinessBagIcon from "../../assets/icons/BusinessBag";
+import SignupScrollableBodyWrapper from "./SignupScrollableBodyWrapper";
 import { Seperator } from "../../components/Seperator/Seperator";
 import { sourceOfWealth, employmentStatus } from "../../data/options";
 import vars from "../../styles/vars";
@@ -105,7 +107,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
         </Typography>
       </View>
       <Seperator backgroundColor={vars["grey"]} marginBottom={24} />
-      <View>
+      <SignupScrollableBodyWrapper>
         <View style={styles.cardBody}>
           <View>
             <FormGroup
@@ -128,6 +130,12 @@ const FinancialDetails: FC<IFinancialDetails> = ({
               />
             </FormGroup>
           </View>
+          <WholeContainer>
+            <Seperator
+              backgroundColor={vars["v2-light-grey"]}
+              marginBottom={16}
+            />
+          </WholeContainer>
           <View>
             <FormGroup
               validationError={
@@ -136,35 +144,13 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 errors.sourceOfWealth
               }
             >
-              {/* <View>
-                <DropDownPicker
-                  schema={{ label: "label", value: "value" }}
-                  onSelectItem={(value: any) => {
-                    const { value: sourceOfWealthValue } = value;
-
-                    setValues({
-                      ...values,
-                      sourceOfWealth: sourceOfWealthValue,
-                    });
-                  }}
-                  listMode="SCROLLVIEW"
-                  // setValue={setSelectedSalutation}
-                  items={sourceOfWealth}
-                  value={values?.sourceOfWealth}
-                  setOpen={setOpenListForSourceOfDeposits}
-                  open={openListForSourceOfDeposits}
-                  style={styles.dropdown}
-                  dropDownContainerStyle={styles.dropdownContainer}
-                  dropDownDirection="TOP"
-                  placeholder="Source of wealth"
-                  scrollViewProps={{
-                    nestedScrollEnabled: true,
-                  }}
-                />
-              </View> */}
               <View style={styles.dropdownWrapper}>
                 <View style={styles.dropDownIconContainerLeft}>
-                  <PigIcon size={16} color="blue" />
+                  <MaterialCommunityIcons
+                    size={20}
+                    color="#086AFB"
+                    name={"storefront-outline"}
+                  />
                 </View>
                 <View>
                   <DropDownPicker
@@ -184,7 +170,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                     open={openListForSourceOfDeposits}
                     style={styles.dropdown}
                     dropDownContainerStyle={styles.dropdownContainer}
-                    placeholder="Source of wealth"
+                    placeholder="Source of deposit"
                     placeholderStyle={{
                       color: vars["medium-grey"],
                     }}
@@ -204,47 +190,9 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 errors.employmentStatus
               }
             >
-              {/* <View>
-                <DropDownPicker
-                  schema={{ label: "label", value: "value" }}
-                  onSelectItem={(value: any) => {
-                    const { value: employmentStatusValue } = value;
-
-                    setValues({
-                      ...values,
-                      employmentStatus: employmentStatusValue,
-                    });
-                    if (employmentStatusValue === "unemployed") {
-                      setFieldValue("occupation", "N/A");
-                      setFieldValue("employerName", "N/A");
-                      setFieldValue("positionHeld", "N/A");
-                      setFieldValue("lengthWithEmployer", "N/A");
-                      setFieldValue("natureOfBusiness", "N/A");
-                    } else {
-                      setFieldValue("occupation", "");
-                      setFieldValue("employerName", "");
-                      setFieldValue("positionHeld", "");
-                      setFieldValue("lengthWithEmployer", "");
-                      setFieldValue("natureOfBusiness", "");
-                    }
-                  }}
-                  listMode="SCROLLVIEW"
-                  items={employmentStatus}
-                  value={values?.employmentStatus}
-                  setOpen={setOpenListForEmploymentStatus}
-                  open={openListForEmploymentStatus}
-                  style={styles.dropdown}
-                  dropDownContainerStyle={styles.dropdownContainer}
-                  dropDownDirection="TOP"
-                  placeholder="Employment status"
-                  scrollViewProps={{
-                    nestedScrollEnabled: true,
-                  }}
-                />
-              </View> */}
               <View style={styles.dropdownWrapper}>
                 <View style={styles.dropDownIconContainerLeft}>
-                  <PigIcon size={16} color="blue" />
+                  <BusinessBagIcon size={16} color="blue" />
                 </View>
                 <View>
                   <DropDownPicker
@@ -406,27 +354,41 @@ const FinancialDetails: FC<IFinancialDetails> = ({
             </FormGroup>
           </View>
         </View>
-        <View style={styles.footerContent}>
-          <View style={styles.downloadBtnMain}>
-            <WholeContainer>
-              <View style={styles.bottomButtonContainer}>
-                <ButtonSubmit
-                  color="light-pink"
-                  onPress={handlePrevStep}
-                  leftIcon={<ArrowLeft size={14} />}
+      </SignupScrollableBodyWrapper>
+      <View style={styles.footerContent}>
+        <View style={styles.downloadBtnMain}>
+          <WholeContainer>
+            <View style={styles.bottomButtonContainer}>
+              <ButtonSubmit
+                color="light-pink"
+                onPress={handlePrevStep}
+                leftIcon={<ArrowLeft size={14} />}
+              >
+                <Typography
+                  fontSize={16}
+                  fontWeight={600}
+                  fontFamily="Nunito-SemiBold"
+                  marginLeft={8}
                 >
                   Back
-                </ButtonSubmit>
-                <ButtonSubmit
-                  color="light-pink"
-                  onPress={handleSubmit}
-                  leftIcon={<ArrowRightLong size={14} />}
+                </Typography>
+              </ButtonSubmit>
+              <ButtonSubmit
+                color="light-pink"
+                onPress={handleSubmit}
+                rightIcon={<ArrowRightLong size={14} />}
+              >
+                <Typography
+                  fontSize={16}
+                  fontWeight={600}
+                  fontFamily="Nunito-SemiBold"
+                  marginLeft={8}
                 >
-                  Continue
-                </ButtonSubmit>
-              </View>
-            </WholeContainer>
-          </View>
+                  Next
+                </Typography>
+              </ButtonSubmit>
+            </View>
+          </WholeContainer>
         </View>
       </View>
     </View>

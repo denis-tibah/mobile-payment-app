@@ -1,15 +1,7 @@
 import { FC, useState } from "react";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Dimensions,
-  ScrollView,
-  Pressable,
-  SafeAreaView,
-} from "react-native";
+import { View, Text, TouchableOpacity, Dimensions } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import DropDownPicker from "react-native-dropdown-picker";
 

@@ -10,6 +10,7 @@ import { AntDesign } from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import Euro from "../../assets/icons/Euro";
+import PayeeAttachFileSection from "./components/PayeeAttaFileSection";
 import CheckBox from "expo-checkbox";
 import { useFormik } from "formik";
 import MainLayout from "../../layout/Main";
@@ -46,6 +47,7 @@ import {
 import ChangeLimits from "../../assets/icons/ChangeLimits";
 import Document from "../../assets/icons/Document";
 import Typography from "../../components/Typography";
+
 
 const currencyOptions = [
   { label: "EUR", value: "EUR" },
@@ -423,99 +425,16 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
               backgroundColor: '#ACACAC',
               opacity: 0.4
             }} />
-            {/* purpose of your transfer input */}
-            <Text
-              style={{
-                fontSize: 12,
-                color: vars["accent-grey"],
-                alignSelf: "center",
-              }}
-            >
-              Please provide supporting information for all transfers above
-              $5,000
-            </Text>
-            <Divider style={{ marginVertical: 15, backgroundColor: "none" }} />
-            <FormGroup
-              validationError={
-                errors.remarks && touched.remarks && errors.remarks
-              }
-            >
-              {/* <FormGroup.TextArea
-                keyboardType="default"
-                name="purpose"
-                returnKeyType={"done"}
-                onChangeText={handleChange("purpose")}
-                onBlur={handleBlur("purpose")}
-                value={values.postcode}
-                placeholderTextColor={vars["ios-default-text"]}
-                placeholder="Purpose of your transfer"
-                iconColor="blue"
-                editable={values.reason === "N/A" ? false : true}
-                icon={<StatementsIcon size={16} />}
-              /> */}
-              <FormGroup.Input
-                keyboardType="text"
-                name="remarks"
-                onChangeText={handleChange("remarks")}
-                onBlur={handleBlur("remarks")}
-                value={values.remarks}
-                placeholderTextColor={vars["ios-default-text"]}
-                placeholder="Purpose of your transfer"
-                iconColor="blue"
-                style={{ height: 42 }}
-                icon={<Document size={18} color={vars['accent-blue']} />}
+            {values.amount >= 5000 && (
+              <PayeeAttachFileSection
+                values={values}
+                setFieldValue={setFieldValue}
+                pickDocument={pickDocument}
+                handleChange={handleChange}
+                handleBlur={handleBlur}
               />
-            </FormGroup>
-            <View style={{ paddingHorizontal: 16 }}>
-              <TouchableOpacity
-                onPress={pickDocument}
-                style={{ display: "flex", flexDirection: "row" }}
-                disabled={values.amount >= 5000 ? false : true}
-              >
-                <AntDesign
-                  name="pluscircleo"
-                  size={38}
-                  color={vars["accent-blue"]}
-                />
-                <Text
-                  style={{
-                    color: vars["shade-grey"],
-                    top: 10,
-                    paddingLeft: 15,
-                    fontFamily: "Nunito-SemiBold",
-                  }}
-                >
-                  Attach a file
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <Divider style={{
-              marginVertical: 26,
-              width: widthGlobal,
-              left: -18,
-              height: 1,
-              backgroundColor: '#ACACAC',
-              opacity: 0.4
-            }} />
-            <View style={{ display: "flex", flexDirection: "row" }}>
-              <FormGroup>
-                <FormGroup.CheckboxUI
-                  label="For manual processing outside my limits"
-                  value={values?.isManualProcessing}
-                  color={
-                    values?.isManualProcessing ? vars["accent-blue"] : undefined
-                  }
-                  onValueChange={() => {
-                    setFieldValue(
-                      "isManualProcessing",
-                      !values?.isManualProcessing
-                    );
-                  }}
-                  disabled={values.amount >= 5000 ? false : true}
-                />
-              </FormGroup>
-              <Text style={{ backgroundColor: vars["shade-grey"] }}>{` `}</Text>
-            </View>
+              )
+            }
           </View>
         </View>
       </KeyboardAwareScrollView>

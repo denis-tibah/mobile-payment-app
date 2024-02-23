@@ -166,7 +166,7 @@ const TermsAndSecurity: FC<ITermsAndSecurity> = ({
                     fontFamily="Nunito-SemiBold"
                     marginLeft={8}
                   >
-                    Continue
+                    Next
                   </Typography>
                 </ButtonSubmit>
               </View>

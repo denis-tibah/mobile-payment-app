@@ -23,7 +23,7 @@ interface ITermsAndSecurity {
 const PRIVACY_SETTINGS = [
   { label: "I've read and accept the Terms", value: "termsAndConditions" },
   {
-    label: "I've read and accept the Provicy Policy",
+    label: "I've read and accept the Privacy Policy",
     value: "readPrivacyPolicy",
   },
 ];
@@ -62,8 +62,8 @@ const TermsAndSecurity: FC<ITermsAndSecurity> = ({
   return (
     <View style={styles.card}>
       <View style={styles.cardTitle}>
-        <Typography fontSize={18} fontFamily="Nunito-SemiBold" fontWeight="600">
-          Terms and Security
+        <Typography fontSize={18} fontFamily="Nunito-SemiBold" fontWeight={600}>
+          Terms & Security
         </Typography>
       </View>
       <Seperator backgroundColor={vars["grey"]} marginBottom={24} />
@@ -85,6 +85,7 @@ const TermsAndSecurity: FC<ITermsAndSecurity> = ({
                       >
                         <FormGroup.CheckboxUI
                           label={label}
+                          labelValue={value}
                           value={values[value as keyof typeof values]}
                           color={
                             values[value as keyof typeof values]
@@ -97,6 +98,7 @@ const TermsAndSecurity: FC<ITermsAndSecurity> = ({
                               !values[value as keyof typeof values]
                             );
                           }}
+                          isTermsAndSecurity
                         />
                       </FormGroup>
                     </Fragment>
@@ -105,12 +107,19 @@ const TermsAndSecurity: FC<ITermsAndSecurity> = ({
               )}
             </View>
           </View>
+          <WholeContainer>
+            <Seperator
+              backgroundColor={vars["v2-light-grey"]}
+              marginBottom={16}
+            />
+          </WholeContainer>
           <View>
             <Text style={styles.termsHeaderText}>Optional</Text>
             <View>
               <FormGroup>
                 <FormGroup.CheckboxUI
                   label="Newsletter subscription"
+                  labelValue="newsLetterSubscription"
                   value={values?.newsLetterSubscription}
                   color={
                     values?.newsLetterSubscription
@@ -137,14 +146,28 @@ const TermsAndSecurity: FC<ITermsAndSecurity> = ({
                   onPress={handlePrevStep}
                   leftIcon={<ArrowLeft size={14} />}
                 >
-                  Back
+                  <Typography
+                    fontSize={16}
+                    fontWeight={600}
+                    fontFamily="Nunito-SemiBold"
+                    marginLeft={8}
+                  >
+                    Back
+                  </Typography>
                 </ButtonSubmit>
                 <ButtonSubmit
                   color="light-pink"
                   onPress={handleSubmit}
-                  leftIcon={<ArrowRightLong size={14} />}
+                  rightIcon={<ArrowRightLong size={14} />}
                 >
-                  Continue
+                  <Typography
+                    fontSize={16}
+                    fontWeight={600}
+                    fontFamily="Nunito-SemiBold"
+                    marginLeft={8}
+                  >
+                    Continue
+                  </Typography>
                 </ButtonSubmit>
               </View>
             </WholeContainer>

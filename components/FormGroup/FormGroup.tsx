@@ -11,6 +11,7 @@ import EyeClosedIcon from "../../assets/icons/EyeClosed";
 import vars from "../../styles/vars";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Button from "../Button";
+import Typography from "../Typography";
 
 const { Item } = Picker;
 const { Item: ItemIOS } = PickerIOS;
@@ -383,12 +384,66 @@ export function SelectForArrOfObject({
     </View>
   );
 }
-export function CheckboxUI({ label, ...props }: any) {
+export function CheckboxUI({
+  label,
+  isTermsAndSecurity,
+  labelValue,
+  ...props
+}: any) {
   return (
     <View style={checkbox.container}>
       <View style={checkbox.checkboxContainer}>
         <Checkbox {...props} />
-        <Text style={checkbox.label}>{label}</Text>
+        {!isTermsAndSecurity && labelValue !== "newsLetterSubscription" ? (
+          <Text style={checkbox.label}>{label}</Text>
+        ) : null}
+        {labelValue === "newsLetterSubscription" ? (
+          <Typography
+            marginLeft={12}
+            fontFamily="Mukta-SemiBold"
+            fontSize={14}
+            fontWeight={500}
+          >
+            Newsletter subscription
+          </Typography>
+        ) : null}
+
+        {labelValue === "termsAndConditions" ? (
+          <Typography
+            fontFamily="Mukta-SemiBold"
+            fontSize={14}
+            fontWeight={500}
+            marginLeft={12}
+          >
+            I've read and accept the{" "}
+            <Typography
+              fontFamily="Mukta-SemiBold"
+              fontSize={14}
+              fontWeight={500}
+              color={vars["accent-pink"]}
+            >
+              Terms
+            </Typography>
+          </Typography>
+        ) : null}
+        {labelValue === "readPrivacyPolicy" ? (
+          <Typography
+            fontFamily="Mukta-SemiBold"
+            fontSize={14}
+            fontWeight={500}
+            marginLeft={12}
+          >
+            I've read and accept the{" "}
+            <Typography
+              fontFamily="Mukta-SemiBold"
+              fontSize={14}
+              fontWeight={500}
+              color={vars["accent-pink"]}
+            >
+              Privacy Policy
+            </Typography>
+          </Typography>
+        ) : null}
       </View>
     </View>
   );

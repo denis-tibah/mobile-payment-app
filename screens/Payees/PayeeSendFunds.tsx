@@ -116,10 +116,10 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
       creditor_name: receiverName,
       amount: smsPaymentRequest.amount,
       currency: smsPaymentRequest.currency,
-      reference: smsPaymentRequest?.remarks,
-      remarks: smsPaymentRequest?.remarks,
-      purpose: smsPaymentRequest?.reason,
-      reason: smsPaymentRequest?.reason,
+      reference: smsPaymentRequest?.reference,
+      remarks: smsPaymentRequest?.reference,
+      purpose: smsPaymentRequest?.purpose,
+      reason: smsPaymentRequest?.purpose,
       access_token: userTokens?.access_token,
       token_ziyl: userTokens?.token_ziyl,
     })
@@ -164,22 +164,6 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
   const handleInitiatepayment = (paymentValues: any) => {
     const recipientFirstname = receiverName.split(" ")[0];
     const recipientLastname = receiverName.split(" ")[1];
-    console.log({
-      recipientFirstname,
-      recipientLastname,
-      amount: paymentValues.amount,
-      currency: paymentValues.currency,
-      debtor_iban: accountIban,
-      creditor_iban: receiverIban,
-      creditor_name: receiverName,
-      reason: paymentValues.reason,
-      remarks: paymentValues.remarks,
-      access_token: userTokens?.access_token,
-      token_ziyl: userTokens?.token_ziyl,
-      ...(paymentValues.attachedFile && {
-        attached_file: paymentValues.attachedFile,
-      }),
-    });
     initiatePayment({
       recipientFirstname,
       recipientLastname,
@@ -188,10 +172,10 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
       debtor_iban: accountIban,
       creditor_iban: receiverIban,
       creditor_name: receiverName,
-      reason: paymentValues.reason,
-      purpose: paymentValues.reason,
-      remarks: paymentValues.remarks,
-      reference: paymentValues.remarks,
+      reason: paymentValues.purpose,
+      purpose: paymentValues.purpose,
+      remarks: paymentValues.reference,
+      reference: paymentValues.reference,
       access_token: userTokens?.access_token,
       token_ziyl: userTokens?.token_ziyl,
       ...(paymentValues.attachedFile && {
@@ -402,14 +386,14 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
               )}
             </View>
             <FormGroup
-              validationError={errors.reason && touched.reason && errors.reason}
+              validationError={errors.reference && touched.reference && errors.reference}
             >
               <FormGroup.Input
                 keyboardType="text"
-                name="reason"
-                onChangeText={handleChange("reason")}
-                onBlur={handleBlur("reason")}
-                value={values.reason}
+                name="reference"
+                onChangeText={handleChange("reference")}
+                onBlur={handleBlur("reference")}
+                value={values.reference}
                 placeholderTextColor={vars["ios-default-text"]}
                 placeholder="Reference"
                 iconColor="blue"

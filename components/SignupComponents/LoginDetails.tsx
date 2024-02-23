@@ -142,6 +142,8 @@ const LoginDetails: FC<ILoginDetails> = ({
               : values?.email,
             phone_number: `${values?.countryCode}${values?.phoneNumber}`,
             identifier: `${values?.countryCode}${values?.phoneNumber}`,
+            countryCodeOnly: values?.countryCode,
+            phoneNumberOnly: values?.phoneNumber,
           })
         );
       } else {

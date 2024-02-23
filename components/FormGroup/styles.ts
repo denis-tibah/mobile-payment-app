@@ -127,6 +127,46 @@ export const pinCode = StyleSheet.create({
   },
 });
 
+export const newPinCode = StyleSheet.create({
+  wrapper: {
+    width: "70%",
+    height: 42,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "#6BA6FD",
+  },
+  Wrapper: {
+    width: "85%",
+  },
+  input: {
+    /* width: 36, */
+    height: 48,
+    margin: 0,
+    /* borderRadius: 6, */
+    padding: 6,
+    fontSize: 18,
+    display: "flex",
+    alignItems: "flex-end",
+    justifyContent: "center",
+    /* borderColor: "#DDDDDD", */
+    alignContent: "center",
+    textAlign: "center",
+    /*  borderWidth: 1, */
+  },
+  newPinCodeStyle: {
+    borderRadius: 0,
+    borderTopWidth: 0,
+    borderRightWidth: 0,
+    borderLeftWidth: 0,
+    borderColor: "#000000",
+  },
+});
+
 export const formGroup: any = StyleSheet.create<any>({
   base: {
     width: "100%",

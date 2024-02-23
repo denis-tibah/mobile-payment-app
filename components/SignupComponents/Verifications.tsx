@@ -14,7 +14,7 @@ import TickIcon from "../../assets/icons/TickWithoutCircle";
 import SalutationIcon from "../../assets/icons/Salutation";
 import ArrowRightIcon from "../../assets/icons/ArrowRight";
 import { Seperator } from "../../components/Seperator/Seperator";
-import { PinCodeInputBoxes } from "../FormGroup/FormGroup";
+import { NewPinCodeInputBoxes } from "../FormGroup/FormGroup";
 import WholeContainer from "../../layout/WholeContainer";
 import FormGroup from "../../components/FormGroup";
 import { registrationPhonePrefix } from "../../data/options";
@@ -93,6 +93,16 @@ const Verifications: FC<IVerifications> = ({
   }, [otp]);
   const handlePinCodeChange = (otpNum: number): void => {
     setOtp(otpNum);
+  };
+
+  const formatedPhoneNumber = (): string => {
+    const firstFour = registration?.data?.phoneNumberOnly.slice(0, 3);
+    const lastNumbers = registration?.data?.phoneNumberOnly.slice(
+      3,
+      registration?.data?.phoneNumberOnly.length + 1
+    );
+    const formattedNumber = `${registration?.data?.countryCodeOnly} ${firstFour} ${lastNumbers}`;
+    return formattedNumber || "";
   };
 
   const getOtp = ({
@@ -301,7 +311,7 @@ const Verifications: FC<IVerifications> = ({
           color={vars["medium-grey2"]}
         >
           You will recieve an sms to your mobile device. Please enter this code
-          below
+          below.
         </Typography>
       </View>
       <Seperator backgroundColor={vars["grey"]} marginBottom={24} />
@@ -309,7 +319,7 @@ const Verifications: FC<IVerifications> = ({
         <View style={styles.cardBody}>
           <View>
             <View style={styles.pinCodeContainer}>
-              <PinCodeInputBoxes
+              <NewPinCodeInputBoxes
                 fieldCount={6}
                 onChange={handlePinCodeChange}
                 isNewPinCodeStyle
@@ -320,7 +330,7 @@ const Verifications: FC<IVerifications> = ({
                 </Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.phoneNumberContainer}>
+            {/* <View style={styles.phoneNumberContainer}>
               <View>
                 {registration?.data?.identifier ? (
                   <View style={styles.phoneNumberInnerContainer}>
@@ -343,15 +353,15 @@ const Verifications: FC<IVerifications> = ({
                   <ArrowDownIcon color={vars["accent-pink"]} size={16} />
                 </View>
               </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                borderBottomColor: vars["medium-grey"],
-                borderBottomWidth: StyleSheet.hairlineWidth,
-                paddingTop: 36,
-                marginBottom: 10,
-              }}
-            />
+            </View> */}
+            <WholeContainer>
+              <Seperator
+                backgroundColor={vars["v2-light-grey"]}
+                marginBottom={16}
+                marginTop={36}
+              />
+            </WholeContainer>
+            <View />
             <View style={styles.phoneNumberContainer}>
               <View>
                 {registration?.data?.identifier ? (
@@ -366,7 +376,7 @@ const Verifications: FC<IVerifications> = ({
                       <Text style={{ marginLeft: 2, marginTop: 4 }}>
                         {registration?.data?.identifier &&
                         typeof registration?.data?.identifier === "string"
-                          ? registration?.data?.identifier.toString()
+                          ? formatedPhoneNumber()
                           : ""}
                       </Text>
                     </View>

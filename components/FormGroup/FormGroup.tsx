@@ -5,7 +5,14 @@ import * as Clipboard from "expo-clipboard";
 import { Text, View, TextInput, Platform, Pressable } from "react-native";
 import Checkbox from "expo-checkbox";
 
-import { input, formGroup, textarea, pinCode, checkbox } from "./styles";
+import {
+  input,
+  formGroup,
+  textarea,
+  pinCode,
+  checkbox,
+  newPinCode,
+} from "./styles";
 import EyeIcon from "../../assets/icons/Eye";
 import EyeClosedIcon from "../../assets/icons/EyeClosed";
 import vars from "../../styles/vars";
@@ -236,6 +243,74 @@ export const PinCodeInputBoxes = ({
           {...props}
         />
       ))}
+    </View>
+  );
+};
+
+export const NewPinCodeInputBoxes = ({
+  fieldCount = 4,
+  onChange,
+  isNewPinCodeStyle = false,
+  ...props
+}: any) => {
+  const inputs = useRef<any>([]);
+  const [codes, setCodes] = useState(["-", "-", "-", "-", "-", "-"]);
+
+  const handleTextChange = (text: string, index: number) => {
+    let formattedText = text ? text.replace("-", "") : "";
+    setCodes((prevCode) => {
+      const newCode = [...prevCode];
+      if (text === "") {
+        newCode[index] = "-";
+      } else {
+        if (formattedText.length > 1) {
+          formattedText = formattedText.charAt(formattedText.length - 1);
+        }
+        newCode[index] = formattedText;
+      }
+
+      return newCode;
+    });
+  };
+
+  useEffect(() => {
+    onChange(codes.join(""));
+  }, [codes]);
+
+  const focusInput = (index: number) => {
+    if (index >= 0 && index < fieldCount) {
+      inputs.current[index].focus();
+    }
+  };
+
+  const handleKeyPress = (event: any, index: number) => {
+    if (event.nativeEvent.key === "Backspace") {
+      if (index > 0) {
+        focusInput(index - 1);
+      }
+    } else {
+      focusInput(index + 1);
+    }
+  };
+
+  return (
+    <View style={newPinCode.wrapper}>
+      {codes.map((code, index) => {
+        return (
+          <TextInput
+            key={index}
+            ref={(ref) => (inputs.current[index] = ref)}
+            maxLength={2}
+            style={newPinCode.input}
+            returnKeyType="done"
+            keyboardType="numeric"
+            onChangeText={(text) => handleTextChange(text, index)}
+            value={code}
+            onKeyPress={(event) => handleKeyPress(event, index)}
+            {...props}
+          />
+        );
+      })}
     </View>
   );
 };

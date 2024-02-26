@@ -124,10 +124,11 @@ export function Statements({ navigation }: any) {
       const { dateFrom, dateTo } = showStatementPickerDateToAndFrom;
       if (userData?.id && dateFrom.value && dateTo.value) {
         setLoading(true);
+        const getFormattedDate = new Date(dateTo.value);
         const statementFilterWithDateRante: StatementFilter = {
           account_id: Number(userData?.id),
           from_date: dateFrom.value,
-          to_date: dateTo.value,
+          to_date: getFormattedDate > currentDate ? currentDate.toISOString().split("T")[0] : dateTo.value,
         };
         console.log({ statementFilterWithDateRante });
         dispatch<any>(getStatementsfinxp(statementFilterWithDateRante))

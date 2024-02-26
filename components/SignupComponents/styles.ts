@@ -111,7 +111,6 @@ export const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-
     justifyContent: "flex-start",
   },
   alternatePhoneNumberContainer: {
@@ -179,7 +178,8 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignSelf: "flex-start",
     justifyContent: "flex-start",
-    paddingLeft: 20,
+    /* paddingLeft: 20, */
+    paddingLeft: 14,
     paddingTop: 13,
   },
   dropDownIconContainerRight: {
@@ -230,5 +230,13 @@ export const styles = StyleSheet.create({
     width: "100%",
     paddingBottom: 16,
     paddingTop: 16,
+  },
+
+  headerWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    paddingVertical: 6,
   },
 });

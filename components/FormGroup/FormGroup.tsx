@@ -268,7 +268,6 @@ export const NewPinCodeInputBoxes = ({
         }
         newCode[index] = formattedText;
       }
-
       return newCode;
     });
   };

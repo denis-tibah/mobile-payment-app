@@ -10,6 +10,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import EvilIcons from "react-native-vector-icons/EvilIcons";
 
 import Button from "../../components/Button";
 import { styles } from "./styles";
@@ -92,6 +93,9 @@ export function SignupScreen({ navigation, route }: any) {
     switch (modalContent?.iconType) {
       case "update": {
         return <MaterialCommunityIcons color="white" size={20} name="update" />;
+      }
+      case "error": {
+        return <EvilIcons color="white" size={20} name="close-o" />;
       }
       default:
         return <CheckIcon color="white" size={18} />;
@@ -177,57 +181,6 @@ export function SignupScreen({ navigation, route }: any) {
           </ScrollView>
         </SafeAreaView>
       </ImageBackground>
-      {/* {isOpenModal && (modalContent?.header || modalContent?.body) ? (
-        <ModalBottomSheet
-          isOpen={isOpenModal}
-          hasNoHeaderPadding
-          contentHeight={450}
-        >
-          <View style={styles.headerContainer}>
-            <View style={styles.headerWrapper}>
-              <CheckIcon color="white" size={18} />
-              <Typography
-                color="#FFFF"
-                fontSize={18}
-                marginLeft={6}
-                fontWeight={600}
-              >
-                {modalContent.header}
-              </Typography>
-            </View>
-          </View>
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-              marginTop: 12,
-            }}
-          >
-            <Typography color="#0DCA9D" fontSize={14} fontWeight={600}>
-              {modalContent.body}
-            </Typography>
-          </View>
-          <View style={styles.headerWrapper}>
-            <Button
-              color={"green"}
-              onPress={() => {
-                setIsOpenModal(false);
-                setModalContent({ header: "", body: "" });
-              }}
-              style={styles.buttonOK}
-            >
-              <Text>OK</Text>
-            </Button>
-          </View>
-          <View style={styles.imageWrapper}>
-            <Image
-              source={require('("../../../assets/images/verified.png')}
-              style={styles.image}
-            />
-          </View>
-        </ModalBottomSheet>
-      ) : null} */}
       <SwipableBottomSheet
         rbSheetRef={refRBSheet}
         closeOnDragDown={true}
@@ -265,9 +218,11 @@ export function SignupScreen({ navigation, route }: any) {
               marginTop: 12,
             }}
           >
-            <Typography color="#0DCA9D" fontSize={14} fontWeight={600}>
-              {modalContent.body}
-            </Typography>
+            <WholeContainer>
+              <Typography color="#0DCA9D" fontSize={14} fontWeight={600}>
+                {modalContent.body}
+              </Typography>
+            </WholeContainer>
           </View>
           <View style={styles.headerWrapper}>
             <Button

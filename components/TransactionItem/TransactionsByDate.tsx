@@ -208,7 +208,9 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                       <Divider /* style={{ marginTop: 10, marginBottom: 15 }}  */
                       />
                     ) : null}
-                    {transaction?.service === "DEBIT CARD" ? (
+                    {transaction?.service === "DEBIT CARD" &&
+                    (fieldHasValue(transaction?.exchange_rate) ||
+                      fieldHasValue(transaction?.charges)) ? (
                       <View
                         style={{
                           paddingTop: 16,
@@ -216,17 +218,27 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                         }}
                       >
                         <View style={styles.cardContainer}>
-                          <View style={styles.cardContentContainer}>
+                          {/* <View style={styles.cardContentContainer}>
                             {displayTitle({ title: "Card" })}
-                            {/* {displayValue({ content: "**** **** 5566" })} */}
-                          </View>
-                          <View style={styles.cardContentContainer}>
-                            {displayTitle({ title: "FX" })}
-                            {/* {displayValue({ content: "$266.00" })} */}
-                          </View>
+                          </View> */}
+                          {transaction?.currency ? (
+                            <View style={styles.cardContentContainer}>
+                              {displayTitle({ title: "FX" })}
+                              {displayValue({
+                                content: transaction?.exchange_rate,
+                                hasCurrency: true,
+                                currencyType: transaction?.currency,
+                              })}
+                            </View>
+                          ) : null}
+
                           <View style={styles.cardContentContainer}>
                             {displayTitle({ title: "Fees" })}
-                            {/* {displayValue({ content: "$0.86" })} */}
+                            {displayValue({
+                              content: transaction?.charges,
+                              hasCurrency: true,
+                              currencyType: transaction?.currency,
+                            })}
                           </View>
                         </View>
                       </View>

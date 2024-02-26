@@ -203,6 +203,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           {displayValue({ content: transaction?.reference_no })}
                         </View>
                       ) : null}
+
                       {fieldHasValue(transaction?.status) ? (
                         <View style={styles.detailMobile}>
                           {displayTitle({ title: "Transaction Status" })}
@@ -248,11 +249,14 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         </View>
                       </View>
                     ) : null}
-                    {!fieldHasValue(transaction?.description) &&
-                    transaction?.service === "DEBIT CARD" ? (
+                    {transaction?.service === "DEBIT CARD" &&
+                    (fieldHasValue(transaction?.exchange_rate) ||
+                      fieldHasValue(transaction?.charges)) ? (
                       <Seperator backgroundColor={vars["v2-light-grey"]} />
                     ) : null}
-                    {/* {transaction?.service === "DEBIT CARD" ? (
+                    {transaction?.service === "DEBIT CARD" &&
+                    (fieldHasValue(transaction?.exchange_rate) ||
+                      fieldHasValue(transaction?.charges)) ? (
                       <View
                         style={{
                           paddingTop: 16,
@@ -260,21 +264,35 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         }}
                       >
                         <View style={styles.cardContainer}>
-                          <View style={styles.cardContentContainer}>
+                          {/* <View style={styles.cardContentContainer}>
                             {displayTitle({ title: "Card" })}
-                          </View>
-                          <View style={styles.cardContentContainer}>
-                            {displayTitle({ title: "FX" })}
-                          </View>
-                          <View style={styles.cardContentContainer}>
-                            {displayTitle({ title: "Fees" })}
-                          </View>
+                          </View> */}
+                          {transaction?.exchange_rate ? (
+                            <View style={styles.cardContentContainer}>
+                              {displayTitle({ title: "FX" })}
+                              {displayValue({
+                                content: transaction?.exchange_rate,
+                                hasCurrency: true,
+                                currencyType: transaction?.currency,
+                              })}
+                            </View>
+                          ) : null}
+                          {transaction?.charges ? (
+                            <View style={styles.cardContentContainer}>
+                              {displayTitle({ title: "Fees" })}
+                              {displayValue({
+                                content: transaction?.charges,
+                                hasCurrency: true,
+                                currencyType: transaction?.currency,
+                              })}
+                            </View>
+                          ) : null}
                         </View>
                       </View>
-                    ) : null} */}
-                    {/* {transaction?.service != "DEBIT CARD" ? (
+                    ) : null}
+                    {transaction?.service != "DEBIT CARD" ? (
                       <Seperator backgroundColor={vars["v2-light-grey"]} />
-                    ) : null} */}
+                    ) : null}
                     {/* only show Iban and Bic for sepa transfer */}
                     {transaction?.service != "DEBIT CARD" ? (
                       <View

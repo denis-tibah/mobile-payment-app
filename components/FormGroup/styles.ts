@@ -144,19 +144,22 @@ export const newPinCode = StyleSheet.create({
     width: "85%",
   },
   input: {
-    /* width: 36, */
     height: 48,
     margin: 0,
-    /* borderRadius: 6, */
-    padding: 6,
+    ...Platform.select({
+      ios: {
+        padding: 12,
+      },
+      android: {
+        padding: 6,
+      },
+    }),
     fontSize: 18,
     display: "flex",
     alignItems: "flex-end",
     justifyContent: "center",
-    /* borderColor: "#DDDDDD", */
     alignContent: "center",
     textAlign: "center",
-    /*  borderWidth: 1, */
   },
   newPinCodeStyle: {
     borderRadius: 0,

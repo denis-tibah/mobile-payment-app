@@ -870,6 +870,7 @@ export function Transactions({ navigation, route }: any) {
                     ...searchFieldData,
                     card_id: "",
                   });
+                  clearFilter();
                   setIsCardTransactionShown(false);
                   return;
                 }

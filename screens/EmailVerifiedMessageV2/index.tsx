@@ -6,7 +6,14 @@ import React, {
   useRef,
 } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  Platform,
+} from "react-native";
 /* import { useDispatch, useSelector } from "react-redux"; */
 
 /* import { getTransactions } from "../../redux/transaction/transactionSlice"; */
@@ -93,7 +100,7 @@ export default function EmailVerifiedMessageV2({
 
   return (
     <Fragment>
-      {/* {isOpenModal ? (
+      {isOpenModal && Platform.OS === "ios" ? (
         <ModalBottomSheet
           isOpen={isOpenModal}
           hasNoHeaderPadding
@@ -128,8 +135,8 @@ export default function EmailVerifiedMessageV2({
             />
           </View>
         </ModalBottomSheet>
-      ) : null} */}
-      {isOpenModal ? (
+      ) : null}
+      {isOpenModal && Platform.OS === "android" ? (
         <SwipableBottomSheet
           rbSheetRef={refRBSheet}
           closeOnDragDown={true}
@@ -163,7 +170,7 @@ export default function EmailVerifiedMessageV2({
                 marginLeft={6}
                 fontWeight={600}
               >
-                Email address verified
+                Email address verified.
               </Typography>
             </View>
           </View>

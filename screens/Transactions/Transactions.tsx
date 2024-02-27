@@ -135,7 +135,6 @@ export function Transactions({ navigation, route }: any) {
     dispatch<any>(setIsCardTransactionShown(false));
   };
 
-
   const handleFetchCardTransactions = async (cardId: string) => {
     const cardTransactionsFilter = {
       account_id: userData?.id,
@@ -394,7 +393,9 @@ export function Transactions({ navigation, route }: any) {
                   style={styles.iconFilter}
                   onPress={() => {
                     //added by Aristos to fix issue with search being disabled
-                    clearFilter();
+                    // clearFilter(); -- commented out for now. it blocks the filter functionality on the card transactions
+                    setShowPickerDateFilter(initialDateRange);
+                    setSearchText("");
                     refRBSheet?.current?.open();
                   }}
                 >
@@ -872,6 +873,7 @@ export function Transactions({ navigation, route }: any) {
                   setIsCardTransactionShown(false);
                   return;
                 }
+                dispatch<any>(setIsCardTransactionShown(true));
                 setSearchFieldData({
                   ...searchFieldData,
                   card_id: card.cardreferenceId,

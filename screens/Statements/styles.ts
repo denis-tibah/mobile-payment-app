@@ -3,7 +3,7 @@ import { hp } from "../../utils/helpers";
 
 export const styles: any = StyleSheet.create<any>({
   heading: {
-    marginTop: 26,
+    // marginTop: 26,
     zIndex: 1,
   },
   content: {

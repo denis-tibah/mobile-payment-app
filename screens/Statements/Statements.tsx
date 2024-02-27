@@ -63,8 +63,8 @@ export function Statements({ navigation }: any) {
     showStatementPickerDateToAndFrom,
     setShowStatementPickerDateToAndFrom,
   ] = useState<DateRangeType>(initialDateRange);
-  const [showPickerDateFilter, setShowPickerDateFilter] =
-    useState<DateRangeType>(initialDateRange);
+  // const [showPickerDateFilter, setShowPickerDateFilter] =
+  //   useState<DateRangeType>(initialDateRange);
   const [isLoading, setLoading] = useState<boolean>(false);
 
   // const handleGeneratePDF = async (

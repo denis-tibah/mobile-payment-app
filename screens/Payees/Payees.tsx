@@ -38,6 +38,7 @@ export function Payees({ navigation }: any) {
   const infoData = useSelector((state: any) => state.account.details);
   const validationSchema = validationAddingPayeeSchema();
   const refRBSheet = useRef<any>(null);
+  const refRBSheetDeletePayee = useRef<any>(null);
   const refRBSheetPayeesOrder = useRef<any>(null);
   const [isAddingPayeeShown, setIsAddingPayeeShown] = useState<boolean>(false);
   const [isModalSuccessOpen, setIsModalSuccessOpen] = useState<boolean>(false);
@@ -336,18 +337,8 @@ export function Payees({ navigation }: any) {
                               top: hp(2),
                             }}
                             onPress={() => {
-                              setIsLoading(true);
-                              console.log('item', item.uuid)
-                              dispatch<any>(deleteBeneficiary(item.uuid))
-                              .unwrap()
-                              .then((res: any) => {
-                                setIsLoading(false);
-                                console.log('res', res);
-                              })
-                              .catch((error: any) => {
-                                console.log('error', error);
-                                setIsLoading(false);
-                              });
+                              setSelectedPayeeId(item.uuid);
+                              refRBSheetDeletePayee?.current?.open();
                             }}>
                             <View
                               style={{
@@ -569,6 +560,86 @@ export function Payees({ navigation }: any) {
               ))
             }
           </ScrollView>
+        </SwipableBottomSheet>
+        <SwipableBottomSheet
+          rbSheetRef={refRBSheetDeletePayee}
+          closeOnDragDown={true}
+          closeOnPressMask={false}
+          height={hp(45)}
+          wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+          containerStyles={{
+            backgroundColor: "#FFF",
+            borderTopLeftRadius: 14,
+            borderTopRightRadius: 14,
+            elevation: 12,
+            shadowColor: "#52006A",
+            paddingHorizontal: 15,
+          }}
+          draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
+          >
+          <View style={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: wp(140),
+            alignItems: 'center',
+            alignSelf: 'center',
+            marginTop: 15,
+            }}>
+            <Typography
+              color="#000"
+              fontSize={16}
+              fontWeight={600}
+              textAlign="center"
+              fontFamily="Nunito-SemiBold"
+              style={{marginTop: 10, marginBottom: 20}}
+            >
+              Are you sure you want to delete this payee?
+            </Typography>
+            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '100%'}}>
+              <Button
+                color={"light-pink"}
+                onPress={() => {
+                  setIsLoading(true);
+                  dispatch<any>(deleteBeneficiary(selectedPayeeId))
+                  .unwrap()
+                  .then((res: any) => {
+                    setIsLoading(false);
+                    refRBSheetDeletePayee?.current?.close();
+                  })
+                  .catch((error: any) => {
+                    console.log('error', error);
+                    setIsLoading(false);
+                  });
+                }}
+                style={{marginTop: 20, width: wp(40)}}
+              >
+                <Typography
+                  color={vars['accent-pink']}
+                  fontSize={14}
+                  fontWeight={600}
+                  fontFamily="Nunito-Bold"
+                >
+                  Yes
+                </Typography>
+              </Button>
+              <Button
+                color={"light-blue"}
+                onPress={() => {
+                  refRBSheetDeletePayee?.current?.close();
+                }}
+                style={{marginTop: 20, width: wp(40)}}
+              >
+                <Typography
+                  color={vars['accent-blue']}
+                  fontSize={14}
+                  fontWeight={600}
+                  fontFamily="Nunito-Bold"
+                >
+                  No
+                </Typography>
+              </Button>
+            </View>
+          </View>
         </SwipableBottomSheet>
         <Spinner visible={isLoading} />
     </MainLayout>

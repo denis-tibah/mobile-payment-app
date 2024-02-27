@@ -112,7 +112,7 @@ export const pinCode = StyleSheet.create({
     fontSize: 18,
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-evenly",
     borderColor: "#DDDDDD",
     alignContent: "center",
     textAlign: "center",

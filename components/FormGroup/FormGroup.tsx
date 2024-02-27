@@ -254,26 +254,41 @@ export const NewPinCodeInputBoxes = ({
   ...props
 }: any) => {
   const inputs = useRef<any>([]);
-  const [codes, setCodes] = useState(["-", "-", "-", "-", "-", "-"]);
+  const [codes, setCodes] = useState(
+    Array.from({ length: fieldCount }, (_, index) => "-")
+  );
 
   const handleTextChange = (text: string, index: number) => {
     let formattedText = text ? text.replace("-", "") : "";
-    setCodes((prevCode) => {
-      const newCode = [...prevCode];
-      if (text === "") {
-        newCode[index] = "-";
-      } else {
-        if (formattedText.length > 1) {
-          formattedText = formattedText.charAt(formattedText.length - 1);
+    // for one by one number
+    if (formattedText.length <= 2) {
+      setCodes((prevCode) => {
+        const newCode = [...prevCode];
+        if (text === "") {
+          newCode[index] = "-";
+        } else {
+          if (formattedText.length > 1) {
+            formattedText = formattedText.charAt(formattedText.length - 1);
+          }
+          newCode[index] = formattedText;
         }
-        newCode[index] = formattedText;
-      }
-      return newCode;
-    });
+        return newCode;
+      });
+    }
+    // if otp copied is equal the length of fieldcount
+    if (formattedText.length === fieldCount) {
+      const arrText = formattedText.split("");
+      setCodes((prevCodes: any) =>
+        prevCodes.map((code: string, index: number) =>
+          code ? arrText[index] : ""
+        )
+      );
+    }
   };
 
   useEffect(() => {
     onChange(codes.join(""));
+    123456;
   }, [codes]);
 
   const focusInput = (index: number) => {
@@ -299,7 +314,7 @@ export const NewPinCodeInputBoxes = ({
           <TextInput
             key={index}
             ref={(ref) => (inputs.current[index] = ref)}
-            maxLength={2}
+            maxLength={7}
             style={newPinCode.input}
             returnKeyType="done"
             keyboardType="numeric"

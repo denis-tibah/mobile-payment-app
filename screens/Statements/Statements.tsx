@@ -130,6 +130,7 @@ export function Statements({ navigation }: any) {
           from_date: dateFrom.value,
           to_date: getFormattedDate > currentDate ? currentDate.toISOString().split("T")[0] : dateTo.value,
         };
+        // console.log({ statementFilterWithDateRante });
         dispatch<any>(getStatementsfinxp(statementFilterWithDateRante))
         .unwrap()
         .then(async (res: StatementResponse) => {
@@ -151,6 +152,8 @@ export function Statements({ navigation }: any) {
       } else {
         alert("Please select from and to date");
       }
+    } else {
+      alert("File type not supported yet. Please select PDF file type.");
     }
   };
 

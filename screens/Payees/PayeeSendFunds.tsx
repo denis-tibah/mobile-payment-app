@@ -468,9 +468,6 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           elevation: 12,
           shadowColor: "#52006A",
         }}
-        onClose={() => {
-          navigation.navigate(screenNames.payments);
-        }}
         draggableIconStyles={{ backgroundColor: "#DDD", width: 90 }}
       >
         <View style={styles.container}>

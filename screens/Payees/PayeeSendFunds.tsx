@@ -250,7 +250,8 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
         setIsLoading(false);
         return;
       }
-      handleInitiatepayment(values);
+      const { amount } = values;
+      handleInitiatepayment({ ...values, amount: parseFloat(amount).toFixed(2)});
     },
     validationSchema: validationSchema,
   });

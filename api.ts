@@ -41,8 +41,8 @@ api.interceptors.request.use(
         "Authorization"
       ] = `Bearer ${state?.auth?.data?.token_ziyl}`;
       config.headers[
-        "AuthorizationReceiveMobileNotifications"
-      ] = `Bearer ${state?.auth?.data?.token_receive_mobile_notifications}`;
+        "AuthorizationMobileNotifications"
+      ] = `Bearer ${state?.auth?.data?.token_mobile_notifications}`;
     }
 
     return config;

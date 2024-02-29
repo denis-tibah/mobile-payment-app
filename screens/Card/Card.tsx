@@ -84,35 +84,17 @@ export function Card({ navigation, route }: any) {
   const [terminatedCardModal, setTerminatedCardModal] = useState<boolean>(false);
   const [cardDetails, setCardDetails] = useState<ICardDetails>({});
   const [freezeLoading, setFreezeLoading] = useState(false);
-  // const [showCardOtpModal, setShowCardOtpModal] = useState(false);
-  // const [showGetCardModal, setShowGetCardModal] = useState(false);
-  // const [showCardOtpLoading, setShowCardOtpLoading] = useState(false);  
-  // const [isManagePaymentMethod, setIsManagePaymentMethod] = useState<boolean>(false);
-  // const [isShowTerminatedCard, setIsShowTerminatedCard] = useState<boolean>(false);
-  // const [isLostPinActionPressed, setIsLostPinActionPressed] = useState<boolean>(false);  
-  // const [timeRemaining, setTimeRemaining] = useState<number>(60);
-  // const enableResend = timeRemaining === 0;
-  // const [onSnapEnd, setOnSnapEnd] = useState<any>(false);
-  // const [chosenCurrency, setChosenCurrency] = useState<string>("");
-
   const [selectedCard, setSelectedCard] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSelectedCardTerminated, setIsSelectedCardTerminated] = useState<boolean>(false);
   const [listOfCheckedOptions, setListOfCheckedOptions] = useState<string[]>([]);
   const [isTimeToCountDown, setIsTimeToCountDown] = useState<boolean>(false);
   const timeRemaining = 30;
-  // const [isEnrollmentSuccess, setEnrollmentStatus] = useState<boolean>(false);
-  // const [isEnrollingCard, setIsEnrollingCard] = useState<boolean>(false);
   const [enrollmentCardStatus, setEnrollmentCardStatus] = useState<{
     title: string;
     text: string;
     isError: boolean;
   }>(DEFAULT_CARD_ENROLLMENT_STATUS);
-  // const [orderCard, {
-  //   isLoading: orderCardIsLoading, 
-  //   isSuccess: orderCardIsSuccess,
-  //   isError: orderCardIsError,
-  // }] = useLazyOrderCardQuery();
   const [showCardDetails, {
     isLoading: showCardDetailsIsLoading,
     isSuccess: showCardDetailsIsSuccess,
@@ -144,7 +126,11 @@ export function Card({ navigation, route }: any) {
     if(!selectedCard) {
       setSelectedCard(cardsActiveList[0]);
     }
-    setIsTerminatedCardShown(false);
+    const _isTerminatedCardShown = isTerminatedCardShown;
+    if (_isTerminatedCardShown) {
+      setIsTerminatedCardShown(false);
+    }
+
     setIsLoading(prev => true);
     dispatch<any>(
       setCardAsFrozen({
@@ -158,6 +144,9 @@ export function Card({ navigation, route }: any) {
         handleGetCards();
         setTimeout(() => {
           setSelectedCard(updatedSelectedCard);
+          if (_isTerminatedCardShown) {
+            setIsTerminatedCardShown(true);
+          }
         }, 1000);
       })
       .catch((error: any) => {
@@ -338,6 +327,7 @@ export function Card({ navigation, route }: any) {
           }}
         />
       )}
+      <Spinner visible={isLoading} />
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <ScrollView
           bounces={true}
@@ -345,8 +335,11 @@ export function Card({ navigation, route }: any) {
           refreshControl={
             <RefreshControl
               style={{ backgroundColor: "transparent", display: 'none' }}
-              refreshing={isLoading}
-              onRefresh={handleGetCards}
+              refreshing={false}
+              onRefresh={() => {
+                setIsLoading(true);
+                handleGetCards();
+              }}
             />
           }
         >
@@ -660,17 +653,12 @@ export function Card({ navigation, route }: any) {
               <Button
                 onPress={() => {
                   if (isTerminatedCardShown) {
-                    setIsLoading(prev => true);
-                    // setIsShowTerminatedCard(false);
                     setIsTerminatedCardShown(false);
                     setSelectedCard(cardsActiveList[0]);
                   } else {
-                    setIsLoading(prev => true);
-                    // setIsShowTerminatedCard(true);
                     setIsTerminatedCardShown(true);
-                    setSelectedCard(cardData[0]);
+                    setSelectedCard(shownCardsOnCarousel[0]);
                   }
-                  setIsLoading(prev => false);
                   handleDataChangeShownOnCards();
                   refRBSheetShowTerminatedCards?.current?.close();
                 }}

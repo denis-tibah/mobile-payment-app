@@ -2,6 +2,8 @@ import { Fragment, useEffect, useRef } from "react";
 import { View, ScrollView, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+
 import FormGroup from "../../components/FormGroup";
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
@@ -113,6 +115,10 @@ export function Transactions({ navigation, route }: any) {
 
   const [showPickerDateFilter, setShowPickerDateFilter] =
     useState<DateRangeType>(initialDateRange);
+  console.log(
+    "🚀 ~ Transactions ~ showPickerDateFilter:",
+    showPickerDateFilter
+  );
   const { data: userCardsList } = useGetCardV2Query({
     accountId: userData?.id,
     accessToken: userTokens?.access_token,
@@ -341,7 +347,7 @@ export function Transactions({ navigation, route }: any) {
   //   return await printAsync({ uri: pdfUri });
   // };
 
-  // if isCardTransactionShown is true, then fetch select 
+  // if isCardTransactionShown is true, then fetch select
 
   // useEffect(() => {
   //   if (isCardTransactionShown) {
@@ -374,6 +380,60 @@ export function Transactions({ navigation, route }: any) {
       dispatch<any>(clearTransactions());
     };
   }, []);
+
+  const hideDatePicker = ({ dateType }: { dateType: string }) => {
+    setShowPickerDateFilter((prevState): any => {
+      const dateObj = {};
+      if (dateType === "dateFrom") {
+        Object.assign(dateObj, {
+          ...prevState,
+          dateFrom: {
+            state: false,
+          },
+        });
+      }
+      if (dateType === "dateTo") {
+        Object.assign(dateObj, {
+          ...prevState,
+          dateTo: {
+            state: false,
+          },
+        });
+      }
+      return { ...dateObj };
+    });
+  };
+
+  const handleConfirm = ({
+    date,
+    dateType,
+  }: {
+    date: any;
+    dateType: string;
+  }) => {
+    setShowPickerDateFilter((prevState): any => {
+      const dateObj = {};
+      if (dateType === "dateFrom") {
+        Object.assign(dateObj, {
+          ...prevState,
+          dateFrom: {
+            state: false,
+            value: new Date(date),
+          },
+        });
+      }
+      if (dateType === "dateTo") {
+        Object.assign(dateObj, {
+          ...prevState,
+          dateTo: {
+            state: false,
+            value: date,
+          },
+        });
+      }
+      return { ...dateObj };
+    });
+  };
 
   return (
     <MainLayout navigation={navigation}>
@@ -495,9 +555,17 @@ export function Transactions({ navigation, route }: any) {
                   );
                 })
               : null}
-              {!isCardTransactionShown && Object.keys(_groupedByDateTransactions).length === 0 && (
+            {!isCardTransactionShown &&
+              Object.keys(_groupedByDateTransactions).length === 0 && (
                 <Fragment>
-                  <View style={{ padding: 30, backgroundColor: '#fff', height: hp(150), alignItems: 'center' }}>
+                  <View
+                    style={{
+                      padding: 30,
+                      backgroundColor: "#fff",
+                      height: hp(150),
+                      alignItems: "center",
+                    }}
+                  >
                     <Typography
                       fontSize={16}
                       color={vars["black"]}
@@ -507,7 +575,7 @@ export function Transactions({ navigation, route }: any) {
                     </Typography>
                   </View>
                 </Fragment>
-            )}
+              )}
           </View>
           {/* <Seperator backgroundColor={vars["grey"]} />
           {!isCardTransactionShown && (
@@ -538,10 +606,12 @@ export function Transactions({ navigation, route }: any) {
           paddingHorizontal: 15,
         }}
         draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
-        >
+      >
         <View style={styles.containerBottomSheetHeader}>
-          <View style={{top: hp(-3), left: wp(-3)}}>
-            <Typography fontSize={18} fontFamily={'Nunito-SemiBold'}>Filters</Typography>
+          <View style={{ top: hp(-3), left: wp(-3) }}>
+            <Typography fontSize={18} fontFamily={"Nunito-SemiBold"}>
+              Filters
+            </Typography>
           </View>
           {/* <Divider style={{ marginVertical: 15 }} /> */}
           <TouchableOpacity
@@ -562,17 +632,19 @@ export function Transactions({ navigation, route }: any) {
             {/* <Ionicons name="refresh" size={14} color={vars["accent-blue"]} /> */}
           </TouchableOpacity>
         </View>
-      <Divider style={{ 
-        marginVertical: 8, 
-        width: widthGlobal,
-        backgroundColor: vars["accent-grey"],
-        height: 1,
-        opacity: 0.3,
-        // zIndex: 9999,
-        overflow: "visible"
-        }} />
+        <Divider
+          style={{
+            marginVertical: 8,
+            width: widthGlobal,
+            backgroundColor: vars["accent-grey"],
+            height: 1,
+            opacity: 0.3,
+            // zIndex: 9999,
+            overflow: "visible",
+          }}
+        />
         <View style={{ display: "flex", flexDirection: "row" }}>
-          <View style={{ flex: 1, flexWrap: "wrap"}}>
+          <View style={{ flex: 1, flexWrap: "wrap" }}>
             <Typography fontSize={14} color="#696F7A">
               Start date
             </Typography>
@@ -601,9 +673,19 @@ export function Transactions({ navigation, route }: any) {
               disabled={searchFieldData.card_id !== ""}
             >
               {showPickerDateFilter.dateFrom.value &&
-                getFormattedDateFromUnixDotted(showPickerDateFilter.dateFrom.value)}
+                getFormattedDateFromUnixDotted(
+                  showPickerDateFilter.dateFrom.value
+                )}
             </Button>
-            {showPickerDateFilter.dateFrom.state && (
+            <DateTimePickerModal
+              isVisible={showPickerDateFilter.dateFrom.state}
+              mode="date"
+              onConfirm={(date) =>
+                handleConfirm({ date, dateType: "dateFrom" })
+              }
+              onCancel={() => hideDatePicker({ dateType: "dateFrom" })}
+            />
+            {/* {showPickerDateFilter.dateFrom.state && (
               <DateTimePicker
                 mode="date"
                 display="spinner"
@@ -640,8 +722,7 @@ export function Transactions({ navigation, route }: any) {
                 }}
                 style={styles.dropdownIOSFrom}
               />
-            )}
-
+            )} */}
           </View>
           {/* <View>
             <Text style={{top: 28, right: 31, fontSize: 24}}>
@@ -677,9 +758,17 @@ export function Transactions({ navigation, route }: any) {
               disabled={searchFieldData.card_id !== ""}
             >
               {showPickerDateFilter.dateTo.value &&
-                getFormattedDateFromUnixDotted(showPickerDateFilter.dateTo.value)}
+                getFormattedDateFromUnixDotted(
+                  showPickerDateFilter.dateTo.value
+                )}
             </Button>
-            {showPickerDateFilter.dateTo.state && (
+            <DateTimePickerModal
+              isVisible={showPickerDateFilter.dateTo.state}
+              mode="date"
+              onConfirm={(date) => handleConfirm({ date, dateType: "dateTo" })}
+              onCancel={() => hideDatePicker({ dateType: "dateTo" })}
+            />
+            {/*  {showPickerDateFilter.dateTo.state && (
               <DateTimePicker
                 mode="date"
                 display="spinner"
@@ -716,21 +805,23 @@ export function Transactions({ navigation, route }: any) {
                 }}
                 style={styles.dropdownIOSTo}
               />
-            )}
+            )} */}
           </View>
         </View>
         <Typography fontSize={10} color="#696F7A">
           maximum date range is 60 days
         </Typography>
-        <Divider style={{
-          marginVertical: 15, 
-          width: widthGlobal,
-          backgroundColor: vars["accent-grey"],
-          height: 1,
-          opacity: 0.2,
-          // zIndex: 9999,
-          overflow: "visible"
-        }} />
+        <Divider
+          style={{
+            marginVertical: 15,
+            width: widthGlobal,
+            backgroundColor: vars["accent-grey"],
+            height: 1,
+            opacity: 0.2,
+            // zIndex: 9999,
+            overflow: "visible",
+          }}
+        />
         <Typography fontSize={14} color="#696F7A">
           Status
         </Typography>
@@ -835,20 +926,20 @@ export function Transactions({ navigation, route }: any) {
               onChangeText={(event: string) => {
                 amountRangeFilter(Number(event), "max_amount");
               }}
-              icon={
-                <Euro />
-              }
+              icon={<Euro />}
             />
           </View>
         </View>
-        <Divider style={{ 
-          marginVertical: 15,
-          width: widthGlobal,
-          backgroundColor: vars["accent-grey"],
-          height: 1,
-          opacity: 0.2,
-          overflow: "visible"
-        }} />
+        <Divider
+          style={{
+            marginVertical: 15,
+            width: widthGlobal,
+            backgroundColor: vars["accent-grey"],
+            height: 1,
+            opacity: 0.2,
+            overflow: "visible",
+          }}
+        />
         <Typography fontSize={14} color="#696F7A">
           Your cards
         </Typography>
@@ -900,24 +991,26 @@ export function Transactions({ navigation, route }: any) {
             </TouchableOpacity>
           ))}
         </ScrollView>
-        <Divider style={{
-          marginVertical: 15, 
-          width: widthGlobal,
-          backgroundColor: vars["accent-grey"],
-          height: 1,
-          opacity: 0.2,
-          overflow: "visible" 
-          }} />
+        <Divider
+          style={{
+            marginVertical: 15,
+            width: widthGlobal,
+            backgroundColor: vars["accent-grey"],
+            height: 1,
+            opacity: 0.2,
+            overflow: "visible",
+          }}
+        />
         <Button
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
             width: "100%",
             backgroundColor: "grey",
             marginTop: 10,
             lineHeight: 25,
-            borderColor: 'none',
+            borderColor: "none",
           }}
           color="light-pink"
           leftIcon={
@@ -947,7 +1040,7 @@ export function Transactions({ navigation, route }: any) {
             Submit
           </Typography>
         </Button>
-        
+
         {/* <Divider style={{ marginVertical: 15 }} /> */}
       </SwipableBottomSheet>
       <LoadingScreen isLoading={isLoading} />

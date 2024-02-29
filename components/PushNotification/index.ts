@@ -27,7 +27,7 @@ export const registerForPushNotificationsAsync = async ({
       lightColor: "#FF231F7C",
     });
   }
-
+  console.log("🚀 ~ Device:", Device);
   if (Device.isDevice) {
     console.log("from registerForPushNotificationsAsync Device.isDevice ");
     try {
@@ -82,7 +82,7 @@ export const registerForPushNotificationsAsync = async ({
     alert("Must use physical device for Push Notifications");
   }
 
-  if(!token) {
+  if (!token) {
     // Alert.alert("Failed to get push token for push notification!");
     return;
   }

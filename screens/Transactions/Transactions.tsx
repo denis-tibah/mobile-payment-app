@@ -115,10 +115,7 @@ export function Transactions({ navigation, route }: any) {
 
   const [showPickerDateFilter, setShowPickerDateFilter] =
     useState<DateRangeType>(initialDateRange);
-  console.log(
-    "🚀 ~ Transactions ~ showPickerDateFilter:",
-    showPickerDateFilter
-  );
+
   const { data: userCardsList } = useGetCardV2Query({
     accountId: userData?.id,
     accessToken: userTokens?.access_token,
@@ -320,7 +317,7 @@ export function Transactions({ navigation, route }: any) {
     });
   };
 
-  const handlePreviousPage = () => {
+  /* const handlePreviousPage = () => {
     if (currentPage > 1) {
       const _currentPage = currentPage - 1;
       fetchTransactionsWithFilters({
@@ -338,7 +335,7 @@ export function Transactions({ navigation, route }: any) {
         page: _currentPage,
       });
     }
-  };
+  }; */
 
   // const handleGeneratePDF = async (
   //   statements: StatementTransactionsResponse[]
@@ -421,6 +418,12 @@ export function Transactions({ navigation, route }: any) {
             value: new Date(date),
           },
         });
+        handleOnChangeShowPickerDate(
+          date,
+          setShowPickerDateFilter,
+          showPickerDateFilter,
+          "dateFrom"
+        );
       }
       if (dateType === "dateTo") {
         Object.assign(dateObj, {
@@ -430,6 +433,12 @@ export function Transactions({ navigation, route }: any) {
             value: date,
           },
         });
+        handleOnChangeShowPickerDate(
+          date,
+          setShowPickerDateFilter,
+          showPickerDateFilter,
+          "dateTo"
+        );
       }
       return { ...dateObj };
     });
@@ -685,44 +694,6 @@ export function Transactions({ navigation, route }: any) {
               }
               onCancel={() => hideDatePicker({ dateType: "dateFrom" })}
             />
-            {/* {showPickerDateFilter.dateFrom.state && (
-              <DateTimePicker
-                mode="date"
-                display="spinner"
-                onTouchCancel={() =>
-                  setShowPickerDateFilter({
-                    ...showPickerDateFilter,
-                    dateFrom: {
-                      state: false,
-                      value: null,
-                    },
-                  })
-                }
-                // minimumDate={new Date(new Date().setMonth(new Date().getMonth() - 2))}
-                //go back 5 years 12*5
-                minimumDate={
-                  new Date(new Date().setMonth(new Date().getMonth() - 60))
-                }
-                maximumDate={new Date()}
-                value={
-                  !showPickerDateFilter.dateFrom.value
-                    ? currentDate
-                    : new Date(showPickerDateFilter.dateFrom.value)
-                }
-                textColor="black"
-                onChange={(event: any) => {
-                  if (event.type == "set") {
-                    handleOnChangeShowPickerDate(
-                      event.nativeEvent.timestamp,
-                      setShowPickerDateFilter,
-                      showPickerDateFilter,
-                      "dateFrom"
-                    );
-                  }
-                }}
-                style={styles.dropdownIOSFrom}
-              />
-            )} */}
           </View>
           {/* <View>
             <Text style={{top: 28, right: 31, fontSize: 24}}>
@@ -768,44 +739,6 @@ export function Transactions({ navigation, route }: any) {
               onConfirm={(date) => handleConfirm({ date, dateType: "dateTo" })}
               onCancel={() => hideDatePicker({ dateType: "dateTo" })}
             />
-            {/*  {showPickerDateFilter.dateTo.state && (
-              <DateTimePicker
-                mode="date"
-                display="spinner"
-                onTouchCancel={() =>
-                  setShowPickerDateFilter({
-                    ...showPickerDateFilter,
-                    dateTo: {
-                      state: false,
-                      value: null,
-                    },
-                  })
-                }
-                // minimumDate={new Date(new Date().setMonth(new Date().getMonth() - 2))}
-                //go back 5 years 12*5
-                minimumDate={
-                  new Date(new Date().setMonth(new Date().getMonth() - 60))
-                }
-                maximumDate={new Date()}
-                value={
-                  !showPickerDateFilter.dateTo.value
-                    ? currentDate
-                    : new Date(showPickerDateFilter.dateTo.value)
-                }
-                textColor="black"
-                onChange={(event: any) => {
-                  if (event.type == "set") {
-                    handleOnChangeShowPickerDate(
-                      event.nativeEvent.timestamp,
-                      setShowPickerDateFilter,
-                      showPickerDateFilter,
-                      "dateTo"
-                    );
-                  }
-                }}
-                style={styles.dropdownIOSTo}
-              />
-            )} */}
           </View>
         </View>
         <Typography fontSize={10} color="#696F7A">

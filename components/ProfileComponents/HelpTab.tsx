@@ -243,7 +243,7 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
         onClose={() => {
           handleCloseBottomSheet();
         }}
-r        wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
+      wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
           height: dimensions.window.height - 145,
           backgroundColor: "#ffffff",

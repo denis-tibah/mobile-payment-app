@@ -237,25 +237,33 @@ export function Payees({ navigation }: any) {
                         </View>
                     </TouchableOpacity>
                     <View style={{display: 'flex', flexDirection: 'row'}}>
-                        <View style={{
-                          top: hp(.2),
-                          display: 'flex',
-                          flexDirection: 'row',
-                          marginRight: wp(5),
+                      <TouchableOpacity onPress={() => {
+                          if (selectedPayeeId === index) {
+                            setSelectedPayeeId(-1);
+                            return;
+                          }
+                          setSelectedPayeeId(index);
                         }}>
-                          <View style={{top: hp(.7)}}>
-                            <CalenderEmpty color={vars['accent-grey']} size={14}/>
+                          <View style={{
+                            top: hp(.2),
+                            display: 'flex',
+                            flexDirection: 'row',
+                            marginRight: wp(5),
+                          }}>
+                            <View style={{top: hp(.7)}}>
+                              <CalenderEmpty color={vars['accent-grey']} size={14}/>
+                            </View>
+                            <Typography
+                                paddingLeft={wp(3)}
+                                color="#000"
+                                fontSize={14}
+                                fontWeight={600}
+                                fontFamily="Nunito-SemiBold"
+                              >{getFormattedDateFromUnixDotted(item.created_at)}
+                            </Typography>
+                            {/* <Text style={{fontSize: 12, color: vars['accent-green']}}>{`+ € 1200`}</Text> */}
                           </View>
-                          <Typography
-                              paddingLeft={wp(3)}
-                              color="#000"
-                              fontSize={14}
-                              fontWeight={600}
-                              fontFamily="Nunito-SemiBold"
-                            >{getFormattedDateFromUnixDotted(item.created_at)}
-                          </Typography>
-                          {/* <Text style={{fontSize: 12, color: vars['accent-green']}}>{`+ € 1200`}</Text> */}
-                        </View>
+                        </TouchableOpacity>
                         <View style={{ paddingTop: 3, paddingLeft: 8 }}>
                           <TouchableOpacity onPress={() => {
                             navigation.navigate(screenNames.payeeSendFunds, {

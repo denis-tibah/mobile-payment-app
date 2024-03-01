@@ -61,7 +61,6 @@ const ProfileTab: FC<IProfileTab> = () => {
   const [isDatePickerVisible, setDatePickerVisibility] =
     useState<boolean>(false);
   const [displayedDOB, setDisplayedDOB] = useState<string>("");
-  console.log("🚀 ~ displayedDOB:", displayedDOB);
 
   const formatDOBToDash = (paramDOB: string): string | null => {
     const splitTimeAndDate: string[] | boolean = paramDOB

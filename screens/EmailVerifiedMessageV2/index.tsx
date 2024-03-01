@@ -148,7 +148,7 @@ export default function EmailVerifiedMessageV2({
           }}
           height={380}
           wrapperStyles={{
-            backgroundColor: "rgba(255, 255, 255, 0.5)",
+            backgroundColor: "rgba(172, 172, 172, 0.5)",
             zIndex: 2,
           }}
           containerStyles={{

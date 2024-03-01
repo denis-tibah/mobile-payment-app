@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import VectorIcon from "react-native-vector-icons/AntDesign";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { RootState } from "../../store";
-import { useAddPayeeMutation, useGetPayeesQuery } from "../../redux/payee/payeeSlice";
+import { useAddPayeeMutation, useGetPayeesQuery, useLazyGetPayeesQuery } from "../../redux/payee/payeeSlice";
 import { Divider, Text } from "react-native-paper";
 import { AntDesign } from '@expo/vector-icons';
 import Search from "../../assets/icons/Search";
@@ -63,12 +63,13 @@ export function Payees({ navigation }: any) {
     accessToken: access_token,
     tokenZiyl: token_ziyl,
   });
+  const [getPayees] = useLazyGetPayeesQuery();
 
   const filteredPayeesList = payeesList?.filter((item: any) => {
     return item.name.toLowerCase().includes(searchName.toLowerCase());
   });
 
-  const { handleChange, handleBlur, values, touched, errors, handleSubmit } = useFormik({
+  const { handleChange, handleBlur, values, touched, errors, handleSubmit, resetForm } = useFormik({
     initialValues: {
       beneficiaryName: "",
       beneficiaryIban: "",
@@ -76,6 +77,7 @@ export function Payees({ navigation }: any) {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
+      setIsLoading(true);
       addNewPayee({
         beneficiary_name: values.beneficiaryName,
         beneficiary_iban: values.beneficiaryIban,
@@ -84,8 +86,13 @@ export function Payees({ navigation }: any) {
         token_ziyl,
       })
       .unwrap()
+      .then((res: any) => {
+        getPayees({ accessToken: access_token, tokenZiyl: token_ziyl});
+      })
       .finally(() => {
         setIsModalSuccessOpen(true);
+        setIsLoading(false);
+        resetForm();
       });
     }
   });
@@ -251,9 +258,9 @@ export function Payees({ navigation }: any) {
                         </View>
                         <View style={{ paddingTop: 3, paddingLeft: 8 }}>
                           <TouchableOpacity onPress={() => {
-                            // navigation.navigate(screenNames.payeeSendFunds, {
-                            //   item,
-                            // });
+                            navigation.navigate(screenNames.payeeSendFunds, {
+                              item,
+                            });
                           }}>
                             <VectorIcon
                               size={14}
@@ -380,7 +387,7 @@ export function Payees({ navigation }: any) {
         closeOnPressMask={false}
         // onClose={() => refRBSheet?.current?.close()}
         height={420}
-        wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+        wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
           backgroundColor: "#FFF",
           borderTopLeftRadius: 14,
@@ -510,7 +517,7 @@ export function Payees({ navigation }: any) {
         closeOnPressMask={false}
         // onClose={() => refRBSheet?.current?.close()}
         height={260}
-        wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+        wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
           backgroundColor: "#FFF",
           borderTopLeftRadius: 14,
@@ -566,7 +573,7 @@ export function Payees({ navigation }: any) {
           closeOnDragDown={true}
           closeOnPressMask={false}
           height={hp(45)}
-          wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+          wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, .5)" }}
           containerStyles={{
             backgroundColor: "#FFF",
             borderTopLeftRadius: 14,
@@ -574,6 +581,14 @@ export function Payees({ navigation }: any) {
             elevation: 12,
             shadowColor: "#52006A",
             paddingHorizontal: 15,
+          }}
+          onClose={() => {
+            setIsLoading(true);
+            getPayees({ accessToken: access_token, tokenZiyl: token_ziyl})
+            .unwrap()
+            .then((res: any) => {
+              setIsLoading(false);
+            });
           }}
           draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
           >
@@ -605,6 +620,7 @@ export function Payees({ navigation }: any) {
                   .then((res: any) => {
                     setIsLoading(false);
                     refRBSheetDeletePayee?.current?.close();
+                    
                   })
                   .catch((error: any) => {
                     console.log('error', error);

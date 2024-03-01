@@ -581,7 +581,7 @@ export function Card({ navigation, route }: any) {
             closeOnPressMask={false}
             // onClose={() => refRBSheet?.current?.close()}
             height={250}
-            wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+            wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
             containerStyles={{
               backgroundColor: "#FFF",
               borderTopLeftRadius: 14,
@@ -625,7 +625,7 @@ export function Card({ navigation, route }: any) {
             closeOnDragDown={true}
             closeOnPressMask={false}
             height={160}
-            wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+            wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
             containerStyles={{
               backgroundColor: "#FFF",
               borderTopLeftRadius: 14,
@@ -685,7 +685,7 @@ export function Card({ navigation, route }: any) {
             closeOnDragDown={true}
             closeOnPressMask={false}
             height={230}
-            wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+            wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
             containerStyles={{
               backgroundColor: "#FFF",
               borderTopLeftRadius: 14,
@@ -760,7 +760,7 @@ export function Card({ navigation, route }: any) {
             closeOnDragDown={true}
             closeOnPressMask={false}
             height={340}
-            wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+            wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
             containerStyles={{
               backgroundColor: "#FFF",
               borderTopLeftRadius: 14,

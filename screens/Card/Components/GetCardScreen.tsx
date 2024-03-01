@@ -223,7 +223,7 @@ export const GetCardScreen = ({navigation}: any) => {
         closeOnDragDown={true}
         closeOnPressMask={false}
         height={290}
-        wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+        wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
           backgroundColor: "#FFF",
           borderTopLeftRadius: 14,
@@ -309,7 +309,7 @@ export const GetCardScreen = ({navigation}: any) => {
         closeOnDragDown={true}
         closeOnPressMask={false}
         height={320}
-        wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+        wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
           backgroundColor: "#FFF",
           borderTopLeftRadius: 14,

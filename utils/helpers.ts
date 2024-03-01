@@ -295,10 +295,17 @@ export function getFormattedDateAndTime(dateToFormat: any) {
     .padStart(2, "0")}`;*/
   return formattedDateAndTime;
 }
-export function getFormattedDateAndTimeAndSeconds(dateToFormat: any) {
+export function getFormattedDateAndTimeAndSeconds({
+  dateToFormat,
+  hasTimeAndSeconds,
+}: {
+  dateToFormat: any;
+  hasTimeAndSeconds: boolean;
+}) {
   const date = new Date(dateToFormat);
+  const time = hasTimeAndSeconds ? "hh:mm:ss" : "";
   // uniform date as per QA
-  const formattedDateAndTime = dateFns.format(date, "dd.MM.yyyy hh:mm:ss");
+  const formattedDateAndTime = dateFns.format(date, `dd.MM.yyyy ${time}`);
   return formattedDateAndTime;
 }
 

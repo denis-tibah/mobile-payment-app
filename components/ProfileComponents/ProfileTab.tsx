@@ -61,6 +61,7 @@ const ProfileTab: FC<IProfileTab> = () => {
   const [isDatePickerVisible, setDatePickerVisibility] =
     useState<boolean>(false);
   const [displayedDOB, setDisplayedDOB] = useState<string>("");
+  console.log("🚀 ~ displayedDOB:", displayedDOB);
 
   const formatDOBToDash = (paramDOB: string): string | null => {
     const splitTimeAndDate: string[] | boolean = paramDOB
@@ -70,7 +71,8 @@ const ProfileTab: FC<IProfileTab> = () => {
     const arrDate: string[] | boolean = date ? date.split("-") : false;
     const [year, month, day] = arrDate ? arrDate : [];
     const dateStr = year && month && day ? `${day}.${month}.${year}` : null;
-    return `${dateStr || ""} ${time || ""}`;
+    /* return `${dateStr || ""} ${time || ""}`; */
+    return `${dateStr || ""}`;
   };
 
   // ASK SANTI FOR STATUS CODES OF /createticketfinxp
@@ -191,7 +193,10 @@ const ProfileTab: FC<IProfileTab> = () => {
     }
     if (values?.dob) {
       // data gets from form
-      const formattedDob = getFormattedDateAndTimeAndSeconds(values?.dob);
+      const formattedDob = getFormattedDateAndTimeAndSeconds({
+        dateToFormat: values?.dob,
+        hasTimeAndSeconds: false,
+      });
       setDisplayedDOB(formattedDob || "");
     }
   }, [profileData?.dob, values?.dob]);

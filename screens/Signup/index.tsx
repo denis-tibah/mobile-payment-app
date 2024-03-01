@@ -186,7 +186,7 @@ export function SignupScreen({ navigation, route }: any) {
         closeOnDragDown={true}
         closeOnPressMask={false}
         height={380}
-        wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+        wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
           backgroundColor: "#0DCA9D",
           borderTopLeftRadius: 14,

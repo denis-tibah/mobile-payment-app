@@ -605,7 +605,7 @@ export function Transactions({ navigation, route }: any) {
         closeOnPressMask={false}
         // onClose={() => refRBSheet?.current?.close()}
         height={550}
-        wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+        wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
           backgroundColor: "#FFF",
           borderTopLeftRadius: 14,

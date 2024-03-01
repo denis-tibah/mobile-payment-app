@@ -51,7 +51,6 @@ const initialDateRange: DateRangeType = {
 };
 
 const currentDate = new Date();
-
 export function Statements({ navigation }: any) {
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const dispatch = useDispatch();

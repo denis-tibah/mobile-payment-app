@@ -27,7 +27,7 @@ export const registerForPushNotificationsAsync = async ({
       lightColor: "#FF231F7C",
     });
   }
-  console.log("🚀 ~ Device:", Device);
+
   if (Device.isDevice) {
     console.log("from registerForPushNotificationsAsync Device.isDevice ");
     try {

@@ -481,7 +481,7 @@ const Verifications: FC<IVerifications> = ({
           }}
           height={bottomSheetContent.isOpen && bottomSheetContent.height}
           wrapperStyles={{
-            backgroundColor: "rgba(255, 255, 255, 0.5)",
+            backgroundColor: "rgba(172, 172, 172, 0.5)",
           }}
           containerStyles={{
             backgroundColor: "#fff",

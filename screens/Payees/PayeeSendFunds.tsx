@@ -307,7 +307,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
             <View style={styles.headerLeft}>
               <TouchableOpacity
                 style={styles.headerLeftIcon}
-                onPress={() => navigation.navigate(screenNames.payments)}
+                onPress={() => navigation.pop()}
               >
                 <ArrowLeftLine size={18} color="blue"/>
               </TouchableOpacity>
@@ -461,7 +461,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
         closeOnDragDown={true}
         closeOnPressMask={false}
         height={380}
-        wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+        wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
           backgroundColor: "#fff",
           borderTopLeftRadius: 14,
@@ -568,7 +568,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
         closeOnDragDown={true}
         closeOnPressMask={false}
         height={420}
-        wrapperStyles={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+        wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
           backgroundColor: "#fff",
           borderTopLeftRadius: 14,

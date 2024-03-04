@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { View, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
+import { View, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, RefreshControl } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import VectorIcon from "react-native-vector-icons/AntDesign";
 import Spinner from "react-native-loading-spinner-overlay/lib";
@@ -116,6 +116,7 @@ export function Payees({ navigation }: any) {
         onClose={() => setIsModalSuccessOpen(false)}
       />
       <Spinner visible={isPayeesListLoading || isAddPayeeLoading} />
+      <Spinner visible={isLoading} />
       <Heading
         icon={<Payee color="pink" size={18} />}
         title={"Payees"}
@@ -158,7 +159,23 @@ export function Payees({ navigation }: any) {
           </View>
           }
         />
-      <ScrollView bounces={true} style={{backgroundColor: '#fff'}}>
+      <ScrollView 
+        bounces={true} 
+        style={{backgroundColor: '#fff'}}
+        refreshControl={
+          <RefreshControl 
+            style={{ backgroundColor: "transparent", display: 'none', }}
+            refreshing={false}
+            onRefresh={ async () => {
+              setIsLoading(true);
+              getPayees({ accessToken: access_token, tokenZiyl: token_ziyl})
+              .unwrap()
+              .then((res: any) => {
+                setIsLoading(false);
+              });
+            }} />
+        }
+        >
         <View style={styles.content}>
           { !!isSearchFilterShown && <View style={{display: 'flex', flexDirection: 'row', padding: 10}}>
             <FormGroup.Input

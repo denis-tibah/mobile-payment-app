@@ -170,9 +170,16 @@ export function Payment({ navigation }: any) {
         bounces={true} 
         style={{backgroundColor: '#fff'}}
         refreshControl={
-          <RefreshControl 
-            style={{ backgroundColor: "transparent", display: 'none', }}
-            refreshing={false} onRefresh={ async () => await handleGetTransactionsForPayments()} />
+          <RefreshControl
+            style={{
+              backgroundColor: "transparent",
+              display: 'none',
+            }}
+            refreshing={false} 
+            onRefresh={async () => {
+              setIsLoading(true);
+              await handleGetTransactionsForPayments();
+            }} />
         }
       >
       <Pressable>

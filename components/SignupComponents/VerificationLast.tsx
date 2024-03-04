@@ -20,6 +20,7 @@ import Button from "../../components/Button";
 import { SuccessModal } from "../SuccessModal/SuccessModal";
 import vars from "../../styles/vars";
 import { screenNames } from "../../utils/helpers";
+import SignupScrollableBodyWrapper from "./SignupScrollableBodyWrapper";
 import { styles } from "./styles";
 
 interface IVerificationLast {
@@ -160,61 +161,65 @@ const VerificationLast: FC<IVerificationLast> = ({
         onClose={onCloseModal}
       />
       <View style={styles.cardTitle}>
-        <Typography fontSize={18} fontFamily="Nunito-SemiBold" fontWeight="600">
+        <Typography fontSize={18} fontFamily="Nunito-SemiBold" fontWeight={600}>
           Last step from your free account
         </Typography>
       </View>
-      <Seperator backgroundColor={vars["grey"]} marginBottom={24} />
-      <View>
+      <Seperator backgroundColor={vars["grey"]} marginBottom={12} />
+      <SignupScrollableBodyWrapper>
         <View style={styles.cardBody}>
           <View>
             <Typography
-              fontSize={14}
-              fontFamily="Nunito-Regular"
+              fontSize={16}
+              fontFamily="Mukta-Regular"
+              fontWeight={600}
               marginBottom={10}
-              marginLeft={24}
             >
-              Thank you for completing your account registration
+              Thank you for completing your account registration.
             </Typography>
             <Typography
-              fontSize={14}
-              fontFamily="Nunito-Regular"
+              fontSize={16}
+              fontFamily="Mukta-Regular"
+              fontWeight={600}
               marginBottom={24}
-              marginLeft={24}
             >
               The last step of the registration is to{" "}
-              <Text style={{ color: vars["accent-pink"] }}>
+              <Text
+                style={{
+                  color: vars["accent-pink"],
+                  fontFamily: "Mukta-Regular",
+                }}
+              >
                 verify your identity
               </Text>
             </Typography>
           </View>
           <Seperator
-            backgroundColor={vars["verification "]}
-            marginBottom={24}
+            backgroundColor={vars["v2-light-grey"]}
+            marginBottom={16}
           />
           <View>
             <Typography
-              fontSize={14}
-              fontFamily="Nunito-Regular"
+              fontSize={16}
+              fontFamily="Mukta-Regular"
+              fontWeight={600}
               marginBottom={10}
-              marginLeft={24}
               color={vars["accent-blue"]}
             >
               You will need:
             </Typography>
-
             <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                marginLeft: 24,
-                marginBottom: 10,
+                marginBottom: 2,
               }}
             >
-              <ProfileIcon color={vars["accent-blue"]} size={14} />
+              <ProfileIcon color={vars["accent-blue"]} size={18} />
               <Typography
-                fontSize={14}
-                fontFamily="Nunito-Regular"
+                fontSize={16}
+                fontFamily="Mukta-Regular"
+                fontWeight={600}
                 marginLeft={5}
               >
                 Your ID document
@@ -224,58 +229,82 @@ const VerificationLast: FC<IVerificationLast> = ({
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                marginLeft: 24,
                 marginBottom: 24,
               }}
             >
-              <WebcamIcon color={vars["accent-blue"]} size={14} />
+              <WebcamIcon color={vars["accent-blue"]} size={18} />
               <Typography
-                fontSize={14}
-                fontFamily="Nunito-Regular"
+                fontSize={16}
+                fontFamily="Mukta-Regular"
+                fontWeight={600}
                 marginLeft={5}
               >
                 Access you your webcam/mobile camera
               </Typography>
             </View>
           </View>
-          <Seperator backgroundColor={vars["grey"]} marginBottom={24} />
+          <Seperator
+            backgroundColor={vars["v2-light-grey"]}
+            marginBottom={24}
+          />
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
-              marginLeft: 24,
-              marginBottom: 24,
+              marginBottom: 8,
             }}
           >
-            <Typography fontSize={14} fontFamily="Nunito-Regular">
+            <Typography
+              fontSize={16}
+              fontFamily="Mukta-Regular"
+              fontWeight={600}
+            >
               We use a third party identity provider called{" "}
-              <Text style={{ color: vars["accent-blue"] }}>SumSub</Text> and
-              they will handle your data inline with their data protection
+              <Text
+                style={{
+                  color: vars["accent-blue"],
+                  fontFamily: "Mukta-Regular",
+                  fontWeight: 600,
+                }}
+              >
+                SumSub
+              </Text>{" "}
+              and they will handle your data inline with their data protection
               policy.
             </Typography>
           </View>
         </View>
-        <View style={styles.footerContent}>
-          <View style={styles.downloadBtnMain}>
-            <WholeContainer>
-              <View style={styles.bottomButtonContainer}>
-                <Button
-                  color="light-pink"
-                  onPress={handleDoItLater}
-                  leftIcon={<ArrowRightLong size={14} />}
+      </SignupScrollableBodyWrapper>
+      <View style={styles.footerContent}>
+        <View style={styles.downloadBtnMain}>
+          <WholeContainer>
+            <View style={styles.bottomButtonContainer}>
+              <Button color="light-pink" onPress={handleDoItLater}>
+                <Typography
+                  fontSize={16}
+                  fontWeight={600}
+                  fontFamily="Nunito-SemiBold"
+                  marginLeft={8}
                 >
                   Do it later
-                </Button>
-                <Button
-                  color="light-pink"
-                  onPress={handleContinue}
-                  leftIcon={<ArrowRightLong size={14} />}
+                </Typography>
+              </Button>
+              <Button
+                color="light-pink"
+                onPress={handleContinue}
+                rightIcon={<ArrowRightLong size={14} />}
+              >
+                <Typography
+                  fontSize={16}
+                  fontWeight={600}
+                  fontFamily="Nunito-SemiBold"
+                  marginLeft={8}
                 >
                   Continue
-                </Button>
-              </View>
-            </WholeContainer>
-          </View>
+                </Typography>
+              </Button>
+            </View>
+          </WholeContainer>
         </View>
       </View>
     </View>

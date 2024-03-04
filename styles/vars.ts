@@ -20,6 +20,7 @@ const vars: any = {
   "medium-grey2": "#696f7a",
   grey: "#DDDDDD",
   "accent-blue": "#086afb",
+  "soft-blue": "#6BA6FD",
   "accent-pink": "#e7038e",
   "accent-orange": "#fbb445",
   "accent-green": "#0dca9d",

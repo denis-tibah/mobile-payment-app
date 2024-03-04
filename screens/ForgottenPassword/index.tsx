@@ -8,10 +8,11 @@ import { useFormik } from "formik";
 import Button from "../../components/Button";
 import FormGroup from "../../components/FormGroup";
 import MainLayout from "../../layout/Main";
-import FixedBottomAction from "../../components/FixedBottomAction";
+import ArrowLeft from "../../assets/icons/ArrowLeft";
+import WholeContainer from "../../layout/WholeContainer";
 import { styles } from "./styles";
 import Typography from "../../components/Typography";
-import ProfileIcon from "../../assets/icons/Profile";
+import ArrowRightLong from "../../assets/icons/ArrowRightLong";
 import EmailIcon from "../../assets/icons/Email";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
@@ -19,9 +20,10 @@ import { forgottenPasswordSchema } from "../../utils/formikSchema";
 import { forgottenPassword } from "../../redux/auth/authSlice";
 
 export function ForgottenPassword({ navigation }: any) {
-  const [isLoading, setIsLoading] = useState(false);
-
   const dispatch = useDispatch();
+  const { navigate }: any = useNavigation();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     handleSubmit,
@@ -96,31 +98,58 @@ export function ForgottenPassword({ navigation }: any) {
 
             <View>
               <View style={styles.cardBody}>
-                <View>
-                  <FormGroup validationError={errors.email}>
-                    <FormGroup.Input
-                      keyboardType="email-address"
-                      onChangeText={handleChange("email")}
-                      onBlur={handleBlur("email")}
-                      value={values.email}
-                      placeholder="Email address"
-                      icon={<EmailIcon />}
-                    />
-                  </FormGroup>
+                <FormGroup validationError={errors.email}>
+                  <FormGroup.Input
+                    keyboardType="email-address"
+                    onChangeText={handleChange("email")}
+                    onBlur={handleBlur("email")}
+                    value={values.email}
+                    placeholder="Email address"
+                    placeholderTextColor={vars["ios-default-text"]}
+                    iconColor="blue"
+                    icon={<EmailIcon size={10} />}
+                  />
+                </FormGroup>
+              </View>
+              <View style={styles.footerContent}>
+                <View style={styles.downloadBtnMain}>
+                  <WholeContainer>
+                    <View style={styles.bottomButtonContainer}>
+                      <Button
+                        color="light-pink"
+                        onPress={() => navigate("login")}
+                        leftIcon={<ArrowLeft size={14} />}
+                      >
+                        <Typography
+                          fontSize={16}
+                          fontWeight={600}
+                          fontFamily="Nunito-SemiBold"
+                          marginLeft={8}
+                        >
+                          Back
+                        </Typography>
+                      </Button>
+                      <Button
+                        style={styles.signinButton}
+                        loading={isLoading}
+                        disabled={isLoading}
+                        color={"light-pink"}
+                        onPress={handleSubmit}
+                        rightIcon={<ArrowRightLong size={14} />}
+                      >
+                        <Typography
+                          fontSize={16}
+                          fontWeight={600}
+                          fontFamily="Nunito-SemiBold"
+                          marginLeft={8}
+                        >
+                          Submit
+                        </Typography>
+                      </Button>
+                    </View>
+                  </WholeContainer>
                 </View>
               </View>
-              <FixedBottomAction rounded>
-                <Button
-                  style={styles.signinButton}
-                  loading={isLoading}
-                  disabled={isLoading}
-                  color={"light-pink"}
-                  onPress={handleSubmit}
-                  leftIcon={<ProfileIcon size={14} />}
-                >
-                  Submit
-                </Button>
-              </FixedBottomAction>
             </View>
           </View>
         </View>

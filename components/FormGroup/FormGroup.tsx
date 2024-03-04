@@ -71,14 +71,19 @@ export function Input({
   disabled,
   ...props
 }: any) {
+  const [isFocused, setIsFocused] = useState(false);
   return (
-    <View style={[input.wrapper, style]}>
+    <View style={[input.wrapper, style,{
+      borderColor: isFocused ? vars["accent-blue"] : vars["soft-blue"],
+    }]}>
       {icon && (
         <View style={input.icon}>
           {cloneElement(icon, { color: iconColor, size: iconSize })}
         </View>
       )}
       <TextInput
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
         editable={!disabled}
         style={input.input}
         value={value ? value.toString() : null}

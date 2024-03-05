@@ -98,7 +98,7 @@ const generateHTML = (transactions: StatementTransactionsResponse[]) => {
         <td style="border: none; padding: 5px;">
           <p style="width: 80px !important; text-align: center;">
             ${formatAmountTableValue(
-              transaction.balance,
+              transaction.balance,  //Added by Aristos Should be the "debit" parameter from the json
               transaction.transfer_currency
             )}
           </p>
@@ -106,7 +106,7 @@ const generateHTML = (transactions: StatementTransactionsResponse[]) => {
         <td style="border: none; padding: 5px;">
           <p style="width: 70px !important; text-align: center;">
             ${formatAmountTableValue(
-              transaction.closing_balance,
+              transaction.closing_balance, //Added by Aristos Should be the "credit" parameter from the json
               transaction.transfer_currency
             )}
           </p>

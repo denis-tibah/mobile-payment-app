@@ -61,12 +61,10 @@ export function Payment({ navigation }: any) {
     isLoading: isAddPayeeLoading,
   }] = useAddPayeeMutation();
 
-  const [getPayees,{ data: payeesList,
-    isLoading: isPayeesListLoading }] = useLazyGetPayeesQuery();
   const [getTransactionsWithFilter, {data: transactionsData}] = useLazyGetTransactionsQuery();
   const formattedTransactionsForPayments = formatTransactionsForPaymentScreen(transactionsData);
 
-  const filteredPayeesList = payeesList?.filter((item: any) => {
+  const filteredFormattedTransactionsForPayments = formattedTransactionsForPayments?.filter((item: any) => {
     return item.name.toLowerCase().includes(searchName.toLowerCase());
   });
 
@@ -228,7 +226,7 @@ export function Payment({ navigation }: any) {
           <Divider style={{ marginVertical: 20 }} /> */}
           {/* <Divider style={{ marginBottom: 10 }} /> */}
           <View style={{display: 'flex', flexDirection: 'column', borderTopColor: vars['grey'], borderTopWidth: 1}}>
-              { formattedTransactionsForPayments?.length > 0 && formattedTransactionsForPayments
+              { filteredFormattedTransactionsForPayments?.length > 0 && filteredFormattedTransactionsForPayments
               .sort((a: any, b: any) => {
                 if (selectedFilterForPayees === '1') {
                   return a.name.localeCompare(b.name);

@@ -28,6 +28,13 @@ export function formatAmountTableValue(amount: any = "", currency = "") {
   ).toFixed(2)}`;
 }
 
+export function formatAmountValueWithCurrency(amount: any = "", currency = "") {
+  if (!amount || !currency) return Number.parseFloat("0").toFixed(2);
+  return `€ ${Math.abs(
+    Number.parseFloat(amount)
+  ).toFixed(2)}`;
+}
+
 // if theres a + sign return true otherwise return false
 export function isPositiveAmount(amount: any = "") {
   return amount.toString().includes("+");

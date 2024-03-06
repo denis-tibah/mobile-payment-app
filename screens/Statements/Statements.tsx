@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Text } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { printAsync } from "expo-print";
@@ -11,6 +11,7 @@ import {
   getStatementsfinxp,
   StatementTransactionsResponse,
 } from "../../redux/transaction/transactionSlice";
+import { getAccountDetails } from "../../redux/account/accountSlice";
 import { generatePDF } from "../../utils/files";
 import Typography from "../../components/Typography";
 import Box from "../../components/Box";
@@ -53,6 +54,8 @@ const initialDateRange: DateRangeType = {
 const currentDate = new Date();
 export function Statements({ navigation }: any) {
   const userData = useSelector((state: RootState) => state?.auth?.userData);
+  const profileData = useSelector((state: RootState) => state?.profile?.profile.data);
+
   const dispatch = useDispatch();
   const accountDetails = useSelector((state: RootState) => state?.account?.details);
   const currentBalance = accountDetails?.curbal;
@@ -73,11 +76,24 @@ export function Statements({ navigation }: any) {
   //   return await printAsync({ uri: pdfUri });
   // };
 
+  useEffect(() => {
+    if(userData?.id) {
+      dispatch(getAccountDetails(userData.id) as any);
+    }
+  }, [userData]);
+
   const handleGeneratePDF = async (
     statements: StatementTransactionsResponse[],
     _searchFilter: StatementFilter
   ) => {
-    const pdfUri = await generateStatementsPDF({statements, accountData: {...userData, ..._searchFilter, currentBalance}});
+    const pdfUri = await generateStatementsPDF({
+      statements, 
+      accountData: {
+        ...userData,
+        ..._searchFilter,
+        currentBalance,
+        ...profileData,
+      }});
     return await printAsync({ uri: pdfUri });
   };
 

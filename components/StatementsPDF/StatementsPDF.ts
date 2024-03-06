@@ -2,7 +2,7 @@ import React from "react";
 import * as Print from "expo-print";
 import { Asset } from 'expo-asset';
 import { StyleSheet, Text, View, Image } from "react-native";
-import { convertDateToDottedName, convertDateToName, formatAmountTableValue, getFormattedDateAndTimeV2 } from "../../utils/helpers";
+import { convertDateToDottedName, convertDateToName, formatAmountTableValue, formatAmountValueWithCurrency, getFormattedDateAndTimeV2 } from "../../utils/helpers";
 import * as DocumentPicker from 'expo-document-picker';
 import ZazooLogo from "../../assets/images/ZazooLogoDark.jpg";
 import * as FileSystem from 'expo-file-system';
@@ -61,16 +61,16 @@ const generateHTML = (transactions: StatementTransactionsResponse[]) => {
             }</td>
             <td>
               <p style="width: 80px !important; text-align: center;">
-                ${formatAmountTableValue(
-                  transaction.balance,
+                ${formatAmountValueWithCurrency(
+                  transaction.debit,
                   transaction.transfer_currency
                 )}
               </p>
             </td>
             <td>
               <p style="width: 70px !important; text-align: center;">
-                ${formatAmountTableValue(
-                  transaction.closing_balance,
+                ${formatAmountValueWithCurrency(
+                  transaction.credit,
                   transaction.transfer_currency
                 )}
               </p>
@@ -97,16 +97,16 @@ const generateHTML = (transactions: StatementTransactionsResponse[]) => {
         }</td>
         <td style="border: none; padding: 5px;">
           <p style="width: 80px !important; text-align: center;">
-            ${formatAmountTableValue(
-              transaction.balance,  //Added by Aristos Should be the "debit" parameter from the json
+            ${formatAmountValueWithCurrency(
+              transaction.debit,
               transaction.transfer_currency
             )}
           </p>
         </td>
         <td style="border: none; padding: 5px;">
           <p style="width: 70px !important; text-align: center;">
-            ${formatAmountTableValue(
-              transaction.closing_balance, //Added by Aristos Should be the "credit" parameter from the json
+            ${formatAmountValueWithCurrency(
+              transaction.credit,
               transaction.transfer_currency
             )}
           </p>
@@ -130,6 +130,10 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
   return `
     <html>
       <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+        * {
+          font-family: 'Nunito';
+        }
         table {
           border-collapse: collapse;
           width: 100%;
@@ -137,7 +141,7 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
         th {
           text-align: left;
           background-color: #F9F9F9;
-          height: 65px;
+          height: 55px;
         }
         th, td {
           border: none;
@@ -157,6 +161,8 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
           display: flex;
           flex-direction: column;
           line-height: 1;
+          padding-right: 30px;
+          margin-top: -10px;
         }
         .account-statement-header {
           display: flex;
@@ -164,8 +170,8 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
           flex-direction: row;
           justify-content: space-between;
           background-color: #F9F9F9;
-          width: 100%
-          padding: 20px;
+          width: 100%;
+          padding: 20px 20px;
         }
         .left-align-div {
           text-align: left;
@@ -187,18 +193,26 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
       </head>
       <body style="flex-direction: column">
         <div class="account-statement-header">
-          <div>
-            <h3>${accountData?.first_name} ${accountData?.last_name}</h3>
+          <div style="display: flex; flex-direction: column; height: 100px !important;">
+            <div style="margin-top: -20px;">
+              <h3>${accountData?.first_name || ""} ${accountData?.last_name || ""}</h3>
+            </div>
+            <div style="margin-top: -10px; flex-direction: column; display: flex;">
+              <span>${accountData?.address_line_1 || ""}</span>
+              <span>${accountData?.address_line_2 || ""}</span>
+              <span>${accountData?.country || ""}</span>
+            </div>
           </div>
           <div class="column-div">
-            <div class="row-div" style="height: 25px">
-              <h5 style="text-align: right;">IBAN: ${accountData?.iban} | </h5> <h5> BIC: ${" "+accountData?.bic}</h5>
+            <div class="row-div" style="height: 25px; flex-direction: row; display: flex;">
+              <h4 style="text-align: right; margin-top: 15px;">IBAN: </h4> <p style="padding-left: 5px;">${" " + (accountData?.iban || "") + " | "}</p> 
+              <h4 style="text-align: right; margin-top: 15px; padding-left: 10px;"> BIC: </h4> <p style="padding-left: 5px;">${" " + (accountData?.bic || "")}</p>
             </div>
             <div style="height: 25px; width: 100%">
               <h5 style="text-align: right;"> Curreny: EUR </h5>
             </div>
             <div style="height: 25px; width: 100%">
-              <h5 style="text-align: right;"> Current Balance: ${accountData?.currentBalance}</h5>
+              <h5 style="text-align: right;"> Current Balance: ${accountData?.currentBalance || ""}</h5>
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Alert, Pressable, View, Switch } from "react-native";
+import { Alert, Pressable, View, Switch, KeyboardAvoidingView } from "react-native";
+import Constants from "expo-constants";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
@@ -25,11 +26,12 @@ import { useLoginMutation } from "../../redux/auth/authSliceV2";
 import { useLazyGetAccountQuery } from "../../redux/account/accountSliceV2";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
-import { arrayChecker } from "../../utils/helpers";
+import { arrayChecker, hp, wp } from "../../utils/helpers";
 import { validationAuthSchema } from "../../utils/validation";
 import { getDeviceDetails } from "../../utils/getIpAddress";
 
 export function LoginScreen({ navigation }: any) {
+  const appVersion = Constants?.manifest?.version;
   const [isFaceId, setFaceId] = useState<boolean>(true);
   const [storageData, setStorageData] = useState<any>({});
   const [biometricFlag, setBiometricFlag] = useState<string>("null");
@@ -486,6 +488,28 @@ export function LoginScreen({ navigation }: any) {
           </View>
         </View>
       </View>
+      <KeyboardAvoidingView>
+        <View style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: hp(-46),
+        }}>
+          { appVersion ? <Typography
+            textAlign="center"
+            color="#fff"
+            fontFamily="Nunito-SemiBold"
+            >
+              v{appVersion}
+          </Typography> : <Typography
+            textAlign="center"
+            color="#fff"
+            fontFamily="Nunito-SemiBold"
+            >
+              
+          </Typography>}
+        </View>
+      </KeyboardAvoidingView>
     </MainLayout>
   );
 }

@@ -16,6 +16,11 @@ export interface GroupedByDateTransactionObject {
   [date: string]: Transaction[];
 }
 
+const appVersion = process.env.APP_VERSION;
+export const getAppVersion = () => {
+  return appVersion;
+};
+
 export function formatDateTableValue(date = "") {
   return date.split("-").reverse().join("-");
 }

@@ -104,7 +104,8 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                       ) : null}
                       {transaction?.service === "SEPA CT IN" ||
                       transaction?.service === "SEPA CT OUT" ||
-                      transaction?.service === "SEPA INST IN" ? (
+                      transaction?.service === "SEPA INST IN" ||
+                      transaction?.service === "INTERNAL" ? (
                         <BankIcon size={14} color={"heavy-grey"} />
                       ) : null}
                       <Typography

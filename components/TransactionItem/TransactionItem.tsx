@@ -230,10 +230,9 @@ export function TransactionItem({ data }: TransactionItemProps) {
                     {displayValue({ content: data?.purposeSimple })}
                   </View>
                   <View style={styles.cardContainer}>
-                    <View style={styles.cardContentContainer}>
+                    {/* <View style={styles.cardContentContainer}>
                       {displayTitle({ title: "Card" })}
-                      {/* {displayValue({ content: "**** **** 5566" })} */}
-                    </View>
+                    </View> */}
                     <View style={styles.cardContentContainer}>
                       {displayTitle({ title: "FX" })}
                       {displayValue({

@@ -400,7 +400,7 @@ export const formatCurrencyToLocalEn = (currency: string) => {
 
 export const formatCurrencyToLocalEnTwo = (currency: string) => {
   if (currency) {
-    const trimString = currency.replace(/[^0-9.-]+/g, "");
+    const trimString = currency.toString().replace(/[^0-9.-]+/g, "");
     const convertedAmount = Number(trimString);
     if (convertedAmount) {
       return parseFloat(trimString).toLocaleString("en-US", {

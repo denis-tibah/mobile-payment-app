@@ -493,7 +493,7 @@ export function LoginScreen({ navigation }: any) {
           position: 'absolute',
           left: 0,
           right: 0,
-          bottom: hp(-46),
+          bottom: biometricFlag!==null ? hp(-46) : hp(-65),
         }}>
           { appVersion ? <Typography
             textAlign="center"

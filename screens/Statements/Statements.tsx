@@ -65,16 +65,7 @@ export function Statements({ navigation }: any) {
     showStatementPickerDateToAndFrom,
     setShowStatementPickerDateToAndFrom,
   ] = useState<DateRangeType>(initialDateRange);
-  // const [showPickerDateFilter, setShowPickerDateFilter] =
-  //   useState<DateRangeType>(initialDateRange);
   const [isLoading, setLoading] = useState<boolean>(false);
-
-  // const handleGeneratePDF = async (
-  //   statements: StatementTransactionsResponse[]
-  // ) => {
-  //   const pdfUri = await generatePDF(statements);
-  //   return await printAsync({ uri: pdfUri });
-  // };
 
   useEffect(() => {
     if(userData?.id) {

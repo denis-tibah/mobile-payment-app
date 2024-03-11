@@ -88,6 +88,8 @@ export function Payees({ navigation }: any) {
       .unwrap()
       .then((res: any) => {
         getPayees({ accessToken: access_token, tokenZiyl: token_ziyl});
+        setIsModalSuccessOpen(true);
+        setIsLoading(false);
       })
       .finally(() => {
         setIsModalSuccessOpen(true);
@@ -287,11 +289,7 @@ export function Payees({ navigation }: any) {
                               item,
                             });
                           }}>
-                            <VectorIcon
-                              size={14}
-                              color={vars['accent-blue']}
-                              name={"pluscircleo"}
-                            />
+                            <ArrowRight color="blue" size={14}/>
                           </TouchableOpacity>
                         </View>
                     </View>

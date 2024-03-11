@@ -73,7 +73,7 @@ function CardScreenStack() {
   );
 }
 
-function PayeeStack() {
+function PaymentStack() {
   return (
     <Payee.Navigator
       screenOptions={{
@@ -81,6 +81,22 @@ function PayeeStack() {
       }}
     >
       <Payee.Screen name={screenNames.payments} component={PaymentScreen} />
+      <Payee.Screen
+        name={screenNames.payeeSendFunds}
+        component={PayeeSendFunds}
+      />
+    </Payee.Navigator>
+  );
+}
+
+function PayeeStack() {
+  return (
+    <Payee.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Payee.Screen name={screenNames.payees} component={PayeeScreen} />
       <Payee.Screen
         name={screenNames.payeeSendFunds}
         component={PayeeSendFunds}
@@ -98,9 +114,9 @@ function DashboardStack() {
         component={TransactionsScreen}
       />
       <Tab.Screen name={screenNames.card} component={CardScreenStack} />
-      <Tab.Screen name={screenNames.payments} component={PayeeStack} />
+      <Tab.Screen name={screenNames.payments} component={PaymentStack} />
       <Tab.Screen name={screenNames.statements} component={StatementScreen} />
-      <Tab.Screen name={screenNames.payees} component={PayeeScreen} />
+      <Tab.Screen name={screenNames.payees} component={PayeeStack} />
       {/* <Tab.Screen name={screenNames.payeeSendFunds} component={PayeeSendFunds} /> */}
       <Tab.Screen name="profile" component={ProfileScreen} />
     </TabNavigation>
@@ -348,11 +364,11 @@ export default function AppNavigationWrapper() {
               options={{ headerShown: false }}
             />
 
-            <Root.Screen
+            {/* <Root.Screen
               options={{ headerShown: false }}
               name={screenNames.payees}
               component={PayeeScreen}
-            />
+            /> */}
             <Root.Screen
               options={{ headerShown: false }}
               name={screenNames.approve}

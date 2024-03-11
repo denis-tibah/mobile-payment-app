@@ -16,6 +16,12 @@ export default function TabNavigation({ children }: any) {
     <>
       <Tab.Navigator
         screenOptions={({ route }) => ({
+          ...(route.name === screenNames.payments && {
+            unmountOnBlur: true,
+          }),
+          ...(route.name === screenNames.payees && {
+            unmountOnBlur: true,
+          }),
           tabBarIcon: ({ focused, size }) => {
             if (route.name === screenNames.myaccount) {
               return (
@@ -51,10 +57,7 @@ export default function TabNavigation({ children }: any) {
                 />
               );
             }
-            if (
-              route.name === screenNames.payees ||
-              route.name === screenNames.addPayee
-            ) {
+            if ( route.name === screenNames.payees ) {
               return (
                 <PayeeIcon size={size} color={focused ? "pink" : "soft-pink"} />
               );

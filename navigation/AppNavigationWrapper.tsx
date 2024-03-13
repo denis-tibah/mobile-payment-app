@@ -185,7 +185,7 @@ export default function AppNavigationWrapper() {
     const transactionDetails = notification?.request?.content?.data;
     const emailverificationData = notification?.request?.content?.data;
 
-    if (transactionDetails.requestType === "TransactionApproval") {
+    if (transactionDetails?.requestType === "TransactionApproval") {
       //save notification id so we can remove it from the taskbar
       setLastNotification(notification?.request?.identifier);
       setShowApproval({
@@ -198,7 +198,7 @@ export default function AppNavigationWrapper() {
       });
     }
 
-    if (transactionDetails.requestType === "PaymentReceived") {
+    if (transactionDetails?.requestType === "PaymentReceived") {
       //save notification id so we can remove it from the taskbar
       setLastNotification(notification?.request?.identifier);
       console.log("transactionDetails", transactionDetails);
@@ -213,7 +213,7 @@ export default function AppNavigationWrapper() {
     }
 
     //email verificationL his is triggerd by /verifyemailfinxp webservice
-    if (emailverificationData.requestType === "EmailVerified") {
+    if (emailverificationData?.requestType === "EmailVerified") {
       setLastNotification(notification?.request?.identifier);
 
       setShowEmailVerified({

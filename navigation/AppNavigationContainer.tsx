@@ -11,13 +11,13 @@ import { useDispatch, useSelector } from "react-redux";
 import ErrorBoundary from "react-native-error-boundary";
 import UserInactivity from "react-native-user-inactivity";
 import { PaperProvider } from "react-native-paper";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import Spinner from "react-native-loading-spinner-overlay/lib";
 
 import AppNavigationWrapper from "./AppNavigationWrapper";
 import ErrorFallback from "../components/ErrorFallback";
 import { signout } from "../redux/auth/authSlice";
 import { setInActivityState } from "../redux/account/accountSlice";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import Spinner from "react-native-loading-spinner-overlay/lib";
 
 const AppNavigationContainer = () => {
   const prefix = Linking.createURL("/");

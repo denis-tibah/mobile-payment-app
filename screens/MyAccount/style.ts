@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import vars from "../../styles/vars";
 
 export const styles: any = StyleSheet.create<any>({
   listHead: {
@@ -169,5 +170,17 @@ export const styles: any = StyleSheet.create<any>({
     shadowOpacity: 0.1,
     elevation: 20,
     shadowColor: "#000",
+  },
+  faceIdContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingBottom: 16,
+  },
+  faceIdIconContainer: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 6,
   },
 });

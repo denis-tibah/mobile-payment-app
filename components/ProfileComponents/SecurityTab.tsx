@@ -11,6 +11,8 @@ import { useSelector } from "react-redux";
 import { useFormik } from "formik";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import FaceIdIcon from "../../assets/icons/FaceId";
+import * as SecureStore from "expo-secure-store";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 
 import Typography from "../Typography";
@@ -42,6 +44,28 @@ const SecurityTab: FC<ISecurityTab> = () => {
   }>({ header: "", body: "", isOpen: false, isError: false });
   const [isEnableTwoFactor, setTwoFactorAuthentication] =
     useState<boolean>(false);
+  const [enableBiometric, setEnableBiometric] = useState<boolean>(false);
+  console.log("🚀 ~ enableBiometric:", enableBiometric);
+
+  useEffect(() => {
+    const handleGetBiometricStatus = async () => {
+      const enableBiometric = await SecureStore.getItemAsync("enableBiometric");
+      setEnableBiometric(
+        enableBiometric !== null ? JSON.parse(enableBiometric) : false
+      );
+    };
+    handleGetBiometricStatus();
+  }, []);
+
+  useEffect(() => {
+    const handleBiometricStatus = async (enableBiometric: boolean) => {
+      await SecureStore.setItemAsync(
+        "enableBiometric",
+        JSON.stringify(enableBiometric)
+      );
+    };
+    handleBiometricStatus(enableBiometric);
+  }, [enableBiometric]);
 
   const [
     updatePasswordMutation,
@@ -151,7 +175,7 @@ const SecurityTab: FC<ISecurityTab> = () => {
         <ScrollView>
           <Pressable>
             <View>
-              <View
+              {/* <View
                 style={{
                   paddingHorizontal: 18,
                   paddingBottom: 8,
@@ -203,6 +227,67 @@ const SecurityTab: FC<ISecurityTab> = () => {
                     ios_backgroundColor="#3e3e3e"
                     onValueChange={(e) => setTwoFactorAuthentication(e)}
                     value={isEnableTwoFactor}
+                  />
+                </View>
+              </View>
+              <WholeContainer>
+                <Seperator
+                  backgroundColor={vars["v2-light-grey"]}
+                  marginBottom={16}
+                />
+              </WholeContainer> */}
+              <View
+                style={{
+                  paddingHorizontal: 18,
+                  paddingBottom: 8,
+                  ...Platform.select({
+                    ios: {
+                      paddingBottom: 12,
+                    },
+                  }),
+                }}
+              >
+                <View
+                  style={{
+                    marginLeft: 12,
+                    marginRight: 12,
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+
+                    ...Platform.select({
+                      ios: {
+                        paddingVertical: 8,
+                      },
+                    }),
+                  }}
+                >
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <TwoFactorAuthenticationIcon color="blue" size={18} />
+                    <Typography
+                      fontSize={16}
+                      fontWeight={400}
+                      fontFamily="Mukta-Regular"
+                      marginLeft={8}
+                    >
+                      Biometric authentication
+                    </Typography>
+                  </View>
+                  <Switch
+                    trackColor={{ false: "#767577", true: "#81b0ff" }}
+                    thumbColor={
+                      isEnableTwoFactor ? "white" : vars["light-blue"]
+                    }
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={(e) => setEnableBiometric(e)}
+                    value={enableBiometric}
                   />
                 </View>
               </View>

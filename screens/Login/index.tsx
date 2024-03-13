@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Alert, Pressable, View, Switch, KeyboardAvoidingView } from "react-native";
+import {
+  Alert,
+  Pressable,
+  View,
+  Switch,
+  KeyboardAvoidingView,
+} from "react-native";
 import Constants from "expo-constants";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -34,6 +40,7 @@ export function LoginScreen({ navigation }: any) {
   const appVersion = Constants?.manifest?.version;
   const [isFaceId, setFaceId] = useState<boolean>(true);
   const [storageData, setStorageData] = useState<any>({});
+  console.log("🚀 ~ LoginScreen ~ storageData:", storageData);
   const [biometricFlag, setBiometricFlag] = useState<string>("null");
   const [statusMessage, setStatusMessage] = useState<{
     header: string;
@@ -41,12 +48,14 @@ export function LoginScreen({ navigation }: any) {
     isOpen: boolean;
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
+  const [biometricStatus, setBiometricStatus] = useState<boolean>(false);
+  console.log("🚀 ~ LoginScreen ~ biometricStatus:", biometricStatus);
 
   const { navigate }: any = useNavigation();
   const dispatch = useDispatch();
   /* const validationSchema = validationAuthSchema(); */
 
-  const saveSecureCredetails = async (email: string, password: string) => {
+  const saveSecureCredentials = async (email: string, password: string) => {
     await SecureStore.setItemAsync("user_email", email);
     await SecureStore.setItemAsync("user_password", password);
   };
@@ -114,16 +123,30 @@ export function LoginScreen({ navigation }: any) {
     }
     if (dataLogin?.biometricYN && dataLogin?.biometricYN === "Y") {
       console.log("use biometric");
-      await saveSecureCredetails(
+      /* await saveSecureCredentials(
         values?.email || storageData?.email,
         values?.password || storageData?.password
+      ); */
+      await saveSecureCredentials(
+        dataLogin?.email || values?.email,
+        values?.password
       );
     } else {
       console.log("do not use biometric");
-      await SecureStore.deleteItemAsync("email");
-      await SecureStore.deleteItemAsync("password");
+      await SecureStore.deleteItemAsync("user_email");
+      await SecureStore.deleteItemAsync("user_password");
     }
   };
+
+  useEffect(() => {
+    const handleGetBiometricStatus = async () => {
+      const enableBiometric = await SecureStore.getItemAsync("enableBiometric");
+      setBiometricStatus(
+        enableBiometric !== null ? JSON.parse(enableBiometric) : false
+      );
+    };
+    handleGetBiometricStatus();
+  }, []);
 
   const checkCompatible = async () => {
     const compatible: boolean = await LocalAuthentication.hasHardwareAsync();
@@ -179,28 +202,32 @@ export function LoginScreen({ navigation }: any) {
     return biometricAuth.success;
   };
 
-  const handleChangeFaceId = () => {
+  /* const handleChangeFaceId = () => {
     setFaceId(!isFaceId);
-  };
+  }; */
 
   // set storage data for biometric to be used on users next session
-  const handleSetBiometricFlag = async (param: string) => {
+  /* const handleSetBiometricFlag = async (param: string) => {
     await AsyncStorage.setItem("IsBiometricOn", param);
   };
+ */
   // get storage data for biometric
-  const handleGetBiometricFlag = async () => {
+  /* const handleGetBiometricFlag = async () => {
     const isBiometric = await AsyncStorage.getItem("IsBiometricOn");
     return isBiometric;
-  };
+  }; */
+
   // set storage data for faceId switch. this will be remembered when user go to login page
-  const handleSetFaceIdFlag = async (param: string) => {
+  /* const handleSetFaceIdFlag = async (param: string) => {
     await AsyncStorage.setItem("faceId", param);
-  };
+  }; */
+
   // get storage data for faceId
-  const handleGetFaceIdFlag = async () => {
+  /* const handleGetFaceIdFlag = async () => {
     const faceIdFlag = await AsyncStorage.getItem("faceId");
     return faceIdFlag;
-  };
+  }; */
+
   // get email and password from storage
   const handleGetStoredEmailPassword = async () => {
     const credentials = await getSavedCredetails();
@@ -284,7 +311,7 @@ export function LoginScreen({ navigation }: any) {
     })();
   }, []); */
 
-  useEffect(() => {
+  /* useEffect(() => {
     // set biometricFlag true/false to show or hide biometrics switch
     handleGetBiometricFlag()
       .then((res: any) => {
@@ -303,21 +330,21 @@ export function LoginScreen({ navigation }: any) {
         setFaceId(res === "T" ? true : false);
       })
       .catch((err: any) => console.log(err));
-  }, []);
+  }, []); */
 
-  useEffect(() => {
-    // set biometric flag if theres email and password from storage
+  // set biometric flag if theres email and password from storage
+  /*  useEffect(() => {
     if (storageData?.email && storageData?.password) {
       handleSetBiometricFlag("Y");
       setBiometricFlag("Y");
     }
-  }, [storageData]);
+  }, [storageData]); */
 
-  useEffect(() => {
+  // login user using biometric
+  /* useEffect(() => {
     const faceIdStorageData = isFaceId ? "T" : "F";
     handleSetFaceIdFlag(faceIdStorageData);
 
-    // login user using biometric
     const triggerBiometric = async () => {
       const compatible = await checkCompatible();
       if (compatible) {
@@ -343,7 +370,39 @@ export function LoginScreen({ navigation }: any) {
     if (isFaceId && storageData?.email && storageData?.password) {
       triggerBiometric();
     }
-  }, [isFaceId, storageData]);
+  }, [isFaceId, storageData]); */
+
+  useEffect(() => {
+    handleGetStoredEmailPassword();
+  }, []);
+
+  useEffect(() => {
+    const triggerBiometric = async () => {
+      const compatible = await checkCompatible();
+      if (compatible) {
+        const saved = await checkSavedBiometrics();
+        if (saved) {
+          const auth = await handleBiometricAuth();
+          console.log(auth, "AUTHH");
+          if (auth) {
+            const ipAddress = await getDeviceDetails();
+            const reqData = {
+              email: storageData?.email,
+              password: storageData?.password,
+              ipAddress,
+              browserfingerprint: "react native app",
+            };
+            loginMutation(reqData);
+          } else {
+            setFaceId(false);
+          }
+        }
+      }
+    };
+    if (biometricStatus && storageData?.email && storageData?.password) {
+      triggerBiometric();
+    }
+  }, [biometricStatus, storageData]);
 
   return (
     <MainLayout navigation={navigation}>
@@ -427,7 +486,7 @@ export function LoginScreen({ navigation }: any) {
                   </Pressable>
                 </View>
               </View>
-              {biometricFlag !== "null" ? (
+              {/* {biometricFlag !== "null" ? (
                 <View style={styles.faceIdContainer}>
                   <View style={styles.faceIdIconContainer}>
                     <FaceIdIcon size={20} color="blue" />
@@ -444,7 +503,6 @@ export function LoginScreen({ navigation }: any) {
                         true: "#81b0ff",
                         false: "#DDDDDD",
                       }}
-                      /* thumbColor={isFaceId ? "#81b0ff" : "white"} */
                       thumbColor="#808080"
                       style={{ marginTop: -24 }}
                       ios_backgroundColor="#3e3e3e"
@@ -452,7 +510,7 @@ export function LoginScreen({ navigation }: any) {
                     />
                   </View>
                 </View>
-              ) : null}
+              ) : null} */}
               <FixedBottomAction
                 rounded
                 isFullWidth
@@ -489,25 +547,29 @@ export function LoginScreen({ navigation }: any) {
         </View>
       </View>
       <KeyboardAvoidingView>
-        <View style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: biometricFlag!==null ? hp(-46) : hp(-65),
-        }}>
-          { appVersion ? <Typography
-            textAlign="center"
-            color="#fff"
-            fontFamily="Nunito-SemiBold"
+        <View
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: biometricFlag !== null ? hp(-46) : hp(-65),
+          }}
+        >
+          {appVersion ? (
+            <Typography
+              textAlign="center"
+              color="#fff"
+              fontFamily="Nunito-SemiBold"
             >
               v{appVersion}
-          </Typography> : <Typography
-            textAlign="center"
-            color="#fff"
-            fontFamily="Nunito-SemiBold"
-            >
-              
-          </Typography>}
+            </Typography>
+          ) : (
+            <Typography
+              textAlign="center"
+              color="#fff"
+              fontFamily="Nunito-SemiBold"
+            ></Typography>
+          )}
         </View>
       </KeyboardAvoidingView>
     </MainLayout>

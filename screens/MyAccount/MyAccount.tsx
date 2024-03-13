@@ -1,13 +1,16 @@
-import { /* useEffect,  */ useState } from "react";
+import { useEffect, useState, useRef, Fragment } from "react";
 import {
   View,
   ScrollView,
   RefreshControl,
+  Dimensions,
+  Switch,
   /*   TouchableOpacity, */
 } from "react-native";
 /* import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"; */
-
 import { useSelector } from "react-redux";
+import * as SecureStore from "expo-secure-store";
+
 /* import Heading from "../../components/Heading"; */
 import MainLayout from "../../layout/Main";
 import { styles } from "./style";
@@ -37,8 +40,15 @@ import {
 import { stat } from "fs";
 import AccordionItem from "../../components/AccordionItem";
 import ProgressClock from "../../assets/icons/ProgressClock";
+import FaceIdIcon from "../../assets/icons/FaceId";
 import TransactionsLeftRightIcon from "../../assets/icons/TransactionsLeftRight";
 import WholeContainer from "../../layout/WholeContainer";
+import SwipableBottomSheet from "../../components/SwipableBottomSheet";
+import { Seperator } from "../../components/Seperator/Seperator";
+import vars from "../../styles/vars";
+
+const windowDimensions = Dimensions.get("window");
+const screenDimensions = Dimensions.get("screen");
 
 const defaultStatus = "SUCCESS";
 export function MyAccount({ navigation }: any) {
@@ -111,12 +121,48 @@ export function MyAccount({ navigation }: any) {
     tokenZiyl: userTokens?.token_ziyl,
   });
 
+  const refRBSheet = useRef();
+
   const [refreshing, setRefreshing] = useState<boolean>(false);
   /* const [sortByStatus, setSortByStatus] = useState<boolean>(false); */
   /* const [isLoading, setIsLoading] = useState<boolean>(false); */
   /* const [paginateRefresh, setPaginateRefresh] = useState<boolean>(false); */
   const [isOneTransactionOpen, setIsOneTransactionOpen] =
     useState<boolean>(false);
+  const [storageData, setStorageData] = useState<{
+    email: string;
+    password: string;
+  }>({
+    email: "",
+    password: "",
+  });
+  const [triggerBiometric, setTriggerBiometric] = useState(false);
+  const [dimensions, setDimensions] = useState({
+    window: windowDimensions,
+    screen: screenDimensions,
+  });
+  const [isFaceId, setFaceId] = useState<boolean>(true);
+  const [enableBiometric, setEnableBiometric] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleGetBiometricStatus = async () => {
+      const enableBiometric = await SecureStore.getItemAsync("enableBiometric");
+      setEnableBiometric(
+        enableBiometric !== null ? JSON.parse(enableBiometric) : false
+      );
+    };
+    handleGetBiometricStatus();
+  }, []);
+
+  useEffect(() => {
+    const handleBiometricStatus = async (enableBiometric: boolean) => {
+      await SecureStore.setItemAsync(
+        "enableBiometric",
+        JSON.stringify(enableBiometric)
+      );
+    };
+    handleBiometricStatus(enableBiometric);
+  }, [enableBiometric]);
 
   /* const fetchTransactions = async (filterParams?: {
     pageNumber?: number;
@@ -170,6 +216,48 @@ export function MyAccount({ navigation }: any) {
   /* useEffect(() => {
     fetchTransactions();
   }, [userId]); */
+
+  useEffect(() => {
+    setTimeout(() => {
+      setTriggerBiometric(true);
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    const getUserEmailPassword = async () => {
+      const email = await SecureStore.getItemAsync("user_email");
+      const password = await SecureStore.getItemAsync("user_password");
+      if (email && password) {
+        setStorageData({
+          email,
+          password,
+        });
+      }
+    };
+    if (triggerBiometric) {
+      getUserEmailPassword();
+    }
+  }, [triggerBiometric]);
+
+  useEffect(() => {
+    if (triggerBiometric) {
+      if (
+        !isloadingTransactionsPending &&
+        !isloadingTransactionsCompleted &&
+        !enableBiometric
+      ) {
+        refRBSheet?.current?.open();
+      }
+    }
+  }, [
+    triggerBiometric,
+    isloadingTransactionsPending,
+    isloadingTransactionsCompleted,
+  ]);
+
+  const handleChangeBiometric = () => {
+    setEnableBiometric(!enableBiometric);
+  };
 
   const displayListItems = (isLoading: any, items: any): JSX.Element | null => {
     if (isLoading) {
@@ -231,97 +319,102 @@ export function MyAccount({ navigation }: any) {
   };
 
   return (
-    <MainLayout navigation={navigation}>
-      <Spinner
-        visible={
-          /* paginateRefresh || */
-          /* isLoading || */
-          isloadingTransactionsPending || isloadingTransactionsCompleted
-        }
-      />
-      <ScrollView
-        bounces={true}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            /* onRefresh={fetchTransactions} */
-            onRefresh={() => {}}
-          />
-        }
-      >
-        <View style={styles.balancesContainer}>
-          <View
-            style={[
-              styles.balanceItem,
-              { borderBottomColor: "#E7038E", width: "37.33%" },
-            ]}
-          >
-            <Typography
-              color={"medium-grey2"}
-              fontWeight={400}
-              fontSize={12}
-              marginTop={4}
-              lineHeight={14}
+    <Fragment>
+      <MainLayout navigation={navigation}>
+        <Spinner
+          visible={
+            /* paginateRefresh || */
+            /* isLoading || */
+            isloadingTransactionsPending || isloadingTransactionsCompleted
+          }
+        />
+        <ScrollView
+          bounces={true}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              /* onRefresh={fetchTransactions} */
+              onRefresh={() => {}}
+            />
+          }
+        >
+          <View style={styles.balancesContainer}>
+            <View
+              style={[
+                styles.balanceItem,
+                { borderBottomColor: "#E7038E", width: "37.33%" },
+              ]}
             >
-              Current Balance
-            </Typography>
-            <Typography color={"accent-pink"} fontWeight={800} fontSize={18}>
-              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
-                formatCurrencyToLocalEnTwo(
-                  userAccountInformation?.data?.curbal
-                ) || "0.00"
-              }`}
-            </Typography>
-          </View>
-          <View
-            style={[
-              styles.balanceItem,
-              { borderBottomColor: "#FBB445", width: "26.33%" },
-            ]}
-          >
-            <Typography
-              color={"medium-grey2"}
-              fontWeight={400}
-              fontSize={12}
-              marginTop={4}
-              lineHeight={14}
+              <Typography
+                color={"medium-grey2"}
+                fontWeight={400}
+                fontSize={12}
+                marginTop={4}
+                lineHeight={14}
+              >
+                Current Balance
+              </Typography>
+              <Typography color={"accent-pink"} fontWeight={800} fontSize={18}>
+                {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
+                  formatCurrencyToLocalEnTwo(
+                    userAccountInformation?.data?.curbal
+                  ) || "0.00"
+                }`}
+              </Typography>
+            </View>
+            <View
+              style={[
+                styles.balanceItem,
+                { borderBottomColor: "#FBB445", width: "26.33%" },
+              ]}
             >
-              Pending
-            </Typography>
-            <Typography color={"accent-orange"} fontWeight={800} fontSize={18}>
-              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
-                formatCurrencyToLocalEnTwo(
-                  userAccountInformation?.data?.blocked_amount
-                ) || "0.00"
-              }`}
-            </Typography>
-          </View>
-          <View
-            style={[
-              styles.balanceItem,
-              { borderBottomColor: "#0DCA9D", width: "37.33%" },
-            ]}
-          >
-            <Typography
-              color={"medium-grey2"}
-              fontWeight={400}
-              fontSize={12}
-              marginTop={4}
-              lineHeight={14}
+              <Typography
+                color={"medium-grey2"}
+                fontWeight={400}
+                fontSize={12}
+                marginTop={4}
+                lineHeight={14}
+              >
+                Pending
+              </Typography>
+              <Typography
+                color={"accent-orange"}
+                fontWeight={800}
+                fontSize={18}
+              >
+                {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
+                  formatCurrencyToLocalEnTwo(
+                    userAccountInformation?.data?.blocked_amount
+                  ) || "0.00"
+                }`}
+              </Typography>
+            </View>
+            <View
+              style={[
+                styles.balanceItem,
+                { borderBottomColor: "#0DCA9D", width: "37.33%" },
+              ]}
             >
-              Available Balance
-            </Typography>
-            <Typography color={"accent-green"} fontWeight={800} fontSize={18}>
-              {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
-                formatCurrencyToLocalEnTwo(
-                  userAccountInformation?.data?.avlbal
-                ) || "0.00"
-              }`}
-            </Typography>
+              <Typography
+                color={"medium-grey2"}
+                fontWeight={400}
+                fontSize={12}
+                marginTop={4}
+                lineHeight={14}
+              >
+                Available Balance
+              </Typography>
+              <Typography color={"accent-green"} fontWeight={800} fontSize={18}>
+                {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
+                  formatCurrencyToLocalEnTwo(
+                    userAccountInformation?.data?.avlbal
+                  ) || "0.00"
+                }`}
+              </Typography>
+            </View>
           </View>
-        </View>
-        <View>
-          {/* <View style={styles.base}>
+          <View>
+            {/* <View style={styles.base}>
             <Heading
               icon={<AccountIcon color="pink" size={18} />}
               title="Latest Transactions"
@@ -344,38 +437,38 @@ export function MyAccount({ navigation }: any) {
               }
             />
           </View> */}
-          <View>
-            <AccordionItem
-              title="Pending"
-              iconColor="#FBB445"
-              iconSize={28}
-              isOpenByDefault
-              IconLeft={() => <ProgressClock color="#FBB445" size={18} />}
-            >
-              <View style={styles.accordionBodyContainer}>
-                {displayListItems(
-                  isloadingTransactionsPending,
-                  groupedByDateTransactionsPending
+            <View>
+              <AccordionItem
+                title="Pending"
+                iconColor="#FBB445"
+                iconSize={28}
+                isOpenByDefault
+                IconLeft={() => <ProgressClock color="#FBB445" size={18} />}
+              >
+                <View style={styles.accordionBodyContainer}>
+                  {displayListItems(
+                    isloadingTransactionsPending,
+                    groupedByDateTransactionsPending
+                  )}
+                </View>
+              </AccordionItem>
+              <AccordionItem
+                title="Latest transactions"
+                iconColor="#E7038E"
+                iconSize={28}
+                isOpenByDefault
+                IconLeft={() => (
+                  <TransactionsLeftRightIcon color="#E7038E" size={18} />
                 )}
-              </View>
-            </AccordionItem>
-            <AccordionItem
-              title="Latest transactions"
-              iconColor="#E7038E"
-              iconSize={28}
-              isOpenByDefault
-              IconLeft={() => (
-                <TransactionsLeftRightIcon color="#E7038E" size={18} />
-              )}
-            >
-              <View style={styles.accordionBodyContainer}>
-                {displayListItems(
-                  isloadingTransactionsCompleted,
-                  groupedByDateTransactionsCompleted
-                )}
-              </View>
-            </AccordionItem>
-            {/* {_groupedByDateTransactions ? (
+              >
+                <View style={styles.accordionBodyContainer}>
+                  {displayListItems(
+                    isloadingTransactionsCompleted,
+                    groupedByDateTransactionsCompleted
+                  )}
+                </View>
+              </AccordionItem>
+              {/* {_groupedByDateTransactions ? (
               <>
                 <View>
                   {_groupedByDateTransactions
@@ -421,16 +514,95 @@ export function MyAccount({ navigation }: any) {
                 </Typography>
               </View>
             )} */}
-          </View>
-          {/* Aristos: temp disabled this */}
-          {/* <Pagination
+            </View>
+            {/* Aristos: temp disabled this */}
+            {/* <Pagination
             handlePreviousPage={handlePreviousPage}
             page={currentPage || 0}
             lastPage={lastPage || 0}
             handleNextPage={handleNextPage}
           /> */}
+          </View>
+        </ScrollView>
+      </MainLayout>
+      <SwipableBottomSheet
+        rbSheetRef={refRBSheet}
+        closeOnDragDown={true}
+        closeOnPressMask={false}
+        wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
+        containerStyles={{
+          height: dimensions.window.height - 395,
+          backgroundColor: "#ffffff",
+          borderTopLeftRadius: 14,
+          borderTopRightRadius: 14,
+          elevation: 12,
+          shadowColor: "#52006A",
+        }}
+        draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
+      >
+        <View>
+          <WholeContainer>
+            <View
+              style={{
+                paddingVertical: 4,
+              }}
+            >
+              <Typography fontSize={18} marginLeft={8} fontWeight={600}>
+                Turn on the biometric authentication
+              </Typography>
+            </View>
+          </WholeContainer>
+          <View>
+            <Seperator
+              borderColor={vars["grey"]}
+              marginTop={18}
+              borderWidth={0.5}
+            />
+          </View>
+          <WholeContainer>
+            <View style={{ paddingVertical: 22 }}>
+              <Typography
+                fontSize={14}
+                fontWeight={600}
+                color={vars["medium-grey2"]}
+              >
+                For security reason we suggest to turn on the biometric
+                authentication
+              </Typography>
+            </View>
+            <View>
+              <View style={styles.faceIdContainer}>
+                <View style={styles.faceIdIconContainer}>
+                  <FaceIdIcon size={20} color="blue" />
+                  <Typography fontSize={16}>Use FaceID next time</Typography>
+                </View>
+                <View
+                  style={{
+                    marginTop: 18,
+                  }}
+                >
+                  <Switch
+                    value={enableBiometric}
+                    trackColor={{
+                      true: "#81b0ff",
+                      false: "#DDDDDD",
+                    }}
+                    thumbColor="#808080"
+                    style={{ marginTop: -24 }}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={handleChangeBiometric}
+                  />
+                </View>
+              </View>
+            </View>
+            <View style={{ paddingTop: 22 }}>
+              <Typography fontSize={16} color={vars["accent-pink"]}>
+                Learn more about biometric authentication
+              </Typography>
+            </View>
+          </WholeContainer>
         </View>
-      </ScrollView>
-    </MainLayout>
+      </SwipableBottomSheet>
+    </Fragment>
   );
 }

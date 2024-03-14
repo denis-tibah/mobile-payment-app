@@ -3,7 +3,7 @@
     "name": "Zazoo",
     "scheme": "zazoomobile",
     "slug": "zazoo",
-    "version": "1.0.5",
+    "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",

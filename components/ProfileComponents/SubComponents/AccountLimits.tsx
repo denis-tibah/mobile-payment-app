@@ -19,18 +19,23 @@ import vars from '../../../styles/vars';
 import WholeContainer from '../../../layout/WholeContainer';
 import Button from '../../Button';
 import { styles } from "../styles";
+import { SuccessModal } from '../../SuccessModal/SuccessModal';
 
+type AccountLimitProps = {
+  
+}
 
-const AccountLimits = () => {
+const AccountLimits: React.FC<AccountLimitProps> = (): JSX.Element => {
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const userData = useSelector((state: RootState) => state?.auth?.userData);
+  
   const [statusMessage, setStatusMessage] = useState<{
     header: string;
     body: string;
     isOpen: boolean;
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
-  
+
   const {
     isLoading: isLoadingGetLimits,
     isError: isErrorGetProfile,
@@ -89,8 +94,17 @@ const AccountLimits = () => {
           tokenZiyl: userTokens?.token_ziyl,
           accountId: userData?.id,
         });
-      },
+    },
+  });
+
+  const onCloseModal = (): void => {
+    setStatusMessage({
+      header: "",
+      body: "",
+      isOpen: false,
+      isError: false,
     });
+  };
 
   useEffect(() => {
     if (!isLoadingUpdateLimits && isSuccessUpdateLimits) {
@@ -126,6 +140,13 @@ const AccountLimits = () => {
       <ScrollView>
         <View style={{ backgroundColor: "#ffff" }}>
           <Spinner visible={isLoadingGetLimits || isLoadingUpdateLimits} />
+          <SuccessModal
+            isOpen={statusMessage?.isOpen}
+            title={statusMessage.header}
+            text={statusMessage.body}
+            isError={statusMessage.isError}
+            onClose={onCloseModal}
+          />
           <Pressable>
             <View style={{ marginTop: 16 }}>
               <View>

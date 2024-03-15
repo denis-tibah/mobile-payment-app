@@ -317,7 +317,7 @@ export function Profile({ route, navigation }: any) {
       case "Notifications": {
         return <NotificationsTab cleanUpTabSelection={cleanUpTabSelection} />;
       }
-      case "Set you limits": {
+      case "Limits": {
         return <LimitsTab cleanUpTabSelection={cleanUpTabSelection} />;
       }
       case "Help": {
@@ -1173,7 +1173,7 @@ export function Profile({ route, navigation }: any) {
                     <View>
                       <TouchableOpacity
                         onPress={() => {
-                          handleShowTab("Set you limits");
+                          handleShowTab("Limits");
                         }}
                       >
                         <View style={styles.buttonNavigationContainer}>

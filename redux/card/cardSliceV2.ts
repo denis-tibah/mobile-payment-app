@@ -132,6 +132,12 @@ export const cardsV2 = createApi({
       }),
       invalidatesTags: ["cardsV2"],
     }),
+    getCardLimit: builder.query({
+      query: () => ({
+        url: `/card/limit`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -149,4 +155,5 @@ export const {
   useLazyFreezeCardQuery,
   useLazyShowCardPinNumberQuery,
   useShowCardRegistrationFinxpMutation,
+  useLazyGetCardLimitQuery,
 } = cardsV2;

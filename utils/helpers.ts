@@ -461,3 +461,19 @@ export const groupByDateAndSeveralProperties = ({
   });
   return grouped;
 };
+
+export const calculatePercentage = (min: number, max: number) => {
+  if (min < 0 || max < 0) {
+    // Handle negative numbers if necessary
+    return null;
+  }
+  if (min > max) {
+    // Swap min and max if necessary
+    [min, max] = [max, min];
+  }
+  // Calculate the percentage
+  const percentage = (min / max) * 100;
+  // Convert to floating-point number (divide by 100)
+  const percentageAsFloat = percentage / 100;
+  return percentageAsFloat;
+};

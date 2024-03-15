@@ -136,6 +136,7 @@ export function MyAccount({ navigation }: any) {
     email: "",
     password: "",
   });
+
   const [triggerBiometric, setTriggerBiometric] = useState(false);
   const [dimensions, setDimensions] = useState({
     window: windowDimensions,
@@ -254,10 +255,6 @@ export function MyAccount({ navigation }: any) {
     isloadingTransactionsPending,
     isloadingTransactionsCompleted,
   ]);
-
-  const handleChangeBiometric = () => {
-    setEnableBiometric(!enableBiometric);
-  };
 
   const displayListItems = (isLoading: any, items: any): JSX.Element | null => {
     if (isLoading) {
@@ -531,7 +528,7 @@ export function MyAccount({ navigation }: any) {
         closeOnPressMask={false}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
-          height: dimensions.window.height - 395,
+          height: dimensions.window.height - 370,
           backgroundColor: "#ffffff",
           borderTopLeftRadius: 14,
           borderTopRightRadius: 14,
@@ -582,7 +579,6 @@ export function MyAccount({ navigation }: any) {
                   }}
                 >
                   <Switch
-                    value={enableBiometric}
                     trackColor={{
                       true: "#81b0ff",
                       false: "#DDDDDD",
@@ -590,7 +586,10 @@ export function MyAccount({ navigation }: any) {
                     thumbColor="#808080"
                     style={{ marginTop: -24 }}
                     ios_backgroundColor="#3e3e3e"
-                    onValueChange={handleChangeBiometric}
+                    onValueChange={(e) => {
+                      setEnableBiometric(e);
+                    }}
+                    value={enableBiometric}
                   />
                 </View>
               </View>

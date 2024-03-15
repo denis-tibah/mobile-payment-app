@@ -40,7 +40,6 @@ export function LoginScreen({ navigation }: any) {
   const appVersion = Constants?.manifest?.version;
   const [isFaceId, setFaceId] = useState<boolean>(true);
   const [storageData, setStorageData] = useState<any>({});
-  console.log("🚀 ~ LoginScreen ~ storageData:", storageData);
   const [biometricFlag, setBiometricFlag] = useState<string>("null");
   const [statusMessage, setStatusMessage] = useState<{
     header: string;
@@ -49,13 +48,14 @@ export function LoginScreen({ navigation }: any) {
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
   const [biometricStatus, setBiometricStatus] = useState<boolean>(false);
-  console.log("🚀 ~ LoginScreen ~ biometricStatus:", biometricStatus);
 
   const { navigate }: any = useNavigation();
   const dispatch = useDispatch();
   /* const validationSchema = validationAuthSchema(); */
 
   const saveSecureCredentials = async (email: string, password: string) => {
+    console.log("🚀 ~ saveSecureCredentials ~ password:", password);
+    console.log("🚀 ~ saveSecureCredentials ~ email:", email);
     await SecureStore.setItemAsync("user_email", email);
     await SecureStore.setItemAsync("user_password", password);
   };
@@ -123,13 +123,9 @@ export function LoginScreen({ navigation }: any) {
     }
     if (dataLogin?.biometricYN && dataLogin?.biometricYN === "Y") {
       console.log("use biometric");
-      /* await saveSecureCredentials(
-        values?.email || storageData?.email,
-        values?.password || storageData?.password
-      ); */
       await saveSecureCredentials(
         dataLogin?.email || values?.email,
-        values?.password
+        values?.password || storageData?.password
       );
     } else {
       console.log("do not use biometric");
@@ -392,6 +388,7 @@ export function LoginScreen({ navigation }: any) {
               ipAddress,
               browserfingerprint: "react native app",
             };
+            console.log("🚀 ~ triggerBiometric ~ reqData:", reqData);
             loginMutation(reqData);
           } else {
             setFaceId(false);

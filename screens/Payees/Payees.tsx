@@ -643,7 +643,6 @@ export function Payees({ navigation }: any) {
                   .then((res: any) => {
                     setIsLoading(false);
                     refRBSheetDeletePayee?.current?.close();
-                    
                   })
                   .catch((error: any) => {
                     console.log('error', error);

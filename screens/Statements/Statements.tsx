@@ -195,6 +195,7 @@ export function Statements({ navigation }: any) {
       <Box style={styles.dateContainer}>
         <ScrollingButtons
           onScrollOptions={(formattedDate) => {
+            // generate pdf
             if (!formattedDate) return;
             const date = new Date(formattedDate);
             const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toString();

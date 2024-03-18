@@ -66,11 +66,6 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
       data: dataCreateHelpTicket,
     },
   ] = useCreateHelpTicketMutation();
-  console.log("🚀 ~ isLoadingCreateHelpTicket:", isLoadingCreateHelpTicket);
-  console.log("🚀 ~ isSuccessCreateHelpTicket:", isSuccessCreateHelpTicket);
-  console.log("🚀 ~ isErrorCreateHelpTicket:", isErrorCreateHelpTicket);
-  console.log("🚀 ~ errorCreateHelpTicket:", errorCreateHelpTicket);
-  console.log("🚀 ~ dataCreateHelpTicket:", dataCreateHelpTicket?.message);
 
   const {
     handleSubmit,
@@ -100,9 +95,21 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
     },
   });
 
+  const onCloseModal = (): void => {
+    setStatusMessage({
+      header: "",
+      body: "",
+      isOpen: false,
+      isError: false,
+    });
+  };
+
   useEffect(() => {
     if (!isLoadingCreateHelpTicket && isSuccessCreateHelpTicket) {
-      if (dataCreateHelpTicket?.code === "200") {
+      if (
+        dataCreateHelpTicket?.code === "200" ||
+        dataCreateHelpTicket?.code === 200
+      ) {
         setStatusMessage({
           header: "Success",
           body:
@@ -111,6 +118,9 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
           isOpen: true,
           isError: false,
         });
+        setFieldValue("type", "");
+        setFieldValue("ticketValue", "");
+        refRBSheet.current.close();
       }
     }
   }, [
@@ -137,6 +147,7 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
           console.log("goes to this");
           message = dataCreateHelpTicket?.message;
         }
+        refRBSheet.current.close();
       }
 
       setStatusMessage({
@@ -171,15 +182,6 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
       );
     }
   }, [passedTicketType, transactionReferenceNumber]);
-
-  const onCloseModal = (): void => {
-    setStatusMessage({
-      header: "",
-      body: "",
-      isOpen: false,
-      isError: false,
-    });
-  };
 
   return (
     <Fragment>

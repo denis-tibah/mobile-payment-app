@@ -119,6 +119,31 @@ export const profileV2 = createApi({
         };
       },
     }),
+    createHelpTicket: builder.mutation({
+      query: ({
+        bodyParams,
+        accessToken,
+        tokenZiyl,
+      }: {
+        bodyParams: any;
+        accessToken: any;
+        tokenZiyl: any;
+      }) => {
+        console.log("🚀 ~ tokenZiyl:", tokenZiyl);
+        console.log("🚀 ~ accessToken:", accessToken);
+        console.log("🚀 ~ bodyParams:", bodyParams);
+        return {
+          url: "/createhelpticketfinxp",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            AuthorizationFinxp: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${tokenZiyl}`,
+          },
+          body: bodyParams,
+        };
+      },
+    }),
   }),
 });
 
@@ -128,4 +153,5 @@ export const {
   useUpdatePasswordMutation,
   useUpdateNotificationsMutation,
   useCreateTicketFreshDeskMutation,
+  useCreateHelpTicketMutation,
 } = profileV2;

@@ -16,13 +16,14 @@ import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import Button from "../Button";
 import { helpTabCreateTicketSchema } from "../../utils/formikSchema";
 import { ticketType } from "../../data/options";
-import { useCreateTicketFreshDeskMutation } from "../../redux/profile/profileSliceV2";
+import { useCreateHelpTicketMutation } from "../../redux/profile/profileSliceV2";
 import { RootState } from "../../store";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
 import Typography from "../Typography";
 import WholeContainer from "../../layout/WholeContainer";
 import SwipableBottomSheet from "../SwipableBottomSheet";
+import { arrayChecker } from "../../utils/helpers";
 
 interface IFinancialDetailsTab {
   isOpenBottomSheet: boolean;
@@ -38,9 +39,6 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
   transactionReferenceNumber,
   handleCloseBottomSheet,
 }) => {
-  const profileData = useSelector(
-    (state: RootState) => state?.profile?.profile
-  )?.data;
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const refRBSheet = useRef();
 
@@ -59,25 +57,20 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
   });
 
   const [
-    createTicketFreshDesk,
+    createHelpTicket,
     {
-      isLoading: isLoadingCreateTicketFreshDesk,
-      isError: isErrorCreateTicketFreshDesk,
-      isSuccess: isSuccessCreateTicketFreshDesk,
-      error: errorCreateTicketFreshDesk,
-      data: dataCreateTicketFreshDesk,
+      isLoading: isLoadingCreateHelpTicket,
+      isError: isErrorCreateHelpTicket,
+      isSuccess: isSuccessCreateHelpTicket,
+      error: errorCreateHelpTicket,
+      data: dataCreateHelpTicket,
     },
-  ] = useCreateTicketFreshDeskMutation();
-  console.log(
-    "🚀 ~ isErrorCreateTicketFreshDesk:",
-    isErrorCreateTicketFreshDesk
-  );
-  console.log(
-    "🚀 ~ isSuccessCreateTicketFreshDesk:",
-    isSuccessCreateTicketFreshDesk
-  );
-  console.log("🚀 ~ errorCreateTicketFreshDesk:", errorCreateTicketFreshDesk);
-  console.log("🚀 ~ dataCreateTicketFreshDesk:", dataCreateTicketFreshDesk);
+  ] = useCreateHelpTicketMutation();
+  console.log("🚀 ~ isLoadingCreateHelpTicket:", isLoadingCreateHelpTicket);
+  console.log("🚀 ~ isSuccessCreateHelpTicket:", isSuccessCreateHelpTicket);
+  console.log("🚀 ~ isErrorCreateHelpTicket:", isErrorCreateHelpTicket);
+  console.log("🚀 ~ errorCreateHelpTicket:", errorCreateHelpTicket);
+  console.log("🚀 ~ dataCreateHelpTicket:", dataCreateHelpTicket?.message);
 
   const {
     handleSubmit,
@@ -96,25 +89,68 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
     validationSchema: helpTabCreateTicketSchema,
     onSubmit: async ({ type, ticketValue }) => {
       const bodyParams = {
-        type: "helpdesk issue Request",
-        dateSubmitted: new Date().toISOString(),
-        ticketValue: [
-          {
-            help: {
-              type,
-              value: ticketValue,
-            },
-          },
-        ],
-        receive_mail: profileData?.email,
+        reason: type ? type.toUpperCase() : "",
+        description: ticketValue,
       };
-      createTicketFreshDesk({
+      createHelpTicket({
         bodyParams: bodyParams,
         accessToken: userTokens?.access_token,
         tokenZiyl: userTokens?.token_ziyl,
       });
     },
   });
+
+  useEffect(() => {
+    if (!isLoadingCreateHelpTicket && isSuccessCreateHelpTicket) {
+      if (dataCreateHelpTicket?.code === "200") {
+        setStatusMessage({
+          header: "Success",
+          body:
+            dataCreateHelpTicket?.message ||
+            "Message forwarded to customer service",
+          isOpen: true,
+          isError: false,
+        });
+      }
+    }
+  }, [
+    isLoadingCreateHelpTicket,
+    isSuccessCreateHelpTicket,
+    dataCreateHelpTicket,
+  ]);
+
+  useEffect(() => {
+    if (
+      !isLoadingCreateHelpTicket &&
+      (dataCreateHelpTicket?.code === "400" ||
+        dataCreateHelpTicket?.code === 400 ||
+        dataCreateHelpTicket?.code === "401" ||
+        dataCreateHelpTicket?.code === 401 ||
+        dataCreateHelpTicket?.code === "422" ||
+        dataCreateHelpTicket?.code === 422)
+    ) {
+      let message = "Something went wrong";
+      if (dataCreateHelpTicket?.message) {
+        if (arrayChecker(dataCreateHelpTicket?.message)) {
+          message = dataCreateHelpTicket?.message.join(", ");
+        } else {
+          console.log("goes to this");
+          message = dataCreateHelpTicket?.message;
+        }
+      }
+
+      setStatusMessage({
+        header: "Error",
+        body: message || "Something went wrong",
+        isOpen: true,
+        isError: true,
+      });
+    }
+  }, [
+    isLoadingCreateHelpTicket,
+    isSuccessCreateHelpTicket,
+    dataCreateHelpTicket,
+  ]);
 
   useEffect(() => {
     if (isOpenBottomSheet) {
@@ -149,7 +185,7 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
     <Fragment>
       <ScrollView style={{}}>
         <View style={{ backgroundColor: "#ffff" }}>
-          <Spinner visible={isLoadingCreateTicketFreshDesk} />
+          <Spinner visible={isLoadingCreateHelpTicket} />
           <SuccessModal
             isOpen={statusMessage?.isOpen}
             title={statusMessage.header}
@@ -243,7 +279,7 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
         onClose={() => {
           handleCloseBottomSheet();
         }}
-      wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
+        wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
           height: dimensions.window.height - 145,
           backgroundColor: "#ffffff",

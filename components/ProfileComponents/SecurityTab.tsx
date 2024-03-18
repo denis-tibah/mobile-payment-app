@@ -45,7 +45,6 @@ const SecurityTab: FC<ISecurityTab> = () => {
   const [isEnableTwoFactor, setTwoFactorAuthentication] =
     useState<boolean>(false);
   const [enableBiometric, setEnableBiometric] = useState<boolean>(false);
-  console.log("🚀 ~ enableBiometric:", enableBiometric);
 
   useEffect(() => {
     const handleGetBiometricStatus = async () => {

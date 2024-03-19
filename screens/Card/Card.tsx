@@ -7,6 +7,8 @@ import {
   Alert,
   Text,
   RefreshControl,
+  Dimensions,
+  Platform,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as Clipboard from "expo-clipboard";
@@ -42,15 +44,9 @@ import ArrowRight from "../../assets/icons/ArrowRight";
 import { ArrowSwitch } from "../../assets/icons/ArrowSwitch";
 import { PinNumberCode } from "../../assets/icons/PinNumber";
 import { BugIcon } from "../../assets/icons/BugIcon";
-import BottomSheet from "../../components/BottomSheet";
 import ManagePaymentMethod from "./Components/ManagePayment";
+import { NewPinCodeInputBoxes } from "../../components/FormGroup/FormGroup";
 import {
-  PinCodeInputBoxes,
-  PinCodeInputClipBoard,
-  NewPinCodeInputBoxes,
-} from "../../components/FormGroup/FormGroup";
-import {
-  useLazyOrderCardQuery,
   useLazySendSmsLostCardVerificationQuery,
   useLazyShowCardDetailsQuery,
 } from "../../redux/card/cardSliceV2";
@@ -68,6 +64,8 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
 const paymentManageOptions = managePaymentMethods.map(
   (option: any) => option.value
 );
+const windowDimensions = Dimensions.get("window");
+const screenDimensions = Dimensions.get("screen");
 
 export function Card({ navigation, route }: any) {
   const dispatch = useDispatch();
@@ -109,6 +107,11 @@ export function Card({ navigation, route }: any) {
     text: string;
     isError: boolean;
   }>(DEFAULT_CARD_ENROLLMENT_STATUS);
+  const [dimensions, setDimensions] = useState({
+    window: windowDimensions,
+    screen: screenDimensions,
+  });
+
   const [
     showCardDetails,
     {
@@ -684,16 +687,6 @@ export function Card({ navigation, route }: any) {
             }}
             draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
           >
-            {/* <View style={{
-            width: '30%',
-              alignSelf:'center', 
-              backgroundColor: vars['grey'],
-              height: 5,
-              borderRadius: 10, 
-              zIndex: 999, 
-              marginBottom: 20, 
-              top: 0
-              }}></View> */}
             <Typography
               fontSize={18}
               fontWeight={600}
@@ -726,7 +719,9 @@ export function Card({ navigation, route }: any) {
             rbSheetRef={refRBSheetShowTerminatedCards}
             closeOnDragDown={true}
             closeOnPressMask={false}
-            height={160}
+            height={
+              dimensions.window.height - (Platform.OS === "android" ? 535 : 600)
+            }
             wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
             containerStyles={{
               backgroundColor: "#FFF",

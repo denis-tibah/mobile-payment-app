@@ -84,7 +84,7 @@ export function Statements({ navigation }: any) {
         ..._searchFilter,
         currentBalance,
         ...profileData,
-      }});
+    }});
     return await printAsync({ uri: pdfUri });
   };
 
@@ -131,19 +131,19 @@ export function Statements({ navigation }: any) {
       if (userData?.id && dateFrom.value && dateTo.value) {
         setLoading(true);
         const getFormattedDate = new Date(dateTo.value);
-        const statementFilterWithDateRante: StatementFilter = {
+        const statementFilterWithDateRange: StatementFilter = {
           account_id: Number(userData?.id),
           from_date: dateFrom.value,
           to_date: getFormattedDate > currentDate ? currentDate.toISOString().split("T")[0] : dateTo.value,
         };
         // console.log({ statementFilterWithDateRante });
-        dispatch<any>(getStatementsfinxp(statementFilterWithDateRante))
+        dispatch<any>(getStatementsfinxp(statementFilterWithDateRange))
         .unwrap()
         .then(async (res: StatementResponse) => {
           const { statements } = res;
           if (statements && statements?.length > 0) {
             setLoading(false);
-            await handleGeneratePDF(statements, statementFilterWithDateRante);
+            await handleGeneratePDF(statements, statementFilterWithDateRange);
           } else {
             setLoading(false);
             alert("You dont have transaction for selected dates");

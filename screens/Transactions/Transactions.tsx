@@ -450,7 +450,11 @@ export function Transactions({ navigation, route }: any) {
       <ScrollView bounces={false}>
         <View style={styles.container}>
           <Heading
-            icon={<TransactionIcon size={18} color="pink" />}
+            icon={
+            <TransactionIcon 
+              size={18} 
+              color="pink"
+            />}
             title={
               isCardTransactionShown
                 ? "Card Transactions History"
@@ -679,7 +683,7 @@ export function Transactions({ navigation, route }: any) {
                   },
                 });
               }}
-              disabled={searchFieldData.card_id !== ""}
+              disabled={searchFieldData.card_id !== "" && isCardTransactionShown}
             >
               {showPickerDateFilter.dateFrom.value &&
                 getFormattedDateFromUnixDotted(
@@ -726,7 +730,7 @@ export function Transactions({ navigation, route }: any) {
                   },
                 });
               }}
-              disabled={searchFieldData.card_id !== ""}
+              disabled={searchFieldData.card_id !== "" && isCardTransactionShown}
             >
               {showPickerDateFilter.dateTo.value &&
                 getFormattedDateFromUnixDotted(
@@ -765,7 +769,7 @@ export function Transactions({ navigation, route }: any) {
           {transactionStatusOptions.map((option, index) => (
             <TouchableOpacity
               key={index}
-              disabled={searchFieldData.card_id !== ""}
+              disabled={searchFieldData.card_id !== "" && isCardTransactionShown}
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -817,7 +821,7 @@ export function Transactions({ navigation, route }: any) {
             <FormGroup.Input
               placeholder={"From"}
               color={vars["black"]}
-              disabled={searchFieldData.card_id !== ""}
+              disabled={searchFieldData.card_id !== "" && isCardTransactionShown}
               fontSize={14}
               fontWeight={"400"}
               style={{
@@ -847,7 +851,7 @@ export function Transactions({ navigation, route }: any) {
             <FormGroup.Input
               placeholder={"To"}
               color={vars["black"]}
-              disabled={searchFieldData.card_id !== ""}
+              disabled={searchFieldData.card_id !== "" && isCardTransactionShown}
               fontSize={14}
               fontWeight={"400"}
               style={{

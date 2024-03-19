@@ -474,7 +474,7 @@ export function Card({ navigation, route }: any) {
             <Divider style={{marginVertical: 10, paddingHorizontal: 15}} />
               <View style={styles.cardActionsListContainer}>
                 <TouchableOpacity style={styles.cardActionItem} onPress={() => {
-                    dispatch<any>(setIsCardTransactionShown(true));
+                    // dispatch<any>(setIsCardTransactionShown(true));
                     navigation.navigate('Transactions');
                   }}>
                   <View style={{display: 'flex', flexDirection: 'row'}}>

@@ -246,7 +246,10 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
 }
 
 export const generateStatementsPDF = async ({statements, accountData}: any) => {
+  const { from_date, to_date } = accountData;
   const getHTML = await statementsPDFGenerator({ statements, accountData});
   const { uri } = await Print.printToFileAsync({ html: getHTML });
-  return uri;
+  const newURI = FileSystem.documentDirectory + `statement_${from_date}_${to_date}.pdf`;
+  await FileSystem.moveAsync({from: uri, to: newURI});
+  return newURI;
 }

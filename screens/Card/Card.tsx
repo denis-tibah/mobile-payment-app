@@ -10,12 +10,15 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as Clipboard from "expo-clipboard";
+import Carousel from "react-native-snap-carousel";
+import { AntDesign } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Spinner from "react-native-loading-spinner-overlay/lib";
+
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
 import Button from "../../components/Button";
-import { styles } from "./styles";
 import Typography from "../../components/Typography";
-import { AntDesign } from "@expo/vector-icons";
 import CardIcon from "../../assets/icons/Card";
 import FreezeIcon from "../../assets/icons/Freeze";
 import EyeIcon from "../../assets/icons/Eye";
@@ -27,17 +30,10 @@ import {
   setIsCardTransactionShown,
   terminateCard,
 } from "../../redux/card/cardSlice";
-import {
-  getUserActiveCards,
-  screenNames,
-} from "../../utils/helpers";
-import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { getUserActiveCards, screenNames } from "../../utils/helpers";
 import { CardView } from "../../components/Card/CardView";
 import { GetCardModal } from "./GetCardModal";
 import { RootState } from "../../store";
-import Carousel from "react-native-snap-carousel";
-
-import Spinner from "react-native-loading-spinner-overlay/lib";
 import { ICardDetails } from "../../models/interface";
 import vars from "../../styles/vars";
 import TerminatingCardModal from "./TerminatingCardModal";
@@ -48,11 +44,20 @@ import { PinNumberCode } from "../../assets/icons/PinNumber";
 import { BugIcon } from "../../assets/icons/BugIcon";
 import BottomSheet from "../../components/BottomSheet";
 import ManagePaymentMethod from "./Components/ManagePayment";
-import { PinCodeInputBoxes, PinCodeInputClipBoard } from "../../components/FormGroup/FormGroup";
-import { useLazyOrderCardQuery, useLazySendSmsLostCardVerificationQuery, useLazyShowCardDetailsQuery } from "../../redux/card/cardSliceV2";
+import {
+  PinCodeInputBoxes,
+  PinCodeInputClipBoard,
+  NewPinCodeInputBoxes,
+} from "../../components/FormGroup/FormGroup";
+import {
+  useLazyOrderCardQuery,
+  useLazySendSmsLostCardVerificationQuery,
+  useLazyShowCardDetailsQuery,
+} from "../../redux/card/cardSliceV2";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 import { Seperator } from "../../components/Seperator/Seperator";
 import { managePaymentMethods } from "../../utils/constants";
+import { styles } from "./styles";
 
 const DEFAULT_CARD_ENROLLMENT_STATUS = {
   title: "",
@@ -60,7 +65,9 @@ const DEFAULT_CARD_ENROLLMENT_STATUS = {
   isError: false,
 };
 
-const paymentManageOptions = managePaymentMethods.map((option: any) => option.value);
+const paymentManageOptions = managePaymentMethods.map(
+  (option: any) => option.value
+);
 
 export function Card({ navigation, route }: any) {
   const dispatch = useDispatch();
@@ -74,20 +81,27 @@ export function Card({ navigation, route }: any) {
   const profile = useSelector((state: any) => state.profile?.profile);
   const userEmail = profile?.data.email;
 
-  const isCardTransactionShown = useSelector((state: RootState) => state?.card?.isCardTransactionShown);
+  const isCardTransactionShown = useSelector(
+    (state: RootState) => state?.card?.isCardTransactionShown
+  );
 
   const [cardPin, setCardPin] = useState<string>("");
   const [remainingTime, setRemainingTime] = useState(30);
   const cardData = useSelector((state: RootState) => state?.card?.data);
   const cardsActiveList = getUserActiveCards(cardData);
-  const [isTerminatedCardShown, setIsTerminatedCardShown] = useState<boolean>(false);
-  const [terminatedCardModal, setTerminatedCardModal] = useState<boolean>(false);
+  const [isTerminatedCardShown, setIsTerminatedCardShown] =
+    useState<boolean>(false);
+  const [terminatedCardModal, setTerminatedCardModal] =
+    useState<boolean>(false);
   const [cardDetails, setCardDetails] = useState<ICardDetails>({});
   const [freezeLoading, setFreezeLoading] = useState(false);
   const [selectedCard, setSelectedCard] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isSelectedCardTerminated, setIsSelectedCardTerminated] = useState<boolean>(false);
-  const [listOfCheckedOptions, setListOfCheckedOptions] = useState<string[]>([]);
+  const [isSelectedCardTerminated, setIsSelectedCardTerminated] =
+    useState<boolean>(false);
+  const [listOfCheckedOptions, setListOfCheckedOptions] = useState<string[]>(
+    []
+  );
   const [isTimeToCountDown, setIsTimeToCountDown] = useState<boolean>(false);
   const timeRemaining = 30;
   const [enrollmentCardStatus, setEnrollmentCardStatus] = useState<{
@@ -95,18 +109,27 @@ export function Card({ navigation, route }: any) {
     text: string;
     isError: boolean;
   }>(DEFAULT_CARD_ENROLLMENT_STATUS);
-  const [showCardDetails, {
-    isLoading: showCardDetailsIsLoading,
-    isSuccess: showCardDetailsIsSuccess,
-    data: showCardDetailsData,
-    isError: showCardDetailsIsError,
-  }] = useLazyShowCardDetailsQuery();
+  const [
+    showCardDetails,
+    {
+      isLoading: showCardDetailsIsLoading,
+      isSuccess: showCardDetailsIsSuccess,
+      data: showCardDetailsData,
+      isError: showCardDetailsIsError,
+    },
+  ] = useLazyShowCardDetailsQuery();
   const [terminatedThisCard] = useLazySendSmsLostCardVerificationQuery();
-  const shownCardsOnCarousel = isTerminatedCardShown ? cardsActiveList ? [...cardsActiveList, ...cardData] : [] : cardsActiveList ? cardsActiveList : [];
+  const shownCardsOnCarousel = isTerminatedCardShown
+    ? cardsActiveList
+      ? [...cardsActiveList, ...cardData]
+      : []
+    : cardsActiveList
+    ? cardsActiveList
+    : [];
 
   const handlePinCodeChange = (value: string) => {
     setCardPin(value);
-  }
+  };
 
   const handleDataChangeShownOnCards = (index?: number) => {
     refCarousel.current.snapToItem(index ?? 0);
@@ -123,7 +146,7 @@ export function Card({ navigation, route }: any) {
   };
 
   const freezeCard = async (isCardToFreeze: boolean) => {
-    if(!selectedCard) {
+    if (!selectedCard) {
       setSelectedCard(cardsActiveList[0]);
     }
     const _isTerminatedCardShown = isTerminatedCardShown;
@@ -131,16 +154,21 @@ export function Card({ navigation, route }: any) {
       setIsTerminatedCardShown(false);
     }
 
-    setIsLoading(prev => true);
+    setIsLoading((prev) => true);
     dispatch<any>(
       setCardAsFrozen({
         freezeYN: isCardToFreeze ? "Y" : "N",
         account_id: userData?.id,
-        card_id: !selectedCard ? cardsActiveList[0].cardreferenceId : selectedCard?.cardreferenceId,
-      }))
+        card_id: !selectedCard
+          ? cardsActiveList[0].cardreferenceId
+          : selectedCard?.cardreferenceId,
+      })
+    )
       .unwrap()
       .then((res: any) => {
-        const updatedSelectedCard = res.find((card: any) => card.cardreferenceId === selectedCard?.cardreferenceId);
+        const updatedSelectedCard = res.find(
+          (card: any) => card.cardreferenceId === selectedCard?.cardreferenceId
+        );
         handleGetCards();
         setTimeout(() => {
           setSelectedCard(updatedSelectedCard);
@@ -153,7 +181,7 @@ export function Card({ navigation, route }: any) {
         console.log({ error });
       })
       .finally(() => {
-        setIsLoading(prev => false);
+        setIsLoading((prev) => false);
       });
   };
 
@@ -164,48 +192,49 @@ export function Card({ navigation, route }: any) {
   };
 
   const requestShowCard = async () => {
-
-    setIsLoading(prev => prev = true);
+    setIsLoading((prev) => (prev = true));
     dispatch(
       sendSmsShowCardVerification({
         type: "trusted",
       }) as any
-    ).unwrap()
-    .then((res: any) => {
-      if (res) {
-        refRBSShowCard?.current?.open();
-      }
-    })
-    .catch((error: any) => {
-      console.log({ error });
-    })
-    .finally(() => {
-      setIsLoading(prev => prev = false);
-    });
+    )
+      .unwrap()
+      .then((res: any) => {
+        if (res) {
+          refRBSShowCard?.current?.open();
+        }
+      })
+      .catch((error: any) => {
+        console.log({ error });
+      })
+      .finally(() => {
+        setIsLoading((prev) => (prev = false));
+      });
   };
 
   const handleOnlinePayment = async () => {
     setFreezeLoading(true);
-    setIsLoading(prev => true);
+    setIsLoading((prev) => true);
     //card status === do_not_honor means frozen now, before it means pending from enrollment by aristos - arjay 1.23.2024
-    if( 
+    if (
       selectedCard?.cardStatus === "cancelled" ||
       selectedCard?.cardStatus === "terminated"
     ) {
       Alert.alert("Card is not active", "Please activate your card first");
       setFreezeLoading(false);
-      setIsLoading(prev => false);
+      setIsLoading((prev) => false);
       return;
     } else {
       setFreezeLoading(false);
-      setIsLoading(prev => false);
+      setIsLoading((prev) => false);
     }
     freezeCard(
       selectedCard?.frozenYN === "Y" &&
-      selectedCard?.cardStatus === "do_not_honor"
-        ? false : true
+        selectedCard?.cardStatus === "do_not_honor"
+        ? false
+        : true
     );
-  }
+  };
 
   // TODO: target each card when doing action on each card, right now it only targets the first card
   const _renderItem = ({ item, index }: any) => {
@@ -266,16 +295,16 @@ export function Card({ navigation, route }: any) {
   }, [showCardDetailsIsSuccess, showCardDetailsIsError]);
 
   const checkIfCardIsFrozen = (card: any) => {
-    if (card.frozenYN === "N" && card.cardStatus === "active") { // means the card is not frozen
-      setListOfCheckedOptions([
-        ...listOfCheckedOptions,
-        "online_payment"
-      ])
+    if (card.frozenYN === "N" && card.cardStatus === "active") {
+      // means the card is not frozen
+      setListOfCheckedOptions([...listOfCheckedOptions, "online_payment"]);
     } else {
-      const removeOnlinePaymentOption = listOfCheckedOptions.filter((option) => option !== "online_payment");
+      const removeOnlinePaymentOption = listOfCheckedOptions.filter(
+        (option) => option !== "online_payment"
+      );
       setListOfCheckedOptions(removeOnlinePaymentOption);
     }
-  }
+  };
 
   // triggered when cardDetails image is truthy
   useEffect(() => {
@@ -299,7 +328,10 @@ export function Card({ navigation, route }: any) {
   }, [shownCardsOnCarousel]);
 
   useEffect(() => {
-    if (selectedCard?.cardStatus === "cancelled" && selectedCard?.lostYN === "Y") {
+    if (
+      selectedCard?.cardStatus === "cancelled" &&
+      selectedCard?.lostYN === "Y"
+    ) {
       setIsSelectedCardTerminated(true);
     } else {
       setIsSelectedCardTerminated(false);
@@ -314,7 +346,7 @@ export function Card({ navigation, route }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      { terminatedCardModal && (
+      {terminatedCardModal && (
         <TerminatingCardModal
           isOpen={terminatedCardModal}
           title={"Card Terminated"}
@@ -328,13 +360,13 @@ export function Card({ navigation, route }: any) {
         />
       )}
       <Spinner visible={isLoading} />
-      <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <View style={{ flex: 1, backgroundColor: "#fff" }}>
         <ScrollView
           bounces={true}
           style={{ flex: 1 }}
           refreshControl={
             <RefreshControl
-              style={{ backgroundColor: "transparent", display: 'none' }}
+              style={{ backgroundColor: "transparent", display: "none" }}
               refreshing={false}
               onRefresh={() => {
                 setIsLoading(true);
@@ -354,7 +386,13 @@ export function Card({ navigation, route }: any) {
                       navigation.navigate(screenNames.getCard);
                     }}
                     color={"light-pink"}
-                    leftIcon={<MaterialCommunityIcons name="credit-card-plus-outline" size={14} color={vars['accent-pink']} />}
+                    leftIcon={
+                      <MaterialCommunityIcons
+                        name="credit-card-plus-outline"
+                        size={14}
+                        color={vars["accent-pink"]}
+                      />
+                    }
                     disabled={cardsActiveList.length === 0 ? false : true}
                   >
                     Create
@@ -368,7 +406,9 @@ export function Card({ navigation, route }: any) {
               <Carousel
                 ref={refCarousel}
                 disableIntervalMomentum
-                data={cardDetails?.cardImage ? [cardDetails] : shownCardsOnCarousel}
+                data={
+                  cardDetails?.cardImage ? [cardDetails] : shownCardsOnCarousel
+                }
                 renderItem={_renderItem}
                 refreshing={isLoading}
                 enableMomentum={false}
@@ -378,11 +418,11 @@ export function Card({ navigation, route }: any) {
                 removeClippedSubviews={false}
                 itemWidth={303}
                 initialScrollIndex={0}
-                inactiveSlideOpacity={.5}
+                inactiveSlideOpacity={0.5}
                 layout="default"
                 lockScrollWhileSnapping={true}
                 onSnapToItem={(index) => {
-                  if(isTerminatedCardShown) {
+                  if (isTerminatedCardShown) {
                     setSelectedCard(shownCardsOnCarousel[index]);
                   } else {
                     setSelectedCard(cardsActiveList[index]);
@@ -415,7 +455,7 @@ export function Card({ navigation, route }: any) {
                       fontSize={16}
                       fontWeight={600}
                       marginLeft={8}
-                      fontFamily={'Nunito-SemiBold'}
+                      fontFamily={"Nunito-SemiBold"}
                     >
                       Show Card
                     </Typography>
@@ -427,33 +467,32 @@ export function Card({ navigation, route }: any) {
                   <Button
                     // color={selectedCard?.frozenYN === "Y" ? "blue" : "light-blue"}
                     color="light-blue"
-                    leftIcon={
-                      <FreezeIcon
-                        color={"blue"}
-                        size={14}
-                      />
-                    }
+                    leftIcon={<FreezeIcon color={"blue"} size={14} />}
                     onPress={() => {
                       setFreezeLoading(true);
-                      setIsLoading(prev => true);
+                      setIsLoading((prev) => true);
                       //card status === do_not_honor means frozen now, before it means pending from enrollment by aristos - arjay 1.23.2024
-                      if( 
+                      if (
                         selectedCard?.cardStatus === "cancelled" ||
                         selectedCard?.cardStatus === "terminated"
                       ) {
-                        Alert.alert("Card is not active", "Please activate your card first");
+                        Alert.alert(
+                          "Card is not active",
+                          "Please activate your card first"
+                        );
                         setFreezeLoading(false);
-                        setIsLoading(prev => false);
+                        setIsLoading((prev) => false);
                         return;
                       } else {
                         setFreezeLoading(false);
-                        setIsLoading(prev => false);
+                        setIsLoading((prev) => false);
                       }
                       freezeCard(
                         selectedCard?.frozenYN === "Y" &&
-                        selectedCard?.cardStatus === "do_not_honor"
-                          ? false : true
-                        );
+                          selectedCard?.cardStatus === "do_not_honor"
+                          ? false
+                          : true
+                      );
                     }}
                     disabled={freezeLoading || isSelectedCardTerminated}
                   >
@@ -461,9 +500,11 @@ export function Card({ navigation, route }: any) {
                       fontSize={16}
                       fontWeight={600}
                       // marginLeft={8}
-                      fontFamily={'Nunito-SemiBold'}
+                      fontFamily={"Nunito-SemiBold"}
                     >
-                      {selectedCard?.frozenYN === "Y" ? "Unfreeze Card" : "Freeze Card"}
+                      {selectedCard?.frozenYN === "Y"
+                        ? "Unfreeze Card"
+                        : "Freeze Card"}
                     </Typography>
                   </Button>
                 </Pressable>
@@ -471,107 +512,158 @@ export function Card({ navigation, route }: any) {
             </View>
           </View>
           <Pressable>
-            <Divider style={{marginVertical: 10, paddingHorizontal: 15}} />
-              <View style={styles.cardActionsListContainer}>
-                <TouchableOpacity style={styles.cardActionItem} onPress={() => {
-                    // dispatch<any>(setIsCardTransactionShown(true));
-                    navigation.navigate('Transactions');
-                  }}>
-                  <View style={{display: 'flex', flexDirection: 'row'}}>
-                    <View style={{paddingRight: 8, marginTop: 2 }}>
-                      <ArrowSwitch color="heavy-blue" size={18}/>
-                    </View>
-                    <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito-SemiBold'}>
-                      See Card Transactions
-                    </Typography>
+            <Divider style={{ marginVertical: 10, paddingHorizontal: 15 }} />
+            <View style={styles.cardActionsListContainer}>
+              <TouchableOpacity
+                style={styles.cardActionItem}
+                onPress={() => {
+                  // dispatch<any>(setIsCardTransactionShown(true));
+                  navigation.navigate("Transactions");
+                }}
+              >
+                <View style={{ display: "flex", flexDirection: "row" }}>
+                  <View style={{ paddingRight: 8, marginTop: 2 }}>
+                    <ArrowSwitch color="heavy-blue" size={18} />
                   </View>
-                  <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
-                </TouchableOpacity>
-              </View>
-            <Divider style={{
-              marginVertical: 5,
-              paddingHorizontal: 15,
-              height: 1,
-              backgroundColor: vars['shade-grey'],
-              opacity: .2,
+                  <Typography
+                    fontSize={16}
+                    fontWeight={600}
+                    fontFamily={"Nunito-SemiBold"}
+                  >
+                    See Card Transactions
+                  </Typography>
+                </View>
+                <ArrowRight
+                  color="heavy-blue"
+                  size={14}
+                  style={{ paddingRight: 14 }}
+                />
+              </TouchableOpacity>
+            </View>
+            <Divider
+              style={{
+                marginVertical: 5,
+                paddingHorizontal: 15,
+                height: 1,
+                backgroundColor: vars["shade-grey"],
+                opacity: 0.2,
               }}
             />
             <View style={styles.cardActionsListContainer}>
-              <TouchableOpacity style={styles.cardActionItem} onPress={() => {
-                if (!selectedCard) {
-                  return;
-                }
-                checkIfCardIsFrozen(selectedCard);
-                refRBSheet?.current?.open()
-              }}>
-                <View style={{display: 'flex', flexDirection: 'row'}}>
-                  <View style={{paddingRight: 8, marginTop: 2}}>
-                    <MaterialCommunityIcons name="cog-outline" size={18} color={vars['accent-blue']} />
+              <TouchableOpacity
+                style={styles.cardActionItem}
+                onPress={() => {
+                  if (!selectedCard) {
+                    return;
+                  }
+                  checkIfCardIsFrozen(selectedCard);
+                  refRBSheet?.current?.open();
+                }}
+              >
+                <View style={{ display: "flex", flexDirection: "row" }}>
+                  <View style={{ paddingRight: 8, marginTop: 2 }}>
+                    <MaterialCommunityIcons
+                      name="cog-outline"
+                      size={18}
+                      color={vars["accent-blue"]}
+                    />
                   </View>
-                  <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito-SemiBold'}>
+                  <Typography
+                    fontSize={16}
+                    fontWeight={600}
+                    fontFamily={"Nunito-SemiBold"}
+                  >
                     Manage Payment Method
                   </Typography>
                 </View>
-                <TouchableOpacity
-                  style={{marginTop: 7}} 
-                  
-                >
-                  <ArrowRight color="heavy-blue" size={14} style={{ paddingRight: 14 }}/>
+                <TouchableOpacity style={{ marginTop: 7 }}>
+                  <ArrowRight
+                    color="heavy-blue"
+                    size={14}
+                    style={{ paddingRight: 14 }}
+                  />
                 </TouchableOpacity>
               </TouchableOpacity>
             </View>
-            <Divider style={{
-              marginVertical: 5,
-              paddingHorizontal: 15,
-              height: 1,
-              backgroundColor: vars['shade-grey'],
-              opacity: .2,
+            <Divider
+              style={{
+                marginVertical: 5,
+                paddingHorizontal: 15,
+                height: 1,
+                backgroundColor: vars["shade-grey"],
+                opacity: 0.2,
               }}
             />
             <View style={styles.cardActionsListContainer}>
-              <TouchableOpacity style={styles.cardActionItem} onPress={() => refRBSTerminateThisCard?.current?.open()}>
-                <View style={{display: 'flex', flexDirection: 'row'}}>
-                  <View style={{paddingRight: 8, marginTop: 2}}>
+              <TouchableOpacity
+                style={styles.cardActionItem}
+                onPress={() => refRBSTerminateThisCard?.current?.open()}
+              >
+                <View style={{ display: "flex", flexDirection: "row" }}>
+                  <View style={{ paddingRight: 8, marginTop: 2 }}>
                     <PinNumberCode color="heavy-blue" size={18} />
                   </View>
-                  <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito-SemiBold'}>
+                  <Typography
+                    fontSize={16}
+                    fontWeight={600}
+                    fontFamily={"Nunito-SemiBold"}
+                  >
                     Lost Card
                   </Typography>
                 </View>
-                <TouchableOpacity style={{marginTop: 7}}>
-                  <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
+                <TouchableOpacity style={{ marginTop: 7 }}>
+                  <ArrowRight
+                    color="heavy-blue"
+                    size={14}
+                    style={{ paddingRight: 14 }}
+                  />
                 </TouchableOpacity>
               </TouchableOpacity>
             </View>
-            <Divider style={{
-              marginVertical: 5,
-              paddingHorizontal: 15,
-              height: 1,
-              backgroundColor: vars['shade-grey'],
-              opacity: .2,
+            <Divider
+              style={{
+                marginVertical: 5,
+                paddingHorizontal: 15,
+                height: 1,
+                backgroundColor: vars["shade-grey"],
+                opacity: 0.2,
               }}
             />
             <View style={styles.cardActionsListContainer}>
-              <TouchableOpacity style={styles.cardActionItem} onPress={() => refRBSheetShowTerminatedCards?.current?.open()}>
-                <View style={{display: 'flex', flexDirection: 'row'}}>
-                  <View style={{paddingRight: 8, marginTop: 2}}>
-                    <BugIcon size={18} color={vars['accent-blue']} />
+              <TouchableOpacity
+                style={styles.cardActionItem}
+                onPress={() => refRBSheetShowTerminatedCards?.current?.open()}
+              >
+                <View style={{ display: "flex", flexDirection: "row" }}>
+                  <View style={{ paddingRight: 8, marginTop: 2 }}>
+                    <BugIcon size={18} color={vars["accent-blue"]} />
                   </View>
-                  <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito-SemiBold'}>
-                    {isTerminatedCardShown ? "Hide Terminated Cards" : "Show Terminated Cards"}
+                  <Typography
+                    fontSize={16}
+                    fontWeight={600}
+                    fontFamily={"Nunito-SemiBold"}
+                  >
+                    {isTerminatedCardShown
+                      ? "Hide Terminated Cards"
+                      : "Show Terminated Cards"}
                   </Typography>
                 </View>
-                <TouchableOpacity style={{marginTop: 7}} >
-                  <ArrowRight color="heavy-blue" size={14}  style={{ paddingRight: 14 }}/>
+                <TouchableOpacity style={{ marginTop: 7 }}>
+                  <ArrowRight
+                    color="heavy-blue"
+                    size={14}
+                    style={{ paddingRight: 14 }}
+                  />
                 </TouchableOpacity>
               </TouchableOpacity>
             </View>
-            <Divider style={{
-              marginVertical: 5,
-              paddingHorizontal: 15,
-              height: 1,
-              backgroundColor: vars['shade-grey'],
-              opacity: .2,
+            <Divider
+              style={{
+                marginVertical: 5,
+                paddingHorizontal: 15,
+                height: 1,
+                backgroundColor: vars["shade-grey"],
+                opacity: 0.2,
               }}
             />
           </Pressable>
@@ -602,19 +694,29 @@ export function Card({ navigation, route }: any) {
               marginBottom: 20, 
               top: 0
               }}></View> */}
-            <Typography fontSize={18} fontWeight={600} fontFamily={'Nunito-SemiBold'}>
-              <MaterialCommunityIcons name="cog-outline" size={18} color={vars['accent-blue']} />
-              {" "}Manage Payment Method
+            <Typography
+              fontSize={18}
+              fontWeight={600}
+              fontFamily={"Nunito-SemiBold"}
+            >
+              <MaterialCommunityIcons
+                name="cog-outline"
+                size={18}
+                color={vars["accent-blue"]}
+              />{" "}
+              Manage Payment Method
             </Typography>
-            <Divider style={{
-              // marginBottom: 25,
-              marginTop: 20,
-              height: 1,
-              backgroundColor: vars['shade-grey'],
-              opacity: .2,
-              width: '100%',
-              }} />
-            <ManagePaymentMethod 
+            <Divider
+              style={{
+                // marginBottom: 25,
+                marginTop: 20,
+                height: 1,
+                backgroundColor: vars["shade-grey"],
+                opacity: 0.2,
+                width: "100%",
+              }}
+            />
+            <ManagePaymentMethod
               handleOnlinePayment={handleOnlinePayment}
               listOfCheckedOptions={listOfCheckedOptions}
               setListOfCheckedOptions={setListOfCheckedOptions}
@@ -637,19 +739,23 @@ export function Card({ navigation, route }: any) {
             draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
           >
             <Typography fontSize={16} fontWeight={600}>
-              {isTerminatedCardShown ? "Hide Terminated Cards?" : "Show Terminated Cards?"}
+              {isTerminatedCardShown
+                ? "Hide Terminated Cards?"
+                : "Show Terminated Cards?"}
             </Typography>
-            <Divider style={{marginVertical: 15, paddingHorizontal: 15}} />
-            <View style={{
+            <Divider style={{ marginVertical: 15, paddingHorizontal: 15 }} />
+            <View
+              style={{
                 width: "100%",
-                display: 'flex',
-                flexDirection: 'row',
+                display: "flex",
+                flexDirection: "row",
                 justifyContent: "space-between",
                 alignItems: "center",
                 paddingVertical: 10,
-                bottom: '2%',
-                marginTop: 25
-              }}>
+                bottom: "2%",
+                marginTop: 25,
+              }}
+            >
               <Button
                 onPress={() => {
                   if (isTerminatedCardShown) {
@@ -662,7 +768,7 @@ export function Card({ navigation, route }: any) {
                   handleDataChangeShownOnCards();
                   refRBSheetShowTerminatedCards?.current?.close();
                 }}
-                style={{color: '#fff', width: 140}}
+                style={{ color: "#fff", width: 140 }}
                 color="light-pink"
                 fontFamily={"Nunito-SemiBold"}
                 leftIcon={<EyeIcon color="pink" size={14} />}
@@ -671,9 +777,9 @@ export function Card({ navigation, route }: any) {
               </Button>
               <Button
                 onPress={() => {
-                  refRBSheetShowTerminatedCards?.current?.close()
+                  refRBSheetShowTerminatedCards?.current?.close();
                 }}
-                style={{color: '#fff', width: 140}}
+                style={{ color: "#fff", width: 140 }}
                 color="grey"
               >
                 Cancel
@@ -696,58 +802,79 @@ export function Card({ navigation, route }: any) {
             }}
             draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
           >
-            <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito-Bold'}>
+            <Typography
+              fontSize={16}
+              fontWeight={600}
+              fontFamily={"Nunito-Bold"}
+            >
               Terminate This Card?
             </Typography>
-            <Divider style={{
+            <Divider
+              style={{
                 marginBottom: 35,
                 marginTop: 10,
                 height: 1,
-                backgroundColor: vars['shade-grey'],
-                opacity: .1,
-                width: '100%',
-              }} />
+                backgroundColor: vars["shade-grey"],
+                opacity: 0.1,
+                width: "100%",
+              }}
+            />
 
             <Typography fontSize={16} fontWeight={400} color={"#000"}>
               Are you sure you want to terminate this card?
             </Typography>
             {/* <Vie}}/> */}
-            <Divider style={{
+            <Divider
+              style={{
                 marginTop: 35,
                 height: 1,
-                backgroundColor: vars['shade-grey'],
-                opacity: .1,
-                width: '100%',
-              }} />
-            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 20}}>
-              <Button 
+                backgroundColor: vars["shade-grey"],
+                opacity: 0.1,
+                width: "100%",
+              }}
+            />
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginTop: 20,
+              }}
+            >
+              <Button
                 onPress={() => {
                   setIsLoading(true);
                   terminatedThisCard({
                     accountId: userID,
                     cardId: selectedCard?.cardreferenceId,
                   })
-                  .unwrap()
-                  .then((res: any) => {
-                    if (res) {
-                      setSelectedCard(shownCardsOnCarousel[0]);
-                    }
-                  })
-                  .finally(() => {
-                    setIsLoading(false);
-                    refRBSTerminateThisCard?.current?.close();
-                  })
+                    .unwrap()
+                    .then((res: any) => {
+                      if (res) {
+                        setSelectedCard(shownCardsOnCarousel[0]);
+                      }
+                    })
+                    .finally(() => {
+                      setIsLoading(false);
+                      refRBSTerminateThisCard?.current?.close();
+                    });
                 }}
-                style={{color: '#fff', width: 140}}
+                style={{ color: "#fff", width: 140 }}
                 color="light-pink"
-                leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
+                leftIcon={
+                  <AntDesign
+                    name="checkcircleo"
+                    size={16}
+                    color={vars["accent-pink"]}
+                  />
+                }
                 disabled={isLoading}
               >
                 Yes
               </Button>
-              <Button 
+              <Button
                 onPress={() => refRBSTerminateThisCard?.current?.close()}
-                style={{color: '#fff', width: 140}}
+                style={{ color: "#fff", width: 140 }}
                 color="grey"
                 // leftIcon={<EyeIcon color="pink" size={14} />}
               >
@@ -771,38 +898,57 @@ export function Card({ navigation, route }: any) {
             }}
             draggableIconStyles={{ backgroundColor: "#DDD", width: 90 }}
           >
-              <Typography fontSize={16} fontWeight={600} fontFamily={'Nunito'}>
-                Show Card
-              </Typography>
-              <Typography fontSize={14} fontWeight={400} color={vars['shade-grey']} >
-                You will receive an sms to your mobile device. Please enter this code below.
-              </Typography>
-              <Divider style={{marginVertical: 15, paddingHorizontal: 15}} />
-              <PinCodeInputClipBoard fieldCount={6} onChange={handlePinCodeChange} isNewPinCodeStyle />
-              <TouchableOpacity
-                onPress={() => console.log('resend')}
-                disabled={isTimeToCountDown}
-              >
-                {isTimeToCountDown ? (
-                  <Text style={styles.noCodeResend}>
-                    Wait for {timeRemaining}s to request again.
-                  </Text>
-                ) : (
-                  <Text style={styles.noCode}>Did not get a verification code?</Text>
-                )}
-              </TouchableOpacity>
-              <View style={{alignItems: 'center', paddingTop: 50}}>
-                <Button
-                  onPress={() => {
-                    if (!cardPin && !userID) {
-                      return;
-                    }
-                    setIsLoading(true);
-                    showCardDetails({
-                      account_id: userID,
-                      otp: cardPin,
-                      card_id: Number(selectedCard?.cardreferenceId),
-                    })
+            <Typography fontSize={16} fontWeight={600} fontFamily={"Nunito"}>
+              Show Card
+            </Typography>
+            <Typography
+              fontSize={14}
+              fontWeight={400}
+              color={vars["shade-grey"]}
+            >
+              You will receive an sms to your mobile device. Please enter this
+              code below.
+            </Typography>
+            <Divider style={{ marginVertical: 15, paddingHorizontal: 15 }} />
+            <View
+              style={{
+                display: "flex",
+                alignItems: "center",
+                paddingVertical: 8,
+              }}
+            >
+              <NewPinCodeInputBoxes
+                fieldCount={6}
+                onChange={handlePinCodeChange}
+                isNewPinCodeStyle
+              />
+            </View>
+            <TouchableOpacity
+              onPress={() => console.log("resend")}
+              disabled={isTimeToCountDown}
+            >
+              {isTimeToCountDown ? (
+                <Text style={styles.noCodeResend}>
+                  Wait for {timeRemaining}s to request again.
+                </Text>
+              ) : (
+                <Text style={styles.noCode}>
+                  Did not get a verification code?
+                </Text>
+              )}
+            </TouchableOpacity>
+            <View style={{ alignItems: "center", paddingTop: 50 }}>
+              <Button
+                onPress={() => {
+                  if (!cardPin && !userID) {
+                    return;
+                  }
+                  setIsLoading(true);
+                  showCardDetails({
+                    account_id: userID,
+                    otp: cardPin,
+                    card_id: Number(selectedCard?.cardreferenceId),
+                  })
                     .unwrap()
                     .then((res: any) => {
                       if (res) {
@@ -814,23 +960,30 @@ export function Card({ navigation, route }: any) {
                           cardImage: res.cardImageBase64,
                           cardNumber: res?.cardNumber,
                         });
-                      }})
-                      .catch((error: any) => {
-                        console.log({ error });
-                      })
-                      .finally(() => {
-                        setIsLoading(false);
-                        refRBSShowCard?.current?.close();
-                      });
-                  }}
-                  style={{color: '#fff', width: 140}}
-                  color="light-pink"
-                  leftIcon={<AntDesign name="checkcircleo" size={16} color={vars['accent-pink']} />}
-                  disabled={isLoading}
-                >
-                  Confirm
-                </Button>
-              </View>
+                      }
+                    })
+                    .catch((error: any) => {
+                      console.log({ error });
+                    })
+                    .finally(() => {
+                      setIsLoading(false);
+                      refRBSShowCard?.current?.close();
+                    });
+                }}
+                style={{ color: "#fff", width: 140 }}
+                color="light-pink"
+                leftIcon={
+                  <AntDesign
+                    name="checkcircleo"
+                    size={16}
+                    color={vars["accent-pink"]}
+                  />
+                }
+                disabled={isLoading}
+              >
+                Confirm
+              </Button>
+            </View>
           </SwipableBottomSheet>
           {/* <Spinner visible={orderCardIsLoading} /> */}
         </ScrollView>

@@ -8,6 +8,8 @@ import {
   ImageBackground,
   Image,
   SafeAreaView,
+  StatusBar,
+  Platform,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
@@ -142,8 +144,12 @@ export function SignupScreen({ navigation, route }: any) {
       <ImageBackground
         style={{ height: "100%" }}
         source={require("../../assets/images/bg.png")}
-        resizeMode="cover"
+        //resizeMode="cover"
       >
+        <SafeAreaView style={{ flex: 0, backgroundColor: "white" }} />
+        <StatusBar
+          barStyle={Platform.OS === "ios" ? "dark-content" : "light-content"}
+        />
         <ScrollableStepper
           navList={[
             "Login Credentials",

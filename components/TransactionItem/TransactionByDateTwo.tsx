@@ -11,6 +11,9 @@ import {
   getFormattedDateAndTime,
   fieldHasValue,
   isPositiveAmountWithSign,
+  getFormattedDateFromUnix,
+  getFormattedDateFromUnixDotted,
+  convertDateToDottedNameV2,
 } from "../../utils/helpers";
 import { styles } from "./stylesTwo";
 import Button from "../Button";
@@ -145,6 +148,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           marginLeft={2}
                           fontWeight={400}
                           fontSize={14}
+                          paddingLeft={5}
                           fontFamily="Mukta-Regular"
                           /* color={Number(transaction.amount) > 0 ? "green" : "red"} */
                         >
@@ -429,17 +433,24 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
     <Fragment>
       <View style={{ backgroundColor: "#F5F9FF" }}>
         <Pressable>
-          <WholeContainer>
-            <View style={{ paddingVertical: 6 }}>
-              <Typography
-                fontSize={14}
-                fontWeight={500}
-                fontFamily="Mukta-Regular"
-              >
-                {getFormattedDate(shownData.date)}
-              </Typography>
-            </View>
-          </WholeContainer>
+          <View style={{ paddingVertical: 6, paddingHorizontal: 18, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Typography
+              fontSize={14}
+              fontWeight={500}
+              fontFamily="Mukta-Regular"
+            >
+              {convertDateToDottedNameV2(shownData.date)}
+            </Typography>
+            <Typography
+              fontSize={14}
+              fontWeight={500}
+              fontFamily="Nunito-SemiBold"
+              marginLeft={6}
+              color={isPositiveAmountWithSign(totalAmount) === 1 ? "green" : "red"}
+            >
+              {totalAmount}
+            </Typography>
+          </View>
           <TransactionByDate transactions={transactionsByDate} />
         </Pressable>
       </View>

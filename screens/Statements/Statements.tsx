@@ -90,40 +90,40 @@ export function Statements({ navigation }: any) {
 
   // generateStatementsPDF
 
-  const handleOnChangeShowPickerDate = (
-    formattedDate: string,
-    setState: any,
-    values: any,
-    key: string
-  ) => {
-    const { dateFrom, dateTo } = values;
-    if (key === "dateFrom") {
-      if (dateTo.value) {
-        const fromDate = new Date(formattedDate);
-        const toDate = new Date(dateTo.value);
-        if (fromDate > toDate) {
-          alert("Date from should be before or same with Date to");
-          return;
-        }
-      }
-    } else {
-      if (dateFrom.value) {
-        const fromDate = new Date(dateFrom.value);
-        const toDate = new Date(formattedDate);
-        if (fromDate > toDate) {
-          alert("Date from should be before or same with Date to");
-          return;
-        }
-      }
-    }
-    setState({
-      ...values,
-      [key]: {
-        state: false,
-        value: formattedDate,
-      },
-    });
-  };
+  // const handleOnChangeShowPickerDate = (
+  //   formattedDate: string,
+  //   setState: any,
+  //   values: any,
+  //   key: string
+  // ) => {
+  //   const { dateFrom, dateTo } = values;
+  //   if (key === "dateFrom") {
+  //     if (dateTo.value) {
+  //       const fromDate = new Date(formattedDate);
+  //       const toDate = new Date(dateTo.value);
+  //       if (fromDate > toDate) {
+  //         alert("Date from should be before or same with Date to");
+  //         return;
+  //       }
+  //     }
+  //   } else {
+  //     if (dateFrom.value) {
+  //       const fromDate = new Date(dateFrom.value);
+  //       const toDate = new Date(formattedDate);
+  //       if (fromDate > toDate) {
+  //         alert("Date from should be before or same with Date to");
+  //         return;
+  //       }
+  //     }
+  //   }
+  //   setState({
+  //     ...values,
+  //     [key]: {
+  //       state: false,
+  //       value: formattedDate,
+  //     },
+  //   });
+  // };
 
   const handleGenerateFile = async () => {
     if (selectedPrint === "pdf") {
@@ -136,7 +136,6 @@ export function Statements({ navigation }: any) {
           from_date: dateFrom.value,
           to_date: getFormattedDate > currentDate ? currentDate.toISOString().split("T")[0] : dateTo.value,
         };
-        // console.log({ statementFilterWithDateRante });
         dispatch<any>(getStatementsfinxp(statementFilterWithDateRange))
         .unwrap()
         .then(async (res: StatementResponse) => {

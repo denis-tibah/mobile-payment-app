@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import { useSelector, useDispatch } from "react-redux";
 import DropDownPicker from "react-native-dropdown-picker";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { SelectList } from "react-native-dropdown-select-list";
 
 import ButtonSubmit from "../../components/Button";
 import FormGroup from "../../components/FormGroup";
@@ -99,6 +100,16 @@ const FinancialDetails: FC<IFinancialDetails> = ({
     },
   });
 
+  const [selected, setSelected] = useState("");
+
+  const data = [
+    { key: "2", value: "Appliances" },
+    { key: "3", value: "Cameras" },
+    { key: "5", value: "Vegetables" },
+    { key: "6", value: "Diary Products" },
+    { key: "7", value: "Drinks" },
+  ];
+
   return (
     <View style={styles.card}>
       <View style={styles.cardTitle}>
@@ -136,7 +147,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
               marginBottom={16}
             />
           </WholeContainer>
-          <View>
+          {/* <View>
             <FormGroup
               validationError={
                 errors.sourceOfWealth &&
@@ -178,6 +189,68 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 </View>
                 <View style={styles.dropDownIconContainerRight}>
                   <ArrowRightIcon size={16} color="blue" />
+                </View>
+              </View>
+            </FormGroup>
+          </View> */}
+          <View>
+            <FormGroup
+              validationError={
+                errors.sourceOfWealth &&
+                touched.sourceOfWealth &&
+                errors.sourceOfWealth
+              }
+            >
+              <View>
+                <View style={{ position: "absolute", top: 12, left: 14 }}>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      size={20}
+                      color="#086AFB"
+                      name={"storefront-outline"}
+                    />
+                    {!selected ? (
+                      <Typography
+                        fontSize={14}
+                        fontWeight={600}
+                        fontFamily="Nunito-SemiBold"
+                        marginLeft={8}
+                        color={vars["medium-grey"]}
+                      >
+                        Source of deposit
+                      </Typography>
+                    ) : null}
+                  </View>
+                </View>
+                <View>
+                  <SelectList
+                    setSelected={(val) => setSelected(val)}
+                    data={data}
+                    save="value"
+                    arrowicon={<ArrowRightIcon size={16} color="blue" />}
+                    search={false}
+                    searchicon={
+                      <MaterialCommunityIcons
+                        size={20}
+                        color="#086AFB"
+                        name={"storefront-outline"}
+                      />
+                    }
+                    boxStyles={{
+                      borderRadius: 50,
+                      borderColor: vars["accent-blue"],
+                    }}
+                    dropdownStyles={{ borderColor: vars["accent-blue"] }}
+                    inputStyles={{ marginLeft: 20 }}
+                    // remove text in placeholder
+                    placeholder=" "
+                  />
                 </View>
               </View>
             </FormGroup>

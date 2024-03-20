@@ -10,6 +10,8 @@ import {
   getFormattedDateAndTime,
   fieldHasValue,
   getFormattedDateFromUnixDotted,
+  convertDateToDottedNameV2,
+  wp,
 } from "../../utils/helpers";
 import { styles } from "./styles";
 import ArrowDown from "../../assets/icons/ArrowDown";
@@ -46,7 +48,6 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
   setIsOneTransactionOpen,
 }) => {
   const { navigate }: any = useNavigation();
-
   const [, setTicketParams] = useAtom(helpTabticketParams);
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -75,77 +76,94 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
               <Box
                 style={styles.detailMobileForEachTransactionContainer}
                 key={index}
+                
               >
-                <Box style={styles.detailMobileForEachTransactionWrapper}>
-                  <View style={styles.nameContainer}>
-                    {transaction?.service === "DEBIT CARD" ? (
-                      <CardIcon size={14} color={"heavy-grey"} />
-                    ) : null}
-                    {transaction?.service === "SEPA CT IN" ||
-                    transaction?.service === "SEPA CT OUT" ||
-                    transaction?.service === "SEPA INST IN" ||
-                    transaction?.service === "INTERNAL" ? (
-                      <BankIcon size={14} color={"heavy-grey"} />
-                    ) : null}
-                    <Text numberOfLines={1} style={styles.valueDetailMobile}>
-                      {transaction.name}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flex: 1,
-                      display: "flex",
-                      flexDirection: "row",
-                      alignSelf: "auto",
-                      justifyContent: "flex-end",
-                    }}
-                  >
-                    <Box style={{ marginTop: 8 }}>
-                      {shownData.currency === "EUR" ? (
-                        <EuroIcon
-                          size={18}
-                          color={+transaction.amount > 0 ? "green" : "red"}
-                        />
-                      ) : (
-                        <DollarIcon size={18} color="#278664" />
-                      )}
-                    </Box>
-                    <Box>
-                      <Text
-                        style={[
-                          styles.amountDetailMobile,
-                          Number(transaction.amount) > 0
-                            ? styles.amountAddedDetail
-                            : styles.amountDeductedDetail,
-                        ]}
-                      >
-                        {formatAmountTableValue(
-                          transaction.amount,
-                          shownData.currency
-                        )}
-
-                        <TouchableOpacity
-                          onPress={() => handleToggleDetails(index)}
-                          style={{ paddingTop: 10, paddingLeft: 10 }}
-                        >
-                          {openTransactionIndex === index ? (
-                            <ArrowDown
-                              color="heavy-grey"
-                              size={12}
-                              style={{ paddingRight: 14 }}
-                            />
-                          ) : (
-                            <ArrowRight
-                              color="heavy-grey"
-                              size={12}
-                              style={{ paddingRight: 14 }}
-                            />
-                          )}
-                        </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => handleToggleDetails(index)}
+                  style={styles.detailMobileForEachTransactionWrapper}
+                >
+                  {/* <Box style={styles.detailMobileForEachTransactionWrapper}> */}
+                    <View style={styles.nameContainer}>
+                      {transaction?.service === "DEBIT CARD" ? (
+                        <CardIcon size={14} color={"heavy-grey"} />
+                      ) : null}
+                      {transaction?.service === "SEPA CT IN" ||
+                      transaction?.service === "SEPA CT OUT" ||
+                      transaction?.service === "SEPA INST IN" ||
+                      transaction?.service === "INTERNAL" ? (
+                        <BankIcon size={14} color={"heavy-grey"} />
+                      ) : null}
+                      <Text numberOfLines={1} style={styles.valueDetailMobile}>
+                        {transaction.name}
                       </Text>
-                    </Box>
-                  </View>
-                </Box>
+                    </View>
+                    <View
+                      style={{
+                        // flex: 1,
+                        display: "flex",
+                        flexDirection: "row",
+                        // alignSelf: "end",
+                        // justifyContent: "flex-end",
+                        // backgroundColor: "#ACACAC",
+                        width: "33%",
+                      }}
+                    >
+                      <Box style={{
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'flex-end',
+                        padding: 2,
+                        right: wp(-10),
+                        // : "center",
+                      }}>
+                        <Box style={{ marginTop: 8, paddingRight: 5 }}>
+                          {shownData.currency === "EUR" ? (
+                          <EuroIcon
+                            size={18}
+                            color={+transaction.amount > 0 ? "green" : "red"}
+                            style={{ marginTop: 8 }}
+                          />
+                            ) : (
+                            <DollarIcon size={18} color="#278664" />
+                          )}
+                        </Box>
+                        <Text
+                          style={[
+                            styles.amountDetailMobile,
+                            Number(transaction.amount) > 0
+                              ? styles.amountAddedDetail
+                              : styles.amountDeductedDetail,
+                          ]}
+                        >
+                          {formatAmountTableValue(
+                            transaction.amount,
+                            shownData.currency
+                          )}
+
+                          <TouchableOpacity
+                            onPress={() => handleToggleDetails(index)}
+                            style={{ paddingTop: 10, paddingLeft: 10 }}
+                          >
+                            {openTransactionIndex === index ? (
+                              <ArrowDown
+                                color="heavy-grey"
+                                size={12}
+                                style={{ paddingRight: 14 }}
+                              />
+                            ) : (
+                              <ArrowRight
+                                color="heavy-grey"
+                                size={12}
+                                style={{ paddingRight: 14 }}
+                              />
+                            )}
+                          </TouchableOpacity>
+                        </Text>
+                      </Box>
+                    </View>
+                  {/* </Box> */}
+                </TouchableOpacity>
               </Box>
               {openTransactionIndex === index ? (
                 <Pressable>
@@ -324,8 +342,8 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                           {displayTitle({ title: "Date & Time" })}
                           {displayValue({
                             content: getFormattedDateAndTime(
-                              transaction?.transaction_datetime_with_hour
-                            ),
+                              transaction?.transaction_datetime
+                            )
                           })}
                         </View>
                       </View>
@@ -385,7 +403,7 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
             <View style={{ top: -4, paddingLeft: 3 }}>
               <Typography fontSize={14} textAlign="left">
                 {" "}
-                {getFormattedDateFromUnixDotted(shownData.date)}
+                {convertDateToDottedNameV2(shownData.date)}
               </Typography>
             </View>
           </Box>
@@ -393,13 +411,14 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
             style={{
               textAlign: "center",
               alignItems: "center",
-              justifyContent: "center",
+              justifyContent: "space-around",
               color: "white",
               borderRadius: 5,
               padding: 5,
               display: "flex",
               flexDirection: "row",
-              width: "45%",
+              width: "25%",
+              marginLeft: 20,
             }}
           >
             {shownData.currency === "EUR" ? (
@@ -407,7 +426,7 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
             ) : (
               <DollarIcon size={18} color="#278664" />
             )}
-            <Typography fontSize={14}>
+            <Typography fontSize={14} paddingLeft={5}>
               {formatAmountTableValue(totalAmount, shownData.currency)}
             </Typography>
           </Box>
@@ -421,7 +440,7 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
               padding: 5,
               display: "flex",
               flexDirection: "row",
-              width: "45%",
+              width: "65%",
             }}
           >
             <Box style={styles.arrowCell}>

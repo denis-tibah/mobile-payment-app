@@ -68,6 +68,13 @@ export const sourceOfWealth = [
   { label: "Crypto", value: "crypto" },
 ];
 
+export const sourceOfWealthTwo = [
+  /* null, */
+  { key: "Salary", value: "Salary" },
+  { key: "Dividend", value: "Dividend" },
+  { key: "Crypto", value: "Crypto" },
+];
+
 export const paymentReasons = [
   { label: "Send to Beneficiary", value: "send_to_beneficiary" },
   { label: "Send to External", value: "send_to_external" },

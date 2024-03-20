@@ -21,7 +21,12 @@ import WholeContainer from "../../layout/WholeContainer";
 import BusinessBagIcon from "../../assets/icons/BusinessBag";
 import SignupScrollableBodyWrapper from "./SignupScrollableBodyWrapper";
 import { Seperator } from "../../components/Seperator/Seperator";
-import { sourceOfWealth, employmentStatus } from "../../data/options";
+import {
+  /* sourceOfWealth, */
+  sourceOfWealthTwo,
+  employmentStatus,
+} from "../../data/options";
+
 import vars from "../../styles/vars";
 import { styles } from "./styles";
 
@@ -48,6 +53,8 @@ const FinancialDetails: FC<IFinancialDetails> = ({
     window: windowDimensions,
     screen: screenDimensions,
   });
+  const [selectedSourceOfWealth, setSelectedSourceOfWealth] =
+    useState<string>("");
 
   const {
     handleSubmit,
@@ -99,16 +106,6 @@ const FinancialDetails: FC<IFinancialDetails> = ({
       handleNextStep();
     },
   });
-
-  const [selected, setSelected] = useState("");
-
-  const data = [
-    { key: "2", value: "Appliances" },
-    { key: "3", value: "Cameras" },
-    { key: "5", value: "Vegetables" },
-    { key: "6", value: "Diary Products" },
-    { key: "7", value: "Drinks" },
-  ];
 
   return (
     <View style={styles.card}>
@@ -215,7 +212,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                       color="#086AFB"
                       name={"storefront-outline"}
                     />
-                    {!selected ? (
+                    {!selectedSourceOfWealth ? (
                       <Typography
                         fontSize={14}
                         fontWeight={600}
@@ -230,8 +227,16 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 </View>
                 <View>
                   <SelectList
-                    setSelected={(val) => setSelected(val)}
-                    data={data}
+                    setSelected={(val: string) => {
+                      setSelectedSourceOfWealth(val);
+                    }}
+                    onSelect={() => {
+                      setValues({
+                        ...values,
+                        sourceOfWealth: selectedSourceOfWealth.toLowerCase(),
+                      });
+                    }}
+                    data={sourceOfWealthTwo}
                     save="value"
                     arrowicon={<ArrowRightIcon size={16} color="blue" />}
                     search={false}

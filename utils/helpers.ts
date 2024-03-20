@@ -30,9 +30,7 @@ export function formatAmountTableValue(amount: any = "", currency = "") {
 
 export function formatAmountValueWithCurrency(amount: any = "", currency = "") {
   if (!amount || !currency) return Number.parseFloat("0").toFixed(2);
-  return `€ ${Math.abs(
-    Number.parseFloat(amount)
-  ).toFixed(2)}`;
+  return `€ ${Math.abs(Number.parseFloat(amount)).toFixed(2)}`;
 }
 
 // if theres a + sign return true otherwise return false
@@ -288,9 +286,10 @@ export function getFirstAndLastName(str: string) {
 }
 
 export function getFormattedDateAndTime(dateToFormat: any) {
-  const date = new Date(dateToFormat);
+  console.log("🚀 ~ getFormattedDateAndTime ~ dateToFormat:", dateToFormat);
+  // const date = new Date(dateToFormat);
   // uniform date as per QA
-  const formattedDateAndTime = dateFns.format(date, "dd.MM.yyyy h:mm a"); // Output: DD-MM-YYYY TT:MM PM
+  //const formattedDateAndTime = dateFns.format(date, "dd.MM.yyyy h:mm a"); // Output: DD-MM-YYYY TT:MM PM
 
   /*   const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(
     date.getMonth() + 1
@@ -300,14 +299,14 @@ export function getFormattedDateAndTime(dateToFormat: any) {
     .getMinutes()
     .toString()
     .padStart(2, "0")}`;*/
-  return formattedDateAndTime;
+  //return formattedDateAndTime;
 }
 export function getFormattedDateAndTimeAndSeconds({
   dateToFormat,
   hasTimeAndSeconds,
 }: {
   dateToFormat: any;
-  hasTimeAndSeconds: boolean;
+  hasTimeAndSeconds?: boolean;
 }) {
   const date = new Date(dateToFormat);
   const time = hasTimeAndSeconds ? "hh:mm:ss" : "";

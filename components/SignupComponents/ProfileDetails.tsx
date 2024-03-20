@@ -22,6 +22,10 @@ import { Seperator } from "../../components/Seperator/Seperator";
 import ButtonSubmit from "../../components/Button";
 import WholeContainer from "../../layout/WholeContainer";
 import SignupScrollableBodyWrapper from "./SignupScrollableBodyWrapper";
+import {
+  getFormattedDateAndTimeAndSeconds,
+  getFormattedDateAndTime,
+} from "../../utils/helpers";
 
 import vars from "../../styles/vars";
 import { styles } from "./styles";
@@ -54,6 +58,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
     useState<boolean>(false);
   const [openListForNationality, setOpenListForNationality] =
     useState<boolean>(false);
+  const [displayedDOB, setDisplayedDOB] = useState<string>("false");
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -64,16 +69,17 @@ const ProfileDetails: FC<IProfileDetails> = ({
   };
 
   const handleConfirm = (date: any) => {
+    setDisplayedDOB(date);
     setFieldValue("dob", date.toLocaleDateString());
     hideDatePicker();
   };
 
-  const formatDOBToDash = (paramDOB: string): string | null => {
+  /* const formatDOBToDash = (paramDOB: string): string | null => {
     const arrDOB: string[] | boolean = paramDOB ? paramDOB.split("-") : false;
     const [year, month, day] = arrDOB ? arrDOB : [];
     return year && month && day ? `${month}/${day}/${year}` : null;
   };
-
+ */
   const {
     handleSubmit,
     handleChange,
@@ -88,7 +94,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
       salutation: registration.data?.salutation || "",
       firstName: registration.data?.firstname || "",
       lastName: registration.data?.lastname || "",
-      dob: formatDOBToDash(registration.data?.dob) || "",
+      dob: registration.data?.dob || "",
       placeOfBirth: registration.data?.place_of_birth || "",
       countryOfBirth: registration.data?.country_of_birth,
       nationality: registration.data?.nationality,
@@ -241,7 +247,12 @@ const ProfileDetails: FC<IProfileDetails> = ({
                         : styles.dobTextDefault,
                     ]}
                   >
-                    {values?.dob ? values?.dob : "Date of birth"}
+                    {values?.dob
+                      ? getFormattedDateAndTimeAndSeconds({
+                          dateToFormat: displayedDOB,
+                          hasTimeAndSeconds: false,
+                        })
+                      : "Date of birth"}
                   </Text>
                 </TouchableOpacity>
               </View>

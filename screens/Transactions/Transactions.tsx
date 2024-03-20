@@ -53,6 +53,7 @@ import TransactionItem from "../../components/TransactionItem";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 import { ref } from "yup";
 import Euro from "../../assets/icons/Euro";
+import { RefreshControl } from "react-native";
 
 interface DateRangeType {
   dateTo: {
@@ -100,9 +101,9 @@ export function Transactions({ navigation, route }: any) {
     getTransactionsWithFilter,
     { data: transactionsWithFilter, isLoading: isLoadingTransations },
   ] = useLazyGetTransactionsQuery();
-  const currentPage = transactionsWithFilter?.current_page;
-  const lastPage = transactionsWithFilter?.last_page;
+
   const transactionsList = transactionsWithFilter?.transactions;
+  const txHistory = transactionsWithFilter?.transactions_grouped_by_date;
   const _groupedByDateTransactions =
     groupedByDateTransactions(transactionsList);
   const [isSearchTextOpen, setIsSearchTextOpen] = useState<boolean>(false);
@@ -447,7 +448,18 @@ export function Transactions({ navigation, route }: any) {
   return (
     <MainLayout navigation={navigation}>
       {/* <Spinner visible={isLoading} /> */}
-      <ScrollView bounces={false}>
+      <ScrollView bounces={true} 
+        refreshControl={
+          <RefreshControl
+            style={{ backgroundColor: "transparent", display: 'none' }}
+            refreshing={false}
+            onRefresh={() => {
+              setIsLoading(true);
+              fetchTransactionsWithFilters();
+            }}
+          />
+        }
+      >
         <View style={styles.container}>
           <Heading
             icon={
@@ -505,7 +517,7 @@ export function Transactions({ navigation, route }: any) {
           </View>
         )}
         <View style={{ backgroundColor: "#fff" }}>
-          <Seperator backgroundColor={vars["grey"]} />
+          {/* <Seperator backgroundColor={vars["grey"]} />
           {isCardTransactionShown && cardTransactions?.length > 0
             ? cardTransactions?.map((transaction: any, index: number) => (
                 <TransactionItem
@@ -541,9 +553,9 @@ export function Transactions({ navigation, route }: any) {
                     </Text>
                   </View>
                 </Fragment>
-              )}
+              )} */}
           <View>
-            {!isCardTransactionShown && _groupedByDateTransactions
+            {/* {!isCardTransactionShown && _groupedByDateTransactions
               ? Object.keys(_groupedByDateTransactions).map((date: string) => {
                   let _amount: number = 0;
                   const transactionsByDate = _groupedByDateTransactions[
@@ -567,8 +579,43 @@ export function Transactions({ navigation, route }: any) {
                     />
                   );
                 })
-              : null}
-            {!isCardTransactionShown &&
+              : null} */}
+              {txHistory && txHistory.length > 0 ? (
+                txHistory.map((tx: any, index: number) => {
+
+                  return (
+                    <TransactionsByDate
+                      key={tx.date}
+                      shownData={{
+                        date: tx.date,
+                        totalAmount: tx.closing_balance,
+                        currency: tx.transactions[0].currency,
+                      }}
+                      transactionsByDate={tx.transactions}
+                      totalAmount={tx.closing_balance}
+                    />
+                  );
+                })) : (
+                  <Fragment>
+                    <View
+                      style={{
+                        padding: 30,
+                        backgroundColor: "#fff",
+                        height: hp(150),
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography
+                        fontSize={16}
+                        color={vars["black"]}
+                        fontWeight="Nunito-Bold"
+                      >
+                        Don't have any transactions found
+                      </Typography>
+                    </View>
+                  </Fragment>
+                )}
+            {/* {!isCardTransactionShown &&
               Object.keys(_groupedByDateTransactions).length === 0 && (
                 <Fragment>
                   <View
@@ -588,7 +635,7 @@ export function Transactions({ navigation, route }: any) {
                     </Typography>
                   </View>
                 </Fragment>
-              )}
+              )} */}
           </View>
           {/* <Seperator backgroundColor={vars["grey"]} />
           {!isCardTransactionShown && (

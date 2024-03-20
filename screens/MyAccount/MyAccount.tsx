@@ -24,8 +24,6 @@ import { RootState } from "../../store";
 import {
   getCurrency,
   groupedByDateTransactions,
-  arrayChecker,
-  groupByDateAndSeveralProperties,
   formatCurrencyToLocalEnTwo,
 } from "../../utils/helpers";
 import Spinner from "react-native-loading-spinner-overlay/lib";
@@ -105,10 +103,13 @@ export function MyAccount({ navigation }: any) {
   } = useGetTransactionsQuery(transactionsParams({ status: "SUCCESS" }), {
     skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
   });
-  const transactionsListCompleted = dataTransactionsCompleted?.transactions;
-  const groupedByDateTransactionsCompleted = groupedByDateTransactions(
-    transactionsListCompleted
-  );
+  const groupedByDateTransactionsCompleted = dataTransactionsCompleted?.transactions_grouped_by_date;
+  const txHistory = dataTransactionsCompleted?.transactions_grouped_by_date;
+  // const groupedByDateTransactionsCompleted = groupedByDateTransactions(
+  //   transactionsListCompleted
+  // );
+
+  // console.log({ txHistory });
   /* const groupedByDateTransactionsCompletedAndProperties =
     groupByDateAndSeveralProperties({
       items: transactionsListCompleted,
@@ -286,7 +287,24 @@ export function MyAccount({ navigation }: any) {
     return (
       <View style={{ paddingVertical: 6 }}>
         <View>
-          {Object.keys(items).map((date: string) => {
+          {
+            items.map((item: any, index: number) => {
+              return (
+                <TransactionByDateTwo
+                  setIsOneTransactionOpen={setIsOneTransactionOpen}
+                  key={index}
+                  shownData={{
+                    date: item.date,
+                    totalAmount: item.closing_balance,
+                    currency: item.transactions[0].currency,
+                  }}
+                  transactionsByDate={item.transactions}
+                  totalAmount={item.closing_balance}
+                />
+              );
+            })
+          }
+          {/* {Object.keys(items).map((date: string) => { // previous implementation line 309 - 324
             let _amount: number = 0;
             const transactionsByDate = items[date].map((tx: any) => {
               const { amount } = tx;
@@ -297,19 +315,20 @@ export function MyAccount({ navigation }: any) {
 
             const shownData = {
               date,
-              totalAmount: _amount.toString(),
-              currency: items[date][0].currency,
+              totalAmount: items.closing_balance.toString(),
+              currency: items.transactions[0].currency,
             };
+
             return (
               <TransactionByDateTwo
                 setIsOneTransactionOpen={setIsOneTransactionOpen}
                 key={items[date][0].transaction_uuid}
                 shownData={shownData}
-                transactionsByDate={transactionsByDate}
-                totalAmount={_amount.toString()}
+                transactionsByDate={items.transactions}
+                totalAmount={items.closing_balance.toString()}
               />
             );
-          })}
+          })} */}
         </View>
       </View>
     );

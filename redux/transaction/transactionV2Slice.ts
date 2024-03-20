@@ -6,17 +6,17 @@ export const transactionV2 = createApi({
   reducerPath: "transactionV2",
   baseQuery: fetchBaseQuery({
     baseUrl: exportedBaseUrl,
-    prepareHeaders: (headers) => {
+    prepareHeaders: (headers: any) => {
         headers.set("Content-Type", "application/json");
         return headers;
     },
   }),
   keepUnusedDataFor: 30,
   tagTypes: ["transactionV2"],
-  endpoints: (builder) => ({
-    getTransactions: builder.query<any, any>({
-      query: (params) => ({
-        url: `/getTransactionsV2finxp`,
+  endpoints: (builder: any) => ({
+    getTransactions: builder.query({
+      query: (params: any) => ({
+        url: `/transactions`,
         method: "POST",
         body: {
           account_id: params?.accountId,
@@ -34,6 +34,7 @@ export const transactionV2 = createApi({
           bic: params?.bic,
           reference_no: params?.reference_no,
           card_id: params?.card_id,
+          group_date: true, // constant value since we are now using group by date
         },
         headers: {
           "Content-Type": "application/json",
@@ -43,7 +44,7 @@ export const transactionV2 = createApi({
       }),
     }),
     getStatementfinxp: builder.query({
-      query: ({ account_id, direction, sort, from_date, to_date}) => ({
+      query: ({ account_id, direction, sort, from_date, to_date }: any) => ({
         url: `/ziyl/getStatementfinxp`,
         method: "POST",
         body: {

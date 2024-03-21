@@ -102,10 +102,10 @@ export function Transactions({ navigation, route }: any) {
     { data: transactionsWithFilter, isLoading: isLoadingTransations },
   ] = useLazyGetTransactionsQuery();
 
-  const transactionsList = transactionsWithFilter?.transactions;
+  // const transactionsList = transactionsWithFilter?.transactions;
   const txHistory = transactionsWithFilter?.transactions_grouped_by_date;
-  const _groupedByDateTransactions =
-    groupedByDateTransactions(transactionsList);
+  // const _groupedByDateTransactions =
+  //   groupedByDateTransactions(transactionsList);
   const [isSearchTextOpen, setIsSearchTextOpen] = useState<boolean>(false);
   // const [isSheetFilterOpen, setIsSheetFilterOpen] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");

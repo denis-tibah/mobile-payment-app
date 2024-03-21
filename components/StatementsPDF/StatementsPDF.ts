@@ -27,7 +27,7 @@ const convertImageToBase64 = async (): Promise<string> => {
     });
     
   const mimeType = mime.lookup(asset.localUri || '');
-    return `data:${mimeType}/png;base64,${image}`;
+    return `data:${mimeType};base64,${image}`;
   } catch (error) {
     console.log({ error: `${error}. convert image error` });
     return '';
@@ -132,7 +132,8 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
         * {
-          font-family: 'Nunito';
+          font-family: 'Nunito-Regular';
+
         }
         table {
           border-collapse: collapse;
@@ -146,6 +147,9 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
         th, td {
           border: none;
           padding: 5px;
+        }
+        td {
+          font-size: 12px;
         }
         .title {
           color: #086AFB;
@@ -248,7 +252,7 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
 export const generateStatementsPDF = async ({statements, accountData}: any) => {
   const { from_date, to_date } = accountData;
   const getHTML = await statementsPDFGenerator({ statements, accountData});
-  const { uri } = await Print.printToFileAsync({ html: getHTML });
+  const { uri } = await Print.printToFileAsync({ html: getHTML, margins: { top: 20, bottom: 20, left: 20, right: 20 }});
   const newURI = FileSystem.documentDirectory + `statement_${from_date}_${to_date}.pdf`;
   await FileSystem.moveAsync({from: uri, to: newURI});
   return newURI;

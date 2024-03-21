@@ -514,11 +514,7 @@ const Verifications: FC<IVerifications> = ({
                     fontSize={14}
                     fontWeight={400}
                   >
-                    Lorem ipsum itt tudod újra elküldetni a kódot. Ha így sem
-                    kapod meg, ellenőrizd+módosítsd a telefonszámot. Amennyiben
-                    ezután is problémába ütközöl, írj a{" "}
-                    <Typography color="#E7038E">info@zazoo.io</Typography>{" "}
-                    címre!
+                    If you have not yet received the verification code, press the button below to resend it.
                   </Typography>
                 ) : null}
                 {bottomSheetContent?.type === "phoneNumber" ? (

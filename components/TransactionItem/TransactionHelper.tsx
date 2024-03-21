@@ -10,7 +10,7 @@ const displayTitle = ({ title }: { title: string }) => {
     <Typography
       color="#086AFB"
       fontFamily="Nunito-SemiBold"
-      fontSize={12}
+      fontSize={11}
       fontWeight={600}
     >
       {title}
@@ -34,9 +34,9 @@ const displayValue = ({
       {hasCurrency ? (
         <Typography marginRight={4}>
           {currencyType === "EUR" ? (
-            <EuroIcon size={14} />
+            <EuroIcon size={13} />
           ) : (
-            <DollarIcon size={14} />
+            <DollarIcon size={13} />
           )}
         </Typography>
       ) : null}
@@ -44,7 +44,7 @@ const displayValue = ({
       <Typography
         color="#000"
         fontFamily="Mukta-Regular"
-        fontSize={14}
+        fontSize={13}
         fontWeight={600}
       >
         {/* for amount value */}

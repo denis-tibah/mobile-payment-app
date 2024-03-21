@@ -237,9 +237,18 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                         }}
                       >
                         <View style={styles.cardContainer}>
-                          {/* <View style={styles.cardContentContainer}>
-                            {displayTitle({ title: "Card" })}
-                          </View> */}
+
+                          {transaction?.masked_number ? (
+                            <View style={styles.cardContentContainer}>
+                              {displayTitle({ title: "Card" })}
+                              {displayValue({
+                                content: transaction?.masked_number,
+                                hasCurrency: false,
+                                currencyType: transaction?.currency,
+                              })}
+                            </View>
+                          ) : null}
+
                           {transaction?.currency ? (
                             <View style={styles.cardContentContainer}>
                               {displayTitle({ title: "FX" })}
@@ -259,6 +268,16 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                               currencyType: transaction?.currency,
                             })}
                           </View>
+                          {transaction?.original_amount ? (
+                            <View style={styles.cardContentContainer}>
+                              {displayTitle({ title: "Original Amount" })}
+                              {displayValue({
+                                content: transaction?.original_amount,
+                                hasCurrency: true,
+                                currencyType: transaction?.currency,
+                              })}
+                            </View>
+                          ) : null}
                         </View>
                       </View>
                     ) : null}

@@ -25,7 +25,7 @@ import Pdf from "../../assets/icons/Pdf";
 import Button from "../../components/Button";
 import { RootState } from "../../store";
 import ScrollingButtons from "./ScrollingButtons";
-import { format } from "path";
+import { format } from "date-fns";
 import { generateStatementsPDF } from "../../components/StatementsPDF/StatementsPDF";
 
 
@@ -197,10 +197,8 @@ export function Statements({ navigation }: any) {
             // generate pdf
             if (!formattedDate) return;
             const date = new Date(formattedDate);
-            const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toString();
-            const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).toString();
-            const _firstDay = new Date(firstDay).toISOString().split("T")[0];
-            const _lastDay = new Date(lastDay).toISOString().split("T")[0];
+            const _firstDay = format(new Date(date.getFullYear(), date.getMonth(), 1), "yyyy-MM-dd");
+            const _lastDay = format(new Date(date.getFullYear(), date.getMonth() + 1, 0), "yyyy-MM-dd");
             setShowStatementPickerDateToAndFrom({
               dateTo: {
                 state: false,

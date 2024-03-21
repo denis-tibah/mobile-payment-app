@@ -173,7 +173,7 @@ export const styles: any = StyleSheet.create<any>({
     justifyContent: "flex-start",
     flexWrap: "wrap",
     width: "100%",
-    gap: 30,
+    gap: 8.5,
     marginLeft: 12,
   },
   cardContentContainer: {

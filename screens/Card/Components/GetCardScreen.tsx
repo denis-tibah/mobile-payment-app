@@ -21,6 +21,7 @@ import { Divider } from "react-native-paper";
 import { useLazyOrderCardQuery } from "../../../redux/card/cardSliceV2";
 import { RootState } from "../../../store";
 import Euro from "../../../assets/icons/Euro";
+import ArrowRight from "../../../assets/icons/ArrowRight";
 
 interface GerCardModalProps {
   onClose: () => void;
@@ -255,6 +256,7 @@ export const GetCardScreen = ({navigation}: any) => {
         <View style={{minHeight: 100, zIndex: 999, overflow: 'visible', display: 'flex', paddingTop: 10}}>
           <DropDownPicker
             placeholder="Currency"
+            dropDownDirection="BOTTOM"
             style={styles.dropdownCurrency}
             open={openCurrency}
             value={currency || null}
@@ -264,9 +266,14 @@ export const GetCardScreen = ({navigation}: any) => {
             listMode="SCROLLVIEW"
             textStyle={{color: '#000', fontFamily: 'Nunito-Bold', fontSize: 14, fontWeight: '600'}}
             dropDownContainerStyle={styles.dropdownContainer}
+            // arrowIconStyle={{display: 'none'}}
+            showArrowIcon={false}
             zIndex={1}
             disabled
           />
+          <View style={{right: 10, position: 'absolute', top: 23}}>
+            <ArrowRight size={22} color={vars['accent-blue']} />
+          </View>
         </View>
         <View style={[styles.buttonContainer, {
           // drop shadow for ios

@@ -286,7 +286,7 @@ export function getFirstAndLastName(str: string) {
 }
 
 export function getFormattedDateAndTime(dateToFormat: any) {
-  console.log("🚀 ~ getFormattedDateAndTime ~ dateToFormat:", dateToFormat);
+  // console.log("🚀 ~ getFormattedDateAndTime ~ dateToFormat:", dateToFormat);
   // const date = new Date(dateToFormat);
   // uniform date as per QA
   //const formattedDateAndTime = dateFns.format(date, "dd.MM.yyyy h:mm a"); // Output: DD-MM-YYYY TT:MM PM

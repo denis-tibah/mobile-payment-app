@@ -89,6 +89,19 @@ export const employmentStatus = [
   { label: "Retired", value: "retired" },
 ];
 
+export const employmentStatusTwo = [
+  /* null, */
+  { key: "Employed", value: "Employed", passedValue: "employed" },
+  {
+    key: "Self Employed",
+    value: "Self Employed",
+    passedValue: "self_employed",
+  },
+  { key: "Unemployed", value: "Unemployed", passedValue: "unemployed" },
+  { key: "Student", value: "Student", passedValue: "student" },
+  { key: "Retired", value: "Retired", passedValue: "retired" },
+];
+
 export const companyDetailsRole = [
   {
     label: "Executive Director",

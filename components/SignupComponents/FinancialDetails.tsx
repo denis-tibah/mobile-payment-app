@@ -24,7 +24,8 @@ import { Seperator } from "../../components/Seperator/Seperator";
 import {
   /* sourceOfWealth, */
   sourceOfWealthTwo,
-  employmentStatus,
+  /* employmentStatus, */
+  employmentStatusTwo,
 } from "../../data/options";
 
 import vars from "../../styles/vars";
@@ -55,6 +56,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
   });
   const [selectedSourceOfWealth, setSelectedSourceOfWealth] =
     useState<string>("");
+  const [selectedEmploymentStatus, setEmploymentStatus] = useState<string>("");
 
   const {
     handleSubmit,
@@ -118,6 +120,16 @@ const FinancialDetails: FC<IFinancialDetails> = ({
       <SignupScrollableBodyWrapper>
         <View style={styles.cardBody}>
           <View>
+            <Typography
+              fontSize={16}
+              fontWeight={600}
+              fontFamily="Nunito-SemiBold"
+              marginLeft={10}
+              marginBottom={4}
+              color={vars["medium-grey"]}
+            >
+              How much will you deposit in your account each month?
+            </Typography>
             <FormGroup
               validationError={
                 errors.annualSalary &&
@@ -132,7 +144,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 onBlur={handleBlur("annualSalary")}
                 value={values.annualSalary}
                 placeholderTextColor={vars["ios-default-text"]}
-                placeholder="Monthly account deposits"
+                placeholder=""
                 iconColor="blue"
                 icon={<PigIcon />}
               />
@@ -191,6 +203,16 @@ const FinancialDetails: FC<IFinancialDetails> = ({
             </FormGroup>
           </View> */}
           <View>
+            <Typography
+              fontSize={16}
+              fontWeight={600}
+              fontFamily="Nunito-SemiBold"
+              marginLeft={10}
+              marginBottom={4}
+              color={vars["medium-grey"]}
+            >
+              What's your source of income?
+            </Typography>
             <FormGroup
               validationError={
                 errors.sourceOfWealth &&
@@ -214,13 +236,13 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                     />
                     {!selectedSourceOfWealth ? (
                       <Typography
-                        fontSize={14}
+                        fontSize={16}
                         fontWeight={600}
                         fontFamily="Nunito-SemiBold"
                         marginLeft={8}
                         color={vars["medium-grey"]}
                       >
-                        Source of deposit
+                        Select from list
                       </Typography>
                     ) : null}
                   </View>
@@ -260,7 +282,13 @@ const FinancialDetails: FC<IFinancialDetails> = ({
               </View>
             </FormGroup>
           </View>
-          <View>
+          <WholeContainer>
+            <Seperator
+              backgroundColor={vars["v2-light-grey"]}
+              marginBottom={16}
+            />
+          </WholeContainer>
+          {/* <View>
             <FormGroup
               validationError={
                 errors.employmentStatus &&
@@ -315,7 +343,105 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                 </View>
               </View>
             </FormGroup>
+          </View> */}
+          <View>
+            <Typography
+              fontSize={16}
+              fontWeight={600}
+              fontFamily="Nunito-SemiBold"
+              marginLeft={10}
+              marginBottom={4}
+              color={vars["medium-grey"]}
+            >
+              What's your employment status?
+            </Typography>
+            <FormGroup
+              validationError={
+                errors.employmentStatus &&
+                touched.employmentStatus &&
+                errors.employmentStatus
+              }
+            >
+              <View>
+                <View style={{ position: "absolute", top: 12, left: 14 }}>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <BusinessBagIcon size={16} color="blue" />
+                    {!selectedEmploymentStatus ? (
+                      <Typography
+                        fontSize={16}
+                        fontWeight={600}
+                        fontFamily="Nunito-SemiBold"
+                        marginLeft={8}
+                        color={vars["medium-grey"]}
+                      >
+                        Select from list
+                      </Typography>
+                    ) : null}
+                  </View>
+                </View>
+                <View>
+                  <SelectList
+                    setSelected={(val: string) => {
+                      setEmploymentStatus(val);
+                    }}
+                    onSelect={() => {
+                      const passedValue = employmentStatusTwo.find(
+                        (param) => param?.value === selectedEmploymentStatus
+                      )?.passedValue;
+                      setValues({
+                        ...values,
+                        employmentStatus: passedValue,
+                      });
+                      if (passedValue === "unemployed") {
+                        setFieldValue("occupation", "N/A");
+                        setFieldValue("employerName", "N/A");
+                        setFieldValue("positionHeld", "N/A");
+                        setFieldValue("lengthWithEmployer", "N/A");
+                        setFieldValue("natureOfBusiness", "N/A");
+                      } else {
+                        setFieldValue("occupation", "");
+                        setFieldValue("employerName", "");
+                        setFieldValue("positionHeld", "");
+                        setFieldValue("lengthWithEmployer", "");
+                        setFieldValue("natureOfBusiness", "");
+                      }
+                    }}
+                    data={employmentStatusTwo}
+                    save="value"
+                    arrowicon={<ArrowRightIcon size={16} color="blue" />}
+                    search={false}
+                    searchicon={
+                      <MaterialCommunityIcons
+                        size={20}
+                        color="#086AFB"
+                        name={"storefront-outline"}
+                      />
+                    }
+                    boxStyles={{
+                      borderRadius: 50,
+                      borderColor: vars["accent-blue"],
+                    }}
+                    dropdownStyles={{ borderColor: vars["accent-blue"] }}
+                    inputStyles={{ marginLeft: 20 }}
+                    // remove text in placeholder
+                    placeholder=" "
+                  />
+                </View>
+              </View>
+            </FormGroup>
           </View>
+          <WholeContainer>
+            <Seperator
+              backgroundColor={vars["v2-light-grey"]}
+              marginBottom={16}
+            />
+          </WholeContainer>
           <View>
             <FormGroup
               validationError={

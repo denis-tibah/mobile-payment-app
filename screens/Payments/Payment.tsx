@@ -63,13 +63,13 @@ export function Payment({ navigation }: any) {
 
   const [getTransactionsWithFilter, {data: transactionsData}] = useLazyGetTransactionsQuery();
   const formattedTransactionsForPayments = formatTransactionsForPaymentScreen(transactionsData);
-
   const filteredFormattedTransactionsForPayments = formattedTransactionsForPayments?.filter((item: any) => {
     return item.name.toLowerCase().includes(searchName.toLowerCase());
   });
 
   const handleGetTransactionsForPayments = async () => {
     let search: SearchFilter = {
+      isGroupingDisabled: true,
       accountId: `${userData?.id}`,
       accessToken: userTokens?.access_token,
       tokenZiyl: userTokens?.token_ziyl,
@@ -131,9 +131,12 @@ export function Payment({ navigation }: any) {
     }
   }, [access_token, token_ziyl]);
 
-  useEffect(() => {
-    handleGetTransactionsForPayments();
-  },[]);
+  // useEffect(() => {
+  //   handleGetTransactionsForPayments();
+  // },[]);
+
+  // console.log('transactionsData', transactionsData);
+  // console.log('transactions_grouped_by_date', transactions_grouped_by_date);
 
   return (
     <MainLayout navigation={navigation}>
@@ -292,7 +295,7 @@ export function Payment({ navigation }: any) {
                           fontWeight={600}
                           fontFamily="Nunito-Bold"
                         >
-                          {item.iban}
+                          { item.iban.length > 18 ? `${item.iban.substring(0, 18)}...` : item.iban }
                         </Typography>
                         </View>
                       </View>

@@ -54,6 +54,7 @@ export interface SearchFilter {
   bic?: string;
   accessToken?: string;
   tokenZiyl?: string;
+  isGroupingDisabled?: boolean;
 }
 
 export const transactionSlice = createSlice({

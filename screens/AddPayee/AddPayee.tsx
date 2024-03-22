@@ -26,7 +26,7 @@ import { styles } from "./styles";
 import Typography from "../../components/Typography";
 import { ArrowLeft } from "../../assets/icons/ArrowLeft/ArrowLeft";
 
-export function AddPayee({navigate, route}: any) {
+export function AddPayee({ navigate, route }: any) {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [beneficiaryIban, setBeneficiaryIban] = useState("");
@@ -162,10 +162,12 @@ export function AddPayee({navigate, route}: any) {
         icon={<BeneficiaryIcon color="pink" size={18} />}
         title="Payee"
         leftAction={
-          <Button onPress={() => navigate(screenNames.payments)} color={"light-pink"} leftIcon={<ArrowLeft size={14} />}>
-            <Typography>
-              Back
-            </Typography>
+          <Button
+            onPress={() => navigate(screenNames.payments)}
+            color={"light-pink"}
+            leftIcon={<ArrowLeft size={14} />}
+          >
+            <Typography>Back</Typography>
           </Button>
         }
       />

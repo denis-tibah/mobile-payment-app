@@ -22,6 +22,7 @@ import FormGroup from "../../components/FormGroup";
 import Button from "../../components/Button";
 import CodeIcon from "../../assets/icons/Code";
 import {
+  arrayChecker,
   getFormattedDateFromUnixDotted,
   getNameInitials,
   hp,
@@ -121,12 +122,15 @@ export function Payees({ navigation }: any) {
       const statusCode = addPayeeData?.code
         ? parseInt(addPayeeData?.code)
         : 400;
-      console.log("🚀 ~ useEffect ~ addPayeeData:", addPayeeData);
       setStatusMessage({
         header: statusCode >= 200 && statusCode < 400 ? "Success" : "Error",
         body:
           statusCode >= 200 && statusCode < 400
-            ? `${statusCode}: Success adding beneficiary`
+            ? `${statusCode}: ${
+                addPayeeData?.message
+                  ? addPayeeData?.message
+                  : "Succesfully added payee"
+              }`
             : `${statusCode}: Failed adding payee`,
 
         isOpen: true,
@@ -141,9 +145,21 @@ export function Payees({ navigation }: any) {
 
   useEffect(() => {
     if (isAddPayeeError) {
+      let errorMessage = "Something went wrong";
+      if (
+        addPayeeError?.data?.errors &&
+        arrayChecker(addPayeeError?.data?.errors)
+      ) {
+        if (addPayeeError?.data?.errors.length > 1) {
+          errorMessage = addPayeeError?.data?.errors.join(",");
+        }
+        if (addPayeeError?.data?.errors.length === 1) {
+          errorMessage = addPayeeError?.data?.errors[0];
+        }
+      }
       setStatusMessage({
         header: "Error",
-        body: "Something went wrong",
+        body: errorMessage,
         isOpen: true,
         isError: true,
       });

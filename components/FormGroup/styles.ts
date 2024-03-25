@@ -65,7 +65,7 @@ export const input: any = StyleSheet.create({
     backgroundColor: "rgba(201, 201, 201, 0)",
     fontSize: 16,
     fontWeight: "400",
-    lineHeight: 18,
+    /* lineHeight: 18, */
     height: "100%",
     color: "#000",
     flex: 1,

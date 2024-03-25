@@ -121,16 +121,14 @@ export function Payees({ navigation }: any) {
       const statusCode = addPayeeData?.code
         ? parseInt(addPayeeData?.code)
         : 400;
+      console.log("🚀 ~ useEffect ~ addPayeeData:", addPayeeData);
       setStatusMessage({
         header: statusCode >= 200 && statusCode < 400 ? "Success" : "Error",
         body:
           statusCode >= 200 && statusCode < 400
             ? `${statusCode}: Success adding beneficiary`
-            : `${statusCode}: ${
-                addPayeeData?.message
-                  ? addPayeeData?.message
-                  : "Success adding payee"
-              }`,
+            : `${statusCode}: Failed adding payee`,
+
         isOpen: true,
         isError: statusCode >= 200 && statusCode < 400 ? false : true,
       });
@@ -178,6 +176,16 @@ export function Payees({ navigation }: any) {
             />
           }
         >
+          <Spinner
+            visible={isLoading || isPayeesListLoading || isAddPayeeLoading}
+          />
+          <SuccessModal
+            isOpen={statusMessage?.isOpen}
+            title={statusMessage.header}
+            text={statusMessage.body}
+            isError={statusMessage.isError}
+            onClose={onCloseModal}
+          />
           <View>
             <Heading
               icon={<Payee color="pink" size={18} />}
@@ -853,16 +861,6 @@ export function Payees({ navigation }: any) {
           </View>
         </View>
       </SwipableBottomSheet>
-      <Spinner
-        visible={isLoading || isPayeesListLoading || isAddPayeeLoading}
-      />
-      <SuccessModal
-        isOpen={statusMessage?.isOpen}
-        title={statusMessage.header}
-        text={statusMessage.body}
-        isError={statusMessage.isError}
-        onClose={onCloseModal}
-      />
     </Fragment>
   );
 }

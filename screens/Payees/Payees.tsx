@@ -3,34 +3,25 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
   RefreshControl,
-  SafeAreaView,
 } from "react-native";
+import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import VectorIcon from "react-native-vector-icons/AntDesign";
 import Spinner from "react-native-loading-spinner-overlay/lib";
-import { RootState } from "../../store";
+import { AntDesign } from "@expo/vector-icons";
+import { Divider } from "react-native-paper";
+
 import {
   useAddPayeeMutation,
   useGetPayeesQuery,
-  useLazyGetPayeesQuery,
 } from "../../redux/payee/payeeSlice";
-import { Divider, Text } from "react-native-paper";
-import { AntDesign } from "@expo/vector-icons";
 import Search from "../../assets/icons/Search";
 import Heading from "../../components/Heading";
 import { MainLayout } from "../../layout/Main/Main";
 import FormGroup from "../../components/FormGroup";
 import Button from "../../components/Button";
-import { styles } from "./styles";
-import { useFormik } from "formik";
-import EuroIcon from "../../assets/icons/Euro";
 import CodeIcon from "../../assets/icons/Code";
 import {
-  formatDateDayMonthYear,
-  getCurrency,
   getFormattedDateFromUnixDotted,
   getNameInitials,
   hp,
@@ -39,46 +30,41 @@ import {
   wp,
 } from "../../utils/helpers";
 import vars from "../../styles/vars";
-import {
-  validationAddingPayeeSchema,
-  validationPaymentSchema,
-} from "../../utils/validation";
+import { validationAddingPayeeSchema } from "../../utils/validation";
 import ArrowRight from "../../assets/icons/ArrowRight";
-import BottomSheet from "../../components/BottomSheet";
 import FaceIcon from "../../assets/icons/FaceIcon";
-import BuildingIcon from "../../assets/icons/Building";
-import PinGPS from "../../assets/icons/PinGPS";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
-import IconQr from "../../assets/icons/IconsQr";
 import ArrowDownDotted from "../../assets/icons/ArrowDownDotted";
 import Typography from "../../components/Typography";
 import { deleteBeneficiary } from "../../redux/beneficiary/beneficiarySlice";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 import Payee from "../../assets/icons/Payee";
 import CalenderEmpty from "../../assets/icons/CalenderEmpty";
-import RBSheet from "react-native-raw-bottom-sheet";
+import { RootState } from "../../store";
 
 export function Payees({ navigation }: any) {
   const dispatch = useDispatch();
-  const infoData = useSelector((state: any) => state.account.details);
   const validationSchema = validationAddingPayeeSchema();
   const refRBSheet = useRef<any>(null);
   const refRBSheetDeletePayee = useRef<any>(null);
   const refRBSheetPayeesOrder = useRef<any>(null);
-  const [isAddingPayeeShown, setIsAddingPayeeShown] = useState<boolean>(false);
-  const [isModalSuccessOpen, setIsModalSuccessOpen] = useState<boolean>(false);
+
+  const userTokens = useSelector((state: RootState) => state?.auth?.data);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchName, setSearchName] = useState<string>("");
-  // const [isPayeeListShown, setIsPayeeListShown] = useState<boolean>(true);
   const [isSearchFilterShown, setIsSearchFilterShown] =
     useState<boolean>(false);
-  // const [isPayeeDetailsShown, setIsPayeeDetailsShown] = useState<boolean>(false);
   const [selectedPayeeId, setSelectedPayeeId] = useState<number>(0);
-  const [isFilterForPayeeShown, setIsFilterForPayeeShown] =
-    useState<boolean>(false);
   const [selectedFilterForPayees, setSelectedFilterForPayees] =
     useState<string>("1");
-  const userTokens = useSelector((state: RootState) => state?.auth?.data);
+  const [statusMessage, setStatusMessage] = useState<{
+    header: string;
+    body: string;
+    isOpen: boolean;
+    isError: boolean;
+  }>({ header: "", body: "", isOpen: false, isError: false });
+
   const { access_token, token_ziyl } = userTokens || {};
   const [
     addNewPayee,
@@ -86,15 +72,19 @@ export function Payees({ navigation }: any) {
       isError: isAddPayeeError,
       isSuccess: isAddPayeeSuccess,
       isLoading: isAddPayeeLoading,
+      data: addPayeeData,
+      error: addPayeeError,
     },
   ] = useAddPayeeMutation();
 
-  const { data: payeesList, isLoading: isPayeesListLoading } =
-    useGetPayeesQuery({
-      accessToken: access_token,
-      tokenZiyl: token_ziyl,
-    });
-  const [getPayees] = useLazyGetPayeesQuery();
+  const {
+    data: payeesList,
+    isLoading: isPayeesListLoading,
+    refetch: refetchPayees,
+  } = useGetPayeesQuery({
+    accessToken: access_token,
+    tokenZiyl: token_ziyl,
+  });
 
   const filteredPayeesList = payeesList?.filter((item: any) => {
     return item.name.toLowerCase().includes(searchName.toLowerCase());
@@ -116,36 +106,61 @@ export function Payees({ navigation }: any) {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      setIsLoading(true);
       addNewPayee({
         beneficiary_name: values.beneficiaryName,
         beneficiary_iban: values.beneficiaryIban,
         beneficiary_bic: values.beneficiaryBic,
         access_token,
         token_ziyl,
-      })
-        .unwrap()
-        .then((res: any) => {
-          getPayees({ accessToken: access_token, tokenZiyl: token_ziyl });
-          setIsModalSuccessOpen(true);
-          setIsLoading(false);
-        })
-        .finally(() => {
-          setIsModalSuccessOpen(true);
-          setIsLoading(false);
-          resetForm();
-        });
+      });
     },
   });
 
   useEffect(() => {
     if (isAddPayeeSuccess) {
-      setIsAddingPayeeShown(false);
+      const statusCode = addPayeeData?.code
+        ? parseInt(addPayeeData?.code)
+        : 400;
+      setStatusMessage({
+        header: statusCode >= 200 && statusCode < 400 ? "Success" : "Error",
+        body:
+          statusCode >= 200 && statusCode < 400
+            ? `${statusCode}: Success adding beneficiary`
+            : `${statusCode}: ${
+                addPayeeData?.message
+                  ? addPayeeData?.message
+                  : "Success adding payee"
+              }`,
+        isOpen: true,
+        isError: statusCode >= 200 && statusCode < 400 ? false : true,
+      });
+      if (statusCode >= 200 && statusCode < 400) {
+        refetchPayees();
+      }
+      resetForm();
     }
+  }, [isAddPayeeSuccess, addPayeeData]);
+
+  useEffect(() => {
     if (isAddPayeeError) {
-      setIsAddingPayeeShown(false);
+      setStatusMessage({
+        header: "Error",
+        body: "Something went wrong",
+        isOpen: true,
+        isError: true,
+      });
+      resetForm();
     }
-  }, [isAddPayeeSuccess, isAddPayeeError]);
+  }, [isAddPayeeError, addPayeeError]);
+
+  const onCloseModal = (): void => {
+    setStatusMessage({
+      header: "",
+      body: "",
+      isOpen: false,
+      isError: false,
+    });
+  };
 
   return (
     <Fragment>
@@ -158,15 +173,7 @@ export function Payees({ navigation }: any) {
               style={{ backgroundColor: "transparent", display: "none" }}
               refreshing={false}
               onRefresh={async () => {
-                setIsLoading(true);
-                getPayees({
-                  accessToken: access_token,
-                  tokenZiyl: token_ziyl,
-                })
-                  .unwrap()
-                  .then((res: any) => {
-                    setIsLoading(false);
-                  });
+                refetchPayees();
               }}
             />
           }
@@ -359,7 +366,6 @@ export function Payees({ navigation }: any) {
                                   item.created_at
                                 )}
                               </Typography>
-                              {/* <Text style={{fontSize: 12, color: vars['accent-green']}}>{`+ € 1200`}</Text> */}
                             </View>
                           </TouchableOpacity>
                           <View style={{ paddingTop: 3, paddingLeft: 8 }}>
@@ -541,7 +547,6 @@ export function Payees({ navigation }: any) {
         rbSheetRef={refRBSheet}
         closeOnDragDown={true}
         closeOnPressMask={false}
-        // onClose={() => refRBSheet?.current?.close()}
         height={420}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
@@ -569,7 +574,6 @@ export function Payees({ navigation }: any) {
               fontSize={16}
               fontWeight={600}
               fontFamily="Nunito-Bold"
-              // style={{marginLeft: 15, paddingLeft: 15, borderLeftWidth: 1, borderLeftColor: vars['grey']}}
             >
               Add Payee
             </Typography>
@@ -656,7 +660,6 @@ export function Payees({ navigation }: any) {
             color={"light-pink"}
             onPress={() => {
               refRBSheet.current.close();
-              setIsLoading(true);
               handleSubmit(
                 // @ts-ignore
                 values
@@ -682,7 +685,7 @@ export function Payees({ navigation }: any) {
           </Button>
         </View>
       </SwipableBottomSheet>
-      {/* <SwipableBottomSheet
+      <SwipableBottomSheet
         rbSheetRef={refRBSheetPayeesOrder}
         closeOnDragDown={true}
         closeOnPressMask={false}
@@ -733,7 +736,6 @@ export function Payees({ navigation }: any) {
                 refRBSheetPayeesOrder?.current?.close();
               }, 400);
             }}
-            //leftIcon={<AntDesign name="pluscircleo" size={18} color={vars['accent-pink']} />}
           >
             {item.label}
           </Button>
@@ -752,14 +754,6 @@ export function Payees({ navigation }: any) {
           elevation: 12,
           shadowColor: "#52006A",
           paddingHorizontal: 15,
-        }}
-        onClose={() => {
-          setIsLoading(true);
-          getPayees({ accessToken: access_token, tokenZiyl: token_ziyl })
-            .unwrap()
-            .then((res: any) => {
-              setIsLoading(false);
-            });
         }}
         draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
       >
@@ -798,7 +792,30 @@ export function Payees({ navigation }: any) {
                 dispatch<any>(deleteBeneficiary(selectedPayeeId))
                   .unwrap()
                   .then((res: any) => {
+                    const statusCode = res?.code ? parseInt(res?.code) : 400;
+                    if (statusCode >= 200 && statusCode < 400) {
+                      setStatusMessage({
+                        header: "Success",
+                        body: `${statusCode}: ${
+                          res?.message ? res?.message : "Success deleting payee"
+                        }`,
+                        isOpen: true,
+                        isError: false,
+                      });
+                    } else {
+                      setStatusMessage({
+                        header: "Error",
+                        body: `${statusCode}: ${
+                          res?.message
+                            ? res?.message
+                            : "Unable to  delete payee"
+                        }`,
+                        isOpen: true,
+                        isError: true,
+                      });
+                    }
                     setIsLoading(false);
+                    refetchPayees();
                     refRBSheetDeletePayee?.current?.close();
                   })
                   .catch((error: any) => {
@@ -835,18 +852,16 @@ export function Payees({ navigation }: any) {
             </Button>
           </View>
         </View>
-      </SwipableBottomSheet> */}
+      </SwipableBottomSheet>
       <Spinner
         visible={isLoading || isPayeesListLoading || isAddPayeeLoading}
       />
       <SuccessModal
-        isError={isAddPayeeError}
-        isOpen={isModalSuccessOpen}
-        title={isAddPayeeError ? "Error" : "Success"}
-        text={
-          isAddPayeeError ? "Something went wrong" : "Payee added successfully"
-        }
-        onClose={() => setIsModalSuccessOpen(false)}
+        isOpen={statusMessage?.isOpen}
+        title={statusMessage.header}
+        text={statusMessage.body}
+        isError={statusMessage.isError}
+        onClose={onCloseModal}
       />
     </Fragment>
   );

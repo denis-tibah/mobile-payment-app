@@ -192,16 +192,6 @@ export function Payees({ navigation }: any) {
             />
           }
         >
-          <Spinner
-            visible={isLoading || isPayeesListLoading || isAddPayeeLoading}
-          />
-          <SuccessModal
-            isOpen={statusMessage?.isOpen}
-            title={statusMessage.header}
-            text={statusMessage.body}
-            isError={statusMessage.isError}
-            onClose={onCloseModal}
-          />
           <View>
             <Heading
               icon={<Payee color="pink" size={18} />}
@@ -877,6 +867,16 @@ export function Payees({ navigation }: any) {
           </View>
         </View>
       </SwipableBottomSheet>
+      <Spinner
+        visible={isLoading || isPayeesListLoading || isAddPayeeLoading}
+      />
+      <SuccessModal
+        isOpen={statusMessage?.isOpen}
+        title={statusMessage.header}
+        text={statusMessage.body}
+        isError={statusMessage.isError}
+        onClose={onCloseModal}
+      />
     </Fragment>
   );
 }

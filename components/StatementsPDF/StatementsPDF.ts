@@ -255,6 +255,6 @@ export const generateStatementsPDF = async ({statements, accountData}: any) => {
   const { uri } = await Print.printToFileAsync({ html: getHTML, margins: { top: 20, bottom: 20, left: 20, right: 20 }});
   const newURI = FileSystem.documentDirectory + `statement_${from_date}_${to_date}.pdf`;
   await FileSystem.moveAsync({from: uri, to: newURI});
-  await FileSystem.downloadAsync(newURI, FileSystem.documentDirectory + `statement_${from_date}_${to_date}.pdf`);
+  // await FileSystem.downloadAsync(newURI, FileSystem.documentDirectory + `statement_${from_date}_${to_date}.pdf`);
   return newURI;
 }

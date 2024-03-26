@@ -18,7 +18,7 @@ export const transactionV2 = createApi({
       query: (params: any) => {
         const { isGroupingDisabled } = params;
         return {
-          url: `/transactionsV2`,
+          url: `/transactions`,
           method: "POST",
           body: {
             account_id: params?.accountId,

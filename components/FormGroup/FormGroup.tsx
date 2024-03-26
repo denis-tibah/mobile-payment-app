@@ -162,8 +162,12 @@ export function Password({
   ...props
 }: any) {
   const [showPassword, setShowPassword] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+
   return (
-    <View style={input.wrapper}>
+    <View style={[input.wrapper, {
+      borderColor: isFocused ? vars["accent-blue"] : vars["soft-blue"],
+    }]}>
       {icon && (
         <View style={input.icon}>
           {cloneElement(icon, { color: iconColor, size: 16 })}
@@ -174,6 +178,8 @@ export function Password({
         secureTextEntry={!showPassword}
         style={input.input}
         {...props}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
       />
 
       {rightIcon && (

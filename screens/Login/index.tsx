@@ -54,8 +54,6 @@ export function LoginScreen({ navigation }: any) {
   /* const validationSchema = validationAuthSchema(); */
 
   const saveSecureCredentials = async (email: string, password: string) => {
-    console.log("🚀 ~ saveSecureCredentials ~ password:", password);
-    console.log("🚀 ~ saveSecureCredentials ~ email:", email);
     await SecureStore.setItemAsync("user_email", email);
     await SecureStore.setItemAsync("user_password", password);
   };

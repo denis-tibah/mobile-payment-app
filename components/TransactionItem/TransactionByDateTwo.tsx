@@ -76,7 +76,6 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
   };
 
   const TransactionByDate = ({ transactions }: any) => {
-    console.log("🚀 ~ TransactionByDate ~ transactions:", transactions);
     return (
       <>
         {transactions.map((transaction: Transaction, index: number) => {

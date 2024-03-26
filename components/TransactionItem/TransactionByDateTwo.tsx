@@ -76,6 +76,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
   };
 
   const TransactionByDate = ({ transactions }: any) => {
+    console.log("🚀 ~ TransactionByDate ~ transactions:", transactions);
     return (
       <>
         {transactions.map((transaction: Transaction, index: number) => {
@@ -269,8 +270,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         }}
                       >
                         <View style={styles.cardContainer}>
-                        
-                        {transaction?.masked_number ? (
+                          {transaction?.masked_number ? (
                             <View style={styles.cardContentContainer}>
                               {displayTitle({ title: "Card" })}
                               {displayValue({
@@ -392,15 +392,13 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           </Box>
                         </View>
                       ) : null}
-                      {fieldHasValue(
-                        transaction?.transaction_datetime_with_hour
-                      ) ? (
+                      {fieldHasValue(transaction?.transaction_datetime) ? (
                         <View style={styles.detailMobileInnerDetail}>
                           <View style={styles.detailMobile}>
                             {displayTitle({ title: "Date & Time" })}
                             {displayValue({
                               content: getFormattedDateAndTime(
-                                transaction?.transaction_datetime_with_hour
+                                transaction?.transaction_datetime
                               ),
                             })}
                           </View>
@@ -453,7 +451,15 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
     <Fragment>
       <View style={{ backgroundColor: "#F5F9FF" }}>
         <Pressable>
-          <View style={{ paddingVertical: 6, paddingHorizontal: 18, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View
+            style={{
+              paddingVertical: 6,
+              paddingHorizontal: 18,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
             <Typography
               fontSize={14}
               fontWeight={500}
@@ -466,7 +472,9 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
               fontWeight={500}
               fontFamily="Nunito-SemiBold"
               marginLeft={6}
-              color={isPositiveAmountWithSign(totalAmount) === 1 ? "green" : "red"}
+              color={
+                isPositiveAmountWithSign(totalAmount) === 1 ? "green" : "red"
+              }
             >
               {totalAmount}
             </Typography>

@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   Text,
   Dimensions,
+  Platform,
 } from "react-native";
 import { useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
@@ -14,7 +15,13 @@ import PayeeAttachFileSection from "./components/PayeeAttaFileSection";
 import CheckBox from "expo-checkbox";
 import { useFormik } from "formik";
 import MainLayout from "../../layout/Main";
-import { globalWidthUnit, hp, screenNames, widthGlobal, wp } from "../../utils/helpers";
+import {
+  globalWidthUnit,
+  hp,
+  screenNames,
+  widthGlobal,
+  wp,
+} from "../../utils/helpers";
 import ArrowLeftLine from "../../assets/icons/ArrowLeftLine";
 import vars from "../../styles/vars";
 import { Divider, overlay } from "react-native-paper";
@@ -47,7 +54,8 @@ import {
 import ChangeLimits from "../../assets/icons/ChangeLimits";
 import Document from "../../assets/icons/Document";
 import Typography from "../../components/Typography";
-
+import ModalBottomSheet from "../../components/ModalBottomSheet/ModalBottomSheet";
+import CheckIcon from "../../assets/icons/Check";
 
 const currencyOptions = [
   { label: "EUR", value: "EUR" },
@@ -94,6 +102,9 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
   const validationSchema = validationPaymentSchema(accountBalance);
   const [code, setCode] = useState("");
   const [isTimeToCountDown, setIsTimeToCountDown] = useState<boolean>(false);
+  const [isOpenModalSuccessMessage, setIsOpenModalSuccessMessage] =
+    useState<boolean>(false);
+
   const enableResend = timeRemaining === 0;
 
   const handlePinCodeChange = (value: string) => {
@@ -128,6 +139,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
         const { status } = res;
         refRBSheetCodeOTP?.current.close();
         refRBSheetSuccess?.current?.open();
+        setIsOpenModalSuccessMessage(true);
         setIsPaymentSuccessful(true);
         submitProcessPayment({
           access_token: userTokens?.access_token,
@@ -136,13 +148,14 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           reference: smsPaymentRequest?.remarks,
           purpose: smsPaymentRequest?.reason,
           ticketValue: {
-            processpaymentupload: [ // for improvement - arjay
+            processpaymentupload: [
+              // for improvement - arjay
               {
-                filename:"test.pdf", 
+                filename: "test.pdf",
                 data: smsPaymentRequest?.attached_file,
                 type: "application/pdf",
-              }
-            ]
+              },
+            ],
           },
         });
       })
@@ -233,6 +246,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
     errors,
     setFieldValue,
     setValues,
+    resetForm,
   } = useFormik({
     initialValues: {
       amount: "",
@@ -251,7 +265,10 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
         return;
       }
       const { amount } = values;
-      handleInitiatepayment({ ...values, amount: parseFloat(amount).toFixed(2)});
+      handleInitiatepayment({
+        ...values,
+        amount: parseFloat(amount).toFixed(2),
+      });
     },
     validationSchema: validationSchema,
   });
@@ -296,6 +313,11 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
     };
   }, [timeRemaining, isTimeToCountDown]);
 
+  const closePopup = () => {
+    resetForm();
+    setIsOpenModalSuccessMessage(false);
+  };
+
   return (
     <MainLayout>
       <LoadingScreen isLoading={isLoading} />
@@ -309,18 +331,42 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                 style={styles.headerLeftIcon}
                 onPress={() => navigation.pop()}
               >
-                <ArrowLeftLine size={18} color="blue"/>
+                <ArrowLeftLine size={18} color="blue" />
               </TouchableOpacity>
               <View>
-                <Typography fontSize={14} color='#000' textAlign="left" fontFamily="Nunito-SemiBold">{receiverName}</Typography>
-                <Typography fontSize={12} color={vars["shade-grey"]} textAlign="left" fontFamily="Nunito-SemiBold">
+                <Typography
+                  fontSize={14}
+                  color="#000"
+                  textAlign="left"
+                  fontFamily="Nunito-SemiBold"
+                >
+                  {receiverName}
+                </Typography>
+                <Typography
+                  fontSize={12}
+                  color={vars["shade-grey"]}
+                  textAlign="left"
+                  fontFamily="Nunito-SemiBold"
+                >
                   {receiverIban}
                 </Typography>
               </View>
             </View>
-            <View style={{paddingRight:5}}>
-              <Typography fontSize={14} color='#000' textAlign="left" fontFamily="Nunito-SemiBold">Your Balance</Typography>
-              <Typography fontSize={12} color={vars["shade-grey"]} textAlign="right" fontFamily="Nunito-SemiBold">
+            <View style={{ paddingRight: 5 }}>
+              <Typography
+                fontSize={14}
+                color="#000"
+                textAlign="left"
+                fontFamily="Nunito-SemiBold"
+              >
+                Your Balance
+              </Typography>
+              <Typography
+                fontSize={12}
+                color={vars["shade-grey"]}
+                textAlign="right"
+                fontFamily="Nunito-SemiBold"
+              >
                 € {accountBalance}
               </Typography>
             </View>
@@ -332,14 +378,16 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
               paddingHorizontal: 18,
             }}
           >
-            <Divider style={{
-              marginBottom: 26,
-              width: widthGlobal,
-              left: -18,
-              height: 1,
-              backgroundColor: '#ACACAC',
-              opacity: 0.4
-            }} />
+            <Divider
+              style={{
+                marginBottom: 26,
+                width: widthGlobal,
+                left: -18,
+                height: 1,
+                backgroundColor: "#ACACAC",
+                opacity: 0.4,
+              }}
+            />
             <View style={{ marginBottom: 8, paddingBottom: 10 }}>
               <FormGroup
                 validationError={
@@ -359,35 +407,38 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                   icon={<Euro size={22} />}
                 />
               </FormGroup>
-              {errors.amount === "This amount is above your daily limit" && touched.amount && (
-                <TouchableOpacity
-                  style={{
-                    position: "absolute",
-                    right: 0,
-                    top: 56,
-                    bottom: 0,
-                    justifyContent: "center",
-                    paddingHorizontal: 10,
-                    backgroundColor: "#FFF1F1",
-                    borderRadius: 15,
-                    display: "flex",
-                    flexDirection: "row",
-                    padding: 5,
-                    height: 24,
-                  }}
-                  onPress={() => {
-                    console.log("change limits");
-                  }}
-                >
-                  <ChangeLimits />
-                  <Text style={{ color: "#FF7171", fontSize: 10, top: -2 }}>
-                    Change your limits
-                  </Text>
-                </TouchableOpacity>
-              )}
+              {errors.amount === "This amount is above your daily limit" &&
+                touched.amount && (
+                  <TouchableOpacity
+                    style={{
+                      position: "absolute",
+                      right: 0,
+                      top: 56,
+                      bottom: 0,
+                      justifyContent: "center",
+                      paddingHorizontal: 10,
+                      backgroundColor: "#FFF1F1",
+                      borderRadius: 15,
+                      display: "flex",
+                      flexDirection: "row",
+                      padding: 5,
+                      height: 24,
+                    }}
+                    onPress={() => {
+                      console.log("change limits");
+                    }}
+                  >
+                    <ChangeLimits />
+                    <Text style={{ color: "#FF7171", fontSize: 10, top: -2 }}>
+                      Change your limits
+                    </Text>
+                  </TouchableOpacity>
+                )}
             </View>
             <FormGroup
-              validationError={errors.reference && touched.reference && errors.reference}
+              validationError={
+                errors.reference && touched.reference && errors.reference
+              }
             >
               <FormGroup.Input
                 keyboardType="text"
@@ -402,14 +453,16 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                 icon={<CloudMessage />}
               />
             </FormGroup>
-            <Divider style={{
-              marginVertical: 15,
-              width: widthGlobal,
-              left: -18,
-              height: 1,
-              backgroundColor: '#ACACAC',
-              opacity: 0.4
-            }} />
+            <Divider
+              style={{
+                marginVertical: 15,
+                width: widthGlobal,
+                left: -18,
+                height: 1,
+                backgroundColor: "#ACACAC",
+                opacity: 0.4,
+              }}
+            />
             {values.amount >= 5000 && (
               <PayeeAttachFileSection
                 values={values}
@@ -418,8 +471,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                 handleChange={handleChange}
                 handleBlur={handleBlur}
               />
-              )
-            }
+            )}
           </View>
         </View>
       </KeyboardAwareScrollView>
@@ -563,71 +615,210 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           </Button>
         </View>
       </SwipableBottomSheet>
-      <SwipableBottomSheet
-        rbSheetRef={refRBSheetSuccess}
-        closeOnDragDown={true}
-        closeOnPressMask={false}
-        height={420}
-        wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
-        containerStyles={{
-          backgroundColor: "#fff",
-          borderTopLeftRadius: 14,
-          borderTopRightRadius: 14,
-          elevation: 12,
-          shadowColor: "#52006A",
-        }}
-        onClose={() => {
-          navigation.navigate(screenNames.payments);
-        }}
-        draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
-      >
-        <View
-          style={{
-            borderColor: isPaymentSuccessful
-              ? vars["accent-green"]
-              : vars["heavy-red"],
-            borderTopWidth: 60,
-          }}
+      {isOpenModalSuccessMessage && Platform.OS === "ios" ? (
+        <ModalBottomSheet
+          isOpen={isOpenModalSuccessMessage}
+          hasNoHeaderPadding
+          contentHeight={500}
         >
-          <Text
+          <View
+            style={[
+              styles.headerContainer,
+              { backgroundColor: isPaymentSuccessful ? "#0DCA9D" : "#FF7171" },
+            ]}
+          >
+            <View style={styles.headerWrapper}>
+              <View>
+                {isPaymentSuccessful ? (
+                  <View>
+                    <View
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 4,
+                      }}
+                    >
+                      <CheckIcon color="white" size={18} />
+                      <Text
+                        style={[
+                          styles.textConfirmation,
+                          { color: "white", paddingTop: 0 },
+                        ]}
+                      >
+                        Payment verified
+                      </Text>
+                    </View>
+                  </View>
+                ) : (
+                  <View>
+                    <View
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 4,
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.textConfirmation,
+                          { color: "white", paddingTop: 0 },
+                        ]}
+                      >
+                        Payment rejected
+                      </Text>
+                    </View>
+                  </View>
+                )}
+              </View>
+            </View>
+          </View>
+          {isPaymentSuccessful ? (
+            <View
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                paddingVertical: 12,
+              }}
+            >
+              <Typography
+                color="#000"
+                fontSize={14}
+                marginLeft={6}
+                fontWeight={400}
+                fontFamily="Mukta-Regular"
+              >
+                Your payment is on the way.
+              </Typography>
+              <Typography
+                color="#000"
+                fontSize={14}
+                marginLeft={6}
+                fontWeight={400}
+                fontFamily="Mukta-Regular"
+              >
+                Check your notification and transaction page.
+              </Typography>
+            </View>
+          ) : (
+            <View
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                paddingVertical: 12,
+              }}
+            >
+              <Typography
+                color="#000"
+                fontSize={14}
+                marginLeft={6}
+                fontWeight={400}
+                fontFamily="Mukta-Regular"
+              >
+                Your payment is rejected.
+              </Typography>
+              <Typography
+                color="#000"
+                fontSize={14}
+                marginLeft={6}
+                fontWeight={400}
+                fontFamily="Mukta-Regular"
+              >
+                Get new verification code to your phone or get support from our
+                team
+              </Typography>
+            </View>
+          )}
+
+          <View style={styles.headerWrapper}>
+            <Button
+              color={"green"}
+              onPress={() => closePopup()}
+              style={styles.buttonOK}
+            >
+              <Text>OK</Text>
+            </Button>
+          </View>
+          <View style={styles.imageWrapper}>
+            <Image
+              source={require('("../../../assets/images/verified.png')}
+              style={styles.image}
+            />
+          </View>
+        </ModalBottomSheet>
+      ) : null}
+      {isOpenModalSuccessMessage && Platform.OS === "android" ? (
+        <SwipableBottomSheet
+          rbSheetRef={refRBSheetSuccess}
+          closeOnDragDown={true}
+          closeOnPressMask={false}
+          height={420}
+          wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
+          containerStyles={{
+            backgroundColor: "#fff",
+            borderTopLeftRadius: 14,
+            borderTopRightRadius: 14,
+            elevation: 12,
+            shadowColor: "#52006A",
+          }}
+          onClose={() => {
+            navigation.navigate(screenNames.payments);
+          }}
+          draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
+        >
+          <View
             style={{
-              color: "white",
-              alignSelf: "center",
-              top: -45,
-              fontSize: 18,
+              borderColor: isPaymentSuccessful
+                ? vars["accent-green"]
+                : vars["heavy-red"],
+              borderTopWidth: 60,
             }}
           >
-            {isPaymentSuccessful ? "Payment Successful" : "Payment Failed"}
-          </Text>
-        </View>
-        {isPaymentSuccessful ? (
-          <>
-            <Text style={styles.textConfirmation}>
-              Your payment has been verified.
+            <Text
+              style={{
+                color: "white",
+                alignSelf: "center",
+                top: -45,
+                fontSize: 18,
+              }}
+            >
+              {isPaymentSuccessful ? "Payment Successful" : "Payment Failed"}
             </Text>
-            <Text style={styles.textConfirmation}>
-              Check your notifications and transaction page.
-            </Text>
-            <Image
-              source={require("../../assets/images/verified.png")}
-              style={styles.imageContainer}
-            />
-          </>
-        ) : (
-          <>
-            <Text style={styles.textConfirmation}>
-              Your payment failed to verify.
-            </Text>
-            <Text style={styles.textConfirmation}>
-              Check your notifications and transaction page.
-            </Text>
-            <Image
-              source={require("../../assets/images/failed.png")}
-              style={styles.imageContainer}
-            />
-          </>
-        )}
-      </SwipableBottomSheet>
+          </View>
+          {isPaymentSuccessful ? (
+            <>
+              <Text style={styles.textConfirmation}>
+                Your payment has been verified.
+              </Text>
+              <Text style={styles.textConfirmation}>
+                Check your notifications and transaction page.
+              </Text>
+              <Image
+                source={require("../../assets/images/verified.png")}
+                style={styles.imageContainer}
+              />
+            </>
+          ) : (
+            <>
+              <Text style={styles.textConfirmation}>
+                Your payment failed to verify.
+              </Text>
+              <Text style={styles.textConfirmation}>
+                Check your notifications and transaction page.
+              </Text>
+              <Image
+                source={require("../../assets/images/failed.png")}
+                style={styles.imageContainer}
+              />
+            </>
+          )}
+        </SwipableBottomSheet>
+      ) : null}
     </MainLayout>
   );
 };
@@ -681,7 +872,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: vars["accent-grey"],
     alignSelf: "center",
-    paddingTop: 10,
+    fontWeight: 400,
+    paddingTop: 6,
   },
   imageContainer: {
     width: 200,
@@ -698,5 +890,36 @@ const styles = StyleSheet.create({
     marginTop: 12,
     textAlign: "center",
     paddingBottom: 40,
+  },
+  headerContainer: {
+    backgroundColor: "#0DCA9D",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 0,
+    width: "100%",
+    height: 75,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  headerWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  imageWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#fff",
+  },
+  buttonOK: { backgroundColor: "#fff", height: 30, width: 90, marginTop: 24 },
+  image: {
+    height: 200,
+    width: 180,
+    marginTop: 46,
+    marginLeft: 90,
   },
 });

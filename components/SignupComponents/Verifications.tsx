@@ -108,14 +108,21 @@ const Verifications: FC<IVerifications> = ({
     setOtp(otpNum);
   };
 
-  const formatedPhoneNumber = (): string => {
-    const firstFour = registration?.data?.phoneNumberOnly.slice(0, 3);
-    const lastNumbers = registration?.data?.phoneNumberOnly.slice(
-      3,
-      registration?.data?.phoneNumberOnly.length + 1
-    );
-    const formattedNumber = `${registration?.data?.countryCodeOnly} ${firstFour} ${lastNumbers}`;
-    return formattedNumber || "";
+  const formatedPhoneNumber = (): string | null => {
+    const firstFour = registration?.data?.phoneNumberOnly
+      ? registration?.data?.phoneNumberOnly.slice(0, 3)
+      : "";
+    const lastNumbers = registration?.data?.phoneNumberOnly
+      ? registration?.data?.phoneNumberOnly.slice(
+          3,
+          registration?.data?.phoneNumberOnly.length + 1
+        )
+      : "";
+
+    if (registration?.data?.countryCodeOnly && firstFour && lastNumbers) {
+      return `${registration?.data?.countryCodeOnly} ${firstFour} ${lastNumbers}`;
+    }
+    return null;
   };
 
   const getOtp = ({
@@ -361,44 +368,45 @@ const Verifications: FC<IVerifications> = ({
                   </Text>
                 </TouchableOpacity>
               </View>
-              <WholeContainer>
-                <Seperator
-                  backgroundColor={vars["v2-light-grey"]}
-                  marginBottom={16}
-                  marginTop={36}
-                />
-              </WholeContainer>
-              <View />
-              <View style={styles.phoneNumberContainer}>
-                <View>
-                  {registration?.data?.identifier ? (
+              {formatedPhoneNumber() ? (
+                <Fragment>
+                  <WholeContainer>
+                    <Seperator
+                      backgroundColor={vars["v2-light-grey"]}
+                      marginBottom={16}
+                      marginTop={36}
+                    />
+                  </WholeContainer>
+                  <View style={styles.phoneNumberContainer}>
                     <View>
-                      <Text
-                        style={{
-                          color: vars["medium-grey2"],
-                          marginBottom: 10,
-                        }}
-                      >
-                        Your phone number
-                      </Text>
-                      <View style={styles.phoneNumberInnerContainer}>
-                        <PhoneIcon color="blue" size={18} />
-                        <Text style={{ marginLeft: 2, marginTop: 4 }}>
-                          {registration?.data?.identifier &&
-                          typeof registration?.data?.identifier === "string"
-                            ? formatedPhoneNumber()
-                            : ""}
+                      <View>
+                        <Text
+                          style={{
+                            color: vars["medium-grey2"],
+                            marginBottom: 10,
+                          }}
+                        >
+                          Your phone number
                         </Text>
+                        <View style={styles.phoneNumberInnerContainer}>
+                          <PhoneIcon color="blue" size={18} />
+                          <Text style={{ marginLeft: 2, marginTop: 4 }}>
+                            {registration?.data?.identifier &&
+                            typeof registration?.data?.identifier === "string"
+                              ? formatedPhoneNumber()
+                              : ""}
+                          </Text>
+                        </View>
                       </View>
                     </View>
-                  ) : null}
-                </View>
-                <TouchableOpacity onPress={handleChangePhoneNumber}>
-                  <Text style={{ color: vars["accent-pink"] }}>
-                    Change your phone number
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                    <TouchableOpacity onPress={handleChangePhoneNumber}>
+                      <Text style={{ color: vars["accent-pink"] }}>
+                        Change your phone number
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </Fragment>
+              ) : null}
             </View>
           </View>
           <View style={styles.footerContent}>
@@ -514,7 +522,8 @@ const Verifications: FC<IVerifications> = ({
                     fontSize={14}
                     fontWeight={400}
                   >
-                    If you have not yet received the verification code, press the button below to resend it.
+                    If you have not yet received the verification code, press
+                    the button below to resend it.
                   </Typography>
                 ) : null}
                 {bottomSheetContent?.type === "phoneNumber" ? (

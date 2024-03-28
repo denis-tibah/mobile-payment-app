@@ -30,6 +30,11 @@ const SwipableBottomSheet = ({
           ...draggableIconStyles,
         },
       }}
+      customAvoidingViewProps={{
+        enabled: true,
+        keyboardShouldPersistTaps: "always",
+        behavior: "padding",
+      }}
     >
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView>

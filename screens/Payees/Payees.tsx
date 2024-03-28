@@ -4,6 +4,8 @@ import {
   ScrollView,
   TouchableOpacity,
   RefreshControl,
+  Keyboard,
+  Dimensions,
 } from "react-native";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
@@ -42,6 +44,10 @@ import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 import Payee from "../../assets/icons/Payee";
 import CalenderEmpty from "../../assets/icons/CalenderEmpty";
 import { RootState } from "../../store";
+import RBSheet from "react-native-raw-bottom-sheet";
+
+const windowDimensions = Dimensions.get("window");
+const screenDimensions = Dimensions.get("screen");
 
 export function Payees({ navigation }: any) {
   const dispatch = useDispatch();
@@ -65,6 +71,12 @@ export function Payees({ navigation }: any) {
     isOpen: boolean;
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
+  const [keyboardStatus, setKeyboardStatus] = useState("hidden");
+  const [dimensions, setDimensions] = useState({
+    window: windowDimensions,
+    screen: screenDimensions,
+  });
+  console.log("🚀 ~ Payees ~ keyboardStatus:", keyboardStatus);
 
   const { access_token, token_ziyl } = userTokens || {};
   const [
@@ -107,6 +119,7 @@ export function Payees({ navigation }: any) {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
+      refRBSheet.current.close();
       addNewPayee({
         beneficiary_name: values.beneficiaryName,
         beneficiary_iban: values.beneficiaryIban,
@@ -166,6 +179,20 @@ export function Payees({ navigation }: any) {
       resetForm();
     }
   }, [isAddPayeeError, addPayeeError]);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardStatus("shown");
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardStatus("hidden");
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   const onCloseModal = (): void => {
     setStatusMessage({
@@ -561,7 +588,6 @@ export function Payees({ navigation }: any) {
         rbSheetRef={refRBSheet}
         closeOnDragDown={true}
         closeOnPressMask={false}
-        height={420}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
           backgroundColor: "#FFF",
@@ -570,6 +596,8 @@ export function Payees({ navigation }: any) {
           elevation: 12,
           shadowColor: "#52006A",
           paddingHorizontal: 15,
+          height:
+            dimensions.window.height - (keyboardStatus === "shown" ? 384 : 300),
         }}
         draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
       >
@@ -578,20 +606,19 @@ export function Payees({ navigation }: any) {
             display: "flex",
             flexDirection: "row",
             marginTop: 10,
-            marginBottom: 40,
           }}
         >
           <AntDesign name="pluscircleo" size={16} color={vars["accent-pink"]} />
-          <View style={{ marginLeft: 15, top: -3 }}>
-            <Typography
-              color="#000"
-              fontSize={16}
-              fontWeight={600}
-              fontFamily="Nunito-Bold"
-            >
-              Add Payee
-            </Typography>
-          </View>
+          <Typography
+            color="#000"
+            fontSize={16}
+            fontWeight={600}
+            fontFamily="Nunito-Bold"
+            marginLeft={15}
+            marginBottom={30}
+          >
+            Add Payee
+          </Typography>
         </View>
         <View>
           <FormGroup
@@ -657,47 +684,51 @@ export function Payees({ navigation }: any) {
             />
           </FormGroup>
         </View>
-        <Divider style={{ marginVertical: 15 }} />
-        <View
-          style={{
-            shadowColor: "#ACACAC",
-            shadowOffset: {
-              width: 0,
-              height: -2,
-            },
-            shadowOpacity: 0.23,
-            shadowRadius: 2.62,
-            elevation: 4,
-          }}
-        >
-          <Button
-            color={"light-pink"}
-            onPress={() => {
-              refRBSheet.current.close();
-              handleSubmit(
-                // @ts-ignore
-                values
-              );
-            }}
-            style={{ marginTop: 20 }}
-            leftIcon={
-              <AntDesign
-                name="pluscircleo"
-                size={18}
-                color={vars["accent-pink"]}
-              />
-            }
-          >
-            <Typography
-              color={vars["accent-pink"]}
-              fontSize={16}
-              fontWeight={600}
-              fontFamily="Nunito-Bold"
+        {keyboardStatus === "hidden" ? (
+          <Fragment>
+            <Divider style={{ marginVertical: 15 }} />
+            <View
+              style={{
+                shadowColor: "#ACACAC",
+                shadowOffset: {
+                  width: 0,
+                  height: -2,
+                },
+                shadowOpacity: 0.23,
+                shadowRadius: 2.62,
+                elevation: 4,
+              }}
             >
-              Save Payee
-            </Typography>
-          </Button>
-        </View>
+              <Button
+                color={"light-pink"}
+                onPress={() => {
+                  // refRBSheet.current.close();
+                  handleSubmit(
+                    // @ts-ignore
+                    values
+                  );
+                }}
+                style={{ marginTop: 14 }}
+                leftIcon={
+                  <AntDesign
+                    name="pluscircleo"
+                    size={18}
+                    color={vars["accent-pink"]}
+                  />
+                }
+              >
+                <Typography
+                  color={vars["accent-pink"]}
+                  fontSize={16}
+                  fontWeight={600}
+                  fontFamily="Nunito-Bold"
+                >
+                  Save Payee
+                </Typography>
+              </Button>
+            </View>
+          </Fragment>
+        ) : null}
       </SwipableBottomSheet>
       <SwipableBottomSheet
         rbSheetRef={refRBSheetPayeesOrder}

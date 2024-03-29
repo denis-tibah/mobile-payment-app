@@ -105,6 +105,7 @@ export const store = configureStore({
           "persist/REGISTER",
           "persist/FLUSH",
         ],
+        warnAfter: 128,
       },
     }).concat(
       thunk,

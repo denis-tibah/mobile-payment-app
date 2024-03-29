@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ImageBackground } from "react-native";
+import { View, Text, ImageBackground, ImageSourcePropType } from "react-native";
 import { styles } from "./timerStyles";
 import { prependBase64 } from "../../utils/helpers";
 

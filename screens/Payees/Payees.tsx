@@ -6,7 +6,6 @@ import {
   RefreshControl,
   Keyboard,
   Dimensions,
-  Platform,
 } from "react-native";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
@@ -77,6 +76,7 @@ export function Payees({ navigation }: any) {
     window: windowDimensions,
     screen: screenDimensions,
   });
+  console.log("🚀 ~ Payees ~ keyboardStatus:", keyboardStatus);
 
   const { access_token, token_ziyl } = userTokens || {};
   const [
@@ -597,14 +597,7 @@ export function Payees({ navigation }: any) {
           shadowColor: "#52006A",
           paddingHorizontal: 15,
           height:
-            dimensions.window.height -
-            (keyboardStatus === "shown"
-              ? Platform.OS === "ios"
-                ? 484
-                : 384
-              : Platform.OS === "ios"
-              ? 370
-              : 300),
+            dimensions.window.height - (keyboardStatus === "shown" ? 384 : 300),
         }}
         draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
       >

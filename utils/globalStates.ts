@@ -6,3 +6,5 @@ export const helpTabticketParams = atom({
   passedTicketType: "",
   transactionReferenceNumber: "",
 });
+
+export const sessionToken = atom(null);

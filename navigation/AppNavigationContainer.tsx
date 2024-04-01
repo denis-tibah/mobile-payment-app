@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import {
   createNavigationContainerRef,
   NavigationContainer,
@@ -13,11 +13,13 @@ import UserInactivity from "react-native-user-inactivity";
 import { PaperProvider } from "react-native-paper";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Spinner from "react-native-loading-spinner-overlay/lib";
+import { useAtom } from "jotai";
 
 import AppNavigationWrapper from "./AppNavigationWrapper";
 import ErrorFallback from "../components/ErrorFallback";
 import { signout } from "../redux/auth/authSlice";
 import { setInActivityState } from "../redux/account/accountSlice";
+import { sessionToken } from "../utils/globalStates";
 
 const AppNavigationContainer = () => {
   const prefix = Linking.createURL("/");
@@ -48,6 +50,8 @@ const AppNavigationContainer = () => {
   const navigationRef = createNavigationContainerRef();
   const [currentRoute, setCurrentRoute] = useState("");
 
+  const [userSessionToken, setSessionToken] = useAtom(sessionToken);
+
   const onStateChange = (state: any) => {
     setCurrentRoute(state?.routes[state.index]?.name);
   };
@@ -56,6 +60,25 @@ const AppNavigationContainer = () => {
     // Show error locally on DEBUG mode
     console.log(stackTrace, error);
   };
+
+  // runs in dev environment
+  // run this on dev environment. set global variable setLoginToken in order not to get logged out
+  if (__DEV__) {
+    if (authData?.access_token) {
+      setSessionToken(authData?.access_token);
+    }
+  } else {
+    setSessionToken(null);
+  }
+
+  //runs in production environment
+  // log out user if not dev environment and global variable loginToken is not set
+  useEffect(() => {
+    if (!userSessionToken /* && !__DEV__ */) {
+      dispatch(signout());
+    }
+  }, [userSessionToken]);
+
   /*  return (
     <UserInactivity
       currentScreen={currentRoute}

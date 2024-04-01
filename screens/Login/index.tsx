@@ -15,6 +15,7 @@ import * as SecureStore from "expo-secure-store";
 import { useFormik } from "formik";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAtom } from "jotai";
 
 import Button from "../../components/Button";
 import FormGroup from "../../components/FormGroup";
@@ -35,6 +36,7 @@ import vars from "../../styles/vars";
 import { arrayChecker, hp, wp } from "../../utils/helpers";
 import { validationAuthSchema } from "../../utils/validation";
 import { getDeviceDetails } from "../../utils/getIpAddress";
+import { sessionToken } from "../../utils/globalStates";
 
 export function LoginScreen({ navigation }: any) {
   const appVersion = Constants?.manifest?.version;
@@ -48,6 +50,8 @@ export function LoginScreen({ navigation }: any) {
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
   const [biometricStatus, setBiometricStatus] = useState<boolean>(false);
+
+  const [, setSessionToken] = useAtom(sessionToken);
 
   const { navigate }: any = useNavigation();
   const dispatch = useDispatch();
@@ -115,6 +119,7 @@ export function LoginScreen({ navigation }: any) {
         ? accountQuery[0]
         : {};
     if (dataLogin?.token_ziyl && dataLogin?.access_token) {
+      setSessionToken(dataLogin?.access_token);
       await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
       await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
       dispatch<any>(signInViaRTK({ dataLogin, dataAccount: objAccountQuery }));

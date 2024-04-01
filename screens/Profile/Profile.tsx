@@ -138,6 +138,7 @@ export function Profile({ route, navigation }: any) {
     label: "",
     message: "",
   });
+
   /* const [isEnabled, setIsEnabled] = useState(false);
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
   const [dropDownOpen, setDropDownOpen] = useState(false);

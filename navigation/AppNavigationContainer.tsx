@@ -74,7 +74,7 @@ const AppNavigationContainer = () => {
   //runs in production environment
   // log out user if not dev environment and global variable loginToken is not set
   useEffect(() => {
-    if (!userSessionToken /* && !__DEV__ */) {
+    if (!userSessionToken && !__DEV__) {
       dispatch(signout());
     }
   }, [userSessionToken]);

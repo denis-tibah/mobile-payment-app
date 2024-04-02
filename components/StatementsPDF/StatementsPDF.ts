@@ -187,7 +187,7 @@ const statementsPDFGenerator = async ({ statements, accountData }: any): Promise
       <head>
         <div style="display: flex; flex-direction: row; justify-content: space-between;">
           <div style="width: 50%; height: 50%;">
-            <img src="${ZazooLogo}" style="width: 200px; height: 50px;" alt="Zazoo2" />
+            <img src="${image}" style="width: 200px; height: 50px;" alt="Zazoo2" />
           </div>
           <div style="width: 50%; text-align: right;">
             <h3>Account Statement</h3>

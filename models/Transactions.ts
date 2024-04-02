@@ -26,6 +26,8 @@ export interface Transaction {
   revenueType: string;
   charges: string;
   exchange_rate: string;
+  original_amount?: string;
+  masked_number?: string;
 }
 
 export interface transactions {

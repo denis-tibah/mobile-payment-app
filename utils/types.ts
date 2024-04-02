@@ -17,4 +17,5 @@ export type Transaction = {
   balance?: string | null;
   opening_balance?: string | number;
   isCardTx?: boolean;
+  original_amount?: string;
 };

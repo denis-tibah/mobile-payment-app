@@ -6,11 +6,14 @@ const METHODS = {
   GET: "GET",
   PUT: "PUT",
 };
-const getTokens = async (): Promise<{ accessToken: string | null; tokenZiyl: string | null; }> => {
+const getTokens = async (): Promise<{
+  accessToken: string | null;
+  tokenZiyl: string | null;
+}> => {
   const accessToken = await AsyncStorage.getItem("accessToken");
   const tokenZiyl = await AsyncStorage.getItem("tokenZiyl");
   return { accessToken, tokenZiyl };
-}
+};
 export const cardsV2 = createApi({
   reducerPath: "cardsV2",
   tagTypes: ["cardsV2"],
@@ -18,7 +21,7 @@ export const cardsV2 = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: exportedBaseUrl,
     prepareHeaders: async (headers) => {
-      const { accessToken, tokenZiyl} = await getTokens();
+      const { accessToken, tokenZiyl } = await getTokens();
       if (accessToken && tokenZiyl) {
         headers.set("Content-Type", "application/json");
         headers.set("AuthorizationFinxp", `Bearer ${accessToken}`);
@@ -63,16 +66,17 @@ export const cardsV2 = createApi({
       }),
     }),
     showCardDetails: builder.query({
-      query: ({account_id, otp, card_id}) => {
+      query: ({ account_id, otp, card_id }) => {
         return {
-        url: `/showcardfinxpV2`,
-        method: "POST",
-        body: {
-          account_id,
-          otp,
-          card_id: Number(card_id),
-        },
-      }},
+          url: `/showcardfinxpV2`,
+          method: "POST",
+          body: {
+            account_id,
+            otp,
+            card_id: Number(card_id),
+          },
+        };
+      },
     }),
     sendSmsLostCardVerification: builder.query({
       query: ({ accountId, cardId }) => ({

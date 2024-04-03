@@ -22,6 +22,7 @@ import vars from "../../styles/vars";
 import { useState } from "react";
 import LoadingScreen from "../../components/Loader/LoadingScreen";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
+import TransactionByDateTwo from "../../components/TransactionItem/TransactionByDateTwo";
 import {
   getFormattedDateFromUnixDotted,
   hp,
@@ -113,6 +114,7 @@ export function Transactions({ navigation, route }: any) {
   });
   const [getCartTransactions, { data: cardTransactions }] =
     useLazyGetCardTransactionsQuery();
+  console.log("🚀 ~ Transactions ~ cardTransactions:", cardTransactions);
   const listOfActiveCards = sortUserActiveToInactiveCards(userCardsList);
   const activeCard = listOfActiveCards?.find(
     (card: any) => card.cardStatus === CardStatus.ACTIVE
@@ -437,10 +439,11 @@ export function Transactions({ navigation, route }: any) {
   return (
     <MainLayout navigation={navigation}>
       {/* <Spinner visible={isLoading} /> */}
-      <ScrollView bounces={true} 
+      <ScrollView
+        bounces={true}
         refreshControl={
           <RefreshControl
-            style={{ backgroundColor: "transparent", display: 'none' }}
+            style={{ backgroundColor: "transparent", display: "none" }}
             refreshing={false}
             onRefresh={() => {
               setIsLoading(true);
@@ -451,11 +454,7 @@ export function Transactions({ navigation, route }: any) {
       >
         <View style={styles.container}>
           <Heading
-            icon={
-            <TransactionIcon 
-              size={18} 
-              color="pink"
-            />}
+            icon={<TransactionIcon size={18} color="pink" />}
             title={
               isCardTransactionShown
                 ? "Card Transactions History"
@@ -569,11 +568,21 @@ export function Transactions({ navigation, route }: any) {
                   );
                 })
               : null} */}
-              {txHistory && txHistory.length > 0 ? (
-                txHistory.map((tx: any, index: number) => {
-
-                  return (
-                    <TransactionsByDate
+            {txHistory && txHistory.length > 0 ? (
+              txHistory.map((tx: any, index: number) => {
+                return (
+                  <Fragment>
+                    {/* <TransactionsByDate
+                      key={tx.date}
+                      shownData={{
+                        date: tx.date,
+                        totalAmount: tx.closing_balance,
+                        currency: tx.transactions[0].currency,
+                      }}
+                      transactionsByDate={tx.transactions}
+                      totalAmount={tx.closing_balance}
+                    /> */}
+                    <TransactionByDateTwo
                       key={tx.date}
                       shownData={{
                         date: tx.date,
@@ -583,27 +592,29 @@ export function Transactions({ navigation, route }: any) {
                       transactionsByDate={tx.transactions}
                       totalAmount={tx.closing_balance}
                     />
-                  );
-                })) : (
-                  <Fragment>
-                    <View
-                      style={{
-                        padding: 30,
-                        backgroundColor: "#fff",
-                        height: hp(150),
-                        alignItems: "center",
-                      }}
-                    >
-                      <Typography
-                        fontSize={16}
-                        color={vars["black"]}
-                        fontWeight="Nunito-Bold"
-                      >
-                        Don't have any transactions found
-                      </Typography>
-                    </View>
                   </Fragment>
-                )}
+                );
+              })
+            ) : (
+              <Fragment>
+                <View
+                  style={{
+                    padding: 30,
+                    backgroundColor: "#fff",
+                    height: hp(150),
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography
+                    fontSize={16}
+                    color={vars["black"]}
+                    fontWeight="Nunito-Bold"
+                  >
+                    Don't have any transactions found
+                  </Typography>
+                </View>
+              </Fragment>
+            )}
             {/* {!isCardTransactionShown &&
               Object.keys(_groupedByDateTransactions).length === 0 && (
                 <Fragment>
@@ -719,7 +730,9 @@ export function Transactions({ navigation, route }: any) {
                   },
                 });
               }}
-              disabled={searchFieldData.card_id !== "" && isCardTransactionShown}
+              disabled={
+                searchFieldData.card_id !== "" && isCardTransactionShown
+              }
             >
               {showPickerDateFilter.dateFrom.value &&
                 getFormattedDateFromUnixDotted(
@@ -766,7 +779,9 @@ export function Transactions({ navigation, route }: any) {
                   },
                 });
               }}
-              disabled={searchFieldData.card_id !== "" && isCardTransactionShown}
+              disabled={
+                searchFieldData.card_id !== "" && isCardTransactionShown
+              }
             >
               {showPickerDateFilter.dateTo.value &&
                 getFormattedDateFromUnixDotted(
@@ -805,7 +820,9 @@ export function Transactions({ navigation, route }: any) {
           {transactionStatusOptions.map((option, index) => (
             <TouchableOpacity
               key={index}
-              disabled={searchFieldData.card_id !== "" && isCardTransactionShown}
+              disabled={
+                searchFieldData.card_id !== "" && isCardTransactionShown
+              }
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -857,7 +874,9 @@ export function Transactions({ navigation, route }: any) {
             <FormGroup.Input
               placeholder={"From"}
               color={vars["black"]}
-              disabled={searchFieldData.card_id !== "" && isCardTransactionShown}
+              disabled={
+                searchFieldData.card_id !== "" && isCardTransactionShown
+              }
               fontSize={14}
               fontWeight={"400"}
               style={{
@@ -887,7 +906,9 @@ export function Transactions({ navigation, route }: any) {
             <FormGroup.Input
               placeholder={"To"}
               color={vars["black"]}
-              disabled={searchFieldData.card_id !== "" && isCardTransactionShown}
+              disabled={
+                searchFieldData.card_id !== "" && isCardTransactionShown
+              }
               fontSize={14}
               fontWeight={"400"}
               style={{

@@ -76,92 +76,93 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
               <Box
                 style={styles.detailMobileForEachTransactionContainer}
                 key={index}
-                
               >
                 <TouchableOpacity
                   onPress={() => handleToggleDetails(index)}
                   style={styles.detailMobileForEachTransactionWrapper}
                 >
                   {/* <Box style={styles.detailMobileForEachTransactionWrapper}> */}
-                    <View style={styles.nameContainer}>
-                      {transaction?.service === "DEBIT CARD" ? (
-                        <CardIcon size={14} color={"heavy-grey"} />
-                      ) : null}
-                      {transaction?.service === "SEPA CT IN" ||
-                      transaction?.service === "SEPA CT OUT" ||
-                      transaction?.service === "SEPA INST IN" ||
-                      transaction?.service === "INTERNAL" ? (
-                        <BankIcon size={14} color={"heavy-grey"} />
-                      ) : null}
-                      <Text numberOfLines={1} style={styles.valueDetailMobile}>
-                        {transaction.name}
-                      </Text>
-                    </View>
-                    <View
+                  <View style={styles.nameContainer}>
+                    {transaction?.service === "DEBIT CARD" ? (
+                      <CardIcon size={14} color={"heavy-grey"} />
+                    ) : null}
+                    {transaction?.service === "SEPA CT IN" ||
+                    transaction?.service === "SEPA CT OUT" ||
+                    transaction?.service === "SEPA INST IN" ||
+                    transaction?.service === "INTERNAL" ? (
+                      <BankIcon size={14} color={"heavy-grey"} />
+                    ) : null}
+                    <Text numberOfLines={1} style={styles.valueDetailMobile}>
+                      {transaction.name}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      // flex: 1,
+                      display: "flex",
+                      flexDirection: "row",
+                      // alignSelf: "end",
+                      // justifyContent: "flex-end",
+                      // backgroundColor: "#ACACAC",
+                      width: "33%",
+                    }}
+                  >
+                    <Box
                       style={{
-                        // flex: 1,
+                        flex: 1,
                         display: "flex",
                         flexDirection: "row",
-                        // alignSelf: "end",
-                        // justifyContent: "flex-end",
-                        // backgroundColor: "#ACACAC",
-                        width: "33%",
-                      }}
-                    >
-                      <Box style={{
-                        flex: 1,
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'flex-end',
+                        justifyContent: "flex-end",
                         padding: 2,
                         right: wp(-10),
                         // : "center",
-                      }}>
-                        <Box style={{ marginTop: 8, paddingRight: 5 }}>
-                          {shownData.currency === "EUR" ? (
+                      }}
+                    >
+                      <Box style={{ marginTop: 8, paddingRight: 5 }}>
+                        {shownData.currency === "EUR" ? (
                           <EuroIcon
                             size={18}
                             color={+transaction.amount > 0 ? "green" : "red"}
                             style={{ marginTop: 8 }}
                           />
-                            ) : (
-                            <DollarIcon size={18} color="#278664" />
-                          )}
-                        </Box>
-                        <Text
-                          style={[
-                            styles.amountDetailMobile,
-                            Number(transaction.amount) > 0
-                              ? styles.amountAddedDetail
-                              : styles.amountDeductedDetail,
-                          ]}
-                        >
-                          {formatAmountTableValue(
-                            transaction.amount,
-                            shownData.currency
-                          )}
-
-                          <TouchableOpacity
-                            onPress={() => handleToggleDetails(index)}
-                            style={{ paddingTop: 10, paddingLeft: 10 }}
-                          >
-                            {openTransactionIndex === index ? (
-                              <ArrowDown
-                                color="heavy-grey"
-                                size={12}
-                                style={{ paddingRight: 14 }}
-                              />
-                            ) : (
-                              <ArrowRight
-                                color="heavy-grey"
-                                size={12}
-                                style={{ paddingRight: 14 }}
-                              />
-                            )}
-                          </TouchableOpacity>
-                        </Text>
+                        ) : (
+                          <DollarIcon size={18} color="#278664" />
+                        )}
                       </Box>
-                    </View>
+                      <Text
+                        style={[
+                          styles.amountDetailMobile,
+                          Number(transaction.amount) > 0
+                            ? styles.amountAddedDetail
+                            : styles.amountDeductedDetail,
+                        ]}
+                      >
+                        {formatAmountTableValue(
+                          transaction.amount,
+                          shownData.currency
+                        )}
+
+                        <TouchableOpacity
+                          onPress={() => handleToggleDetails(index)}
+                          style={{ paddingTop: 10, paddingLeft: 10 }}
+                        >
+                          {openTransactionIndex === index ? (
+                            <ArrowDown
+                              color="heavy-grey"
+                              size={12}
+                              style={{ paddingRight: 14 }}
+                            />
+                          ) : (
+                            <ArrowRight
+                              color="heavy-grey"
+                              size={12}
+                              style={{ paddingRight: 14 }}
+                            />
+                          )}
+                        </TouchableOpacity>
+                      </Text>
+                    </Box>
+                  </View>
                   {/* </Box> */}
                 </TouchableOpacity>
               </Box>
@@ -237,7 +238,6 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                         }}
                       >
                         <View style={styles.cardContainer}>
-
                           {transaction?.masked_number ? (
                             <View style={styles.cardContentContainer}>
                               {displayTitle({ title: "Card" })}
@@ -362,7 +362,7 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                           {displayValue({
                             content: getFormattedDateAndTime(
                               transaction?.transaction_datetime
-                            )
+                            ),
                           })}
                         </View>
                       </View>

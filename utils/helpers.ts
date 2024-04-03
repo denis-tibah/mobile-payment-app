@@ -443,7 +443,7 @@ export const arrayChecker = (arr: any[]): Boolean => {
 
 export const fieldHasValue = (value: any) => {
   if (value && value !== null && value !== undefined) {
-    if (value.toLowerCase() !== "null") {
+    if (value !== "null") {
       return value;
     } else {
       return "";

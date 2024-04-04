@@ -39,7 +39,7 @@ const displayValue = ({
 }: {
   content: string | null;
   hasCurrency: boolean;
-  currencyType: string | null;
+  currencyType: string | undefined;
 }) => {
   return (
     <View

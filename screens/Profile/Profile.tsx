@@ -357,8 +357,8 @@ export function Profile({ route, navigation }: any) {
           }
         />
         <SafeAreaView style={{ flex: 1 }}>
-          <ScrollView
-            bounces={false}
+          <View
+            // bounces={false}
             /* style={{ backgroundColor: "#fff" }} */
             style={{ flexGrow: 1 }}
           >
@@ -1306,7 +1306,7 @@ export function Profile({ route, navigation }: any) {
                 </Fragment>
               ) : null}
             </View>
-          </ScrollView>
+          </View>
         </SafeAreaView>
         {/* {displayTabSelection()} */}
       </MainLayout>

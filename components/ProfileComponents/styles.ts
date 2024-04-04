@@ -1,6 +1,7 @@
 import { Path } from "react-native-svg";
 import { StyleSheet } from "react-native";
 import vars from "../../styles/vars";
+import { hp } from "../../utils/helpers";
 
 export const styles = StyleSheet.create({
   dropdownWrapper: {
@@ -63,6 +64,8 @@ export const styles = StyleSheet.create({
     shadowColor: "black",
     elevation: 8,
     padding: 8,
+    position: "relative",
+    bottom: -hp(20),
   },
   downloadBtnMain: {
     width: "100%",

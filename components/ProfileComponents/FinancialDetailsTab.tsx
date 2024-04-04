@@ -167,9 +167,9 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
   return (
     <Fragment>
       <View style={{ flexGrow: 0, backgroundColor: "#fff", height: "75%" }}>
-        <SafeAreaView style={{ flex: 1 }}>
-          <ScrollView>
-            <View style={{ backgroundColor: "#ffff" }}>
+        <SafeAreaView >
+          {/* <ScrollView> */}
+            <View >
               <Spinner visible={isLoadingCreateTicketReq} />
               <SuccessModal
                 isOpen={statusMessage?.isOpen}
@@ -488,11 +488,9 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
                 </View>
               </Pressable>
             </View>
-          </ScrollView>
-        </SafeAreaView>
-        <View style={styles.footerContent}>
-          <View style={styles.downloadBtnMain}>
-            <WholeContainer>
+          {/* </ScrollView> */}
+          <View style={styles.footerContent}>
+            <View style={styles.downloadBtnMain}>
               <Button
                 color="light-pink"
                 leftIcon={
@@ -512,9 +510,16 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
                   Save changes
                 </Typography>
               </Button>
-            </WholeContainer>
+            </View>
           </View>
-        </View>
+        </SafeAreaView>
+        {/* <View style={styles.footerContent}> */}
+          {/* <View style={styles.downloadBtnMain}> */}
+            {/* <WholeContainer> */}
+              
+            {/* </WholeContainer> */}
+          {/* </View> */}
+        {/* </View> */}
       </View>
     </Fragment>
   );

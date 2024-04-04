@@ -19,17 +19,11 @@ import {
 } from "../../redux/transaction/transactionSlice";
 import { RootState } from "../../store";
 import vars from "../../styles/vars";
-import { Seperator } from "../../components/Seperator/Seperator";
 import { useState } from "react";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import LoadingScreen from "../../components/Loader/LoadingScreen";
-/* import Pagination from "../../components/Pagination/Pagination"; */
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 import {
-  formatDateDayMonthYear,
   getFormattedDateFromUnixDotted,
-  getUserActiveCards,
-  groupedByDateTransactions,
   hp,
   sortUserActiveToInactiveCards,
   widthGlobal,
@@ -37,21 +31,15 @@ import {
 } from "../../utils/helpers";
 import { CardStatus, transactionStatusOptions } from "../../utils/constants";
 import { Text } from "react-native";
-import BottomSheet from "../../components/BottomSheet";
 import Filter from "../../assets/icons/Filter";
 import { Divider } from "react-native-paper";
 import {
   useGetCardV2Query,
   useLazyGetCardTransactionsQuery,
-  useLazyGetCardV2Query,
 } from "../../redux/card/cardSliceV2";
 import { useLazyGetTransactionsQuery } from "../../redux/transaction/transactionV2Slice";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import Spinner from "react-native-loading-spinner-overlay/lib";
 import { setIsCardTransactionShown } from "../../redux/card/cardSlice";
-import TransactionItem from "../../components/TransactionItem";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
-import { ref } from "yup";
 import Euro from "../../assets/icons/Euro";
 import { RefreshControl } from "react-native";
 
@@ -72,7 +60,8 @@ const initialSearchFieldData: SearchFilter = {
   accountId: "",
   direction: "desc",
   status: "",
-  /* limit: 20, */
+  from_date: "2022-01-01",
+  to_date: currentDate.toISOString().split("T")[0],
   limit: 500,
   page: 1,
 };

@@ -170,8 +170,8 @@ const SecurityTab: FC<ISecurityTab> = () => {
         isError={statusMessage.isError}
         onClose={onCloseModal}
       />
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-        <ScrollView>
+      <SafeAreaView style={{ backgroundColor: "#fff" }}>
+        {/* <ScrollView> */}
           <Pressable>
             <View>
               {/* <View
@@ -385,7 +385,7 @@ const SecurityTab: FC<ISecurityTab> = () => {
               </View>
             </View>
           </Pressable>
-        </ScrollView>
+        {/* </ScrollView> */}
       </SafeAreaView>
       <View
         style={[

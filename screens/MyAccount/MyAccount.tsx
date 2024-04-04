@@ -125,11 +125,7 @@ export function MyAccount({ navigation }: any) {
   const refRBSheet = useRef();
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  /* const [sortByStatus, setSortByStatus] = useState<boolean>(false); */
-  /* const [isLoading, setIsLoading] = useState<boolean>(false); */
-  /* const [paginateRefresh, setPaginateRefresh] = useState<boolean>(false); */
-  const [isOneTransactionOpen, setIsOneTransactionOpen] =
-    useState<boolean>(false);
+  const [isOneTransactionOpen, setIsOneTransactionOpen] = useState<boolean>(false);
   const [storageData, setStorageData] = useState<{
     email: string;
     password: string;
@@ -143,7 +139,7 @@ export function MyAccount({ navigation }: any) {
     window: windowDimensions,
     screen: screenDimensions,
   });
-  const [isFaceId, setFaceId] = useState<boolean>(true);
+
   const [enableBiometric, setEnableBiometric] = useState<boolean>(false);
 
   useEffect(() => {

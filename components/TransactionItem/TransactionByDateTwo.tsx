@@ -32,6 +32,7 @@ import { displayTitle, displayValue } from "./TransactionHelper";
 import { helpTabticketParams } from "../../utils/globalStates";
 import WholeContainer from "../../layout/WholeContainer";
 import { Seperator } from "../../components/Seperator/Seperator";
+import ZazzoLogo from "../../assets/icons/ZazzoLogo";
 
 interface TransactionItemProps {
   setIsOneTransactionOpen?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -107,10 +108,14 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                       ) : null}
                       {transaction?.service === "SEPA CT IN" ||
                       transaction?.service === "SEPA CT OUT" ||
-                      transaction?.service === "SEPA INST IN" ||
-                      transaction?.service === "INTERNAL" ? (
+                      transaction?.service === "SEPA INST IN" ? (
                         <BankIcon size={14} color={"heavy-grey"} />
                       ) : null}
+                      {
+                        transaction?.service === "INTERNAL" ? (
+                          <ZazzoLogo size={14} color={"heavy-grey"} />
+                        ) : null
+                      }
                       <Typography
                         fontSize={14}
                         fontFamily="Mukta-Regular"

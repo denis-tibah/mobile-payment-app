@@ -1,15 +1,16 @@
-import { StyleSheet } from "react-native"
+import { StyleSheet } from "react-native";
+import { hp } from "../../utils/helpers";
 
-export const styles:any = StyleSheet.create<any>({
+export const styles: any = StyleSheet.create<any>({
   container: {
     // marginTop: 26,
-    zIndex:1,
+    zIndex: 1,
   },
   containerBottomSheetHeader: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     // backgroundColor: '#F5F9FF',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -17,47 +18,42 @@ export const styles:any = StyleSheet.create<any>({
     paddingBottom: 0,
   },
   containerDate: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   iconFilter: {
     height: 34,
     width: 34,
     padding: 10,
-    backgroundColor: '#F5F9FF',
+    backgroundColor: "#F5F9FF",
     borderRadius: 20,
   },
   dateRange: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
     width: 300,
     marginTop: 10,
-  
   },
   listHead: {
-    backgroundColor: "white",
     display: "flex",
     flexDirection: "row",
     paddingTop: 12,
-    // paddingBottom: 12,
-    // paddingLeft: 20,
-    // paddingRight: 100,
-
     paddingBottom: 12,
-    paddingLeft: 19,
+    paddingLeft: 20,
     justifyContent: "space-between",
-    
+    backgroundColor: "#fff",
+    height: hp(150),
   },
   searchBar: {
-    display: 'flex',
+    display: "flex",
     flexDirection: "row",
     backgroundColor: "white",
     height: 68,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     padding: 10,
-    zIndex: 100
+    zIndex: 100,
   },
   bgWhite: {
     backgroundColor: "white",
@@ -73,7 +69,7 @@ export const styles:any = StyleSheet.create<any>({
     alignSelf: "center",
     borderColor: "transparent",
     marginBottom: 18,
-    zIndex: 100
+    zIndex: 100,
   },
   dropdownContainer: {
     width: "95%",
@@ -106,4 +102,4 @@ export const styles:any = StyleSheet.create<any>({
     minWidth: 330,
     marginLeft: -300,
   },
-})
+});

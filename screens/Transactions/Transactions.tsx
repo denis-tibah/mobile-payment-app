@@ -1,8 +1,14 @@
 import { Fragment, useEffect, useRef } from "react";
-import { View, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import Spinner from "react-native-loading-spinner-overlay/lib";
 
 import FormGroup from "../../components/FormGroup";
 import Heading from "../../components/Heading";
@@ -24,6 +30,8 @@ import LoadingScreen from "../../components/Loader/LoadingScreen";
 import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
 import TransactionByDateTwo from "../../components/TransactionItem/TransactionByDateTwo";
 import {
+  arrayChecker,
+  formatDateDayMonthYear,
   getFormattedDateFromUnixDotted,
   hp,
   sortUserActiveToInactiveCards,
@@ -38,11 +46,14 @@ import {
   useGetCardV2Query,
   useLazyGetCardTransactionsQuery,
 } from "../../redux/card/cardSliceV2";
-import { useLazyGetTransactionsQuery } from "../../redux/transaction/transactionV2Slice";
+import {
+  useLazyGetTransactionsQuery,
+  useGetTransactionsQuery,
+} from "../../redux/transaction/transactionV2Slice";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import { setIsCardTransactionShown } from "../../redux/card/cardSlice";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 import Euro from "../../assets/icons/Euro";
-import { RefreshControl } from "react-native";
 
 interface DateRangeType {
   dateTo: {
@@ -93,19 +104,17 @@ export function Transactions({ navigation, route }: any) {
   ] = useLazyGetTransactionsQuery();
 
   // const transactionsList = transactionsWithFilter?.transactions;
-  const txHistory = transactionsWithFilter?.transactions_grouped_by_date;
   // const _groupedByDateTransactions =
   //   groupedByDateTransactions(transactionsList);
   const [isSearchTextOpen, setIsSearchTextOpen] = useState<boolean>(false);
-  // const [isSheetFilterOpen, setIsSheetFilterOpen] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchFieldData, setSearchFieldData] = useState<SearchFilter>(
     initialSearchFieldData
   );
-
   const [showPickerDateFilter, setShowPickerDateFilter] =
     useState<DateRangeType>(initialDateRange);
+  const [transactionsList, setTransactionsList] = useState<any[]>([]);
 
   const { data: userCardsList } = useGetCardV2Query({
     accountId: userData?.id,
@@ -114,7 +123,19 @@ export function Transactions({ navigation, route }: any) {
   });
   const [getCartTransactions, { data: cardTransactions }] =
     useLazyGetCardTransactionsQuery();
-  console.log("🚀 ~ Transactions ~ cardTransactions:", cardTransactions);
+
+  useEffect(() => {
+    if (
+      transactionsWithFilter?.transactions_grouped_by_date &&
+      arrayChecker(transactionsWithFilter?.transactions_grouped_by_date) &&
+      transactionsWithFilter?.transactions_grouped_by_date.length > 0
+    ) {
+      setTransactionsList([
+        ...transactionsWithFilter?.transactions_grouped_by_date,
+      ]);
+    }
+  }, [transactionsWithFilter?.transactions_grouped_by_date]);
+
   const listOfActiveCards = sortUserActiveToInactiveCards(userCardsList);
   const activeCard = listOfActiveCards?.find(
     (card: any) => card.cardStatus === CardStatus.ACTIVE
@@ -436,9 +457,54 @@ export function Transactions({ navigation, route }: any) {
     });
   };
 
+  const displayListItems = () => {
+    if (isLoadingTransations) {
+      return (
+        <View style={styles.listHead}>
+          <Typography
+            fontFamily="Nunito-Regular"
+            fontWeight={600}
+            fontSize={14}
+          >
+            Loading...
+          </Typography>
+        </View>
+      );
+    }
+    if (transactionsList.length > 0) {
+      return transactionsList.map((tx: any) => {
+        return (
+          <Fragment>
+            <TransactionByDateTwo
+              key={tx.date}
+              shownData={{
+                date: tx.date,
+                totalAmount: tx.closing_balance,
+                currency: tx.transactions[0].currency,
+              }}
+              transactionsByDate={tx.transactions}
+              totalAmount={tx.closing_balance}
+            />
+          </Fragment>
+        );
+      });
+    }
+    return (
+      <View style={styles.listHead}>
+        <Typography
+          fontSize={16}
+          color={vars["black"]}
+          fontWeight="Nunito-Bold"
+        >
+          No transactions found
+        </Typography>
+      </View>
+    );
+  };
+
   return (
     <MainLayout navigation={navigation}>
-      {/* <Spinner visible={isLoading} /> */}
+      <Spinner visible={isLoadingTransations || isLoading} />
       <ScrollView
         bounces={true}
         refreshControl={
@@ -568,53 +634,7 @@ export function Transactions({ navigation, route }: any) {
                   );
                 })
               : null} */}
-            {txHistory && txHistory.length > 0 ? (
-              txHistory.map((tx: any, index: number) => {
-                return (
-                  <Fragment>
-                    {/* <TransactionsByDate
-                      key={tx.date}
-                      shownData={{
-                        date: tx.date,
-                        totalAmount: tx.closing_balance,
-                        currency: tx.transactions[0].currency,
-                      }}
-                      transactionsByDate={tx.transactions}
-                      totalAmount={tx.closing_balance}
-                    /> */}
-                    <TransactionByDateTwo
-                      key={tx.date}
-                      shownData={{
-                        date: tx.date,
-                        totalAmount: tx.closing_balance,
-                        currency: tx.transactions[0].currency,
-                      }}
-                      transactionsByDate={tx.transactions}
-                      totalAmount={tx.closing_balance}
-                    />
-                  </Fragment>
-                );
-              })
-            ) : (
-              <Fragment>
-                <View
-                  style={{
-                    padding: 30,
-                    backgroundColor: "#fff",
-                    height: hp(150),
-                    alignItems: "center",
-                  }}
-                >
-                  <Typography
-                    fontSize={16}
-                    color={vars["black"]}
-                    fontWeight="Nunito-Bold"
-                  >
-                    Don't have any transactions found
-                  </Typography>
-                </View>
-              </Fragment>
-            )}
+            {displayListItems()}
             {/* {!isCardTransactionShown &&
               Object.keys(_groupedByDateTransactions).length === 0 && (
                 <Fragment>
@@ -1034,10 +1054,7 @@ export function Transactions({ navigation, route }: any) {
             Submit
           </Typography>
         </Button>
-
-        {/* <Divider style={{ marginVertical: 15 }} /> */}
       </SwipableBottomSheet>
-      <LoadingScreen isLoading={isLoading} />
     </MainLayout>
   );
 }

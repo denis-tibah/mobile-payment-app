@@ -132,7 +132,6 @@ export function Transactions({ navigation, route }: any) {
       };
       getTransactionsWithFilter(search)
         .then((res) => {
-          console.log({ res });
           if (res.data) {
             const { data: _transactions } = res;
             dispatch<any>(setTransationsData(_transactions));

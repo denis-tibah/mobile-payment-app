@@ -55,6 +55,7 @@ export interface SearchFilter {
   accessToken?: string;
   tokenZiyl?: string;
   isGroupingDisabled?: boolean;
+  group_date?: boolean;
 }
 
 export const transactionSlice = createSlice({

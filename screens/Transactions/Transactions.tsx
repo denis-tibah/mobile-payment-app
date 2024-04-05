@@ -1,59 +1,51 @@
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment, useEffect, useState, useRef } from "react";
 import {
   View,
   ScrollView,
   TouchableOpacity,
   RefreshControl,
+  Text,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { AntDesign } from "@expo/vector-icons";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { Divider } from "react-native-paper";
 import Spinner from "react-native-loading-spinner-overlay/lib";
+import { AntDesign } from "@expo/vector-icons";
 
 import FormGroup from "../../components/FormGroup";
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
-import { styles } from "./styles";
 import Button from "../../components/Button";
 import Typography from "../../components/Typography";
+import TransactionByDateTwo from "../../components/TransactionItem/TransactionByDateTwo";
 import TransactionIcon from "../../assets/icons/Transaction";
 import SearchIcon from "../../assets/icons/Search";
+import Euro from "../../assets/icons/Euro";
+import Filter from "../../assets/icons/Filter";
+import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 import {
   SearchFilter,
   clearTransactions,
   setTransationsData,
 } from "../../redux/transaction/transactionSlice";
-import { RootState } from "../../store";
-import vars from "../../styles/vars";
-import { useState } from "react";
-import LoadingScreen from "../../components/Loader/LoadingScreen";
-import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate";
-import TransactionByDateTwo from "../../components/TransactionItem/TransactionByDateTwo";
+import { CardStatus, transactionStatusOptions } from "../../utils/constants";
+import {
+  useGetCardV2Query,
+  useLazyGetCardTransactionsQuery,
+} from "../../redux/card/cardSliceV2";
+import { useLazyGetTransactionsQuery } from "../../redux/transaction/transactionV2Slice";
+import { setIsCardTransactionShown } from "../../redux/card/cardSlice";
 import {
   arrayChecker,
-  formatDateDayMonthYear,
   getFormattedDateFromUnixDotted,
   hp,
   sortUserActiveToInactiveCards,
   widthGlobal,
   wp,
 } from "../../utils/helpers";
-import { CardStatus, transactionStatusOptions } from "../../utils/constants";
-import { Text } from "react-native";
-import Filter from "../../assets/icons/Filter";
-import { Divider } from "react-native-paper";
-import {
-  useGetCardV2Query,
-  useLazyGetCardTransactionsQuery,
-} from "../../redux/card/cardSliceV2";
-import {
-  useLazyGetTransactionsQuery,
-  useGetTransactionsQuery,
-} from "../../redux/transaction/transactionV2Slice";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { setIsCardTransactionShown } from "../../redux/card/cardSlice";
-import SwipableBottomSheet from "../../components/SwipableBottomSheet";
-import Euro from "../../assets/icons/Euro";
+import { RootState } from "../../store";
+import vars from "../../styles/vars";
+import { styles } from "./styles";
 
 interface DateRangeType {
   dateTo: {
@@ -76,6 +68,7 @@ const initialSearchFieldData: SearchFilter = {
   to_date: currentDate.toISOString().split("T")[0],
   limit: 500,
   page: 1,
+  group_date: false,
 };
 
 const initialDateRange: DateRangeType = {
@@ -103,9 +96,6 @@ export function Transactions({ navigation, route }: any) {
     { data: transactionsWithFilter, isLoading: isLoadingTransations },
   ] = useLazyGetTransactionsQuery();
 
-  // const transactionsList = transactionsWithFilter?.transactions;
-  // const _groupedByDateTransactions =
-  //   groupedByDateTransactions(transactionsList);
   const [isSearchTextOpen, setIsSearchTextOpen] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -131,6 +121,42 @@ export function Transactions({ navigation, route }: any) {
     getCartTransactions,
     { data: cardTransactions, isLoading: isLoadingCardTransactions },
   ] = useLazyGetCardTransactionsQuery();
+
+  const fetchTransactionsWithFilters = async (value?: SearchFilter) => {
+    if (userData && userData?.id) {
+      let search: SearchFilter = {
+        ...(value ? value : initialSearchFieldData),
+        accountId: `${userData?.id}`,
+        accessToken: userTokens?.access_token,
+        tokenZiyl: userTokens?.token_ziyl,
+      };
+      getTransactionsWithFilter(search)
+        .then((res) => {
+          if (res.data) {
+            const { data: _transactions } = res;
+            dispatch<any>(setTransationsData(_transactions));
+          }
+        })
+        .catch((err) => {
+          console.log("error");
+          console.log({ err });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+      setSearchFieldData(search);
+    }
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetchTransactionsWithFilters();
+    dispatch<any>(setIsCardTransactionShown(false));
+    return () => {
+      clearFilter();
+      dispatch<any>(clearTransactions());
+    };
+  }, []);
 
   useEffect(() => {
     if (
@@ -197,82 +223,6 @@ export function Transactions({ navigation, route }: any) {
         setIsLoading(false);
       });
   };
-
-  const fetchTransactionsWithFilters = async (value?: SearchFilter) => {
-    if (userData && userData?.id) {
-      let search: SearchFilter = {
-        ...(value ? value : initialSearchFieldData),
-        accountId: `${userData?.id}`,
-        accessToken: userTokens?.access_token,
-        tokenZiyl: userTokens?.token_ziyl,
-      };
-      getTransactionsWithFilter(search)
-        .then((res) => {
-          if (res.data) {
-            const { data: _transactions } = res;
-            dispatch<any>(setTransationsData(_transactions));
-          }
-        })
-        .catch((err) => {
-          console.log("error");
-          console.log({ err });
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-      setSearchFieldData(search);
-    }
-  };
-
-  // const filterFromToDate = async (fromDate: string, toDate: string) => {
-  //   const userId = userData?.id;
-  //   if (fromDate && toDate && userId) {
-  //     const search: SearchFilter = {
-  //       ...searchFieldData,
-  //       ...(fromDate && { from_date: fromDate }),
-  //       ...(toDate && { to_date: toDate }),
-  //       account_id: `${userId}`,
-  //       direction: "desc",
-  //     };
-  //     setSortByDate(false);
-  //     setSearchFieldData(search);
-  //     await fetchTransactionsWithFilters(search);
-  //   }
-  // };
-
-  // const handleOnSubmitEditing = (event: any) => {
-  //   const isNumberOnly = containsOnlyNumbers(searchText);
-  //   const userId = userData?.id;
-  //   if (!userId) {
-  //     return;
-  //   }
-  //   const { from_date, to_date } = searchFieldData;
-  //   const _searchFieldData: SearchFilter = {
-  //     ...(!currentSelectedSearchField && !isNumberOnly && { name: searchText }),
-  //     ...(!currentSelectedSearchField &&
-  //       isNumberOnly && { min_amount: Number(searchText) }),
-  //     ...(currentSelectedSearchField === "bic" && { bic: searchText }),
-  //     ...(currentSelectedSearchField === "status" && { status: searchText }),
-  //     ...(currentSelectedSearchField === "reference_no" && {
-  //       reference_no: Number(searchText),
-  //     }),
-  //     ...(currentSelectedSearchField === "min_amount" && {
-  //       min_amount: Number(searchText),
-  //     }),
-  //     ...(currentSelectedSearchField === "iban" && { iban: searchText }),
-  //     ...(currentSelectedSearchField === "max_amount" && {
-  //       max_amount: Number(searchText),
-  //     }),
-  //     ...(from_date && { from_date }),
-  //     ...(to_date && { to_date }),
-  //     ...initialSearchFieldData,
-  //     accountId: `${userId}`,
-  //   };
-  //   setSearchFieldData(_searchFieldData);
-  //   fetchTransactionsWithFilters({
-  //     ..._searchFieldData,
-  //   });
-  // }
 
   const handleBackgroundChangeActiveInactive = (card: any): string => {
     if (card.cardreferenceId === searchFieldData.card_id) {
@@ -376,47 +326,6 @@ export function Transactions({ navigation, route }: any) {
       });
     }
   }; */
-
-  // const handleGeneratePDF = async (
-  //   statements: StatementTransactionsResponse[]
-  // ) => {
-  //   const pdfUri = await generatePDF(statements);
-  //   return await printAsync({ uri: pdfUri });
-  // };
-
-  // if isCardTransactionShown is true, then fetch select
-
-  // useEffect(() => {
-  //   if (isCardTransactionShown) {
-  //     const activeCard = listOfActiveCards?.find(
-  //       (card: any) => card.cardStatus === CardStatus.ACTIVE
-  //     );
-  //     setSearchFieldData({
-  //       ...searchFieldData,
-  //       card_id:
-  //         searchFieldData.card_id || activeCard?.cardreferenceId.toString(),
-  //     });
-  //     handleFetchCardTransactions(activeCard?.cardreferenceId.toString());
-  //   }
-  // }, [isCardTransactionShown]);
-
-  // useEffect(() => {
-  //   if (searchFieldData.card_id !== "") {
-  //     dispatch<any>(setIsCardTransactionShown(true));
-  //   } else {
-  //     dispatch<any>(setIsCardTransactionShown(false));
-  //   }
-  // }, [searchFieldData.card_id]);
-
-  useEffect(() => {
-    setIsLoading(true);
-    fetchTransactionsWithFilters();
-    dispatch<any>(setIsCardTransactionShown(false));
-    return () => {
-      clearFilter();
-      dispatch<any>(clearTransactions());
-    };
-  }, []);
 
   const hideDatePicker = ({ dateType }: { dateType: string }) => {
     setShowPickerDateFilter((prevState): any => {
@@ -646,8 +555,6 @@ export function Transactions({ navigation, route }: any) {
                 <TouchableOpacity
                   style={styles.iconFilter}
                   onPress={() => {
-                    //added by Aristos to fix issue with search being disabled
-                    // clearFilter(); -- commented out for now. it blocks the filter functionality on the card transactions
                     setShowPickerDateFilter(initialDateRange);
                     setSearchText("");
                     setIsFetchCardInfo(true);
@@ -687,92 +594,7 @@ export function Transactions({ navigation, route }: any) {
           </View>
         )}
         <View style={{ backgroundColor: "#fff" }}>
-          {/* <Seperator backgroundColor={vars["grey"]} />
-          {isCardTransactionShown && cardTransactions?.length > 0
-            ? cardTransactions?.map((transaction: any, index: number) => (
-                <TransactionItem
-                  data={{
-                    ...transaction,
-                    id: Number(transaction.id),
-                    amount: transaction.amount.toString(),
-                    name: transaction.purpose,
-                    balance: transaction.transactionAmount,
-                    bic: "",
-                    closing_balance: "",
-                    running_balance: "",
-                    currency: transaction.transactionCurrency,
-                    description: "",
-                    iban: "",
-                    opening_balance: "",
-                    reference_no: "",
-                    service: "",
-                    status: "",
-                    transaction_datetime: "",
-                    transaction_id: 0,
-                    transaction_uuid: "",
-                  }}
-                  key={index}
-                />
-              ))
-            : !_groupedByDateTransactions && (
-                <Fragment>
-                  <View style={{ padding: 30 }}>
-                    <Text>
-                      Card don't have any transactions. Make sure you have
-                      selected the right card.
-                    </Text>
-                  </View>
-                </Fragment>
-              )} */}
-          <View>
-            {/* {!isCardTransactionShown && _groupedByDateTransactions
-              ? Object.keys(_groupedByDateTransactions).map((date: string) => {
-                  let _amount: number = 0;
-                  const transactionsByDate = _groupedByDateTransactions[
-                    date
-                  ].map((tx, index) => {
-                    const { amount } = tx;
-                    _amount = Number(_amount) + Number(amount);
-                    return tx;
-                  });
-                  const shownData = {
-                    date,
-                    totalAmount: _amount.toString(),
-                    currency: _groupedByDateTransactions[date][0].currency,
-                  };
-                  return (
-                    <TransactionsByDate
-                      key={_groupedByDateTransactions[date][0].transaction_uuid}
-                      shownData={shownData}
-                      transactionsByDate={transactionsByDate}
-                      totalAmount={_amount.toString()}
-                    />
-                  );
-                })
-              : null} */}
-            {displayListItems()}
-            {/* {!isCardTransactionShown &&
-              Object.keys(_groupedByDateTransactions).length === 0 && (
-                <Fragment>
-                  <View
-                    style={{
-                      padding: 30,
-                      backgroundColor: "#fff",
-                      height: hp(150),
-                      alignItems: "center",
-                    }}
-                  >
-                    <Typography
-                      fontSize={16}
-                      color={vars["black"]}
-                      fontWeight="Nunito-Bold"
-                    >
-                      Don't have any transactions found
-                    </Typography>
-                  </View>
-                </Fragment>
-              )} */}
-          </View>
+          <View>{displayListItems()}</View>
           {/* <Seperator backgroundColor={vars["grey"]} />
           {!isCardTransactionShown && (
             <View style={{ bottom: 0 }}>
@@ -790,7 +612,6 @@ export function Transactions({ navigation, route }: any) {
         rbSheetRef={refRBSheet}
         closeOnDragDown={true}
         closeOnPressMask={false}
-        // onClose={() => refRBSheet?.current?.close()}
         height={550}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{

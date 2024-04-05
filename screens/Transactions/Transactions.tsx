@@ -64,7 +64,7 @@ const initialSearchFieldData: SearchFilter = {
   accountId: "",
   direction: "desc",
   status: "",
-  from_date: "2022-02-01",
+  from_date: "2022-01-01",
   to_date: currentDate.toISOString().split("T")[0],
   limit: 500,
   page: 1,

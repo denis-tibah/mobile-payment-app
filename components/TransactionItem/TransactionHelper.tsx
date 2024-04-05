@@ -3,6 +3,7 @@ import { View } from "react-native";
 import Typography from "../Typography";
 import EuroIcon from "../../assets/icons/Euro";
 import DollarIcon from "../../assets/icons/Dollar";
+import GbpIcon from "../../assets/icons/Gbp";
 import { formatAmountTableValue } from "../../utils/helpers";
 
 const displayTitle = ({ title }: { title: string }) => {
@@ -16,6 +17,19 @@ const displayTitle = ({ title }: { title: string }) => {
       {title}
     </Typography>
   );
+};
+
+const currencyIcon = (param: any, { color }: { color: string }) => {
+  switch (param) {
+    case "EUR":
+      return <EuroIcon size={18} color={color} />;
+    case "USD":
+      return <DollarIcon size={18} color={color} />;
+    case "GBP":
+      return <GbpIcon size={18} color={color} />;
+    default:
+      return <EuroIcon size={18} color={color} />;
+  }
 };
 
 const displayValue = ({
@@ -33,11 +47,7 @@ const displayValue = ({
     >
       {hasCurrency ? (
         <Typography marginRight={4}>
-          {currencyType === "EUR" ? (
-            <EuroIcon size={13} />
-          ) : (
-            <DollarIcon size={13} />
-          )}
+          {currencyIcon(currencyType, { color: "blue" })}
         </Typography>
       ) : null}
 
@@ -56,4 +66,4 @@ const displayValue = ({
   );
 };
 
-export { displayTitle, displayValue };
+export { displayTitle, displayValue, currencyIcon };

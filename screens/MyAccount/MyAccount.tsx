@@ -25,6 +25,7 @@ import {
   getCurrency,
   groupedByDateTransactions,
   formatCurrencyToLocalEnTwo,
+  arrayChecker,
 } from "../../utils/helpers";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 /* import TransactionsByDate from "../../components/TransactionItem/TransactionsByDate"; */
@@ -103,7 +104,8 @@ export function MyAccount({ navigation }: any) {
   } = useGetTransactionsQuery(transactionsParams({ status: "SUCCESS" }), {
     skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
   });
-  const groupedByDateTransactionsCompleted = dataTransactionsCompleted?.transactions_grouped_by_date;
+  const groupedByDateTransactionsCompleted =
+    dataTransactionsCompleted?.transactions_grouped_by_date;
   const txHistory = dataTransactionsCompleted?.transactions_grouped_by_date;
   // const groupedByDateTransactionsCompleted = groupedByDateTransactions(
   //   transactionsListCompleted
@@ -125,7 +127,11 @@ export function MyAccount({ navigation }: any) {
   const refRBSheet = useRef();
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [isOneTransactionOpen, setIsOneTransactionOpen] = useState<boolean>(false);
+  /* const [sortByStatus, setSortByStatus] = useState<boolean>(false); */
+  /* const [isLoading, setIsLoading] = useState<boolean>(false); */
+  /* const [paginateRefresh, setPaginateRefresh] = useState<boolean>(false); */
+  const [isOneTransactionOpen, setIsOneTransactionOpen] =
+    useState<boolean>(false);
   const [storageData, setStorageData] = useState<{
     email: string;
     password: string;
@@ -139,7 +145,7 @@ export function MyAccount({ navigation }: any) {
     window: windowDimensions,
     screen: screenDimensions,
   });
-
+  const [isFaceId, setFaceId] = useState<boolean>(true);
   const [enableBiometric, setEnableBiometric] = useState<boolean>(false);
 
   useEffect(() => {
@@ -267,7 +273,11 @@ export function MyAccount({ navigation }: any) {
         </View>
       );
     }
-    if (!isLoading && Object.keys(items).length === 0) {
+    if (
+      !isLoading &&
+      ((arrayChecker(items) && items.length === 0) ||
+        (items && Object.keys(items).length === 0))
+    ) {
       return (
         <View style={styles.listHead}>
           <Typography
@@ -283,7 +293,9 @@ export function MyAccount({ navigation }: any) {
     return (
       <View style={{ paddingVertical: 6 }}>
         <View>
-          {
+          {items &&
+            arrayChecker(items) &&
+            items.length > 0 &&
             items.map((item: any, index: number) => {
               return (
                 <TransactionByDateTwo
@@ -298,8 +310,7 @@ export function MyAccount({ navigation }: any) {
                   totalAmount={item.closing_balance}
                 />
               );
-            })
-          }
+            })}
           {/* {Object.keys(items).map((date: string) => { // previous implementation line 309 - 324
             let _amount: number = 0;
             const transactionsByDate = items[date].map((tx: any) => {

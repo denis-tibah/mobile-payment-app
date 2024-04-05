@@ -372,27 +372,30 @@ export function getFormattedDateFromUnixDotted(dateToFormat: any) {
 }
 
 export function convertDateToDottedNameV2(dateString: string) {
-  var parts = dateString.split(" ");
-  var day =
-    parts[0].length === 3 ? "0" + parts[0].charAt(0) : parts[0].slice(0, 2);
-  var month = parts[1];
-  var year = parts[2];
-  var months: any = {
-    January: "01",
-    February: "02",
-    March: "03",
-    April: "04",
-    May: "05",
-    June: "06",
-    July: "07",
-    August: "08",
-    September: "09",
-    October: "10",
-    November: "11",
-    December: "12",
-  };
-  month = months[month];
-  return day + "." + month + "." + year;
+  if (dateString) {
+    var parts = dateString.split(" ");
+    var day =
+      parts[0].length === 3 ? "0" + parts[0].charAt(0) : parts[0].slice(0, 2);
+    var month = parts[1];
+    var year = parts[2];
+    var months: any = {
+      January: "01",
+      February: "02",
+      March: "03",
+      April: "04",
+      May: "05",
+      June: "06",
+      July: "07",
+      August: "08",
+      September: "09",
+      October: "10",
+      November: "11",
+      December: "12",
+    };
+    month = months[month];
+    return day + "." + month + "." + year;
+  }
+  return "";
 }
 
 export function convertDateToName(timestamp: any) {
@@ -442,7 +445,10 @@ export const arrayChecker = (arr: any[]): Boolean => {
 };
 
 export const fieldHasValue = (value: any) => {
-  if (value && value !== null && value !== undefined) {
+  if (value !== null && value !== undefined) {
+    if (value === 0) {
+      return value;
+    }
     if (value !== "null") {
       return value;
     } else {

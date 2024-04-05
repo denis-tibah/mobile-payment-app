@@ -7,7 +7,7 @@ export interface Transaction {
   currency: string;
   description: string;
   iban: string;
-  id: number;
+  id: number | string | null;
   name: string;
   opening_balance: string | null;
   reference_no: string | null;
@@ -27,7 +27,10 @@ export interface Transaction {
   charges: string;
   exchange_rate: string;
   original_amount?: string;
+  original_currency?: string;
   masked_number?: string;
+  receiptDate?: string;
+  purposeDetailed?: string;
 }
 
 export interface transactions {

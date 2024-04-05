@@ -115,26 +115,48 @@ export function Transactions({ navigation, route }: any) {
   const [showPickerDateFilter, setShowPickerDateFilter] =
     useState<DateRangeType>(initialDateRange);
   const [transactionsList, setTransactionsList] = useState<any[]>([]);
+  const [isFetchCardsInfo, setIsFetchCardInfo] = useState<boolean>(false);
 
-  const { data: userCardsList } = useGetCardV2Query({
-    accountId: userData?.id,
-    accessToken: userTokens?.access_token,
-    tokenZiyl: userTokens?.token_ziyl,
-  });
-  const [getCartTransactions, { data: cardTransactions }] =
-    useLazyGetCardTransactionsQuery();
+  const { data: userCardsList, isLoading: isLoadingUserCardList } =
+    useGetCardV2Query(
+      {
+        accountId: userData?.id,
+        accessToken: userTokens?.access_token,
+        tokenZiyl: userTokens?.token_ziyl,
+      },
+      { skip: !isFetchCardsInfo }
+    );
+
+  const [
+    getCartTransactions,
+    { data: cardTransactions, isLoading: isLoadingCardTransactions },
+  ] = useLazyGetCardTransactionsQuery();
 
   useEffect(() => {
     if (
+      (!searchFieldData?.card_id || searchFieldData?.card_id === "") &&
       transactionsWithFilter?.transactions_grouped_by_date &&
-      arrayChecker(transactionsWithFilter?.transactions_grouped_by_date) &&
-      transactionsWithFilter?.transactions_grouped_by_date.length > 0
+      arrayChecker(transactionsWithFilter?.transactions_grouped_by_date)
     ) {
       setTransactionsList([
         ...transactionsWithFilter?.transactions_grouped_by_date,
       ]);
     }
-  }, [transactionsWithFilter?.transactions_grouped_by_date]);
+    if (searchFieldData?.card_id) {
+      if (
+        cardTransactions?.data?.transactions &&
+        arrayChecker(cardTransactions?.data?.transactions)
+      ) {
+        setTransactionsList([...cardTransactions?.data?.transactions]);
+      } else {
+        setTransactionsList([]);
+      }
+    }
+  }, [
+    transactionsWithFilter?.transactions_grouped_by_date,
+    cardTransactions?.data?.transactions,
+    searchFieldData?.card_id,
+  ]);
 
   const listOfActiveCards = sortUserActiveToInactiveCards(userCardsList);
   const activeCard = listOfActiveCards?.find(
@@ -148,6 +170,7 @@ export function Transactions({ navigation, route }: any) {
       card_id: "",
     });
     setSearchText("");
+    setTransactionsList([]);
     dispatch<any>(setIsCardTransactionShown(false));
   };
 
@@ -158,9 +181,13 @@ export function Transactions({ navigation, route }: any) {
         .toISOString()
         .split("T")[0],
       to_date: new Date().toISOString().split("T")[0],
-      type: "PREAUTH",
+      group_date: true,
+      limit: 100,
+      page: 1,
+      type: "ALL",
       card_id: cardId,
     };
+
     getCartTransactions(cardTransactionsFilter)
       .catch((err) => {
         console.log("error");
@@ -458,12 +485,12 @@ export function Transactions({ navigation, route }: any) {
   };
 
   const displayListItems = () => {
-    if (isLoadingTransations) {
+    if (isLoadingTransations || isLoadingCardTransactions) {
       return (
         <View style={styles.listHead}>
           <Typography
             fontFamily="Nunito-Regular"
-            fontWeight={600}
+            fontWeight={"600"}
             fontSize={14}
           >
             Loading...
@@ -471,19 +498,22 @@ export function Transactions({ navigation, route }: any) {
         </View>
       );
     }
+
     if (transactionsList.length > 0) {
       return transactionsList.map((tx: any) => {
         return (
           <Fragment>
             <TransactionByDateTwo
-              key={tx.date}
+              key={tx?.date}
               shownData={{
-                date: tx.date,
-                totalAmount: tx.closing_balance,
-                currency: tx.transactions[0].currency,
+                date: tx?.date,
+                currency: !searchFieldData?.card_id
+                  ? tx?.transactions[0].currency
+                  : "",
               }}
-              transactionsByDate={tx.transactions}
-              totalAmount={tx.closing_balance}
+              transactionsByDate={tx?.transactions}
+              totalAmount={!searchFieldData?.card_id ? tx?.closing_balance : ""}
+              cardId={searchFieldData?.card_id}
             />
           </Fragment>
         );
@@ -494,7 +524,8 @@ export function Transactions({ navigation, route }: any) {
         <Typography
           fontSize={16}
           color={vars["black"]}
-          fontWeight="Nunito-Bold"
+          fontFamily="Nunito-Regular"
+          fontWeight={"600"}
         >
           No transactions found
         </Typography>
@@ -502,9 +533,93 @@ export function Transactions({ navigation, route }: any) {
     );
   };
 
+  const displayCardList = () => {
+    if (isLoadingUserCardList) {
+      return (
+        <Typography fontSize={14} color="#696F7A">
+          Your cards are loading...
+        </Typography>
+      );
+    }
+    if (
+      userCardsList &&
+      arrayChecker(userCardsList) &&
+      userCardsList.length > 0
+    ) {
+      return (
+        <Fragment>
+          <Typography fontSize={14} color="#696F7A">
+            Your cards
+          </Typography>
+          <ScrollView horizontal>
+            {listOfActiveCards?.map((card: any, index: number) => (
+              <TouchableOpacity
+                style={{
+                  backgroundColor: handleBackgroundChangeActiveInactive(card),
+                  paddingVertical: 10,
+                  paddingHorizontal: 18,
+                  borderRadius: 99,
+                  marginHorizontal: 3,
+                  width: 151,
+                  height: 40,
+                }}
+                onPress={() => {
+                  if (searchFieldData.card_id === card.cardreferenceId) {
+                    setSearchFieldData({
+                      ...searchFieldData,
+                      card_id: "",
+                    });
+                    clearFilter();
+                    setIsCardTransactionShown(false);
+                    return;
+                  }
+                  dispatch<any>(setIsCardTransactionShown(true));
+                  setSearchFieldData({
+                    ...searchFieldData,
+                    group_date: true,
+                    card_id: card.cardreferenceId,
+                  });
+                }}
+              >
+                <Typography
+                  fontSize={14}
+                  color={
+                    searchFieldData.card_id === card.cardreferenceId
+                      ? "#fff"
+                      : card.cardStatus === CardStatus.INACTIVE
+                      ? vars["accent-yellow"]
+                      : card.lostYN === "N"
+                      ? card.type === "P"
+                        ? vars["accent-blue"]
+                        : vars["accent-pink"]
+                      : vars["accent-grey"]
+                  }
+                >
+                  {card.pan}
+                </Typography>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </Fragment>
+      );
+    }
+    return (
+      <Typography fontSize={14} color="#696F7A">
+        We have problem getting cards.
+      </Typography>
+    );
+  };
+
   return (
     <MainLayout navigation={navigation}>
-      <Spinner visible={isLoadingTransations || isLoading} />
+      <Spinner
+        visible={
+          isLoadingTransations ||
+          isLoadingUserCardList ||
+          isLoadingCardTransactions ||
+          isLoading
+        }
+      />
       <ScrollView
         bounces={true}
         refreshControl={
@@ -522,7 +637,7 @@ export function Transactions({ navigation, route }: any) {
           <Heading
             icon={<TransactionIcon size={18} color="pink" />}
             title={
-              isCardTransactionShown
+              searchFieldData?.card_id
                 ? "Card Transactions History"
                 : "Transactions History"
             }
@@ -535,6 +650,7 @@ export function Transactions({ navigation, route }: any) {
                     // clearFilter(); -- commented out for now. it blocks the filter functionality on the card transactions
                     setShowPickerDateFilter(initialDateRange);
                     setSearchText("");
+                    setIsFetchCardInfo(true);
                     refRBSheet?.current?.open();
                   }}
                 >
@@ -693,7 +809,6 @@ export function Transactions({ navigation, route }: any) {
               Filters
             </Typography>
           </View>
-          {/* <Divider style={{ marginVertical: 15 }} /> */}
           <TouchableOpacity
             onPress={() => clearFilter()}
             style={{ flexDirection: "row" }}
@@ -709,7 +824,6 @@ export function Transactions({ navigation, route }: any) {
             >
               Clear filter
             </Text>
-            {/* <Ionicons name="refresh" size={14} color={vars["accent-blue"]} /> */}
           </TouchableOpacity>
         </View>
         <Divider
@@ -719,7 +833,6 @@ export function Transactions({ navigation, route }: any) {
             backgroundColor: vars["accent-grey"],
             height: 1,
             opacity: 0.3,
-            // zIndex: 9999,
             overflow: "visible",
           }}
         />
@@ -768,11 +881,6 @@ export function Transactions({ navigation, route }: any) {
               onCancel={() => hideDatePicker({ dateType: "dateFrom" })}
             />
           </View>
-          {/* <View>
-            <Text style={{top: 28, right: 31, fontSize: 24}}>
-              _
-            </Text>
-          </View> */}
           <View style={{ flex: 1 }}>
             <Typography fontSize={14} color="#696F7A">
               Finish date
@@ -826,7 +934,6 @@ export function Transactions({ navigation, route }: any) {
             backgroundColor: vars["accent-grey"],
             height: 1,
             opacity: 0.2,
-            // zIndex: 9999,
             overflow: "visible",
           }}
         />
@@ -914,11 +1021,6 @@ export function Transactions({ navigation, route }: any) {
               }}
             />
           </View>
-          {/* <View>
-            <Text style={{top: 22, right: 0, fontSize: 18}}>
-              _
-            </Text>
-          </View> */}
           <View style={{ flex: 1, paddingLeft: 10 }}>
             <Typography fontSize={14} color="#696F7A">
               Amount to
@@ -954,57 +1056,7 @@ export function Transactions({ navigation, route }: any) {
             overflow: "visible",
           }}
         />
-        <Typography fontSize={14} color="#696F7A">
-          Your cards
-        </Typography>
-        <ScrollView horizontal>
-          {listOfActiveCards?.map((card: any, index: number) => (
-            <TouchableOpacity
-              style={{
-                backgroundColor: handleBackgroundChangeActiveInactive(card),
-                paddingVertical: 10,
-                paddingHorizontal: 18,
-                borderRadius: 99,
-                marginHorizontal: 3,
-                width: 151,
-                height: 40,
-              }}
-              onPress={() => {
-                if (searchFieldData.card_id === card.cardreferenceId) {
-                  setSearchFieldData({
-                    ...searchFieldData,
-                    card_id: "",
-                  });
-                  clearFilter();
-                  setIsCardTransactionShown(false);
-                  return;
-                }
-                dispatch<any>(setIsCardTransactionShown(true));
-                setSearchFieldData({
-                  ...searchFieldData,
-                  card_id: card.cardreferenceId,
-                });
-              }}
-            >
-              <Typography
-                fontSize={14}
-                color={
-                  searchFieldData.card_id === card.cardreferenceId
-                    ? "#fff"
-                    : card.cardStatus === CardStatus.INACTIVE
-                    ? vars["accent-yellow"]
-                    : card.lostYN === "N"
-                    ? card.type === "P"
-                      ? vars["accent-blue"]
-                      : vars["accent-pink"]
-                    : vars["accent-grey"]
-                }
-              >
-                {card.pan}
-              </Typography>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        {displayCardList()}
         <Divider
           style={{
             marginVertical: 15,
@@ -1048,8 +1100,8 @@ export function Transactions({ navigation, route }: any) {
           <Typography
             fontSize={16}
             color={vars["accent-pink"]}
-            fontWeight="Nunito-Bold"
-            fontWeights="600"
+            fontFamily="Nunito-Regular"
+            fontWeight={"600"}
           >
             Submit
           </Typography>

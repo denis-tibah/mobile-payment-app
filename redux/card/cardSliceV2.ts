@@ -32,8 +32,17 @@ export const cardsV2 = createApi({
   }),
   endpoints: (builder) => ({
     getCardTransactions: builder.query({
-      query: ({ account_id, from_date, to_date, type, card_id }) => ({
-        url: `/getCardTransactionsfinxp`,
+      query: ({
+        account_id,
+        from_date,
+        to_date,
+        type,
+        card_id,
+        group_date,
+        limit,
+        page,
+      }) => ({
+        url: `/getCardTransactionsfinxpV2`,
         method: METHODS.POST,
         body: {
           account_id,
@@ -41,6 +50,9 @@ export const cardsV2 = createApi({
           to_date,
           type,
           card_id,
+          group_date,
+          limit,
+          page,
         },
       }),
       invalidatesTags: ["cardsV2"] as any,

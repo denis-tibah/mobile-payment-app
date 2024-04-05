@@ -14,6 +14,7 @@ import {
   getFormattedDateFromUnix,
   getFormattedDateFromUnixDotted,
   convertDateToDottedNameV2,
+  arrayChecker,
 } from "../../utils/helpers";
 import { styles } from "./stylesTwo";
 import Button from "../Button";
@@ -23,22 +24,23 @@ import Box from "../Box";
 import Typography from "../Typography";
 import EuroIcon from "../../assets/icons/Euro";
 import DollarIcon from "../../assets/icons/Dollar";
+import GbpIcon from "../../assets/icons/Gbp";
 import { Transaction } from "../../models/Transactions";
 import CardIcon from "../../assets/icons/Card";
 import BankIcon from "../../assets/icons/Bank";
 import vars from "../../styles/vars";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
-import { displayTitle, displayValue } from "./TransactionHelper";
+import { displayTitle, displayValue, currencyIcon } from "./TransactionHelper";
 import { helpTabticketParams } from "../../utils/globalStates";
 import WholeContainer from "../../layout/WholeContainer";
 import { Seperator } from "../../components/Seperator/Seperator";
 import ZazzoLogo from "../../assets/icons/ZazzoLogo";
 
 interface TransactionItemProps {
-  setIsOneTransactionOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   transactionsByDate: Transaction[];
   totalAmount: string;
-  shownData: any;
+  shownData?: any;
+  cardId?: string;
 }
 const defaultStatus = "SUCCESS";
 
@@ -46,7 +48,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
   transactionsByDate,
   totalAmount,
   shownData,
-  setIsOneTransactionOpen,
+  cardId,
 }) => {
   const { navigate }: any = useNavigation();
 
@@ -83,6 +85,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
           /* delete transaction?.status;
           Object.assign(transaction, { status: "PENDING" }); */
           let amountColor = "red";
+          // for transaction history
           if (transaction?.status) {
             if (transaction?.status === "SUCCESS") {
               if (isPositiveAmountWithSign(transaction?.amount) === 1) {
@@ -91,6 +94,13 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
             }
             if (transaction?.status === "PENDING") {
               amountColor = "#fcc774";
+            }
+          }
+
+          //currency color of card transaction
+          if (cardId) {
+            if (isPositiveAmountWithSign(transaction?.amount) === 1) {
+              amountColor = "green";
             }
           }
 
@@ -111,18 +121,16 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                       transaction?.service === "SEPA INST IN" ? (
                         <BankIcon size={14} color={"heavy-grey"} />
                       ) : null}
-                      {
-                        transaction?.service === "INTERNAL" ? (
-                          <ZazzoLogo size={14} color={"heavy-grey"} />
-                        ) : null
-                      }
+                      {transaction?.service === "INTERNAL" ? (
+                        <ZazzoLogo size={14} color={"heavy-grey"} />
+                      ) : null}
                       <Typography
                         fontSize={14}
                         fontFamily="Mukta-Regular"
                         fontWeight={400}
                         paddingRight={24}
                       >
-                        {transaction.name}
+                        {transaction?.name || transaction?.purpose}
                       </Typography>
                     </View>
                     <View
@@ -131,9 +139,6 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         flexDirection: "row",
                         alignItems: "center",
                         width: "35%",
-                        /* justifyContent: transaction?.amount
-                          ? "space-between"
-                          : "flex-end", */
                         justifyContent: "space-between",
                       }}
                     >
@@ -144,10 +149,9 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           alignItems: "center",
                         }}
                       >
-                        {shownData.currency === "EUR" ? (
-                          <EuroIcon size={14} color={amountColor} />
-                        ) : (
-                          <DollarIcon size={14} color={amountColor} />
+                        {currencyIcon(
+                          shownData?.currency || transaction?.original_currency,
+                          { color: amountColor }
                         )}
                         <Typography
                           marginLeft={2}
@@ -155,11 +159,11 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           fontSize={14}
                           paddingLeft={5}
                           fontFamily="Mukta-Regular"
-                          /* color={Number(transaction.amount) > 0 ? "green" : "red"} */
                         >
                           {formatAmountTableValue(
-                            transaction.amount,
-                            shownData.currency
+                            transaction?.amount,
+                            shownData?.currency ||
+                              transaction?.original_currency
                           )}
                         </Typography>
                       </View>
@@ -201,8 +205,15 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
               {openTransactionIndex === index ? (
                 <Pressable>
                   <View style={styles.containerDetailsInfo}>
-                    <View style={{ paddingTop: 12, paddingBottom: 16 }}>
-                      {fieldHasValue(transaction?.reference_no) ? (
+                    <View
+                      style={{
+                        paddingTop: 12,
+                        paddingBottom: !cardId ? 16 : 0,
+                      }}
+                    >
+                      {fieldHasValue(
+                        transaction?.reference_no || transaction?.id
+                      ) ? (
                         <View
                           style={[
                             styles.detailMobile,
@@ -210,11 +221,14 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           ]}
                         >
                           {displayTitle({ title: "Transaction Reference" })}
-                          {displayValue({ content: transaction?.reference_no })}
+                          {displayValue({
+                            content:
+                              transaction?.reference_no || transaction?.id,
+                          })}
                         </View>
                       ) : null}
 
-                      {fieldHasValue(transaction?.status) ? (
+                      {!cardId && fieldHasValue(transaction?.status) ? (
                         <View style={styles.detailMobile}>
                           {displayTitle({ title: "Transaction Status" })}
                           <View
@@ -239,10 +253,10 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         </View>
                       ) : null}
                     </View>
-                    {fieldHasValue(transaction?.description) ? (
+                    {!cardId && fieldHasValue(transaction?.description) ? (
                       <Seperator backgroundColor={vars["v2-light-grey"]} />
                     ) : null}
-                    {fieldHasValue(transaction?.description) ? (
+                    {!cardId && fieldHasValue(transaction?.description) ? (
                       <View
                         style={{
                           paddingTop: 12,
@@ -255,16 +269,42 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           ]}
                         >
                           {displayTitle({ title: "Description" })}
-                          {displayValue({ content: transaction?.description })}
+                          {displayValue({
+                            content: transaction?.description,
+                          })}
                         </View>
                       </View>
                     ) : null}
-                    {transaction?.service === "DEBIT CARD" &&
-                    (fieldHasValue(transaction?.exchange_rate) ||
+                    {cardId && fieldHasValue(transaction?.purposeDetailed) ? (
+                      <Seperator backgroundColor={vars["v2-light-grey"]} />
+                    ) : null}
+                    {cardId && fieldHasValue(transaction?.purposeDetailed) ? (
+                      <View
+                        style={{
+                          paddingTop: 12,
+                        }}
+                      >
+                        <View
+                          style={[
+                            styles.detailMobile,
+                            styles.marginerDetailMobile,
+                          ]}
+                        >
+                          {displayTitle({ title: "Description" })}
+                          {displayValue({
+                            content: transaction?.purposeDetailed,
+                          })}
+                        </View>
+                      </View>
+                    ) : null}
+                    {!cardId &&
+                    transaction?.service === "DEBIT CARD" &&
+                    ((!cardId && fieldHasValue(transaction?.exchange_rate)) ||
                       fieldHasValue(transaction?.charges)) ? (
                       <Seperator backgroundColor={vars["v2-light-grey"]} />
                     ) : null}
-                    {transaction?.service === "DEBIT CARD" &&
+                    {!cardId &&
+                    transaction?.service === "DEBIT CARD" &&
                     (fieldHasValue(transaction?.exchange_rate) ||
                       fieldHasValue(transaction?.charges)) ? (
                       <View
@@ -319,11 +359,77 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         </View>
                       </View>
                     ) : null}
-                    {transaction?.service != "DEBIT CARD" ? (
+                    {!cardId && transaction?.service != "DEBIT CARD" ? (
                       <Seperator backgroundColor={vars["v2-light-grey"]} />
                     ) : null}
+
+                    {cardId &&
+                    (fieldHasValue(transaction?.exchange_rate) ||
+                      fieldHasValue(transaction?.charges)) ? (
+                      <Seperator backgroundColor={vars["v2-light-grey"]} />
+                    ) : null}
+
+                    {cardId &&
+                    (fieldHasValue(transaction?.masked_number) ||
+                      fieldHasValue(transaction?.exchange_rate) ||
+                      fieldHasValue(transaction?.charges)) ? (
+                      <View
+                        style={{
+                          paddingTop: 16,
+                          paddingBottom: 16,
+                        }}
+                      >
+                        <View style={styles.cardContainer}>
+                          {transaction?.masked_number ? (
+                            <View style={styles.cardContentContainer}>
+                              {displayTitle({ title: "Card" })}
+                              {displayValue({
+                                content: transaction?.masked_number,
+                                hasCurrency: false,
+                                currencyType: transaction?.currency,
+                              })}
+                            </View>
+                          ) : null}
+
+                          {transaction?.exchange_rate === 0 ||
+                          transaction?.exchange_rate ? (
+                            <View style={styles.cardContentContainer}>
+                              {displayTitle({ title: "FX" })}
+                              {displayValue({
+                                content: transaction?.exchange_rate,
+                                hasCurrency: true,
+                                currencyType: transaction?.original_currency,
+                              })}
+                            </View>
+                          ) : null}
+                          {transaction?.charges === 0 ||
+                          transaction?.charges ? (
+                            <View style={styles.cardContentContainer}>
+                              {displayTitle({ title: "Fees" })}
+                              {displayValue({
+                                content: transaction?.charges,
+                                hasCurrency: true,
+                                currencyType: transaction?.original_currency,
+                              })}
+                            </View>
+                          ) : null}
+
+                          {transaction?.original_amount ? (
+                            <View style={styles.cardContentContainer}>
+                              {displayTitle({ title: "Original Amount" })}
+                              {displayValue({
+                                content: transaction?.original_amount,
+                                hasCurrency: true,
+                                currencyType: transaction?.currency,
+                              })}
+                            </View>
+                          ) : null}
+                        </View>
+                      </View>
+                    ) : null}
+
                     {/* only show Iban and Bic for sepa transfer */}
-                    {transaction?.service != "DEBIT CARD" ? (
+                    {!cardId && transaction?.service != "DEBIT CARD" ? (
                       <View
                         style={{
                           display: "flex",
@@ -374,66 +480,99 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         ) : null}
                       </View>
                     ) : null}
+                    {!cardId ? (
+                      <Fragment>
+                        <Seperator backgroundColor={vars["v2-light-grey"]} />
+                        <View
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            width: "100%",
+                            justifyContent: "space-between",
+                            paddingTop: 12,
+                            paddingBottom: 16,
+                          }}
+                        >
+                          {fieldHasValue(transaction?.service) ? (
+                            <View style={styles.detailMobileInnerDetail}>
+                              <Box style={styles.detailMobile}>
+                                {displayTitle({ title: "Type" })}
+                                {displayValue({
+                                  content: transaction?.service,
+                                })}
+                              </Box>
+                            </View>
+                          ) : null}
+                          {fieldHasValue(transaction?.transaction_datetime) ? (
+                            <View style={styles.detailMobileInnerDetail}>
+                              <View style={styles.detailMobile}>
+                                {displayTitle({ title: "Date & Time" })}
+                                {displayValue({
+                                  content: getFormattedDateAndTime(
+                                    transaction?.transaction_datetime
+                                  ),
+                                })}
+                              </View>
+                            </View>
+                          ) : null}
+                        </View>
+                      </Fragment>
+                    ) : null}
 
-                    <Seperator backgroundColor={vars["v2-light-grey"]} />
-                    <View
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        width: "100%",
-                        justifyContent: "space-between",
-                        paddingTop: 12,
-                        paddingBottom: 16,
-                      }}
-                    >
-                      {fieldHasValue(transaction?.service) ? (
-                        <View style={styles.detailMobileInnerDetail}>
-                          <Box style={styles.detailMobile}>
-                            {displayTitle({ title: "Type" })}
-                            {displayValue({
-                              content: transaction?.service,
-                            })}
-                          </Box>
-                        </View>
-                      ) : null}
-                      {fieldHasValue(transaction?.transaction_datetime) ? (
-                        <View style={styles.detailMobileInnerDetail}>
-                          <View style={styles.detailMobile}>
-                            {displayTitle({ title: "Date & Time" })}
-                            {displayValue({
-                              content: getFormattedDateAndTime(
-                                transaction?.transaction_datetime
-                              ),
-                            })}
-                          </View>
-                        </View>
-                      ) : null}
-                    </View>
-                    <View style={{ marginTop: 10 }}>
-                      <Button
-                        color={"light-pink"}
-                        style={{ width: 154 }}
-                        onPress={() => {
-                          navigate("profile");
-                          setTicketParams({
-                            tabSelectionRoute: "Help",
-                            passedTicketType: "transactions",
-                            transactionReferenceNumber:
-                              transaction?.reference_no || "",
-                            isOpenBottomSheet: true,
-                          });
+                    {cardId && fieldHasValue(transaction?.receiptDate) ? (
+                      <Seperator backgroundColor={vars["v2-light-grey"]} />
+                    ) : null}
+                    {cardId && fieldHasValue(transaction?.receiptDate) ? (
+                      <View
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          width: "100%",
+                          justifyContent: "space-between",
+                          paddingTop: 12,
                         }}
-                        leftIcon={
-                          <AntDesign
-                            name="customerservice"
-                            size={14}
-                            color={vars["accent-pink"]}
-                          />
-                        }
                       >
-                        Customer Service
-                      </Button>
-                    </View>
+                        {fieldHasValue(transaction?.receiptDate) ? (
+                          <View style={styles.detailMobileInnerDetail}>
+                            <View style={styles.detailMobile}>
+                              {displayTitle({ title: "Date & Time" })}
+                              {displayValue({
+                                content: getFormattedDateAndTime(
+                                  transaction?.receiptDate
+                                ),
+                              })}
+                            </View>
+                          </View>
+                        ) : null}
+                      </View>
+                    ) : null}
+                    {!cardId ? (
+                      <View style={{ marginTop: 10 }}>
+                        <Button
+                          color={"light-pink"}
+                          style={{ width: 154 }}
+                          onPress={() => {
+                            navigate("profile");
+                            setTicketParams({
+                              tabSelectionRoute: "Help",
+                              passedTicketType: "transactions",
+                              transactionReferenceNumber:
+                                transaction?.reference_no || "",
+                              isOpenBottomSheet: true,
+                            });
+                          }}
+                          leftIcon={
+                            <AntDesign
+                              name="customerservice"
+                              size={14}
+                              color={vars["accent-pink"]}
+                            />
+                          }
+                        >
+                          Customer Service
+                        </Button>
+                      </View>
+                    ) : null}
                   </View>
                   <View style={{ height: 1 }}>
                     <Seperator
@@ -469,19 +608,23 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
               fontWeight={500}
               fontFamily="Mukta-Regular"
             >
-              {convertDateToDottedNameV2(shownData.date)}
+              {cardId
+                ? shownData?.date
+                : convertDateToDottedNameV2(shownData?.date)}
             </Typography>
-            <Typography
-              fontSize={14}
-              fontWeight={500}
-              fontFamily="Nunito-SemiBold"
-              marginLeft={6}
-              color={
-                isPositiveAmountWithSign(totalAmount) === 1 ? "green" : "red"
-              }
-            >
-              {totalAmount}
-            </Typography>
+            {totalAmount ? (
+              <Typography
+                fontSize={14}
+                fontWeight={500}
+                fontFamily="Nunito-SemiBold"
+                marginLeft={6}
+                color={
+                  isPositiveAmountWithSign(totalAmount) === 1 ? "green" : "red"
+                }
+              >
+                {totalAmount}
+              </Typography>
+            ) : null}
           </View>
           <TransactionByDate transactions={transactionsByDate} />
         </Pressable>

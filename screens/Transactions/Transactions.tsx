@@ -64,7 +64,7 @@ const initialSearchFieldData: SearchFilter = {
   accountId: "",
   direction: "desc",
   status: "",
-  from_date: "2022-01-01",
+  from_date: "2022-02-01",
   to_date: currentDate.toISOString().split("T")[0],
   limit: 500,
   page: 1,
@@ -132,6 +132,7 @@ export function Transactions({ navigation, route }: any) {
       };
       getTransactionsWithFilter(search)
         .then((res) => {
+          console.log({ res });
           if (res.data) {
             const { data: _transactions } = res;
             dispatch<any>(setTransationsData(_transactions));

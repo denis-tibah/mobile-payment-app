@@ -205,15 +205,20 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
               {openTransactionIndex === index ? (
                 <Pressable>
                   <View style={styles.containerDetailsInfo}>
-                    <View
-                      style={{
-                        paddingTop: 12,
-                        paddingBottom: !cardId ? 16 : 0,
-                      }}
-                    >
-                      {fieldHasValue(
-                        transaction?.reference_no || transaction?.id
-                      ) ? (
+                    <View style={{ paddingTop: 12, paddingBottom: 16 }}>
+                    { transaction?.status === "PENDING" || transaction?.status === "PROCESSING" ? (
+                        <View
+                          style={[
+                            styles.detailMobile,
+                            styles.marginerDetailMobile,
+                          ]}
+                        >
+                          {/* {displayTitle({ title: "Transaction Reference" })} */}
+                          {displayValue({ content: `We be automatically reverting on add "5 working days to" initial transaction date if unclaimed by the Merchant` })}
+                        </View>
+                      ) : null}
+
+                      {fieldHasValue(transaction?.reference_no) ? (
                         <View
                           style={[
                             styles.detailMobile,

@@ -357,9 +357,10 @@ export function Profile({ route, navigation }: any) {
           }
         />
         <SafeAreaView style={{ flex: 1 }}>
-          <View
+          <ScrollView
             // bounces={false}
             /* style={{ backgroundColor: "#fff" }} */
+            nestedScrollEnabled
             style={{ flexGrow: 1 }}
           >
             {/* <IncomeBox />
@@ -1306,7 +1307,7 @@ export function Profile({ route, navigation }: any) {
                 </Fragment>
               ) : null}
             </View>
-          </View>
+          </ScrollView>
         </SafeAreaView>
         {/* {displayTabSelection()} */}
       </MainLayout>

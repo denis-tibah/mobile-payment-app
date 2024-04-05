@@ -522,12 +522,7 @@ export function Transactions({ navigation, route }: any) {
   return (
     <MainLayout navigation={navigation}>
       <Spinner
-        visible={
-          isLoadingTransations ||
-          isLoadingUserCardList ||
-          isLoadingCardTransactions ||
-          isLoading
-        }
+        visible={isLoadingTransations || isLoadingCardTransactions || isLoading}
       />
       <ScrollView
         bounces={true}

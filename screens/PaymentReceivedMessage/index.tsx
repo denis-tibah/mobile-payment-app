@@ -1,15 +1,14 @@
+import React, { useState, useEffect, useRef, Fragment } from "react";
+import { StyleSheet, View, Image, Dimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import React,{useEffect} from "react";
-
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { screenNames } from "../../utils/helpers";
-import { api } from "../../api";
-import { Modal } from "../../components/Modal/Modal";
-import Button from "../../components/Button";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store";
-// import { getTransactions } from "../../redux/transaction/transactionSlice";
 import * as Notifications from "expo-notifications";
+
+import { screenNames } from "../../utils/helpers";
+/* import { Modal } from "../../components/Modal/Modal"; */
+import CheckIcon from "../../assets/icons/Check";
+import Typography from "../../components/Typography";
+/* import Button from "../../components/Button"; */
+import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 
 export default function PaymentReceivedScreen({
   isOpen,
@@ -20,110 +19,120 @@ export default function PaymentReceivedScreen({
   const {
     transactionDetails = {
       amount: 0,
-      message:"",
+      message: "",
       title: "",
       card: "",
-      currency:"",
-      ref:"",
-      transactionId:""
+      currency: "",
+      ref: "",
+      transactionId: "",
     },
     userId = "",
   } = data || {};
 
+  const windowDimensions = Dimensions.get("window");
+  const refRBSheet = useRef();
+
   const { navigate }: any = useNavigation();
-  const dispatch = useDispatch();
-  const userData = useSelector((state: RootState) => state?.auth?.userData);
 
-  // const handleTransactionResponse = async (status: any) => {
-  //   try {
-  //     const responsePayload = { status, userId };
+  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
 
-  //     await api.post("/transactionResponse", responsePayload);
-  //   } catch (error) {
-  //     console.error(error);
-  //   } finally {
-  //     setShowApproval({ show: false, data: {} });
-  //   }
+  useEffect(() => {
+    setIsOpenModal(isOpen);
+  }, [isOpen]);
 
-  //   navigate(screenNames.myaccount);
-  // };
+  useEffect(() => {
+    if (isOpenModal) {
+      refRBSheet?.current?.open();
+    } else {
+      refRBSheet?.current?.close();
+    }
+  }, [isOpenModal]);
 
-  // useEffect(() => {
-  //     fetchTransactions();
-  // }, []);
-
-
-  // const fetchTransactions = async () => {
-  //   try {
-
-  //     if (userData) {
-  //       let search= {     
-  //         account_id: userData?.id,
-  //         // sort: "id",
-  //         direction: "desc",
-  //         // status: "PROCESSING"
-  //         // status: "SUCCESS"
-  //     }
-  //       await dispatch<any>(getTransactions(search))
-  //     }
-  //   } catch (error) {
-  //     console.log({ error });
-  //   }
-  //     //  finally {
-  //     //     setShowReceivedPayment({ show: false, data: {} });
-  //     //   }
-
-  //   // navigate(screenNames.myaccount);
-  // };
-
-  const closePopup= async () => {
+  const closePopup = async () => {
     setShowReceivedPayment({ show: false, data: {} });
-   
-    //dismiss all notifications
-   // Notifications.dismissAllNotificationsAsync();
-     //dismiss single notifications
-     Notifications.dismissNotificationAsync(notificationIdentifier);
-
-
+    //dismiss all/single notifications
+    Notifications.dismissNotificationAsync(notificationIdentifier);
     navigate(screenNames.myaccount);
-  }
+  };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      footer={
-        <View style={styles.buttonContainer}>
-          {/* <Button
-            color="light-pink"
-            onPress={() => handleTransactionResponse("reject")}
-          >
-            Decline
-          </Button> */}
+    <Fragment>
+      {/* <Modal isOpen={true} headerTitle={transactionDetails.title}>
+        <View style={styles.container}>
+          {transactionDetails && (
+            <View style={styles.transactionDetails}>
+              <Text>
+                {transactionDetails.message}
+                {transactionDetails.currency}
+                {transactionDetails.amount}
+              </Text>
+            </View>
+          )}
+          <Button color={"green"} onPress={() => closePopup()}>
+            <Text style={styles.buttonText}>OK</Text>
+          </Button>
         </View>
-      }
-      // "Title" here
-      headerTitle={transactionDetails.title}
-    >
-      
-      <View style={styles.container}>
-        {transactionDetails && (
-          <View style={styles.transactionDetails}>
-            <Text>
-              {/* You have just received a Payment of{" "} */}
-              {transactionDetails.message}{transactionDetails.currency}
-              {transactionDetails.amount}
-        
-            </Text>
+      </Modal> */}
+      <SwipableBottomSheet
+        rbSheetRef={refRBSheet}
+        closeOnDragDown={true}
+        closeOnPressMask={false}
+        onClose={() => {
+          closePopup();
+        }}
+        height={windowDimensions.height - 365}
+        wrapperStyles={{
+          backgroundColor: "rgba(172, 172, 172, 0.5)",
+          zIndex: 2,
+        }}
+        containerStyles={{
+          backgroundColor: "#0DCA9D",
+          borderTopLeftRadius: 14,
+          borderTopRightRadius: 14,
+          elevation: 12,
+          shadowColor: "#52006A",
+          zIndex: 2,
+        }}
+        draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
+      >
+        <View style={styles.headerContainer}>
+          <View style={styles.headerWrapper}>
+            <CheckIcon color="white" size={18} />
+            <Typography
+              color="#FFFF"
+              fontSize={18}
+              marginLeft={6}
+              fontWeight={600}
+            >
+              Payment recieved
+            </Typography>
           </View>
-        )}
-        <Button
-          color={"green"}
-          onPress={() => closePopup()}
-        >
-          <Text style={styles.buttonText}>OK</Text>
-        </Button>
-      </View>
-    </Modal>
+        </View>
+        <View style={{ backgroundColor: "#fff", paddingBottom: 10 }}>
+          {transactionDetails && (
+            <View style={styles.transactionDetails}>
+              <Typography
+                color="#696F7A"
+                fontSize={14}
+                marginLeft={6}
+                fontWeight={400}
+                fontFamily="Mukta-Regular"
+              >
+                {transactionDetails.message}
+                {transactionDetails.currency}
+                {transactionDetails.amount}
+              </Typography>
+            </View>
+          )}
+        </View>
+        <View style={styles.imageWrapper}>
+          <Image
+            source={require('("../../../assets/images/payment-approved.png')}
+            style={styles.image}
+          />
+        </View>
+      </SwipableBottomSheet>
+    </Fragment>
   );
 }
 
@@ -133,7 +142,11 @@ const styles: any = StyleSheet.create<any>({
     alignItems: "center",
   },
   transactionDetails: {
-    marginBottom: 20,
+    backgroundColor: "#fff",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 20,
     fontSize: 14,
     fontWeight: 400,
   },
@@ -141,4 +154,43 @@ const styles: any = StyleSheet.create<any>({
     display: "flex",
     alignItems: "flex-end",
   },
+  headerContainer: {
+    backgroundColor: "#0DCA9D",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 0,
+    width: "100%",
+    height: 50,
+    marginBottom: 10,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  headerWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  okWrapper: {
+    backgroundColor: "#fff",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  imageWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#fff",
+  },
+  image: {
+    height: 200,
+    width: 180,
+    marginTop: 20,
+    marginLeft: 90,
+  },
+  buttonOK: { backgroundColor: "#fff", height: 30, width: 90, marginTop: 24 },
 });

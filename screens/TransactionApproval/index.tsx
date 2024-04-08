@@ -1,11 +1,15 @@
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, Image, Dimensions } from "react-native";
+import * as Notifications from "expo-notifications";
+
 import { screenNames } from "../../utils/helpers";
 import { api } from "../../api";
-import { Modal } from "../../components/Modal/Modal";
+/* import { Modal } from "../../components/Modal/Modal"; */
 import Button from "../../components/Button";
-import * as Notifications from "expo-notifications";
+import CheckIcon from "../../assets/icons/Check";
+import Typography from "../../components/Typography";
+import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 
 export default function TransactionApprovalScreen({
   isOpen,
@@ -15,25 +19,40 @@ export default function TransactionApprovalScreen({
 }: any) {
   const {
     transactionDetails = {
-      requestType:"",
-      amount:0,
-      title:"",
-      message:"",
-      card:"",
-      transactionId:"",
-      ref:"",
-      currency:"",
-      transactonDate:""
-
+      requestType: "",
+      amount: 0,
+      title: "",
+      message: "",
+      card: "",
+      transactionId: "",
+      ref: "",
+      currency: "",
+      transactonDate: "",
     },
     userId = "",
   } = data || {};
   const { navigate }: any = useNavigation();
 
-  const handleTransactionResponse = async (id: any,ref: any,status: any) => {
-    try {
-      const responsePayload = { id:id, reference:ref, approve:status };
+  const windowDimensions = Dimensions.get("window");
+  const refRBSheet = useRef();
 
+  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsOpenModal(isOpen);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpenModal) {
+      refRBSheet?.current?.open();
+    } else {
+      refRBSheet?.current?.close();
+    }
+  }, [isOpenModal]);
+
+  const handleTransactionResponse = async (id: any, ref: any, status: any) => {
+    try {
+      const responsePayload = { id: id, reference: ref, approve: status };
       await api.post("/authorizationNotificationFinXP", responsePayload);
     } catch (error) {
       console.error(error);
@@ -46,54 +65,146 @@ export default function TransactionApprovalScreen({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      footer={
-        <View style={styles.buttonContainer}>
+    <Fragment>
+      {/* <Modal
+        isOpen={isOpen}
+        footer={
+          <View style={styles.buttonContainer}>
+            <Button
+              color="light-pink"
+              onPress={() =>
+                handleTransactionResponse(
+                  transactionDetails.transactionId,
+                  transactionDetails.ref,
+                  false
+                )
+              }
+            >
+              Decline
+            </Button>
+          </View>
+        }
+        headerTitle={transactionDetails.title}
+      >
+        <View style={styles.container}>
+          {transactionDetails && (
+            <View style={styles.transactionDetails}>
+              <Text>
+                {transactionDetails.message} of {""}
+                {transactionDetails.amount} {""} {transactionDetails.currency}{" "}
+                {""} with id {transactionDetails.transactionId}
+                was executed at {""} {transactionDetails.transactonDate}
+              </Text>
+            </View>
+          )}
           <Button
-            color="light-pink"
-            onPress={() => 
-              // handleTransactionResponse(Number(transactionDetails.transactionId),transactionDetails.ref,false)}
-              handleTransactionResponse(transactionDetails.transactionId,transactionDetails.ref,false)}
+            color={"green"}
+            onPress={() =>
+              handleTransactionResponse(
+                transactionDetails.transactionId,
+                transactionDetails.ref,
+                true
+              )
+            }
           >
-            Decline
+            <Text style={styles.buttonText}>Approve</Text>
           </Button>
         </View>
-      }
-      // headerTitle={"Payment Confirmation"}
-      headerTitle={transactionDetails.title}
-      
-    >
-      <View style={styles.container}>
-        {transactionDetails && (
-          <View style={styles.transactionDetails}>
-            <Text>
-              {transactionDetails.message} of {""}
-              {transactionDetails.amount} {""} {transactionDetails.currency} {""} with id {transactionDetails.transactionId}
-               was executed at {""} {transactionDetails.transactonDate} 
-          
-                {/* {transactionDetails.message}
-              {transactionDetails.transactionId}
-              {transactionDetails.ref}
-              {transactionDetails.amount}
-              {transactionDetails.currency}
-              {transactionDetails.merchant_name}
-              {transactionDetails.merchant_url}
-              {transactionDetails.transactionDate} */}
+      </Modal> */}
 
-            </Text>
+      <SwipableBottomSheet
+        rbSheetRef={refRBSheet}
+        closeOnDragDown={true}
+        closeOnPressMask={false}
+        onClose={() => {}}
+        height={windowDimensions.height - 310}
+        wrapperStyles={{
+          backgroundColor: "rgba(172, 172, 172, 0.5)",
+          zIndex: 2,
+        }}
+        containerStyles={{
+          backgroundColor: "#0DCA9D",
+          borderTopLeftRadius: 14,
+          borderTopRightRadius: 14,
+          elevation: 12,
+          shadowColor: "#52006A",
+          zIndex: 2,
+        }}
+        draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
+      >
+        <View style={styles.headerContainer}>
+          <View style={styles.headerWrapper}>
+            <CheckIcon color="white" size={18} />
+            <Typography
+              color="#FFFF"
+              fontSize={18}
+              marginLeft={6}
+              fontWeight={600}
+            >
+              Approve payment
+            </Typography>
           </View>
-        )}
-        <Button
-          color={"green"}
-          onPress={() => 
-                  // handleTransactionResponse(Number(transactionDetails.transactionId),transactionDetails.ref,true)}
-                  handleTransactionResponse(transactionDetails.transactionId,transactionDetails.ref,true)}
-        >
-          <Text style={styles.buttonText}>Approve</Text>
-        </Button>
-      </View>
-    </Modal>
+        </View>
+        <View style={{ backgroundColor: "#fff", paddingBottom: 10 }}>
+          {transactionDetails && (
+            <View style={styles.transactionDetails}>
+              <Typography
+                color="#696F7A"
+                fontSize={14}
+                marginLeft={6}
+                fontWeight={400}
+                fontFamily="Mukta-Regular"
+              >
+                {transactionDetails.message} of {""}
+                {transactionDetails.amount} {""} {transactionDetails.currency}{" "}
+                {""} with id {transactionDetails.transactionId}
+                was executed at {""} {transactionDetails.transactonDate}
+              </Typography>
+            </View>
+          )}
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-evenly",
+              marginTop: 20,
+            }}
+          >
+            <Button
+              color={"green"}
+              onPress={() => {
+                handleTransactionResponse(
+                  transactionDetails.transactionId,
+                  transactionDetails.ref,
+                  true
+                );
+              }}
+            >
+              <Text style={styles.buttonText}>Confirm</Text>
+            </Button>
+            <Button
+              color={"red"}
+              onPress={() => {
+                handleTransactionResponse(
+                  transactionDetails.transactionId,
+                  transactionDetails.ref,
+                  false
+                );
+              }}
+            >
+              <Text style={styles.buttonText}>Reject</Text>
+            </Button>
+          </View>
+        </View>
+
+        <View style={styles.imageWrapper}>
+          <Image
+            source={require('("../../../assets/images/payment-approved.png')}
+            style={styles.image}
+          />
+        </View>
+      </SwipableBottomSheet>
+    </Fragment>
   );
 }
 
@@ -103,7 +214,11 @@ const styles: any = StyleSheet.create<any>({
     alignItems: "center",
   },
   transactionDetails: {
-    marginBottom: 20,
+    backgroundColor: "#fff",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 20,
     fontSize: 14,
     fontWeight: 400,
   },
@@ -111,4 +226,43 @@ const styles: any = StyleSheet.create<any>({
     display: "flex",
     alignItems: "flex-end",
   },
+  headerContainer: {
+    backgroundColor: "#0DCA9D",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 0,
+    width: "100%",
+    height: 50,
+    marginBottom: 10,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  headerWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  okWrapper: {
+    backgroundColor: "#fff",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  imageWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#fff",
+  },
+  image: {
+    height: 200,
+    width: 180,
+    marginTop: 20,
+    marginLeft: 90,
+  },
+  buttonOK: { backgroundColor: "#fff", height: 30, width: 90, marginTop: 24 },
 });

@@ -106,4 +106,12 @@ export const styles: any = StyleSheet.create({
   "text-black-only": {
     color: "#000000",
   },
+
+  // only text - black
+  red: {
+    backgroundColor: "#FF7171",
+  },
+  "text-red-only": {
+    color: "#000000",
+  },
 });

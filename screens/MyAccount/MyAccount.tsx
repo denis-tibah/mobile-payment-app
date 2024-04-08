@@ -15,7 +15,6 @@ import Typography from "../../components/Typography";
 import { RootState } from "../../store";
 import {
   getCurrency,
-  groupedByDateTransactions,
   formatCurrencyToLocalEnTwo,
   arrayChecker,
 } from "../../utils/helpers";

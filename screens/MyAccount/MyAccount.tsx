@@ -47,10 +47,12 @@ export function MyAccount({ navigation }: any) {
       tokenZiyl: userTokens?.token_ziyl,
       status,
       direction: "desc",
-      limit: 500,
+      limit: 100,
       page: 1,
-      from_date: "2023-10-30",
+      sort: "date",
+      from_date: "2023-11-01",
       to_date: currentDate.toISOString().split("T")[0],
+      group_date: true,
     };
   };
 
@@ -62,10 +64,8 @@ export function MyAccount({ navigation }: any) {
   } = useGetTransactionsQuery(transactionsParams({ status: "PROCESSING" }), {
     skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
   });
-  const transactionsListPending = dataTransactionsPending?.transactions;
-  const groupedByDateTransactionsPending = groupedByDateTransactions(
-    transactionsListPending
-  );
+  const groupedByDateTransactionsPending =
+    dataTransactionsPending?.transactions_grouped_by_date;
 
   const {
     data: dataTransactionsCompleted,

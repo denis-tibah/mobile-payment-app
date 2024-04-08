@@ -54,6 +54,21 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
 
   const [, setTicketParams] = useAtom(helpTabticketParams);
 
+  const addFiveWorkingDays = (date: string) => {
+    const currentDate = new Date(date);
+    let count = 0;
+    while (count < 5) {
+      currentDate.setDate(currentDate.getDate() + 1);
+      if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) {
+        count++;
+      }
+    }
+    return currentDate.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "long",
+    });
+  };
+
   const [openTransactionIndex, setOpenTransactionIndex] = useState<
     number | null
   >(null);
@@ -221,9 +236,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           ]}
                         >
                           {/* {displayTitle({ title: "Transaction Reference" })} */}
-                          {displayValue({
-                            content: `We be automatically reverting on add "5 working days to" initial transaction date if unclaimed by the Merchant`,
-                          })}
+                          {displayValue({content: `We will be automatically reverting on ${addFiveWorkingDays(transaction?.transaction_datetime)} if unclaimed by the merchant.`})}
                         </View>
                       ) : null}
 

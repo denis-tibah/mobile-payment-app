@@ -33,7 +33,7 @@ export default function TransactionApprovalScreen({
   } = data || {};
   const { navigate }: any = useNavigation();
 
-  const windowDimensions = Dimensions.get("window");
+  const windowDimensions = Dimensions.get("screen");
   const refRBSheet = useRef();
 
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
@@ -117,7 +117,7 @@ export default function TransactionApprovalScreen({
         closeOnDragDown={true}
         closeOnPressMask={false}
         onClose={() => {}}
-        height={windowDimensions.height - 310}
+        height={windowDimensions.height - 400}
         wrapperStyles={{
           backgroundColor: "rgba(172, 172, 172, 0.5)",
           zIndex: 2,

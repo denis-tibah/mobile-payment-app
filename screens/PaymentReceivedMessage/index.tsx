@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useRef, Fragment } from "react";
-import { StyleSheet, View, Image, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  Dimensions,
+  useWindowDimensions,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
 
@@ -29,7 +35,7 @@ export default function PaymentReceivedScreen({
     userId = "",
   } = data || {};
 
-  const windowDimensions = Dimensions.get("window");
+  const windowDimensions = Dimensions.get("screen");
   const refRBSheet = useRef();
 
   const { navigate }: any = useNavigation();
@@ -80,18 +86,18 @@ export default function PaymentReceivedScreen({
         onClose={() => {
           closePopup();
         }}
-        height={windowDimensions.height - 365}
         wrapperStyles={{
           backgroundColor: "rgba(172, 172, 172, 0.5)",
           zIndex: 2,
         }}
+        wrapper={{ backgroundColor: "blue" }}
         containerStyles={{
+          height: windowDimensions.height - 430,
           backgroundColor: "#0DCA9D",
           borderTopLeftRadius: 14,
           borderTopRightRadius: 14,
           elevation: 12,
           shadowColor: "#52006A",
-          zIndex: 2,
         }}
         draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
       >
@@ -108,7 +114,7 @@ export default function PaymentReceivedScreen({
             </Typography>
           </View>
         </View>
-        <View style={{ backgroundColor: "#fff", paddingBottom: 10 }}>
+        <View style={{ backgroundColor: "#fff" }}>
           {transactionDetails && (
             <View style={styles.transactionDetails}>
               <Typography
@@ -118,9 +124,10 @@ export default function PaymentReceivedScreen({
                 fontWeight={400}
                 fontFamily="Mukta-Regular"
               >
-                {transactionDetails.message}
+                {/* {transactionDetails.message}
                 {transactionDetails.currency}
-                {transactionDetails.amount}
+                {transactionDetails.amount} */}
+                Some message here from BE
               </Typography>
             </View>
           )}
@@ -160,9 +167,8 @@ const styles: any = StyleSheet.create<any>({
     borderTopRightRadius: 20,
     padding: 0,
     width: "100%",
-    height: 50,
+    height: 60,
     marginBottom: 10,
-    display: "flex",
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
@@ -189,7 +195,7 @@ const styles: any = StyleSheet.create<any>({
   image: {
     height: 200,
     width: 180,
-    marginTop: 20,
+    marginTop: 40,
     marginLeft: 90,
   },
   buttonOK: { backgroundColor: "#fff", height: 30, width: 90, marginTop: 24 },

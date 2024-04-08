@@ -119,7 +119,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                       {transaction?.service === "SEPA CT IN" ||
                       transaction?.service === "SEPA CT OUT" ||
                       transaction?.service === "SEPA INST IN" ? (
-                        <BankIcon size={14} color={"heavy-grey"} /> 
+                        <BankIcon size={14} color={"heavy-grey"} />
                       ) : null}
                       {transaction?.service === "INTERNAL" ? (
                         <ZazzoLogo size={14} color={"heavy-grey"} />

@@ -103,12 +103,13 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
               amountColor = "green";
             }
           }
+          const keyId = transaction?.reference_no;
 
           return (
             <>
               <View
                 style={styles.detailMobileForEachTransactionContainer}
-                key={index}
+                key={keyId}
               >
                 <TouchableOpacity onPress={() => handleToggleDetails(index)}>
                   <View style={styles.detailMobileForEachTransactionWrapper}>

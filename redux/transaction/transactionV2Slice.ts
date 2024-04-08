@@ -7,8 +7,8 @@ export const transactionV2 = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: exportedBaseUrl,
     prepareHeaders: (headers: any) => {
-        headers.set("Content-Type", "application/json");
-        return headers;
+      headers.set("Content-Type", "application/json");
+      return headers;
     },
   }),
   keepUnusedDataFor: 30,
@@ -36,7 +36,9 @@ export const transactionV2 = createApi({
             bic: params?.bic,
             reference_no: params?.reference_no,
             card_id: params?.card_id,
-            ...(!isGroupingDisabled && {group_date: true}),
+            ...(!isGroupingDisabled
+              ? { group_date: true }
+              : { group_date: false }),
           },
           headers: {
             "Content-Type": "application/json",
@@ -55,7 +57,7 @@ export const transactionV2 = createApi({
           direction,
           sort,
           from_date,
-          to_date
+          to_date,
         },
       }),
     }),

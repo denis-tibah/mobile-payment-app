@@ -366,7 +366,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                               {displayValue({
                                 content: transaction?.original_amount,
                                 hasCurrency: true,
-                                currencyType: transaction?.currency,
+                                currencyType: transaction?.original_currency,
                               })}
                             </View>
                           ) : null}

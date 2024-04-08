@@ -5,6 +5,7 @@ import EuroIcon from "../../assets/icons/Euro";
 import DollarIcon from "../../assets/icons/Dollar";
 import GbpIcon from "../../assets/icons/Gbp";
 import { formatAmountTableValue } from "../../utils/helpers";
+import IconGBP from "../../assets/icons/IconGBP/IconGBP";
 
 const displayTitle = ({ title }: { title: string }) => {
   return (
@@ -39,7 +40,7 @@ const displayValue = ({
 }: {
   content: string | null;
   hasCurrency: boolean;
-  currencyType: string | null;
+  currencyType: string | undefined;
 }) => {
   return (
     <View
@@ -47,7 +48,13 @@ const displayValue = ({
     >
       {hasCurrency ? (
         <Typography marginRight={4}>
-          {currencyIcon(currencyType, { color: "blue" })}
+          {currencyType === "EUR" ? (
+            <EuroIcon size={13} />
+          ) : currencyType === "USD" ? (
+            <DollarIcon size={13} />
+          ) : currencyType === "GBP" ? (
+            <IconGBP size={13} />
+          ) : null}
         </Typography>
       ) : null}
 

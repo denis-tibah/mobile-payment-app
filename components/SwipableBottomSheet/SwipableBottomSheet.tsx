@@ -19,6 +19,7 @@ const SwipableBottomSheet = ({
       closeOnPressMask={closeOnPressMask}
       height={height}
       onClose={onClose}
+      dragable
       customStyles={{
         wrapper: {
           ...wrapperStyles,

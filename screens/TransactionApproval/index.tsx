@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useRef, Fragment } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { StyleSheet, Text, View, Image, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Dimensions,
+  Platform,
+} from "react-native";
 import * as Notifications from "expo-notifications";
 
 import { screenNames } from "../../utils/helpers";
@@ -117,20 +124,23 @@ export default function TransactionApprovalScreen({
         closeOnDragDown={true}
         closeOnPressMask={false}
         onClose={() => {}}
-        height={windowDimensions.height - 400}
         wrapperStyles={{
           backgroundColor: "rgba(172, 172, 172, 0.5)",
           zIndex: 2,
         }}
+        height={windowDimensions.height - 400}
         containerStyles={{
-          backgroundColor: "#0DCA9D",
+          backgroundColor: Platform.OS === "ios" ? "#fff" : "#0DCA9D",
           borderTopLeftRadius: 14,
           borderTopRightRadius: 14,
           elevation: 12,
           shadowColor: "#52006A",
           zIndex: 2,
         }}
-        draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
+        draggableIconStyles={{
+          backgroundColor: Platform.OS === "ios" ? "#0DCA9D" : "#FFF",
+          width: 90,
+        }}
       >
         <View style={styles.headerContainer}>
           <View style={styles.headerWrapper}>
@@ -228,11 +238,11 @@ const styles: any = StyleSheet.create<any>({
   },
   headerContainer: {
     backgroundColor: "#0DCA9D",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: Platform.OS === "ios" ? 0 : 20,
+    borderTopRightRadius: Platform.OS === "ios" ? 0 : 20,
     padding: 0,
     width: "100%",
-    height: 50,
+    height: Platform.OS === "ios" ? 70 : 50,
     marginBottom: 10,
     display: "flex",
     flexDirection: "row",

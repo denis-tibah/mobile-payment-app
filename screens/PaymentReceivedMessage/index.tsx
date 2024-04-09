@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useRef, Fragment } from "react";
-import {
-  StyleSheet,
-  View,
-  Image,
-  Dimensions,
-  useWindowDimensions,
-} from "react-native";
+import { StyleSheet, View, Image, Dimensions, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
 
@@ -90,16 +84,18 @@ export default function PaymentReceivedScreen({
           backgroundColor: "rgba(172, 172, 172, 0.5)",
           zIndex: 2,
         }}
-        wrapper={{ backgroundColor: "blue" }}
+        height={windowDimensions.height - 430}
         containerStyles={{
-          height: windowDimensions.height - 430,
-          backgroundColor: "#0DCA9D",
+          backgroundColor: Platform.OS === "ios" ? "#fff" : "#0DCA9D",
           borderTopLeftRadius: 14,
           borderTopRightRadius: 14,
           elevation: 12,
           shadowColor: "#52006A",
         }}
-        draggableIconStyles={{ backgroundColor: "#FFF", width: 90 }}
+        draggableIconStyles={{
+          backgroundColor: Platform.OS === "ios" ? "#0DCA9D" : "#FFF",
+          width: 90,
+        }}
       >
         <View style={styles.headerContainer}>
           <View style={styles.headerWrapper}>
@@ -124,10 +120,9 @@ export default function PaymentReceivedScreen({
                 fontWeight={400}
                 fontFamily="Mukta-Regular"
               >
-                {/* {transactionDetails.message}
+                {transactionDetails.message}
                 {transactionDetails.currency}
-                {transactionDetails.amount} */}
-                Some message here from BE
+                {transactionDetails.amount}
               </Typography>
             </View>
           )}
@@ -163,11 +158,11 @@ const styles: any = StyleSheet.create<any>({
   },
   headerContainer: {
     backgroundColor: "#0DCA9D",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: Platform.OS === "ios" ? 0 : 20,
+    borderTopRightRadius: Platform.OS === "ios" ? 0 : 20,
     padding: 0,
     width: "100%",
-    height: 60,
+    height: Platform.OS === "ios" ? 70 : 50,
     marginBottom: 10,
     flexDirection: "row",
     justifyContent: "space-around",

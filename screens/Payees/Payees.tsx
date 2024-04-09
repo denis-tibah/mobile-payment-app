@@ -833,6 +833,7 @@ export function Payees({ navigation }: any) {
             <Button
               color={"light-pink"}
               onPress={() => {
+                refRBSheetDeletePayee?.current?.close();
                 setIsLoading(true);
                 dispatch<any>(deleteBeneficiary(selectedPayeeId))
                   .unwrap()
@@ -861,7 +862,6 @@ export function Payees({ navigation }: any) {
                     }
                     setIsLoading(false);
                     refetchPayees();
-                    refRBSheetDeletePayee?.current?.close();
                   })
                   .catch((error: any) => {
                     console.log("error", error);

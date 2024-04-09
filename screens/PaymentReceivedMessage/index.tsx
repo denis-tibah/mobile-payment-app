@@ -34,10 +34,10 @@ export default function PaymentReceivedScreen({
 
   const { navigate }: any = useNavigation();
 
-  const [isOpenModal, setIsOpenModal] = useState<boolean>(true);
+  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
 
   useEffect(() => {
-    setIsOpenModal(true);
+    setIsOpenModal(isOpen);
   }, [isOpen]);
 
   useEffect(() => {

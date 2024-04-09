@@ -34,10 +34,10 @@ export default function PaymentReceivedScreen({
 
   const { navigate }: any = useNavigation();
 
-  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+  const [isOpenModal, setIsOpenModal] = useState<boolean>(true);
 
   useEffect(() => {
-    setIsOpenModal(isOpen);
+    setIsOpenModal(true);
   }, [isOpen]);
 
   useEffect(() => {
@@ -84,7 +84,7 @@ export default function PaymentReceivedScreen({
           backgroundColor: "rgba(172, 172, 172, 0.5)",
           zIndex: 2,
         }}
-        height={windowDimensions.height - 430}
+        height={windowDimensions.height - 445}
         containerStyles={{
           backgroundColor: Platform.OS === "ios" ? "#fff" : "#0DCA9D",
           borderTopLeftRadius: 14,
@@ -120,9 +120,10 @@ export default function PaymentReceivedScreen({
                 fontWeight={400}
                 fontFamily="Mukta-Regular"
               >
-                {transactionDetails.message}
+                {/* {transactionDetails.message}
                 {transactionDetails.currency}
-                {transactionDetails.amount}
+                {transactionDetails.amount} */}
+                Some message from BE
               </Typography>
             </View>
           )}

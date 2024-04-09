@@ -120,10 +120,9 @@ export default function PaymentReceivedScreen({
                 fontWeight={400}
                 fontFamily="Mukta-Regular"
               >
-                {/* {transactionDetails.message}
+                {transactionDetails.message}
                 {transactionDetails.currency}
-                {transactionDetails.amount} */}
-                Some message from BE
+                {transactionDetails.amount}
               </Typography>
             </View>
           )}

@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   Text,
+  Dimensions,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -42,6 +43,7 @@ import {
   sortUserActiveToInactiveCards,
   widthGlobal,
   wp,
+  formattedDateForQuery,
 } from "../../utils/helpers";
 import { RootState } from "../../store";
 import vars from "../../styles/vars";
@@ -66,7 +68,7 @@ const initialSearchFieldData: SearchFilter = {
   status: "",
   from_date: "2022-01-01",
   to_date: currentDate.toISOString().split("T")[0],
-  limit: 500,
+  limit: 300,
   page: 1,
   group_date: false,
 };
@@ -90,6 +92,8 @@ export function Transactions({ navigation, route }: any) {
   const isCardTransactionShown = useSelector(
     (state: RootState) => state?.card?.isCardTransactionShown
   );
+
+  const windowDimensions = Dimensions.get("screen");
 
   const [
     getTransactionsWithFilter,
@@ -201,12 +205,18 @@ export function Transactions({ navigation, route }: any) {
   };
 
   const handleFetchCardTransactions = async (cardId: string) => {
+    const dateFrom = formattedDateForQuery(
+      showPickerDateFilter.dateFrom.value,
+      "dateFrom"
+    );
+    const dateTo = formattedDateForQuery(
+      showPickerDateFilter.dateTo.value,
+      "dateTo"
+    );
     const cardTransactionsFilter = {
       account_id: userData?.id,
-      from_date: new Date(new Date().setFullYear(new Date().getFullYear() - 2))
-        .toISOString()
-        .split("T")[0],
-      to_date: new Date().toISOString().split("T")[0],
+      from_date: dateFrom,
+      to_date: dateTo,
       group_date: true,
       limit: 100,
       page: 1,
@@ -607,9 +617,11 @@ export function Transactions({ navigation, route }: any) {
         rbSheetRef={refRBSheet}
         closeOnDragDown={true}
         closeOnPressMask={false}
-        height={550}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
+          height: searchFieldData?.card_id
+            ? windowDimensions.height - 455
+            : windowDimensions.height - 260,
           backgroundColor: "#FFF",
           borderTopLeftRadius: 14,
           borderTopRightRadius: 14,
@@ -679,9 +691,6 @@ export function Transactions({ navigation, route }: any) {
                   },
                 });
               }}
-              disabled={
-                searchFieldData.card_id !== "" && isCardTransactionShown
-              }
             >
               {showPickerDateFilter.dateFrom.value &&
                 getFormattedDateFromUnixDotted(
@@ -723,9 +732,9 @@ export function Transactions({ navigation, route }: any) {
                   },
                 });
               }}
-              disabled={
+              /* disabled={
                 searchFieldData.card_id !== "" && isCardTransactionShown
-              }
+              } */
             >
               {showPickerDateFilter.dateTo.value &&
                 getFormattedDateFromUnixDotted(
@@ -753,125 +762,126 @@ export function Transactions({ navigation, route }: any) {
             overflow: "visible",
           }}
         />
-        <Typography fontSize={14} color="#696F7A">
-          Status
-        </Typography>
-        <ScrollView
-          horizontal
-          style={{ display: "flex", flexDirection: "row" }}
-        >
-          {transactionStatusOptions.map((option, index) => (
-            <TouchableOpacity
-              key={index}
-              disabled={
-                searchFieldData.card_id !== "" && isCardTransactionShown
-              }
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                marginRight: 10,
-                backgroundColor:
-                  searchFieldData.status === option.value
-                    ? vars[option.colorActive]
-                    : vars[option.color],
-                paddingHorizontal: 18,
-                paddingVertical: 12,
-                borderRadius: 99,
-              }}
-              onPress={() => {
-                if (searchFieldData.status === option.value) {
-                  setSearchFieldData({
-                    ...searchFieldData,
-                    status: "",
-                  });
-                  return;
-                }
-                setSearchFieldData({
-                  ...searchFieldData,
-                  status: option.value,
-                });
-              }}
+        {!searchFieldData?.card_id ? (
+          <Fragment>
+            <Typography fontSize={14} color="#696F7A">
+              Status
+            </Typography>
+            <ScrollView
+              horizontal
+              style={{ display: "flex", flexDirection: "row" }}
             >
-              <Text
-                style={{
-                  color:
-                    searchFieldData.status === option.value
-                      ? "#fff"
-                      : vars[option.colorActive],
-                  fontSize: 14,
-                }}
-              >
-                {option.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-        <Divider style={{ marginVertical: 15 }} />
-        <View style={{ display: "flex", flexDirection: "row" }}>
-          {/* two input fields for amount range: amount from and amount to */}
-          <View style={{ flex: 1, flexWrap: "wrap", paddingRight: 10 }}>
-            <Typography fontSize={14} color="#696F7A">
-              Amount from
-            </Typography>
-            <FormGroup.Input
-              placeholder={"From"}
-              color={vars["black"]}
-              disabled={
-                searchFieldData.card_id !== "" && isCardTransactionShown
-              }
-              fontSize={14}
-              fontWeight={"400"}
+              {transactionStatusOptions.map((option, index) => (
+                <TouchableOpacity
+                  key={index}
+                  disabled={
+                    searchFieldData.card_id !== "" && isCardTransactionShown
+                  }
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginRight: 10,
+                    backgroundColor:
+                      searchFieldData.status === option.value
+                        ? vars[option.colorActive]
+                        : vars[option.color],
+                    paddingHorizontal: 18,
+                    paddingVertical: 12,
+                    borderRadius: 99,
+                  }}
+                  onPress={() => {
+                    if (searchFieldData.status === option.value) {
+                      setSearchFieldData({
+                        ...searchFieldData,
+                        status: "",
+                      });
+                      return;
+                    }
+                    setSearchFieldData({
+                      ...searchFieldData,
+                      status: option.value,
+                    });
+                  }}
+                >
+                  <Text
+                    style={{
+                      color:
+                        searchFieldData.status === option.value
+                          ? "#fff"
+                          : vars[option.colorActive],
+                      fontSize: 14,
+                    }}
+                  >
+                    {option.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <Divider style={{ marginVertical: 15 }} />
+            <View style={{ display: "flex", flexDirection: "row" }}>
+              {/* two input fields for amount range: amount from and amount to */}
+              <View style={{ flex: 1, flexWrap: "wrap", paddingRight: 10 }}>
+                <Typography fontSize={14} color="#696F7A">
+                  Amount from
+                </Typography>
+                <FormGroup.Input
+                  placeholder={"From"}
+                  color={vars["black"]}
+                  disabled={
+                    searchFieldData.card_id !== "" && isCardTransactionShown
+                  }
+                  fontSize={14}
+                  fontWeight={"400"}
+                  style={{
+                    width: "100%",
+                    borderWidth: 1,
+                    borderColor: vars["accent-blue"],
+                  }}
+                  icon={<Euro />}
+                  value={searchFieldData.min_amount}
+                  onChangeText={(event: string) => {
+                    amountRangeFilter(Number(event), "min_amount");
+                  }}
+                />
+              </View>
+              <View style={{ flex: 1, paddingLeft: 10 }}>
+                <Typography fontSize={14} color="#696F7A">
+                  Amount to
+                </Typography>
+                <FormGroup.Input
+                  placeholder={"To"}
+                  color={vars["black"]}
+                  disabled={
+                    searchFieldData.card_id !== "" && isCardTransactionShown
+                  }
+                  fontSize={14}
+                  fontWeight={"400"}
+                  style={{
+                    width: "100%",
+                    borderWidth: 1,
+                    borderColor: vars["accent-blue"],
+                  }}
+                  value={searchFieldData.max_amount}
+                  onChangeText={(event: string) => {
+                    amountRangeFilter(Number(event), "max_amount");
+                  }}
+                  icon={<Euro />}
+                />
+              </View>
+            </View>
+            <Divider
               style={{
-                width: "100%",
-                borderWidth: 1,
-                borderColor: vars["accent-blue"],
-              }}
-              icon={
-                // icon EUR
-                <Euro />
-              }
-              value={searchFieldData.min_amount}
-              onChangeText={(event: string) => {
-                amountRangeFilter(Number(event), "min_amount");
+                marginVertical: 15,
+                width: widthGlobal,
+                backgroundColor: vars["accent-grey"],
+                height: 1,
+                opacity: 0.2,
+                overflow: "visible",
               }}
             />
-          </View>
-          <View style={{ flex: 1, paddingLeft: 10 }}>
-            <Typography fontSize={14} color="#696F7A">
-              Amount to
-            </Typography>
-            <FormGroup.Input
-              placeholder={"To"}
-              color={vars["black"]}
-              disabled={
-                searchFieldData.card_id !== "" && isCardTransactionShown
-              }
-              fontSize={14}
-              fontWeight={"400"}
-              style={{
-                width: "100%",
-                borderWidth: 1,
-                borderColor: vars["accent-blue"],
-              }}
-              value={searchFieldData.max_amount}
-              onChangeText={(event: string) => {
-                amountRangeFilter(Number(event), "max_amount");
-              }}
-              icon={<Euro />}
-            />
-          </View>
-        </View>
-        <Divider
-          style={{
-            marginVertical: 15,
-            width: widthGlobal,
-            backgroundColor: vars["accent-grey"],
-            height: 1,
-            opacity: 0.2,
-            overflow: "visible",
-          }}
-        />
+          </Fragment>
+        ) : null}
         {displayCardList()}
         <Divider
           style={{

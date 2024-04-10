@@ -39,7 +39,7 @@ export const transactionStatusOptions = [
     // {label: "Failed", value: TRANSACTIONS_STATUS.REJECTED, color: 'light-red', colorActive: 'heavy-red'},
     {label: "Cancelled", value: TRANSACTIONS_STATUS.CANCEL, color: 'light-yellow', colorActive: 'heavy-yellow'},
     {label: "Failed", value: TRANSACTIONS_STATUS.REJECT, color: 'light-red', colorActive: 'heavy-red'},
-    {label: "Refund", value: TRANSACTIONS_STATUS.RECALL, color: 'light-orange', colorActive: 'heavy-orange'}
+    {label: "Refund", value: TRANSACTIONS_STATUS.RECALL, color: 'light-yellow', colorActive: 'heavy-yellow'}
 
 ]
 

@@ -279,8 +279,9 @@ export function TransactionItem({ data }: TransactionItemProps) {
                   {data?.status === "SUCCESS" && (
                     <Chip label="Completed" color="green" />
                   )}
+                  {/* changed color by Aristos 09-04-204 */}
                   {data?.status === "PENDING" && (
-                    <Chip label="Pending" color="orange" />
+                    <Chip label="Pending" color="red" />
                   )}
                   {data?.status === "CANCELLED" && (
                     <Chip label="Cancelled" color="red" />

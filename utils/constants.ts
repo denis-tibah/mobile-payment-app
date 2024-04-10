@@ -14,7 +14,8 @@ export const countries = [
 ]
 
 export enum TRANSACTIONS_STATUS {
-    // PENDING='PENDING',
+    //enabled by aristos 09-04-2024
+    PENDING='PENDING',
     SUCCESS = 'SUCCESS',
     PROCESSING = 'PROCESSING',
     CANCELLED='CANCELED',
@@ -23,9 +24,13 @@ export enum TRANSACTIONS_STATUS {
 
 export const transactionStatusOptions = [
     {label: "Success", value: TRANSACTIONS_STATUS.SUCCESS, color: 'light-green', colorActive: 'heavy-green'},
-    {label: "Processing", value: TRANSACTIONS_STATUS.PROCESSING, color: 'light-blue', colorActive: 'accent-blue'},
+      //disabled by Aristos 09-04-2024
+    // {label: "Processing", value: TRANSACTIONS_STATUS.PROCESSING, color: 'light-blue', colorActive: 'accent-blue'},
+      //added by Aristos 09-04-2024
+    {label: "Pending", value: TRANSACTIONS_STATUS.PENDING, color: 'light-blue', colorActive: 'accent-blue'},
     {label: "Cancelled", value: TRANSACTIONS_STATUS.CANCELLED, color: 'light-yellow', colorActive: 'heavy-yellow'},
-    {label: "Failed", value: TRANSACTIONS_STATUS.REJECTED, color: 'light-red', colorActive: 'heavy-red'}
+    {label: "Failed", value: TRANSACTIONS_STATUS.REJECTED, color: 'light-red', colorActive: 'heavy-red'},
+
 ]
 
 export const managePaymentMethods = [

@@ -28,7 +28,6 @@ import ScrollingButtons from "./ScrollingButtons";
 import { format } from "date-fns";
 import { generateStatementsPDF } from "../../components/StatementsPDF/StatementsPDF";
 
-
 interface DateRangeType {
   dateTo: {
     state: boolean;
@@ -54,10 +53,14 @@ const initialDateRange: DateRangeType = {
 const currentDate = new Date();
 export function Statements({ navigation }: any) {
   const userData = useSelector((state: RootState) => state?.auth?.userData);
-  const profileData = useSelector((state: RootState) => state?.profile?.profile.data);
+  const profileData = useSelector(
+    (state: RootState) => state?.profile?.profile.data
+  );
 
   const dispatch = useDispatch();
-  const accountDetails = useSelector((state: RootState) => state?.account?.details);
+  const accountDetails = useSelector(
+    (state: RootState) => state?.account?.details
+  );
   const currentBalance = accountDetails?.curbal;
   const [selectedPrint, setSelectedPrint] = useState<string>("pdf");
 
@@ -68,7 +71,7 @@ export function Statements({ navigation }: any) {
   const [isLoading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    if(userData?.id) {
+    if (userData?.id) {
       dispatch(getAccountDetails(userData.id) as any);
     }
   }, [userData]);
@@ -78,13 +81,14 @@ export function Statements({ navigation }: any) {
     _searchFilter: StatementFilter
   ) => {
     const pdfUri = await generateStatementsPDF({
-      statements, 
+      statements,
       accountData: {
         ...userData,
         ..._searchFilter,
         currentBalance,
         ...profileData,
-    }});
+      },
+    });
     return await printAsync({ uri: pdfUri });
   };
 
@@ -134,26 +138,28 @@ export function Statements({ navigation }: any) {
         const statementFilterWithDateRange: StatementFilter = {
           account_id: Number(userData?.id),
           from_date: dateFrom.value,
-          to_date: getFormattedDate > currentDate ? currentDate.toISOString().split("T")[0] : dateTo.value,
+          to_date:
+            getFormattedDate > currentDate
+              ? currentDate.toISOString().split("T")[0]
+              : dateTo.value,
         };
         dispatch<any>(getStatementsfinxp(statementFilterWithDateRange))
-        .unwrap()
-        .then(async (res: StatementResponse) => {
-          const { statements } = res;
-          if (statements && statements?.length > 0) {
+          .unwrap()
+          .then(async (res: StatementResponse) => {
+            const { statements } = res;
+            if (statements && statements?.length > 0) {
+              setLoading(false);
+              await handleGeneratePDF(statements, statementFilterWithDateRange);
+            } else {
+              setLoading(false);
+              alert("You dont have transaction for selected dates");
+            }
             setLoading(false);
-            await handleGeneratePDF(statements, statementFilterWithDateRange);
-          } else {
+          })
+          .catch((err: any) => {
             setLoading(false);
-            alert("You dont have transaction for selected dates");
-          }
-          setLoading(false);
-        })
-        .catch((err: any) => {
-          setLoading(false);
-          alert("Something went wrong");
-          console.log({ err: `${err}. Statements generation file error` });
-        });
+            console.log({ err: `${err}. Statements generation file error` });
+          });
       } else {
         alert("Please select from and to date");
       }
@@ -197,8 +203,14 @@ export function Statements({ navigation }: any) {
             // generate pdf
             if (!formattedDate) return;
             const date = new Date(formattedDate);
-            const _firstDay = format(new Date(date.getFullYear(), date.getMonth(), 1), "yyyy-MM-dd");
-            const _lastDay = format(new Date(date.getFullYear(), date.getMonth() + 1, 0), "yyyy-MM-dd");
+            const _firstDay = format(
+              new Date(date.getFullYear(), date.getMonth(), 1),
+              "yyyy-MM-dd"
+            );
+            const _lastDay = format(
+              new Date(date.getFullYear(), date.getMonth() + 1, 0),
+              "yyyy-MM-dd"
+            );
             setShowStatementPickerDateToAndFrom({
               dateTo: {
                 state: false,
@@ -209,8 +221,7 @@ export function Statements({ navigation }: any) {
                 value: _firstDay,
               },
             });
-          }
-          }
+          }}
         />
       </Box>
       <View style={styles.footerContent}>

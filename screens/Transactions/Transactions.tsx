@@ -135,7 +135,7 @@ export function Transactions({ navigation, route }: any) {
         accessToken: userTokens?.access_token,
         tokenZiyl: userTokens?.token_ziyl,
       };
- console.log("****SearchFilter is ******" ,search);
+//  console.log("****SearchFilter is ******" ,search);
 
       getTransactionsWithFilter(search)
         .then((res) => {

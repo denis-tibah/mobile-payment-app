@@ -18,8 +18,15 @@ export enum TRANSACTIONS_STATUS {
     PENDING='PENDING',
     SUCCESS = 'SUCCESS',
     PROCESSING = 'PROCESSING',
-    CANCELLED='CANCELED',
-    REJECTED = 'FAILED'
+    //finxp did a change whic requires chanegs on ourside
+    //CANCELLED='CANCELED',
+    //REJECTED = 'FAILED'
+    CANCEL='CANCELED',
+    REJECT = 'FAILED',
+    RECALL= "REFUND"
+
+
+
 }
 
 export const transactionStatusOptions = [
@@ -28,8 +35,11 @@ export const transactionStatusOptions = [
     // {label: "Processing", value: TRANSACTIONS_STATUS.PROCESSING, color: 'light-blue', colorActive: 'accent-blue'},
       //added by Aristos 09-04-2024
     {label: "Pending", value: TRANSACTIONS_STATUS.PENDING, color: 'light-blue', colorActive: 'accent-blue'},
-    {label: "Cancelled", value: TRANSACTIONS_STATUS.CANCELLED, color: 'light-yellow', colorActive: 'heavy-yellow'},
-    {label: "Failed", value: TRANSACTIONS_STATUS.REJECTED, color: 'light-red', colorActive: 'heavy-red'},
+    // {label: "Cancelled", value: TRANSACTIONS_STATUS.CANCELLED, color: 'light-yellow', colorActive: 'heavy-yellow'},
+    // {label: "Failed", value: TRANSACTIONS_STATUS.REJECTED, color: 'light-red', colorActive: 'heavy-red'},
+    {label: "Cancelled", value: TRANSACTIONS_STATUS.CANCEL, color: 'light-yellow', colorActive: 'heavy-yellow'},
+    {label: "Failed", value: TRANSACTIONS_STATUS.REJECT, color: 'light-red', colorActive: 'heavy-red'},
+    {label: "Refund", value: TRANSACTIONS_STATUS.RECALL, color: 'light-orange', colorActive: 'heavy-orange'}
 
 ]
 

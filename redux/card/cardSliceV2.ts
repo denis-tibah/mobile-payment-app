@@ -42,9 +42,6 @@ export const cardsV2 = createApi({
         limit,
         page,
       }) => {
-        console.log("🚀 ~ to_date:", to_date);
-        console.log("🚀 ~ from_date:", from_date);
-
         return {
           url: `/getCardTransactionsfinxpV2`,
           method: METHODS.POST,

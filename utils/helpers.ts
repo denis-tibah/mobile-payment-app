@@ -507,3 +507,15 @@ export const calculatePercentage = (min: number, max: number) => {
   const percentageAsFloat = percentage / 100;
   return percentageAsFloat;
 };
+
+export const formattedDateForQuery = (
+  paramDate: string | null | number,
+  type: string
+): string => {
+  const formattedDefaultDate =
+    type === "dateTo" ? dateFns.format(new Date(), "yyyy-MM-dd") : "2022-01-01";
+  const formattedDate = paramDate
+    ? dateFns.format(new Date(paramDate), "yyyy-MM-dd")
+    : formattedDefaultDate;
+  return formattedDate;
+};

@@ -127,6 +127,7 @@ export function Transactions({ navigation, route }: any) {
   ] = useLazyGetCardTransactionsQuery();
 
   const fetchTransactionsWithFilters = async (value?: SearchFilter) => {
+   
     if (userData && userData?.id) {
       let search: SearchFilter = {
         ...(value ? value : initialSearchFieldData),
@@ -134,6 +135,8 @@ export function Transactions({ navigation, route }: any) {
         accessToken: userTokens?.access_token,
         tokenZiyl: userTokens?.token_ziyl,
       };
+ console.log("****SearchFilter is ******" ,search);
+
       getTransactionsWithFilter(search)
         .then((res) => {
           if (res.data) {

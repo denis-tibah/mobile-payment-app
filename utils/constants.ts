@@ -21,7 +21,7 @@ export enum TRANSACTIONS_STATUS {
     //finxp did a change whic requires chanegs on ourside
     //CANCELLED='CANCELED',
     //REJECTED = 'FAILED'
-    CANCEL='CANCELED',
+    CANCEL='CANCEL',
     REJECT = 'FAILED',
     RECALL= "REFUND"
 

@@ -752,7 +752,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           </View>
         </ModalBottomSheet>
       ) : null}
-      {isOpenModalSuccessMessage && Platform.OS === "android" ? (
+      {Platform.OS === "android" ? (
         <SwipableBottomSheet
           rbSheetRef={refRBSheetSuccess}
           closeOnDragDown={true}

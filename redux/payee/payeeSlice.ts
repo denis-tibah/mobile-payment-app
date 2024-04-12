@@ -6,15 +6,15 @@ export const payeeSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: exportedBaseUrl,
     prepareHeaders: (headers) => {
-        headers.set("Content-Type", "application/json");
-        return headers;
-      },
-    }),
+      headers.set("Content-Type", "application/json");
+      return headers;
+    },
+  }),
   keepUnusedDataFor: 30,
   tagTypes: ["payee"],
   endpoints: (builder) => ({
     getPayees: builder.query({
-      query: ({accessToken, tokenZiyl}) => ({
+      query: ({ accessToken, tokenZiyl }) => ({
         url: `/getBeneficiaryfinxp`,
         method: "GET",
         headers: {
@@ -63,30 +63,31 @@ export const payeeSlice = createApi({
         reference,
       }: any) => {
         return {
-        url: `/initiatepaymentfinxp`,
-        method: "POST",
-        body: {
-          recipientFirstname,
-          recipientLastname,
-          creditor_name,
-          debtor_iban,
-          creditor_iban,
-          amount,
-          currency,
-          reason,
-          remarks,
-          purpose,
-          reference,
-        },
-        headers: {
-          "Content-Type": "application/json",
-          AuthorizationFinxp: `Bearer ${access_token}`,
-          Authorization: `Bearer ${token_ziyl}`,
-        },
-      }},
+          url: `/initiatepaymentfinxp`,
+          method: "POST",
+          body: {
+            recipientFirstname,
+            recipientLastname,
+            creditor_name,
+            debtor_iban,
+            creditor_iban,
+            amount,
+            currency,
+            reason,
+            remarks,
+            purpose,
+            reference,
+          },
+          headers: {
+            "Content-Type": "application/json",
+            AuthorizationFinxp: `Bearer ${access_token}`,
+            Authorization: `Bearer ${token_ziyl}`,
+          },
+        };
+      },
     }),
     smsRequestVerification: builder.mutation({
-      query: ({ 
+      query: ({
         access_token,
         token_ziyl,
         identifier,
@@ -101,25 +102,26 @@ export const payeeSlice = createApi({
           currency,
           access_token,
           token_ziyl,
-        })
+        });
         return {
-        url: `/otprequestfinxp`,
-        method: "POST",
-        body: {
-          identifier,
-          type,
-          amount,
-          currency
-        },
-        headers: {
-          "Content-Type": "application/json",
-          AuthorizationFinxp: `Bearer ${access_token}`,
-          Authorization: `Bearer ${token_ziyl}`,
-        },
-      }},
+          url: `/otprequestfinxp`,
+          method: "POST",
+          body: {
+            identifier,
+            type,
+            amount,
+            currency,
+          },
+          headers: {
+            "Content-Type": "application/json",
+            AuthorizationFinxp: `Bearer ${access_token}`,
+            Authorization: `Bearer ${token_ziyl}`,
+          },
+        };
+      },
     }),
-    processPayment : builder.mutation({
-      query: ({ 
+    processPayment: builder.mutation({
+      query: ({
         access_token,
         token_ziyl,
         identifier,
@@ -134,29 +136,30 @@ export const payeeSlice = createApi({
         purpose,
       }: any) => {
         return {
-        url: `/processpaymentfinxp`,
-        method: "POST",
-        body: {
-          identifier,
-          code,
-          amount,
-          currency,
-          debtor_iban,
-          creditor_iban,
-          remarks,
-          reason,
-          reference,
-          purpose,
-        },
-        headers: {
-          "Content-Type": "application/json",
-          AuthorizationFinxp: `Bearer ${access_token}`,
-          Authorization: `Bearer ${token_ziyl}`,
-        },
-      }},
+          url: `/processpaymentfinxp`,
+          method: "POST",
+          body: {
+            identifier,
+            code,
+            amount,
+            currency,
+            debtor_iban,
+            creditor_iban,
+            remarks,
+            reason,
+            reference,
+            purpose,
+          },
+          headers: {
+            "Content-Type": "application/json",
+            AuthorizationFinxp: `Bearer ${access_token}`,
+            Authorization: `Bearer ${token_ziyl}`,
+          },
+        };
+      },
     }),
     submitProcessPayment: builder.mutation({
-      query: ({ 
+      query: ({
         access_token,
         token_ziyl,
         email,
@@ -165,34 +168,86 @@ export const payeeSlice = createApi({
         purpose,
       }: any) => {
         return {
-        url: `/submitprocesspaymentticket `,
-        method: "POST",
-        body: {
-          type: "ProcessPaymentFileUpload",
-          email,
-          subject: "Process Payment",
-          reference,
-          purposeoftransfer: purpose,
-          ticketValue
-        },
-        headers: {
-          "Content-Type": "application/json",
-          AuthorizationFinxp: `Bearer ${access_token}`,
-          Authorization: `Bearer ${token_ziyl}`,
-        },
-      }},
+          url: `/submitprocesspaymentticket `,
+          method: "POST",
+          body: {
+            type: "ProcessPaymentFileUpload",
+            email,
+            subject: "Process Payment",
+            reference,
+            purposeoftransfer: purpose,
+            ticketValue,
+          },
+          headers: {
+            "Content-Type": "application/json",
+            AuthorizationFinxp: `Bearer ${access_token}`,
+            Authorization: `Bearer ${token_ziyl}`,
+          },
+        };
+      },
+    }),
+    initiatePaymentV2: builder.mutation({
+      query: ({ bodyParams, paramsHeader }) => {
+        console.log("🚀 ~ paramsHeader:", paramsHeader);
+        console.log("🚀 ~ bodyParams:", bodyParams);
+        return {
+          url: `/payment/initiate`,
+          method: "POST",
+          body: bodyParams,
+          headers: {
+            "Content-Type": "application/json",
+            AuthorizationFinxp: `Bearer ${paramsHeader?.accessToken}`,
+            Authorization: `Bearer ${paramsHeader?.tokenZiyl}`,
+          },
+        };
+      },
+    }),
+    getOTPV2: builder.mutation({
+      query: ({ bodyParams, paramsHeader }) => {
+        console.log("🚀 ~ paramsHeader:", paramsHeader);
+        console.log("🚀 ~ bodyParams:", bodyParams);
+        return {
+          url: `/payment/otp`,
+          method: "POST",
+          body: bodyParams,
+          headers: {
+            "Content-Type": "application/json",
+            AuthorizationFinxp: `Bearer ${paramsHeader?.accessToken}`,
+            Authorization: `Bearer ${paramsHeader?.tokenZiyl}`,
+          },
+        };
+      },
+    }),
+    processPaymentV2: builder.mutation({
+      query: ({ bodyParams, paramsHeader }) => {
+        console.log("🚀 ~ paramsHeader:", paramsHeader);
+        console.log("🚀 ~ bodyParams:", bodyParams);
+        return {
+          url: `/payment/process`,
+          method: "POST",
+          body: bodyParams,
+          headers: {
+            "Content-Type": "application/json",
+            AuthorizationFinxp: `Bearer ${paramsHeader?.accessToken}`,
+            Authorization: `Bearer ${paramsHeader?.tokenZiyl}`,
+          },
+        };
+      },
     }),
   }),
 });
 
-export const { 
-  useGetPayeesQuery, 
+export const {
+  useGetPayeesQuery,
   useLazyGetPayeesQuery,
   useAddPayeeMutation,
   useInitiatePaymentMutation,
   useSmsRequestVerificationMutation,
   useProcessPaymentMutation,
   useSubmitProcessPaymentMutation,
+  useInitiatePaymentV2Mutation,
+  useGetOTPV2Mutation,
+  useProcessPaymentV2Mutation,
 } = payeeSlice;
 
 // reference = remarks

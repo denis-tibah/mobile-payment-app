@@ -22,7 +22,7 @@ import {
   employmentStatus,
   employmentStatusTwo,
 } from "../../data/options";
-import { useCreateTicketRequestMutation } from "../../redux/profile/profileSliceV2";
+/* import { useCreateTicketRequestMutation } from "../../redux/profile/profileSliceV2"; */
 import { RootState } from "../../store";
 import WholeContainer from "../../layout/WholeContainer";
 import Typography from "../Typography";
@@ -61,7 +61,7 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
   }>({ key: "", value: "", passedValue: "" });
 
   // ASK SANTI FOR STATUS CODES OF /createticketfinxp
-  const [
+  /* const [
     createTicketMutation,
     {
       isLoading: isLoadingCreateTicketReq,
@@ -86,7 +86,7 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
   console.log(
     "🚀 ~ FinancialDetailsTab ~ dataCreateTicketReq:",
     dataCreateTicketReq
-  );
+  ); */
 
   useEffect(() => {
     if (profileData?.UserProfile?.employmentStatus) {
@@ -128,30 +128,13 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
     },
     validationSchema: financialDataTabSchema,
     onSubmit: async ({ annualSalary, sourceOfDeposit, employmentStatus }) => {
-      const createTicketType = {
-        ticketValue: [],
-        receive_email: profileData?.email || "",
-        dateSubmitted: new Date(),
-      };
+      const bodyParams = {};
 
-      Object.assign(createTicketType, {
-        ticketValue: [
-          {
-            profile: {
-              annual_salary: annualSalary || "",
-              source_of_wealth: sourceOfDeposit || "",
-              employment_status: employmentStatus || "",
-            },
-          },
-        ],
-        ticketType: "Update Profile Request",
-      });
-
-      createTicketMutation({
-        bodyParams: createTicketType,
+      /* createTicketMutation({
+        bodyParams,
         accessToken: userTokens?.access_token,
         tokenZiyl: userTokens?.token_ziyl,
-      });
+      }); */
     },
   });
 
@@ -167,146 +150,146 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
   return (
     <Fragment>
       <View style={{ flexGrow: 0, backgroundColor: "#fff", height: "75%" }}>
-        <SafeAreaView >
+        <SafeAreaView>
           {/* <ScrollView> */}
-            <View >
-              <Spinner visible={isLoadingCreateTicketReq} />
-              <SuccessModal
-                isOpen={statusMessage?.isOpen}
-                title={statusMessage.header}
-                text={statusMessage.body}
-                isError={statusMessage.isError}
-                onClose={onCloseModal}
-              />
-              <Pressable>
-                <View style={{ paddingBottom: 12, paddingTop: 16 }}>
-                  <View style={[styles.formContainer]}>
-                    <WholeContainer>
-                      <Typography
-                        fontSize={16}
-                        fontWeight={600}
-                        fontFamily="Nunito-SemiBold"
-                        marginLeft={10}
-                        marginBottom={4}
-                        color={vars["medium-grey"]}
-                      >
-                        How much will you deposit in your account each month?
-                      </Typography>
-                      <FormGroup
-                        validationError={
-                          errors.annualSalary &&
-                          touched.annualSalary &&
-                          errors.annualSalary
-                        }
-                      >
-                        <FormGroup.Input
-                          keyboardType="numeric"
-                          returnKeyType={"done"}
-                          onChangeText={handleChange("annualSalary")}
-                          onBlur={handleBlur("annualSalary")}
-                          value={values.annualSalary}
-                          placeholder=""
-                          placeholderTextColor={vars["ios-default-text"]}
-                          iconColor="#086AFB"
-                          icon={<PigIcon size={16} color="blue" />}
-                        />
-                      </FormGroup>
-                      <Seperator
-                        backgroundColor={vars["v2-light-grey"]}
-                        marginBottom={16}
+          <View>
+            <Spinner visible={isLoadingCreateTicketReq} />
+            <SuccessModal
+              isOpen={statusMessage?.isOpen}
+              title={statusMessage.header}
+              text={statusMessage.body}
+              isError={statusMessage.isError}
+              onClose={onCloseModal}
+            />
+            <Pressable>
+              <View style={{ paddingBottom: 12, paddingTop: 16 }}>
+                <View style={[styles.formContainer]}>
+                  <WholeContainer>
+                    <Typography
+                      fontSize={16}
+                      fontWeight={600}
+                      fontFamily="Nunito-SemiBold"
+                      marginLeft={10}
+                      marginBottom={4}
+                      color={vars["medium-grey"]}
+                    >
+                      How much will you deposit in your account each month?
+                    </Typography>
+                    <FormGroup
+                      validationError={
+                        errors.annualSalary &&
+                        touched.annualSalary &&
+                        errors.annualSalary
+                      }
+                    >
+                      <FormGroup.Input
+                        keyboardType="numeric"
+                        returnKeyType={"done"}
+                        onChangeText={handleChange("annualSalary")}
+                        onBlur={handleBlur("annualSalary")}
+                        value={values.annualSalary}
+                        placeholder=""
+                        placeholderTextColor={vars["ios-default-text"]}
+                        iconColor="#086AFB"
+                        icon={<PigIcon size={16} color="blue" />}
                       />
-                    </WholeContainer>
-                  </View>
+                    </FormGroup>
+                    <Seperator
+                      backgroundColor={vars["v2-light-grey"]}
+                      marginBottom={16}
+                    />
+                  </WholeContainer>
+                </View>
 
-                  <View style={[styles.formContainer]}>
-                    <WholeContainer>
-                      <Typography
-                        fontSize={16}
-                        fontWeight={600}
-                        fontFamily="Nunito-SemiBold"
-                        marginLeft={10}
-                        marginBottom={4}
-                        color={vars["medium-grey"]}
-                      >
-                        What's your source of income?
-                      </Typography>
-                      <FormGroup
-                        validationError={
-                          errors.sourceOfDeposit &&
-                          touched.sourceOfDeposit &&
-                          errors.sourceOfDeposit
-                        }
-                      >
-                        <View>
+                <View style={[styles.formContainer]}>
+                  <WholeContainer>
+                    <Typography
+                      fontSize={16}
+                      fontWeight={600}
+                      fontFamily="Nunito-SemiBold"
+                      marginLeft={10}
+                      marginBottom={4}
+                      color={vars["medium-grey"]}
+                    >
+                      What's your source of income?
+                    </Typography>
+                    <FormGroup
+                      validationError={
+                        errors.sourceOfDeposit &&
+                        touched.sourceOfDeposit &&
+                        errors.sourceOfDeposit
+                      }
+                    >
+                      <View>
+                        <View
+                          style={{ position: "absolute", top: 12, left: 14 }}
+                        >
                           <View
-                            style={{ position: "absolute", top: 12, left: 14 }}
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                            }}
                           >
-                            <View
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                              }}
-                            >
+                            <MaterialCommunityIcons
+                              size={20}
+                              color="#086AFB"
+                              name={"storefront-outline"}
+                            />
+                            {!selectedSourceOfWealth ? (
+                              <Typography
+                                fontSize={16}
+                                fontWeight={600}
+                                fontFamily="Nunito-SemiBold"
+                                marginLeft={8}
+                                color={vars["medium-grey"]}
+                              >
+                                Select from list
+                              </Typography>
+                            ) : null}
+                          </View>
+                        </View>
+                        <View>
+                          <SelectList
+                            defaultOption={defaultSourceOfDeposit}
+                            setSelected={(val: string) => {
+                              setSelectedSourceOfWealth(val);
+                            }}
+                            onSelect={() => {
+                              setValues({
+                                ...values,
+                                sourceOfDeposit:
+                                  selectedSourceOfWealth.toLowerCase(),
+                              });
+                            }}
+                            data={sourceOfWealthTwo}
+                            save="value"
+                            arrowicon={
+                              <ArrowRightIcon size={16} color="blue" />
+                            }
+                            search={false}
+                            searchicon={
                               <MaterialCommunityIcons
                                 size={20}
                                 color="#086AFB"
                                 name={"storefront-outline"}
                               />
-                              {!selectedSourceOfWealth ? (
-                                <Typography
-                                  fontSize={16}
-                                  fontWeight={600}
-                                  fontFamily="Nunito-SemiBold"
-                                  marginLeft={8}
-                                  color={vars["medium-grey"]}
-                                >
-                                  Select from list
-                                </Typography>
-                              ) : null}
-                            </View>
-                          </View>
-                          <View>
-                            <SelectList
-                              defaultOption={defaultSourceOfDeposit}
-                              setSelected={(val: string) => {
-                                setSelectedSourceOfWealth(val);
-                              }}
-                              onSelect={() => {
-                                setValues({
-                                  ...values,
-                                  sourceOfDeposit:
-                                    selectedSourceOfWealth.toLowerCase(),
-                                });
-                              }}
-                              data={sourceOfWealthTwo}
-                              save="value"
-                              arrowicon={
-                                <ArrowRightIcon size={16} color="blue" />
-                              }
-                              search={false}
-                              searchicon={
-                                <MaterialCommunityIcons
-                                  size={20}
-                                  color="#086AFB"
-                                  name={"storefront-outline"}
-                                />
-                              }
-                              boxStyles={{
-                                borderRadius: 50,
-                                borderColor: vars["accent-blue"],
-                              }}
-                              dropdownStyles={{
-                                borderColor: vars["accent-blue"],
-                              }}
-                              inputStyles={{ marginLeft: 20 }}
-                              // remove text in placeholder
-                              placeholder=" "
-                            />
-                          </View>
+                            }
+                            boxStyles={{
+                              borderRadius: 50,
+                              borderColor: vars["accent-blue"],
+                            }}
+                            dropdownStyles={{
+                              borderColor: vars["accent-blue"],
+                            }}
+                            inputStyles={{ marginLeft: 20 }}
+                            // remove text in placeholder
+                            placeholder=" "
+                          />
                         </View>
-                      </FormGroup>
-                      {/* <FormGroup
+                      </View>
+                    </FormGroup>
+                    {/* <FormGroup
                         validationError={
                           errors.sourceOfDeposit &&
                           touched.sourceOfDeposit &&
@@ -350,100 +333,100 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
                           </View>
                         </View>
                       </FormGroup> */}
-                      <Seperator
-                        backgroundColor={vars["v2-light-grey"]}
-                        marginBottom={16}
-                      />
-                    </WholeContainer>
-                  </View>
-                  <View style={[styles.formContainer]}>
-                    <WholeContainer>
-                      <Typography
-                        fontSize={16}
-                        fontWeight={600}
-                        fontFamily="Nunito-SemiBold"
-                        marginLeft={10}
-                        marginBottom={4}
-                        color={vars["medium-grey"]}
-                      >
-                        What's your employment status?
-                      </Typography>
-                      <FormGroup
-                        validationError={
-                          errors.employmentStatus &&
-                          touched.employmentStatus &&
-                          errors.employmentStatus
-                        }
-                      >
-                        <View>
+                    <Seperator
+                      backgroundColor={vars["v2-light-grey"]}
+                      marginBottom={16}
+                    />
+                  </WholeContainer>
+                </View>
+                <View style={[styles.formContainer]}>
+                  <WholeContainer>
+                    <Typography
+                      fontSize={16}
+                      fontWeight={600}
+                      fontFamily="Nunito-SemiBold"
+                      marginLeft={10}
+                      marginBottom={4}
+                      color={vars["medium-grey"]}
+                    >
+                      What's your employment status?
+                    </Typography>
+                    <FormGroup
+                      validationError={
+                        errors.employmentStatus &&
+                        touched.employmentStatus &&
+                        errors.employmentStatus
+                      }
+                    >
+                      <View>
+                        <View
+                          style={{ position: "absolute", top: 12, left: 14 }}
+                        >
                           <View
-                            style={{ position: "absolute", top: 12, left: 14 }}
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                            }}
                           >
-                            <View
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                              }}
-                            >
-                              <BusinessBagIcon size={16} color="blue" />
-                              {!selectedEmploymentStatus ? (
-                                <Typography
-                                  fontSize={16}
-                                  fontWeight={600}
-                                  fontFamily="Nunito-SemiBold"
-                                  marginLeft={8}
-                                  color={vars["medium-grey"]}
-                                >
-                                  Select from list
-                                </Typography>
-                              ) : null}
-                            </View>
-                          </View>
-                          <View>
-                            <SelectList
-                              defaultOption={defaultEmploymentStatus}
-                              setSelected={(val: string) => {
-                                setEmploymentStatus(val);
-                              }}
-                              onSelect={() => {
-                                const passedValue = employmentStatusTwo.find(
-                                  (param) =>
-                                    param?.value === selectedEmploymentStatus
-                                )?.passedValue;
-                                setValues({
-                                  ...values,
-                                  employmentStatus: passedValue,
-                                });
-                              }}
-                              data={employmentStatusTwo}
-                              save="value"
-                              arrowicon={
-                                <ArrowRightIcon size={16} color="blue" />
-                              }
-                              search={false}
-                              searchicon={
-                                <MaterialCommunityIcons
-                                  size={20}
-                                  color="#086AFB"
-                                  name={"storefront-outline"}
-                                />
-                              }
-                              boxStyles={{
-                                borderRadius: 50,
-                                borderColor: vars["accent-blue"],
-                              }}
-                              dropdownStyles={{
-                                borderColor: vars["accent-blue"],
-                              }}
-                              inputStyles={{ marginLeft: 20 }}
-                              // remove text in placeholder
-                              placeholder=" "
-                            />
+                            <BusinessBagIcon size={16} color="blue" />
+                            {!selectedEmploymentStatus ? (
+                              <Typography
+                                fontSize={16}
+                                fontWeight={600}
+                                fontFamily="Nunito-SemiBold"
+                                marginLeft={8}
+                                color={vars["medium-grey"]}
+                              >
+                                Select from list
+                              </Typography>
+                            ) : null}
                           </View>
                         </View>
-                      </FormGroup>
-                      {/* <FormGroup
+                        <View>
+                          <SelectList
+                            defaultOption={defaultEmploymentStatus}
+                            setSelected={(val: string) => {
+                              setEmploymentStatus(val);
+                            }}
+                            onSelect={() => {
+                              const passedValue = employmentStatusTwo.find(
+                                (param) =>
+                                  param?.value === selectedEmploymentStatus
+                              )?.passedValue;
+                              setValues({
+                                ...values,
+                                employmentStatus: passedValue,
+                              });
+                            }}
+                            data={employmentStatusTwo}
+                            save="value"
+                            arrowicon={
+                              <ArrowRightIcon size={16} color="blue" />
+                            }
+                            search={false}
+                            searchicon={
+                              <MaterialCommunityIcons
+                                size={20}
+                                color="#086AFB"
+                                name={"storefront-outline"}
+                              />
+                            }
+                            boxStyles={{
+                              borderRadius: 50,
+                              borderColor: vars["accent-blue"],
+                            }}
+                            dropdownStyles={{
+                              borderColor: vars["accent-blue"],
+                            }}
+                            inputStyles={{ marginLeft: 20 }}
+                            // remove text in placeholder
+                            placeholder=" "
+                          />
+                        </View>
+                      </View>
+                    </FormGroup>
+                    {/* <FormGroup
                         validationError={
                           errors.employmentStatus &&
                           touched.employmentStatus &&
@@ -483,11 +466,11 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
                           </View>
                         </View>
                       </FormGroup> */}
-                    </WholeContainer>
-                  </View>
+                  </WholeContainer>
                 </View>
-              </Pressable>
-            </View>
+              </View>
+            </Pressable>
+          </View>
           {/* </ScrollView> */}
           <View style={styles.footerContent}>
             <View style={styles.downloadBtnMain}>
@@ -514,11 +497,11 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
           </View>
         </SafeAreaView>
         {/* <View style={styles.footerContent}> */}
-          {/* <View style={styles.downloadBtnMain}> */}
-            {/* <WholeContainer> */}
-              
-            {/* </WholeContainer> */}
-          {/* </View> */}
+        {/* <View style={styles.downloadBtnMain}> */}
+        {/* <WholeContainer> */}
+
+        {/* </WholeContainer> */}
+        {/* </View> */}
         {/* </View> */}
       </View>
     </Fragment>

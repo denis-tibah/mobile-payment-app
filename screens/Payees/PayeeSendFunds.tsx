@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -5,18 +6,19 @@ import {
   Text,
   Dimensions,
   Platform,
+  Image,
 } from "react-native";
 import { useSelector } from "react-redux";
+import { Divider } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
+import { useFormik } from "formik";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
-import Euro from "../../assets/icons/Euro";
-import PayeeAttachFileSection from "./components/PayeeAttaFileSection";
-import CheckBox from "expo-checkbox";
-import { useFormik } from "formik";
-import MainLayout from "../../layout/Main";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import Spinner from "react-native-loading-spinner-overlay";
+
 import {
-  globalWidthUnit,
+  arrayChecker,
   hp,
   screenNames,
   widthGlobal,
@@ -24,43 +26,31 @@ import {
 } from "../../utils/helpers";
 import ArrowLeftLine from "../../assets/icons/ArrowLeftLine";
 import vars from "../../styles/vars";
-import { Divider, overlay } from "react-native-paper";
 import FormGroup from "../../components/FormGroup";
 import Button from "../../components/Button";
 import { RootState } from "../../store";
-import StatementsIcon from "../../assets/icons/StatementsIcon";
-import DropDownPicker from "react-native-dropdown-picker";
-import { useEffect, useRef, useState } from "react";
 import { validationPaymentSchema } from "../../utils/validation";
 import {
   useInitiatePaymentMutation,
   useProcessPaymentMutation,
   useSmsRequestVerificationMutation,
   useSubmitProcessPaymentMutation,
+  useInitiatePaymentV2Mutation,
+  useGetOTPV2Mutation,
+  useProcessPaymentV2Mutation,
 } from "../../redux/payee/payeeSlice";
-import BottomSheet from "../../components/BottomSheet";
-import { CodeModal } from "../../components/CodeModal/CodeModal";
-import LoadingScreen from "../../components/Loader/LoadingScreen";
-import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
-import { Image } from "react-native";
 import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
-import CloudMessage from "../../assets/icons/CloudMessage";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import SwipableBottomSheet from "../../components/SwipableBottomSheet";
-import {
-  PinCodeInputBoxes,
-  PinCodeInputClipBoard,
-} from "../../components/FormGroup/FormGroup";
-import ChangeLimits from "../../assets/icons/ChangeLimits";
-import Document from "../../assets/icons/Document";
-import Typography from "../../components/Typography";
+import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import ModalBottomSheet from "../../components/ModalBottomSheet/ModalBottomSheet";
+import MainLayout from "../../layout/Main";
+import PayeeAttachFileSection from "./components/PayeeAttaFileSection";
+import CloudMessage from "../../assets/icons/CloudMessage";
+import SwipableBottomSheet from "../../components/SwipableBottomSheet";
+import { PinCodeInputClipBoard } from "../../components/FormGroup/FormGroup";
+import ChangeLimits from "../../assets/icons/ChangeLimits";
+import Typography from "../../components/Typography";
 import CheckIcon from "../../assets/icons/Check";
-
-const currencyOptions = [
-  { label: "EUR", value: "EUR" },
-  { label: "USD", value: "USD" },
-];
+import Euro from "../../assets/icons/Euro";
 
 const PayeeSendFunds = ({ navigation, route }: any) => {
   const { params }: any = route || { params: {} };
@@ -69,6 +59,11 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
   const refRBSheetSuccess = useRef();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
+  const paramsHeader = {
+    accessToken: userTokens?.access_token,
+    tokenZiyl: userTokens?.token_ziyl,
+  };
+
   const accountIban = userData?.iban || "";
   const accountName = `${userData?.first_name} ${userData?.last_name}` || "";
   const receiverName: string = params?.item.name || "";
@@ -76,17 +71,6 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
   const receiverUuid: string = params?.item.uuid || "";
   const windowHeight = Dimensions.get("window").height;
 
-  const [initiatePayment] = useInitiatePaymentMutation();
-  const [smsRequestVerification] = useSmsRequestVerificationMutation();
-  const [processPayment] = useProcessPaymentMutation();
-  const [submitProcessPayment] = useSubmitProcessPaymentMutation();
-
-  const { data: userAccountInformation } = useGetAccountDetailsQuery({
-    accountId: userData?.id || 0,
-    accessToken: userTokens?.access_token,
-    tokenZiyl: userTokens?.token_ziyl,
-  });
-  const accountBalance = userAccountInformation?.data?.avlbal || 0;
   const [timeRemaining, setTimeRemaining] = useState<number>(60);
   const [isDropDownCurrencyOpen, setIsDropDownCurrencyOpen] =
     useState<boolean>(false);
@@ -99,11 +83,20 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
     useState<boolean>(false);
   const [selectedCurrency, setSelectedCurrency] = useState<string>("EUR");
   const [smsPaymentRequest, setSmsPaymentRequest] = useState<any>({});
-  const validationSchema = validationPaymentSchema(accountBalance);
+
   const [code, setCode] = useState("");
   const [isTimeToCountDown, setIsTimeToCountDown] = useState<boolean>(false);
   const [isOpenModalSuccessMessage, setIsOpenModalSuccessMessage] =
     useState<boolean>(false);
+  const [statusMessage, setStatusMessage] = useState<{
+    header: string;
+    body: string;
+    isOpen: boolean;
+    isError: boolean;
+  }>({ header: "", body: "", isOpen: false, isError: false });
+  const [bottomSheetMessage, setBottomSheetMessage] = useState<{
+    message: string;
+  }>({ message: "" });
 
   const enableResend = timeRemaining === 0;
 
@@ -114,6 +107,129 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
   const _handleResendSMSVerificationCode = () => {
     // handleResendHere
   };
+
+  const [initiatePayment] = useInitiatePaymentMutation();
+  const [
+    initiatePaymentV2,
+    {
+      isLoading: isLoadingInitPaymentV2,
+      isError: isErrorInitPaymentV2,
+      isSuccess: isSuccessInitPaymentV2,
+      error: errorInitPaymentV2,
+      data: dataInitPaymentV2,
+    },
+  ] = useInitiatePaymentV2Mutation();
+
+  const [smsRequestVerification] = useSmsRequestVerificationMutation();
+  const [
+    getOTPV2,
+    {
+      isLoading: isLoadingGetOTPV2,
+      isError: isErrorInitGetOTPV2,
+      isSuccess: isSuccessGetOTPV2,
+      error: errorGetOTPV2,
+      data: dataGetOTPV2,
+    },
+  ] = useGetOTPV2Mutation();
+
+  const [processPayment] = useProcessPaymentMutation();
+  const [
+    processPaymentV2,
+    {
+      isLoading: isLoadingProcessPaymentV2,
+      isError: isErrorProcessPaymentV2,
+      isSuccess: isSuccessProcessPaymentV2,
+      error: errorProcessPaymentV2,
+      data: dataProcessPaymentV2,
+    },
+  ] = useProcessPaymentV2Mutation();
+
+  const [submitProcessPayment] = useSubmitProcessPaymentMutation();
+
+  const { data: userAccountInformation } = useGetAccountDetailsQuery({
+    accountId: userData?.id || 0,
+    accessToken: userTokens?.access_token,
+    tokenZiyl: userTokens?.token_ziyl,
+  });
+
+  const accountBalance = userAccountInformation?.data?.avlbal || 0;
+  const validationSchema = validationPaymentSchema(accountBalance);
+
+  // initiate payment request
+  useEffect(() => {
+    if (!isLoadingInitPaymentV2 && isSuccessInitPaymentV2) {
+      if (dataInitPaymentV2?.code === 200) {
+        const transactionId =
+          dataInitPaymentV2?.data?.transaction_id &&
+          dataInitPaymentV2?.data?.transaction_id;
+        if (transactionId) {
+          const parsedAmount = parseFloat(values?.amount).toFixed(2);
+          const bodyParams = {
+            identifier: transactionId,
+            type: "transfer",
+            amount: parsedAmount,
+            currency: values?.currency,
+          };
+          getOTPV2({ bodyParams, paramsHeader });
+        }
+      }
+    }
+  }, [isLoadingInitPaymentV2, isSuccessInitPaymentV2, dataInitPaymentV2]);
+
+  useEffect(() => {
+    if (!isLoadingInitPaymentV2 && isErrorInitPaymentV2) {
+      if (
+        errorInitPaymentV2 &&
+        errorInitPaymentV2?.data &&
+        errorInitPaymentV2?.data?.code
+      ) {
+        if (
+          errorInitPaymentV2?.data?.code === 400 ||
+          errorInitPaymentV2?.data?.code === 422 ||
+          errorInitPaymentV2?.data?.code === 460 ||
+          errorInitPaymentV2?.data?.code === 460
+        ) {
+          console.log("going 1");
+          if (errorInitPaymentV2?.data && errorInitPaymentV2?.data?.errors) {
+            console.log("going 2");
+            const errorMessage =
+              arrayChecker(errorInitPaymentV2?.data?.errors) &&
+              errorInitPaymentV2?.data?.errors.length > 0
+                ? errorInitPaymentV2?.data?.errors[0]
+                : "Something went wrong";
+
+            setStatusMessage({
+              header: "Error",
+              body: errorMessage,
+              isOpen: true,
+              isError: true,
+            });
+          }
+        }
+      }
+    }
+  }, [isLoadingInitPaymentV2, isErrorInitPaymentV2, errorInitPaymentV2]);
+
+  // for otp
+  useEffect(() => {
+    if (!isLoadingGetOTPV2 && isSuccessGetOTPV2) {
+      if (dataGetOTPV2?.message) {
+        setBottomSheetMessage({ message: dataGetOTPV2?.message });
+        refRBSheetCodeOTP?.current?.open();
+      }
+    }
+  }, [isLoadingGetOTPV2, isSuccessGetOTPV2, dataGetOTPV2]);
+
+  useEffect(() => {
+    if (!isLoadingGetOTPV2 && isErrorInitGetOTPV2) {
+      setStatusMessage({
+        header: "Error",
+        body: "OTP error: Please try again",
+        isOpen: true,
+        isError: true,
+      });
+    }
+  }, [isLoadingGetOTPV2, isErrorInitGetOTPV2]);
 
   const handleProcessPayment = async ({ code }: { code: string }) => {
     if (!code) {
@@ -170,12 +286,8 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
       });
   };
 
-  const handleResendSMSVerificationCode = () => {
-    smsRequestVerification(smsPaymentRequest);
-  };
-
   const handleInitiatepayment = (paymentValues: any) => {
-    const recipientFirstname = receiverName.split(" ")[0];
+    /* const recipientFirstname = receiverName.split(" ")[0];
     const recipientLastname = receiverName.split(" ")[1];
     initiatePayment({
       recipientFirstname,
@@ -234,7 +346,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
       .catch((err) => {
         console.log("Error1: ", err);
         setIsLoading(false);
-      });
+      }); */
   };
 
   const {
@@ -258,19 +370,33 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
       reason: "",
       attachedFile: "",
     },
+    validationSchema: validationSchema,
     onSubmit: (values: any) => {
-      setIsLoading(true);
+      // setIsLoading(true);
       if (values.amount >= 5000 && !values?.attachedFile) {
         setIsLoading(false);
         return;
       }
-      const { amount } = values;
+      /* const { amount } = values;
       handleInitiatepayment({
         ...values,
         amount: parseFloat(amount).toFixed(2),
-      });
+      }); */
+
+      const parsedAmount = parseFloat(values?.amount).toFixed(2);
+      const bodyParams = {
+        debtor_iban: accountIban,
+        creditor_iban: receiverIban,
+        creditor_name: receiverName,
+        amount: parsedAmount,
+        currency: values?.currency,
+        purpose: values?.purpose,
+        reference: values?.reference,
+        bic: userData?.bic,
+      };
+
+      initiatePaymentV2({ bodyParams, paramsHeader });
     },
-    validationSchema: validationSchema,
   });
 
   const pickDocument = async () => {
@@ -318,12 +444,31 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
     setIsOpenModalSuccessMessage(false);
   };
 
+  const onCloseModal = (): void => {
+    console.log("closing asap");
+    setStatusMessage({
+      header: "",
+      body: "",
+      isOpen: false,
+      isError: false,
+    });
+  };
+
   return (
     <MainLayout>
-      <LoadingScreen isLoading={isLoading} />
+      <Spinner
+        visible={isLoading || isLoadingInitPaymentV2 || isLoadingGetOTPV2}
+      />
       <KeyboardAwareScrollView
         style={{ height: "100%", backgroundColor: "white" }}
       >
+        <SuccessModal
+          isOpen={statusMessage.isOpen}
+          title={statusMessage.header}
+          text={statusMessage.body}
+          isError={statusMessage.isError}
+          onClose={onCloseModal}
+        />
         <View style={{ paddingRight: 6 }}>
           <View style={styles.header}>
             <View style={styles.headerLeft}>
@@ -512,7 +657,10 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
         rbSheetRef={refRBSheetCodeOTP}
         closeOnDragDown={true}
         closeOnPressMask={false}
-        height={380}
+        onClose={() => {
+          setBottomSheetMessage({ message: "" });
+        }}
+        height={385}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
           backgroundColor: "#fff",
@@ -527,7 +675,6 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           <Text
             style={{
               fontSize: 18,
-              // fontWeight: "bold",
               left: 20,
               fontFamily: "Nunito-SemiBold",
               color: "#000",
@@ -540,7 +687,6 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
             <Text
               style={{
                 fontSize: 14,
-                // fontWeight: "bold",
                 left: 20,
                 fontFamily: "Nunito-SemiBold",
                 color: vars["shade-grey"],
@@ -548,8 +694,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                 paddingTop: 10,
               }}
             >
-              You will receive an sms to your mobile device. Please enter this
-              code below.
+              {bottomSheetMessage?.message}
             </Text>
           </View>
           <Divider

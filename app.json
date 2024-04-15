@@ -15,22 +15,20 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
+    "jsEngine": "hermes",
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "UIBackgroundModes": [
-          "remote-notification"
-        ],
+        "UIBackgroundModes": ["remote-notification"],
         "NSFaceIDUsageDescription": "We need your permission to authenticate using Face ID",
         "NSCameraUsageDescription": "This app uses the camera to scan barcodes on event tickets.",
         "NSMicrophoneUsageDescription": "Time to record a video",
         "NSPhotoLibraryUsageDescription": "Let us pick a photo",
         "NSLocationWhenInUseUsageDescription": "Please provide us with your geolocation data to prove your current location"
       },
-      "bundleIdentifier": "com.zazoo.zazoomobile"
+      "bundleIdentifier": "com.zazoo.zazoomobile",
+      "jsEngine": "jsc"
     },
     "android": {
       "adaptiveIcon": {
@@ -60,12 +58,10 @@
               "pathPrefix": "/"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
-      ]
+      ],
+      "jsEngine": "jsc"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -95,18 +91,18 @@
         }
       ],
       [
-      "expo-build-properties",
-      {
-        "android": {
-          "compileSdkVersion": 34,
-          "targetSdkVersion": 34,
-          "buildToolsVersion": "34.0.0",
-          "minSdkVersion": 31
-        },
-        "ios": {
-          "deploymentTarget": "14.0"
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0",
+            "minSdkVersion": 31
+          },
+          "ios": {
+            "deploymentTarget": "14.0"
+          }
         }
-      }
       ]
     ]
   }

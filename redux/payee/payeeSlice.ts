@@ -188,8 +188,6 @@ export const payeeSlice = createApi({
     }),
     initiatePaymentV2: builder.mutation({
       query: ({ bodyParams, paramsHeader }) => {
-        console.log("🚀 ~ paramsHeader:", paramsHeader);
-        console.log("🚀 ~ bodyParams:", bodyParams);
         return {
           url: `/payment/initiate`,
           method: "POST",
@@ -204,8 +202,6 @@ export const payeeSlice = createApi({
     }),
     getOTPV2: builder.mutation({
       query: ({ bodyParams, paramsHeader }) => {
-        console.log("🚀 ~ paramsHeader:", paramsHeader);
-        console.log("🚀 ~ bodyParams:", bodyParams);
         return {
           url: `/payment/otp`,
           method: "POST",

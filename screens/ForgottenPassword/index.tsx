@@ -89,7 +89,7 @@ export function ForgottenPassword({ navigation }: any) {
               <Typography
                 fontSize={18}
                 fontFamily="Nunito-SemiBold"
-                fontWeight={600}
+                fontWeight={"600"}
               >
                 Forgotten password
               </Typography>
@@ -122,7 +122,7 @@ export function ForgottenPassword({ navigation }: any) {
                       >
                         <Typography
                           fontSize={16}
-                          fontWeight={600}
+                          fontWeight={"600"}
                           fontFamily="Nunito-SemiBold"
                           marginLeft={8}
                         >
@@ -139,7 +139,7 @@ export function ForgottenPassword({ navigation }: any) {
                       >
                         <Typography
                           fontSize={16}
-                          fontWeight={600}
+                          fontWeight={"600"}
                           fontFamily="Nunito-SemiBold"
                           marginLeft={8}
                         >

@@ -428,7 +428,7 @@ export function LoginScreen({ navigation }: any) {
               <View style={styles.cardTitleSubheader}>
                 <Typography
                   fontFamily="Mukta-Regular"
-                  fontWeight="500"
+                  fontWeight={500}
                   fontSize={14}
                   color={vars["medium-grey-lighter"]}
                 >

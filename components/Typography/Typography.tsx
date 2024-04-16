@@ -39,12 +39,22 @@ export function Typography({
   style,
   ...props
 }: any) {
+  let convertedFontWeight = "";
+
+  if (fontWeight) {
+    if (typeof fontWeight === "string") {
+      convertedFontWeight = fontWeight;
+    } else {
+      convertedFontWeight = fontWeight.toString();
+    }
+  }
+
   return (
     <Text
       style={{
         fontFamily: fontFamily ?? "Mukta-Regular",
         fontSize: fontSize ?? 14,
-        fontWeight: fontWeight ?? "normal",
+        fontWeight: convertedFontWeight ?? "normal",
         color: vars[color] ?? color,
         ...props,
       }}

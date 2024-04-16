@@ -403,7 +403,7 @@ const ProfileTab: FC<IProfileTab> = () => {
                 <CompassIcon color="blue" size={18} />
                 <Typography
                   fontSize={18}
-                  fontWeight={600}
+                  fontWeight={"600"}
                   fontFamily="Nunito-SemiBold"
                   marginLeft={4}
                 >

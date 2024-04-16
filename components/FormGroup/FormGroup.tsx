@@ -73,9 +73,15 @@ export function Input({
 }: any) {
   const [isFocused, setIsFocused] = useState(false);
   return (
-    <View style={[input.wrapper, style,{
-      borderColor: isFocused ? vars["accent-blue"] : vars["soft-blue"],
-    }]}>
+    <View
+      style={[
+        input.wrapper,
+        style,
+        {
+          borderColor: isFocused ? vars["accent-blue"] : vars["soft-blue"],
+        },
+      ]}
+    >
       {icon && (
         <View style={input.icon}>
           {cloneElement(icon, { color: iconColor, size: iconSize })}
@@ -165,9 +171,14 @@ export function Password({
   const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <View style={[input.wrapper, {
-      borderColor: isFocused ? vars["accent-blue"] : vars["soft-blue"],
-    }]}>
+    <View
+      style={[
+        input.wrapper,
+        {
+          borderColor: isFocused ? vars["accent-blue"] : vars["soft-blue"],
+        },
+      ]}
+    >
       {icon && (
         <View style={input.icon}>
           {cloneElement(icon, { color: iconColor, size: 16 })}
@@ -502,7 +513,7 @@ export function CheckboxUI({
             marginLeft={12}
             fontFamily="Mukta-SemiBold"
             fontSize={14}
-            fontWeight={500}
+            fontWeight={"500"}
           >
             Newsletter subscription
           </Typography>
@@ -512,14 +523,14 @@ export function CheckboxUI({
           <Typography
             fontFamily="Mukta-SemiBold"
             fontSize={14}
-            fontWeight={500}
+            fontWeight={"500"}
             marginLeft={12}
           >
             I've read and accept the{" "}
             <Typography
               fontFamily="Mukta-SemiBold"
               fontSize={14}
-              fontWeight={500}
+              fontWeight={"500"}
               color={vars["accent-pink"]}
             >
               Terms
@@ -530,14 +541,14 @@ export function CheckboxUI({
           <Typography
             fontFamily="Mukta-SemiBold"
             fontSize={14}
-            fontWeight={500}
+            fontWeight={"500"}
             marginLeft={12}
           >
             I've read and accept the{" "}
             <Typography
               fontFamily="Mukta-SemiBold"
               fontSize={14}
-              fontWeight={500}
+              fontWeight={"500"}
               color={vars["accent-pink"]}
             >
               Privacy Policy

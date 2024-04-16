@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const styles = StyleSheet.create<any>({
+export const styles = StyleSheet.create({
   cardContainer: {
     position: "relative",
     display: "flex",
@@ -31,7 +31,7 @@ export const styles = StyleSheet.create<any>({
   timer: {
     color: "#fff",
     fontSize: 12,
-    fontWeight: 700,
+    fontWeight: "700",
     position: "absolute",
     top: 10,
     right: 10,

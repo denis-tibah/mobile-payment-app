@@ -143,7 +143,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                       <Typography
                         fontSize={14}
                         fontFamily="Mukta-Regular"
-                        fontWeight={400}
+                        fontWeight={"400"}
                         paddingRight={24}
                       >
                         {transaction?.name || transaction?.purpose}
@@ -171,7 +171,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         )}
                         <Typography
                           marginLeft={2}
-                          fontWeight={400}
+                          fontWeight={"400"}
                           fontSize={14}
                           paddingLeft={5}
                           fontFamily="Mukta-Regular"
@@ -236,7 +236,11 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           ]}
                         >
                           {/* {displayTitle({ title: "Transaction Reference" })} */}
-                          {displayValue({content: `We will be automatically reverting on ${addFiveWorkingDays(transaction?.transaction_datetime)} if unclaimed by the merchant.`})}
+                          {displayValue({
+                            content: `We will be automatically reverting on ${addFiveWorkingDays(
+                              transaction?.transaction_datetime
+                            )} if unclaimed by the merchant.`,
+                          })}
                         </View>
                       ) : null}
 
@@ -592,7 +596,8 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           leftIcon={
                             <AntDesign
                               name="customerservice"
-                              size={14}
+                              // size={14}
+                              style={{ fontSize: 14 }}
                               color={vars["accent-pink"]}
                             />
                           }
@@ -633,7 +638,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
           >
             <Typography
               fontSize={14}
-              fontWeight={500}
+              fontWeight={"500"}
               fontFamily="Mukta-Regular"
             >
               {cardId
@@ -643,7 +648,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
             {totalAmount ? (
               <Typography
                 fontSize={14}
-                fontWeight={500}
+                fontWeight={"500"}
                 fontFamily="Nunito-SemiBold"
                 marginLeft={6}
                 color={

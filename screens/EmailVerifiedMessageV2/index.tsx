@@ -113,7 +113,7 @@ export default function EmailVerifiedMessageV2({
                 color="#FFFF"
                 fontSize={18}
                 marginLeft={6}
-                fontWeight={600}
+                fontWeight={"600"}
               >
                 Email address verified
               </Typography>
@@ -168,7 +168,7 @@ export default function EmailVerifiedMessageV2({
                 color="#FFFF"
                 fontSize={18}
                 marginLeft={6}
-                fontWeight={600}
+                fontWeight={"600"}
               >
                 Email address verified.
               </Typography>
@@ -203,7 +203,7 @@ export default function EmailVerifiedMessageV2({
   transactionDetails: {
     marginBottom: 20,
     fontSize: 14,
-    fontWeight: 400,
+    fontWeight: "400",
   },
   buttonContainer: {
     display: "flex",

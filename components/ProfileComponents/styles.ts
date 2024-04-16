@@ -64,8 +64,8 @@ export const styles = StyleSheet.create({
     shadowColor: "black",
     elevation: 8,
     padding: 8,
-    position: "relative",
-    bottom: -hp(20),
+    /* position: "relative",
+    bottom: -hp(20), */
   },
   downloadBtnMain: {
     width: "100%",

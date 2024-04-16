@@ -115,7 +115,7 @@ export const getCurrency = (currency = "") => {
   }
 };
 
-export const groupedByDateTransactions = (
+/* export const groupedByDateTransactions = (
   txData: Transaction[]
 ): GroupedByDateTransactionObject => {
   if (!txData) return {};
@@ -132,8 +132,8 @@ export const groupedByDateTransactions = (
       return current;
     }, {});
   return groupedByDateTransactions;
-};
-export const groupedByNameTransactions = (
+}; */
+/* export const groupedByNameTransactions = (
   txData: Transaction[]
 ): GroupedByDateTransactionObject => {
   if (!txData) return {};
@@ -151,7 +151,7 @@ export const groupedByNameTransactions = (
       return current;
     }, {});
   return groupedByNameTransactions;
-};
+}; */
 
 export function capitalizeFirstLetter(str: string): string {
   return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());

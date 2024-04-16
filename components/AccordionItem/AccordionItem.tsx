@@ -44,7 +44,7 @@ export function AccordionItem({
           {IconLeft ? <IconLeft /> : null}
           <Typography
             color="#000"
-            fontWeight={600}
+            fontWeight={"600"}
             fontFamily="Nunito-Bold"
             fontSize={16}
           >

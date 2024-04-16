@@ -1,109 +1,79 @@
+import { useEffect, useRef, useState } from "react";
 import {
   View,
-  StyleSheet,
   TouchableOpacity,
   Text,
   Dimensions,
   Platform,
+  Image,
 } from "react-native";
 import { useSelector } from "react-redux";
+import { Divider } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
+import { useFormik } from "formik";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
-import Euro from "../../assets/icons/Euro";
-import PayeeAttachFileSection from "./components/PayeeAttaFileSection";
-import CheckBox from "expo-checkbox";
-import { useFormik } from "formik";
-import MainLayout from "../../layout/Main";
-import {
-  globalWidthUnit,
-  hp,
-  screenNames,
-  widthGlobal,
-  wp,
-} from "../../utils/helpers";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import Spinner from "react-native-loading-spinner-overlay";
+
 import ArrowLeftLine from "../../assets/icons/ArrowLeftLine";
 import vars from "../../styles/vars";
-import { Divider, overlay } from "react-native-paper";
 import FormGroup from "../../components/FormGroup";
 import Button from "../../components/Button";
 import { RootState } from "../../store";
-import StatementsIcon from "../../assets/icons/StatementsIcon";
-import DropDownPicker from "react-native-dropdown-picker";
-import { useEffect, useRef, useState } from "react";
 import { validationPaymentSchema } from "../../utils/validation";
 import {
-  useInitiatePaymentMutation,
-  useProcessPaymentMutation,
-  useSmsRequestVerificationMutation,
-  useSubmitProcessPaymentMutation,
+  useInitiatePaymentV2Mutation,
+  useGetOTPV2Mutation,
+  useProcessPaymentV2Mutation,
 } from "../../redux/payee/payeeSlice";
-import BottomSheet from "../../components/BottomSheet";
-import { CodeModal } from "../../components/CodeModal/CodeModal";
-import LoadingScreen from "../../components/Loader/LoadingScreen";
-import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
-import { Image } from "react-native";
 import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
-import CloudMessage from "../../assets/icons/CloudMessage";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import SwipableBottomSheet from "../../components/SwipableBottomSheet";
-import {
-  PinCodeInputBoxes,
-  PinCodeInputClipBoard,
-} from "../../components/FormGroup/FormGroup";
-import ChangeLimits from "../../assets/icons/ChangeLimits";
-import Document from "../../assets/icons/Document";
-import Typography from "../../components/Typography";
+import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import ModalBottomSheet from "../../components/ModalBottomSheet/ModalBottomSheet";
+import MainLayout from "../../layout/Main";
+import PayeeAttachFileSection from "./components/PayeeAttaFileSection";
+import CloudMessage from "../../assets/icons/CloudMessage";
+import SwipableBottomSheet from "../../components/SwipableBottomSheet";
+import { PinCodeInputClipBoard } from "../../components/FormGroup/FormGroup";
+import ChangeLimits from "../../assets/icons/ChangeLimits";
+import Typography from "../../components/Typography";
 import CheckIcon from "../../assets/icons/Check";
-
-const currencyOptions = [
-  { label: "EUR", value: "EUR" },
-  { label: "USD", value: "USD" },
-];
+import Euro from "../../assets/icons/Euro";
+import { arrayChecker, screenNames, widthGlobal } from "../../utils/helpers";
+import { styles } from "./styles";
+import WholeContainer from "../../layout/WholeContainer";
 
 const PayeeSendFunds = ({ navigation, route }: any) => {
   const { params }: any = route || { params: {} };
-  const accountData = useSelector((state: any) => state?.account?.details);
+  /*  const accountData = useSelector((state: any) => state?.account?.details); */
   const refRBSheetCodeOTP = useRef();
   const refRBSheetSuccess = useRef();
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
-  const accountIban = userData?.iban || "";
-  const accountName = `${userData?.first_name} ${userData?.last_name}` || "";
-  const receiverName: string = params?.item.name || "";
-  const receiverIban: string = params?.item.iban || "";
-  const receiverUuid: string = params?.item.uuid || "";
-  const windowHeight = Dimensions.get("window").height;
-
-  const [initiatePayment] = useInitiatePaymentMutation();
-  const [smsRequestVerification] = useSmsRequestVerificationMutation();
-  const [processPayment] = useProcessPaymentMutation();
-  const [submitProcessPayment] = useSubmitProcessPaymentMutation();
-
-  const { data: userAccountInformation } = useGetAccountDetailsQuery({
-    accountId: userData?.id || 0,
+  const paramsHeader = {
     accessToken: userTokens?.access_token,
     tokenZiyl: userTokens?.token_ziyl,
-  });
-  const accountBalance = userAccountInformation?.data?.avlbal || 0;
+  };
+
+  const accountIban = userData?.iban || "";
+  const receiverName: string = params?.item.name || "";
+  const receiverIban: string = params?.item.iban || "";
+
   const [timeRemaining, setTimeRemaining] = useState<number>(60);
-  const [isDropDownCurrencyOpen, setIsDropDownCurrencyOpen] =
-    useState<boolean>(false);
-  const [isOTPModalOpen, setIsOTPModalOpen] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [base64File, setBase64File] = useState<string>("");
-  const [isPaymentResultBottomSheetOpen, setIsPaymentResultBottomSheetOpen] =
-    useState<boolean>(false);
-  const [isPaymentSuccessful, setIsPaymentSuccessful] =
-    useState<boolean>(false);
-  const [selectedCurrency, setSelectedCurrency] = useState<string>("EUR");
-  const [smsPaymentRequest, setSmsPaymentRequest] = useState<any>({});
-  const validationSchema = validationPaymentSchema(accountBalance);
+
   const [code, setCode] = useState("");
   const [isTimeToCountDown, setIsTimeToCountDown] = useState<boolean>(false);
   const [isOpenModalSuccessMessage, setIsOpenModalSuccessMessage] =
     useState<boolean>(false);
+  const [statusMessage, setStatusMessage] = useState<{
+    header: string;
+    body: string;
+    isOpen: boolean;
+    isError: boolean;
+  }>({ header: "", body: "", isOpen: false, isError: false });
+  const [bottomSheetMessage, setBottomSheetMessage] = useState<{
+    message: string;
+  }>({ message: "" });
 
   const enableResend = timeRemaining === 0;
 
@@ -111,130 +81,223 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
     setCode(value);
   };
 
-  const _handleResendSMSVerificationCode = () => {
-    // handleResendHere
-  };
+  const [
+    initiatePaymentV2,
+    {
+      isLoading: isLoadingInitPaymentV2,
+      isError: isErrorInitPaymentV2,
+      isSuccess: isSuccessInitPaymentV2,
+      error: errorInitPaymentV2,
+      data: dataInitPaymentV2,
+    },
+  ] = useInitiatePaymentV2Mutation();
+
+  const [
+    getOTPV2,
+    {
+      isLoading: isLoadingGetOTPV2,
+      isError: isErrorInitGetOTPV2,
+      isSuccess: isSuccessGetOTPV2,
+      error: errorGetOTPV2,
+      data: dataGetOTPV2,
+    },
+  ] = useGetOTPV2Mutation();
+  console.log("🚀 ~ PayeeSendFunds ~ errorGetOTPV2:", errorGetOTPV2);
+
+  const [
+    processPaymentV2,
+    {
+      isLoading: isLoadingProcessPaymentV2,
+      isError: isErrorProcessPaymentV2,
+      isSuccess: isSuccessProcessPaymentV2,
+      error: errorProcessPaymentV2,
+      data: dataProcessPaymentV2,
+    },
+  ] = useProcessPaymentV2Mutation();
+
+  const { data: userAccountInformation } = useGetAccountDetailsQuery({
+    accountId: userData?.id || 0,
+    accessToken: userTokens?.access_token,
+    tokenZiyl: userTokens?.token_ziyl,
+  });
+
+  const accountBalance = userAccountInformation?.data?.avlbal || 0;
+  const validationSchema = validationPaymentSchema(accountBalance);
+
+  // initiate payment request
+  useEffect(() => {
+    if (!isLoadingInitPaymentV2 && isSuccessInitPaymentV2) {
+      if (dataInitPaymentV2?.code === 200) {
+        const transactionId =
+          dataInitPaymentV2?.data?.transaction_id &&
+          dataInitPaymentV2?.data?.transaction_id;
+        if (transactionId) {
+          const parsedAmount = parseFloat(values?.amount).toFixed(2);
+          const bodyParams = {
+            identifier: transactionId,
+            type: "transfer",
+            amount: parsedAmount,
+            currency: values?.currency,
+          };
+          getOTPV2({ bodyParams, paramsHeader });
+        }
+      }
+    }
+  }, [isLoadingInitPaymentV2, isSuccessInitPaymentV2, dataInitPaymentV2]);
+
+  useEffect(() => {
+    if (!isLoadingInitPaymentV2 && isErrorInitPaymentV2) {
+      if (
+        errorInitPaymentV2 &&
+        errorInitPaymentV2?.data &&
+        errorInitPaymentV2?.data?.code
+      ) {
+        if (
+          errorInitPaymentV2?.data?.code === 400 ||
+          errorInitPaymentV2?.data?.code === 422 ||
+          errorInitPaymentV2?.data?.code === 460 ||
+          errorInitPaymentV2?.data?.code === 460
+        ) {
+          if (errorInitPaymentV2?.data && errorInitPaymentV2?.data?.errors) {
+            const errorMessage =
+              arrayChecker(errorInitPaymentV2?.data?.errors) &&
+              errorInitPaymentV2?.data?.errors.length > 0
+                ? errorInitPaymentV2?.data?.errors[0]
+                : "Something went wrong";
+
+            setStatusMessage({
+              header: "Error",
+              body: errorMessage,
+              isOpen: true,
+              isError: true,
+            });
+          }
+        } else {
+          setStatusMessage({
+            header: "Error",
+            body: "Something went wrong on payment initialization",
+            isOpen: true,
+            isError: true,
+          });
+        }
+      }
+    }
+  }, [isLoadingInitPaymentV2, isErrorInitPaymentV2, errorInitPaymentV2]);
+
+  // for successfull otp
+  useEffect(() => {
+    if (!isLoadingGetOTPV2 && isSuccessGetOTPV2) {
+      if (dataGetOTPV2?.message) {
+        setBottomSheetMessage({ message: dataGetOTPV2?.message });
+
+        refRBSheetCodeOTP?.current?.open();
+      }
+    }
+  }, [isLoadingGetOTPV2, isSuccessGetOTPV2, dataGetOTPV2]);
+  // for failed otp
+  useEffect(() => {
+    if (!isLoadingGetOTPV2 && isErrorInitGetOTPV2) {
+      setStatusMessage({
+        header: "Error",
+        body: "OTP error: Please try again",
+        isOpen: true,
+        isError: true,
+      });
+    }
+  }, [isLoadingGetOTPV2, isErrorInitGetOTPV2]);
+
+  //for successfull process payment
+  useEffect(() => {
+    if (!isLoadingProcessPaymentV2 && isSuccessProcessPaymentV2) {
+      // refRBSheetCodeOTP?.current?.close();
+      if (dataProcessPaymentV2?.code === 200) {
+        refRBSheetSuccess?.current?.open();
+        setIsOpenModalSuccessMessage(true);
+        setBottomSheetMessage({
+          message: dataProcessPaymentV2?.message
+            ? dataProcessPaymentV2?.message
+            : "Your payment has been verified",
+        });
+      }
+    }
+  }, [
+    isLoadingProcessPaymentV2,
+    isSuccessProcessPaymentV2,
+    dataProcessPaymentV2,
+  ]);
+  //for rejected  process payment
+  useEffect(() => {
+    if (!isLoadingProcessPaymentV2 && isErrorProcessPaymentV2) {
+      if (
+        errorProcessPaymentV2?.data?.code === 400 ||
+        errorProcessPaymentV2?.data?.code === 422 ||
+        errorProcessPaymentV2?.data?.code === 460 ||
+        errorProcessPaymentV2?.data?.code === 461 ||
+        errorProcessPaymentV2?.data?.code === 404
+      ) {
+        setIsOpenModalSuccessMessage(true);
+        if (
+          errorProcessPaymentV2?.data &&
+          errorProcessPaymentV2?.data?.errors
+        ) {
+          refRBSheetSuccess?.current?.open();
+          const errorMessage =
+            arrayChecker(errorProcessPaymentV2?.data?.errors) &&
+            errorProcessPaymentV2?.data?.errors.length > 0
+              ? errorProcessPaymentV2?.data?.errors[0]
+              : "Something went wrong";
+          setBottomSheetMessage({
+            message: errorMessage,
+          });
+          /* if (Platform.OS === "ios") {
+            setStatusMessage({
+              header: "Error",
+              body: errorMessage,
+              isOpen: true,
+              isError: true,
+            });
+          } */
+        }
+      } else {
+        setStatusMessage({
+          header: "Error",
+          body: "Semething went wrong while processing your payment",
+          isOpen: true,
+          isError: true,
+        });
+      }
+    }
+  }, [
+    isLoadingProcessPaymentV2,
+    isErrorProcessPaymentV2,
+    errorProcessPaymentV2,
+  ]);
 
   const handleProcessPayment = async ({ code }: { code: string }) => {
     if (!code) {
-      return;
+      setStatusMessage({
+        header: "Error",
+        body: "Incorrect OTP",
+        isOpen: true,
+        isError: true,
+      });
     }
-    processPayment({
-      identifier: smsPaymentRequest.identifier,
+    const transactionId =
+      dataInitPaymentV2?.data?.transaction_id &&
+      dataInitPaymentV2?.data?.transaction_id;
+    const parsedAmount = parseFloat(values?.amount).toFixed(2);
+    const bodyParams = {
+      identifier: transactionId,
       code,
       debtor_iban: accountIban,
       creditor_iban: receiverIban,
       creditor_name: receiverName,
-      amount: smsPaymentRequest.amount,
-      currency: smsPaymentRequest.currency,
-      reference: smsPaymentRequest?.reference,
-      remarks: smsPaymentRequest?.reference,
-      purpose: smsPaymentRequest?.purpose,
-      reason: smsPaymentRequest?.purpose,
-      access_token: userTokens?.access_token,
-      token_ziyl: userTokens?.token_ziyl,
-    })
-      .unwrap()
-      .then((res) => {
-        const { status } = res;
-        refRBSheetCodeOTP?.current.close();
-        refRBSheetSuccess?.current?.open();
-        setIsOpenModalSuccessMessage(true);
-        setIsPaymentSuccessful(true);
-        submitProcessPayment({
-          access_token: userTokens?.access_token,
-          token_ziyl: userTokens?.token_ziyl,
-          email: userData?.email,
-          reference: smsPaymentRequest?.remarks,
-          purpose: smsPaymentRequest?.reason,
-          ticketValue: {
-            processpaymentupload: [
-              // for improvement - arjay
-              {
-                filename: "test.pdf",
-                data: smsPaymentRequest?.attached_file,
-                type: "application/pdf",
-              },
-            ],
-          },
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        refRBSheetCodeOTP?.current.close();
-        refRBSheetSuccess?.current?.open();
-        setIsPaymentSuccessful(false);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
-
-  const handleResendSMSVerificationCode = () => {
-    smsRequestVerification(smsPaymentRequest);
-  };
-
-  const handleInitiatepayment = (paymentValues: any) => {
-    const recipientFirstname = receiverName.split(" ")[0];
-    const recipientLastname = receiverName.split(" ")[1];
-    initiatePayment({
-      recipientFirstname,
-      recipientLastname,
-      amount: paymentValues.amount,
-      currency: paymentValues.currency,
-      debtor_iban: accountIban,
-      creditor_iban: receiverIban,
-      creditor_name: receiverName,
-      reason: paymentValues.purpose,
-      purpose: paymentValues.purpose,
-      remarks: paymentValues.reference,
-      reference: paymentValues.reference,
-      access_token: userTokens?.access_token,
-      token_ziyl: userTokens?.token_ziyl,
-      ...(paymentValues.attachedFile && {
-        attached_file: paymentValues.attachedFile,
-      }),
-    })
-      .unwrap()
-      .then((res) => {
-        let paymentRequest = {
-          identifier: res.transaction_id,
-          type: "transfer",
-          amount: paymentValues.amount,
-          currency: paymentValues.currency,
-        };
-        console.log("res", res);
-        setIsLoading(false);
-        setSmsPaymentRequest({
-          ...res,
-          ...paymentRequest,
-          ...paymentValues,
-          token_ziyl: userTokens?.token_ziyl,
-          access_token: userTokens?.access_token,
-        });
-        smsRequestVerification({
-          ...paymentRequest,
-          token_ziyl: userTokens?.token_ziyl,
-          access_token: userTokens?.access_token,
-        })
-          .unwrap()
-          .then((res) => {
-            const { status } = res;
-            if (status === "success") {
-              refRBSheetCodeOTP?.current.open();
-            }
-          })
-          .catch((err) => {
-            console.log("Error2: ", err);
-          })
-          .finally(() => {
-            setIsLoading(false);
-          });
-      })
-      .catch((err) => {
-        console.log("Error1: ", err);
-        setIsLoading(false);
-      });
+      amount: parsedAmount,
+      bic: userData?.bic,
+      currency: values?.currency,
+      remarks: values?.reference,
+    };
+    processPaymentV2({ bodyParams, paramsHeader });
   };
 
   const {
@@ -258,19 +321,32 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
       reason: "",
       attachedFile: "",
     },
+    validationSchema: validationSchema,
     onSubmit: (values: any) => {
-      setIsLoading(true);
       if (values.amount >= 5000 && !values?.attachedFile) {
-        setIsLoading(false);
+        setStatusMessage({
+          header: "",
+          body: "Amount shoudn't be greater than 5000",
+          isOpen: true,
+          isError: true,
+        });
         return;
       }
-      const { amount } = values;
-      handleInitiatepayment({
-        ...values,
-        amount: parseFloat(amount).toFixed(2),
-      });
+
+      const parsedAmount = parseFloat(values?.amount).toFixed(2);
+      const bodyParams = {
+        debtor_iban: accountIban,
+        creditor_iban: receiverIban,
+        creditor_name: receiverName,
+        amount: parsedAmount,
+        currency: values?.currency,
+        purpose: values?.purpose,
+        reference: values?.reference,
+        bic: userData?.bic,
+      };
+
+      initiatePaymentV2({ bodyParams, paramsHeader });
     },
-    validationSchema: validationSchema,
   });
 
   const pickDocument = async () => {
@@ -318,62 +394,110 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
     setIsOpenModalSuccessMessage(false);
   };
 
+  const _handleResendSMSVerificationCode = () => {
+    refRBSheetCodeOTP?.current?.close();
+    const transactionId =
+      dataInitPaymentV2?.data?.transaction_id &&
+      dataInitPaymentV2?.data?.transaction_id;
+    const parsedAmount = parseFloat(values?.amount).toFixed(2);
+    const bodyParams = {
+      identifier: transactionId,
+      type: "transfer",
+      amount: parsedAmount,
+      currency: values?.currency,
+    };
+    getOTPV2({ bodyParams, paramsHeader });
+  };
+
+  const onCloseModal = (): void => {
+    setStatusMessage({
+      header: "",
+      body: "",
+      isOpen: false,
+      isError: false,
+    });
+  };
+
   return (
     <MainLayout>
-      <LoadingScreen isLoading={isLoading} />
+      <Spinner
+        visible={
+          isLoadingInitPaymentV2 ||
+          isLoadingGetOTPV2 ||
+          isLoadingProcessPaymentV2
+        }
+      />
       <KeyboardAwareScrollView
         style={{ height: "100%", backgroundColor: "white" }}
       >
-        <View style={{ paddingRight: 6 }}>
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <TouchableOpacity
-                style={styles.headerLeftIcon}
-                onPress={() => navigation.pop()}
-              >
+        <SuccessModal
+          isOpen={statusMessage.isOpen}
+          title={statusMessage.header}
+          text={statusMessage.body}
+          isError={statusMessage.isError}
+          onClose={onCloseModal}
+        />
+        <WholeContainer>
+          <View style={styles.headerText}>
+            <View style={styles.headerLeftIcon}>
+              <TouchableOpacity onPress={() => navigation.pop()}>
                 <ArrowLeftLine size={18} color="blue" />
               </TouchableOpacity>
-              <View>
+            </View>
+            <View style={{ paddingHorizontal: 14, width: "100%" }}>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
                 <Typography
                   fontSize={14}
                   color="#000"
-                  textAlign="left"
                   fontFamily="Nunito-SemiBold"
                 >
                   {receiverName}
                 </Typography>
+
+                <Typography
+                  fontSize={14}
+                  color="#000"
+                  marginRight={24}
+                  fontFamily="Nunito-SemiBold"
+                >
+                  Your Balance
+                </Typography>
+              </View>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
                 <Typography
                   fontSize={12}
                   color={vars["shade-grey"]}
-                  textAlign="left"
                   fontFamily="Nunito-SemiBold"
                 >
                   {receiverIban}
                 </Typography>
+                <Typography
+                  fontSize={12}
+                  color={vars["shade-grey"]}
+                  fontFamily="Nunito-SemiBold"
+                  marginRight={24}
+                >
+                  € {accountBalance}
+                </Typography>
               </View>
             </View>
-            <View style={{ paddingRight: 5 }}>
-              <Typography
-                fontSize={14}
-                color="#000"
-                textAlign="left"
-                fontFamily="Nunito-SemiBold"
-              >
-                Your Balance
-              </Typography>
-              <Typography
-                fontSize={12}
-                color={vars["shade-grey"]}
-                textAlign="right"
-                fontFamily="Nunito-SemiBold"
-              >
-                € {accountBalance}
-              </Typography>
-            </View>
           </View>
+        </WholeContainer>
+        <View style={{ paddingRight: 6 }}>
           <View
             style={{
-              // paddingTop: 8,
               backgroundColor: "#fff",
               paddingHorizontal: 18,
             }}
@@ -404,10 +528,10 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                   placeholder="Amount to send"
                   iconColor="blue"
                   style={{ height: 42 }}
-                  icon={<Euro size={22} />}
+                  icon={<Euro size={"22"} />}
                 />
               </FormGroup>
-              {errors.amount === "This amount is above your daily limit" &&
+              {/* {errors.amount === "This amount is above your daily limit" &&
                 touched.amount && (
                   <TouchableOpacity
                     style={{
@@ -429,11 +553,11 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                     }}
                   >
                     <ChangeLimits />
-                    <Text style={{ color: "#FF7171", fontSize: 10, top: -2 }}>
+                    <Text style={{ color: "#FF7171", fontSize: "10", top: -2 }}>
                       Change your limits
                     </Text>
                   </TouchableOpacity>
-                )}
+                )} */}
             </View>
             <FormGroup
               validationError={
@@ -475,24 +599,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           </View>
         </View>
       </KeyboardAwareScrollView>
-      <View
-        style={{
-          position: "relative",
-          width: "100%",
-          backgroundColor: "#fff",
-          paddingHorizontal: 16,
-          paddingVertical: 20,
-          shadowColor: "#ACACAC",
-          shadowOffset: {
-            width: 0,
-            height: -2,
-          },
-          shadowOpacity: 0.25,
-          shadowRadius: 3.84,
-          elevation: 5,
-          zIndex: 999,
-        }}
-      >
+      <View style={styles.sendButton}>
         <Button
           onPress={handleSubmit}
           color="light-pink"
@@ -500,7 +607,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           leftIcon={
             <AntDesign
               name="checkcircleo"
-              size={16}
+              style={{ fontSize: 16 }}
               color={vars["accent-pink"]}
             />
           }
@@ -512,7 +619,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
         rbSheetRef={refRBSheetCodeOTP}
         closeOnDragDown={true}
         closeOnPressMask={false}
-        height={380}
+        height={385}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
           backgroundColor: "#fff",
@@ -527,7 +634,6 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           <Text
             style={{
               fontSize: 18,
-              // fontWeight: "bold",
               left: 20,
               fontFamily: "Nunito-SemiBold",
               color: "#000",
@@ -540,7 +646,6 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
             <Text
               style={{
                 fontSize: 14,
-                // fontWeight: "bold",
                 left: 20,
                 fontFamily: "Nunito-SemiBold",
                 color: vars["shade-grey"],
@@ -548,8 +653,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                 paddingTop: 10,
               }}
             >
-              You will receive an sms to your mobile device. Please enter this
-              code below.
+              {bottomSheetMessage?.message}
             </Text>
           </View>
           <Divider
@@ -591,22 +695,17 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           />
           <Button
             onPress={() => {
-              setIsLoading(true);
+              console.log("submitting");
+              refRBSheetCodeOTP?.current?.close();
               handleProcessPayment({ code });
             }}
             color="light-pink"
-            style={{
-              width: "90%",
-              bottom: 0,
-              position: "relative",
-              alignItems: "center",
-              alignSelf: "center",
-              marginTop: 20,
-            }}
+            style={styles.buttonConfirmPayment}
             leftIcon={
               <AntDesign
                 name="checkcircleo"
-                size={16}
+                //size={16}
+                style={{ fontSize: 16 }}
                 color={vars["accent-pink"]}
               />
             }
@@ -615,143 +714,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           </Button>
         </View>
       </SwipableBottomSheet>
-      {isOpenModalSuccessMessage && Platform.OS === "ios" ? (
-        <ModalBottomSheet
-          isOpen={isOpenModalSuccessMessage}
-          hasNoHeaderPadding
-          contentHeight={500}
-        >
-          <View
-            style={[
-              styles.headerContainer,
-              { backgroundColor: isPaymentSuccessful ? "#0DCA9D" : "#FF7171" },
-            ]}
-          >
-            <View style={styles.headerWrapper}>
-              <View>
-                {isPaymentSuccessful ? (
-                  <View>
-                    <View
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: 4,
-                      }}
-                    >
-                      <CheckIcon color="white" size={18} />
-                      <Text
-                        style={[
-                          styles.textConfirmation,
-                          { color: "white", paddingTop: 0 },
-                        ]}
-                      >
-                        Payment verified
-                      </Text>
-                    </View>
-                  </View>
-                ) : (
-                  <View>
-                    <View
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: 4,
-                      }}
-                    >
-                      <Text
-                        style={[
-                          styles.textConfirmation,
-                          { color: "white", paddingTop: 0 },
-                        ]}
-                      >
-                        Payment rejected
-                      </Text>
-                    </View>
-                  </View>
-                )}
-              </View>
-            </View>
-          </View>
-          {isPaymentSuccessful ? (
-            <View
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                paddingVertical: 12,
-              }}
-            >
-              <Typography
-                color="#000"
-                fontSize={14}
-                marginLeft={6}
-                fontWeight={400}
-                fontFamily="Mukta-Regular"
-              >
-                Your payment is on the way.
-              </Typography>
-              <Typography
-                color="#000"
-                fontSize={14}
-                marginLeft={6}
-                fontWeight={400}
-                fontFamily="Mukta-Regular"
-              >
-                Check your notification and transaction page.
-              </Typography>
-            </View>
-          ) : (
-            <View
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                paddingVertical: 12,
-              }}
-            >
-              <Typography
-                color="#000"
-                fontSize={14}
-                marginLeft={6}
-                fontWeight={400}
-                fontFamily="Mukta-Regular"
-              >
-                Your payment is rejected.
-              </Typography>
-              <Typography
-                color="#000"
-                fontSize={14}
-                marginLeft={6}
-                fontWeight={400}
-                fontFamily="Mukta-Regular"
-              >
-                Get new verification code to your phone or get support from our
-                team
-              </Typography>
-            </View>
-          )}
 
-          <View style={styles.headerWrapper}>
-            <Button
-              color={"green"}
-              onPress={() => closePopup()}
-              style={styles.buttonOK}
-            >
-              <Text>OK</Text>
-            </Button>
-          </View>
-          <View style={styles.imageWrapper}>
-            <Image
-              source={require('("../../../assets/images/verified.png')}
-              style={styles.image}
-            />
-          </View>
-        </ModalBottomSheet>
-      ) : null}
       {Platform.OS === "android" ? (
         <SwipableBottomSheet
           rbSheetRef={refRBSheetSuccess}
@@ -773,9 +736,11 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
         >
           <View
             style={{
-              borderColor: isPaymentSuccessful
+              borderColor: isSuccessProcessPaymentV2
                 ? vars["accent-green"]
-                : vars["heavy-red"],
+                : isErrorProcessPaymentV2
+                ? vars["heavy-red"]
+                : vars["accent-green"],
               borderTopWidth: 60,
             }}
           >
@@ -787,139 +752,149 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                 fontSize: 18,
               }}
             >
-              {isPaymentSuccessful ? "Payment Successful" : "Payment Failed"}
+              {isSuccessProcessPaymentV2 ? "Payment Successful" : null}
+              {isErrorProcessPaymentV2 ? "Payment rejected" : null}
             </Text>
           </View>
-          {isPaymentSuccessful ? (
-            <>
-              <Text style={styles.textConfirmation}>
-                Your payment has been verified.
-              </Text>
-              <Text style={styles.textConfirmation}>
-                Check your notifications and transaction page.
-              </Text>
+          <View
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Typography
+              color="#000"
+              fontSize={14}
+              marginLeft={6}
+              fontWeight={"400"}
+              fontFamily="Mukta-Regular"
+            >
+              {bottomSheetMessage?.message}
+            </Typography>
+          </View>
+          {isSuccessProcessPaymentV2 ? (
+            <Image
+              source={require("../../assets/images/verified.png")}
+              style={styles.imageContainer}
+            />
+          ) : null}
+          {isErrorProcessPaymentV2 ? (
+            <Image
+              source={require("../../assets/images/failed.png")}
+              style={styles.imageContainer}
+            />
+          ) : null}
+        </SwipableBottomSheet>
+      ) : null}
+      {isOpenModalSuccessMessage && Platform.OS === "ios" ? (
+        <ModalBottomSheet
+          isOpen={isOpenModalSuccessMessage}
+          hasNoHeaderPadding
+          contentHeight={500}
+        >
+          <View
+            style={[
+              styles.headerContainer,
+              {
+                backgroundColor: isSuccessProcessPaymentV2
+                  ? "#0DCA9D"
+                  : isErrorProcessPaymentV2
+                  ? "#FF7171"
+                  : "#0DCA9D",
+              },
+            ]}
+          >
+            <View style={styles.headerWrapper}>
+              {isSuccessProcessPaymentV2 ? (
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 4,
+                  }}
+                >
+                  <CheckIcon color="white" size={"18"} />
+                  <Text
+                    style={[
+                      styles.textConfirmation,
+                      { color: "white", paddingTop: 0 },
+                    ]}
+                  >
+                    Payment verified
+                  </Text>
+                </View>
+              ) : null}
+              {isErrorProcessPaymentV2 ? (
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 4,
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.textConfirmation,
+                      { color: "white", paddingTop: 0 },
+                    ]}
+                  >
+                    Payment rejected
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+          </View>
+          <View
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              paddingVertical: 12,
+            }}
+          >
+            <Typography
+              color="#000"
+              fontSize={14}
+              marginLeft={6}
+              fontWeight={"400"}
+              fontFamily="Mukta-Regular"
+            >
+              {bottomSheetMessage?.message}
+            </Typography>
+          </View>
+
+          <View style={styles.headerWrapper}>
+            <Button
+              color={"green"}
+              onPress={() => closePopup()}
+              style={styles.buttonOK}
+            >
+              <Text>OK</Text>
+            </Button>
+          </View>
+          <View style={styles.imageWrapper}>
+            {isSuccessProcessPaymentV2 ? (
               <Image
-                source={require("../../assets/images/verified.png")}
-                style={styles.imageContainer}
+                source={require('("../../../assets/images/verified.png')}
+                style={styles.image}
               />
-            </>
-          ) : (
-            <>
-              <Text style={styles.textConfirmation}>
-                Your payment failed to verify.
-              </Text>
-              <Text style={styles.textConfirmation}>
-                Check your notifications and transaction page.
-              </Text>
+            ) : null}
+            {isErrorProcessPaymentV2 ? (
               <Image
                 source={require("../../assets/images/failed.png")}
                 style={styles.imageContainer}
               />
-            </>
-          )}
-        </SwipableBottomSheet>
+            ) : null}
+          </View>
+        </ModalBottomSheet>
       ) : null}
     </MainLayout>
   );
 };
 export default PayeeSendFunds;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  header: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    backgroundColor: "#fff",
-    paddingTop: 25,
-    paddingHorizontal: 10,
-    // backgroundColor: "#ACACAC",
-  },
-  headerLeft: {
-    display: "flex",
-    flexDirection: "row",
-  },
-  headerLeftIcon: {
-    height: wp(23),
-    width: wp(23),
-    borderRadius: wp(23),
-    top: hp(-2.7),
-    margin: 7,
-    backgroundColor: "#F5F9FF",
-    padding: wp(7.5),
-  },
-  dropdown: {
-    width: "93%",
-    height: 52,
-    alignSelf: "center",
-    backgroundColor: "#fff",
-    borderColor: vars["accent-blue"],
-    borderWidth: 1,
-    borderRadius: 40,
-  },
-  dropdownContainer: {
-    width: "93%",
-    alignSelf: "center",
-    backgroundColor: "#fff",
-    borderColor: "#fff",
-    borderWidth: 0,
-    borderRadius: 40,
-  },
-  textConfirmation: {
-    fontSize: 14,
-    color: vars["accent-grey"],
-    alignSelf: "center",
-    fontWeight: 400,
-    paddingTop: 6,
-  },
-  imageContainer: {
-    width: 200,
-    height: 200,
-    alignSelf: "center",
-    resizeMode: "contain",
-    marginTop: 20,
-    right: -45,
-  },
-  noCodeResend: {
-    color: vars["accent-pink"],
-    fontSize: 12,
-    fontWeight: "400",
-    marginTop: 12,
-    textAlign: "center",
-    paddingBottom: 40,
-  },
-  headerContainer: {
-    backgroundColor: "#0DCA9D",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 0,
-    width: "100%",
-    height: 75,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-  },
-  headerWrapper: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-  },
-  imageWrapper: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "#fff",
-  },
-  buttonOK: { backgroundColor: "#fff", height: 30, width: 90, marginTop: 24 },
-  image: {
-    height: 200,
-    width: 180,
-    marginTop: 46,
-    marginLeft: 90,
-  },
-});

@@ -229,7 +229,7 @@ const AddressDetails: FC<IAddressDetails> = ({
         <Typography
           fontSize={14}
           fontFamily="Mukta-Regular"
-          fontWeight={400}
+          fontWeight={"400"}
           color="#696F7A"
         >
           We require 3 years of address history
@@ -754,7 +754,7 @@ const AddressDetails: FC<IAddressDetails> = ({
               >
                 <Typography
                   fontSize={16}
-                  fontWeight={600}
+                  fontWeight={"600"}
                   fontFamily="Nunito-SemiBold"
                   marginLeft={8}
                 >
@@ -768,7 +768,7 @@ const AddressDetails: FC<IAddressDetails> = ({
               >
                 <Typography
                   fontSize={16}
-                  fontWeight={600}
+                  fontWeight={"600"}
                   fontFamily="Nunito-SemiBold"
                   marginLeft={8}
                 >

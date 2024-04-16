@@ -23,7 +23,7 @@ export const textarea: any = StyleSheet.create({
   },
 });
 
-export const input: any = StyleSheet.create({
+export const input = StyleSheet.create({
   wrapper: {
     width: "100%",
     height: 42,

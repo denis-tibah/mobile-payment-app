@@ -172,9 +172,9 @@ const SecurityTab: FC<ISecurityTab> = () => {
       />
       <SafeAreaView style={{ backgroundColor: "#fff" }}>
         {/* <ScrollView> */}
-          <Pressable>
-            <View>
-              {/* <View
+        <Pressable>
+          <View>
+            {/* <View
                 style={{
                   paddingHorizontal: 18,
                   paddingBottom: 8,
@@ -211,7 +211,7 @@ const SecurityTab: FC<ISecurityTab> = () => {
                     <TwoFactorAuthenticationIcon color="blue" size={18} />
                     <Typography
                       fontSize={16}
-                      fontWeight={400}
+                      fontWeight={"400"}
                       fontFamily="Mukta-Regular"
                       marginLeft={8}
                     >
@@ -235,156 +235,154 @@ const SecurityTab: FC<ISecurityTab> = () => {
                   marginBottom={16}
                 />
               </WholeContainer> */}
+            <View
+              style={{
+                paddingHorizontal: 18,
+                paddingBottom: 8,
+                ...Platform.select({
+                  ios: {
+                    paddingBottom: 12,
+                  },
+                }),
+              }}
+            >
               <View
                 style={{
-                  paddingHorizontal: 18,
-                  paddingBottom: 8,
+                  marginLeft: 12,
+                  marginRight: 12,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+
                   ...Platform.select({
                     ios: {
-                      paddingBottom: 12,
+                      paddingVertical: 8,
                     },
                   }),
                 }}
               >
                 <View
                   style={{
-                    marginLeft: 12,
-                    marginRight: 12,
                     display: "flex",
                     flexDirection: "row",
                     alignItems: "center",
-                    justifyContent: "space-between",
-
-                    ...Platform.select({
-                      ios: {
-                        paddingVertical: 8,
-                      },
-                    }),
                   }}
                 >
-                  <View
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                    }}
-                  >
-                    <TwoFactorAuthenticationIcon color="blue" size={18} />
-                    <Typography
-                      fontSize={16}
-                      fontWeight={400}
-                      fontFamily="Mukta-Regular"
-                      marginLeft={8}
-                    >
-                      Biometric authentication
-                    </Typography>
-                  </View>
-                  <Switch
-                    trackColor={{ false: "#767577", true: "#81b0ff" }}
-                    thumbColor={
-                      isEnableTwoFactor ? "white" : vars["light-blue"]
-                    }
-                    ios_backgroundColor="#3e3e3e"
-                    onValueChange={(e) => setEnableBiometric(e)}
-                    value={enableBiometric}
-                  />
-                </View>
-              </View>
-              <View style={{ paddingBottom: 12 }}>
-                <WholeContainer>
-                  <Seperator
-                    backgroundColor={vars["v2-light-grey"]}
-                    marginBottom={16}
-                  />
+                  <TwoFactorAuthenticationIcon color="blue" size={18} />
                   <Typography
                     fontSize={16}
-                    fontWeight={400}
+                    fontWeight={"400"}
                     fontFamily="Mukta-Regular"
-                    marginLeft={12}
-                    marginBottom={12}
+                    marginLeft={8}
                   >
-                    Change password
+                    Biometric authentication
                   </Typography>
-                  <View>
-                    <FormGroup
-                      validationError={
-                        errors.oldPassword &&
-                        touched.oldPassword &&
-                        errors.oldPassword
-                      }
-                    >
-                      <FormGroup.Password
-                        iconColor="#086AFB"
-                        icon={
-                          <MaterialCommunityIcons
-                            color="#086AFB"
-                            size={22}
-                            name={"key-outline"}
-                          />
-                        }
-                        rightIcon
-                        onChangeText={handleChange("oldPassword")}
-                        onBlur={handleBlur("oldPassword")}
-                        value={values.oldPassword}
-                        placeholderTextColor={vars["ios-default-text"]}
-                        placeholder="Old password"
-                      />
-                    </FormGroup>
-                  </View>
-                  <View>
-                    <FormGroup
-                      validationError={
-                        errors.password && touched.password && errors.password
-                      }
-                    >
-                      <FormGroup.Password
-                        iconColor="#086AFB"
-                        icon={
-                          <MaterialCommunityIcons
-                            color="#086AFB"
-                            size={22}
-                            name={"key-outline"}
-                          />
-                        }
-                        rightIcon
-                        onChangeText={handleChange("password")}
-                        onBlur={handleBlur("password")}
-                        value={values.password}
-                        placeholderTextColor={vars["ios-default-text"]}
-                        placeholder="New password"
-                      />
-                    </FormGroup>
-                  </View>
-                  <View>
-                    <FormGroup
-                      validationError={
-                        errors.passwordConfirmation &&
-                        touched.passwordConfirmation &&
-                        errors.passwordConfirmation
-                      }
-                    >
-                      <FormGroup.Password
-                        iconColor="#086AFB"
-                        icon={
-                          <MaterialCommunityIcons
-                            color="#086AFB"
-                            size={22}
-                            name={"key-outline"}
-                          />
-                        }
-                        rightIcon
-                        onChangeText={handleChange("passwordConfirmation")}
-                        onBlur={handleBlur("passwordConfirmation")}
-                        value={values.passwordConfirmation}
-                        placeholderTextColor={vars["ios-default-text"]}
-                        placeholder="New password again"
-                      />
-                    </FormGroup>
-                  </View>
-                </WholeContainer>
+                </View>
+                <Switch
+                  trackColor={{ false: "#767577", true: "#81b0ff" }}
+                  thumbColor={isEnableTwoFactor ? "white" : vars["light-blue"]}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={(e) => setEnableBiometric(e)}
+                  value={enableBiometric}
+                />
               </View>
             </View>
-          </Pressable>
+            <View style={{ paddingBottom: 12 }}>
+              <WholeContainer>
+                <Seperator
+                  backgroundColor={vars["v2-light-grey"]}
+                  marginBottom={16}
+                />
+                <Typography
+                  fontSize={16}
+                  fontWeight={"400"}
+                  fontFamily="Mukta-Regular"
+                  marginLeft={12}
+                  marginBottom={12}
+                >
+                  Change password
+                </Typography>
+                <View>
+                  <FormGroup
+                    validationError={
+                      errors.oldPassword &&
+                      touched.oldPassword &&
+                      errors.oldPassword
+                    }
+                  >
+                    <FormGroup.Password
+                      iconColor="#086AFB"
+                      icon={
+                        <MaterialCommunityIcons
+                          color="#086AFB"
+                          size={22}
+                          name={"key-outline"}
+                        />
+                      }
+                      rightIcon
+                      onChangeText={handleChange("oldPassword")}
+                      onBlur={handleBlur("oldPassword")}
+                      value={values.oldPassword}
+                      placeholderTextColor={vars["ios-default-text"]}
+                      placeholder="Old password"
+                    />
+                  </FormGroup>
+                </View>
+                <View>
+                  <FormGroup
+                    validationError={
+                      errors.password && touched.password && errors.password
+                    }
+                  >
+                    <FormGroup.Password
+                      iconColor="#086AFB"
+                      icon={
+                        <MaterialCommunityIcons
+                          color="#086AFB"
+                          size={22}
+                          name={"key-outline"}
+                        />
+                      }
+                      rightIcon
+                      onChangeText={handleChange("password")}
+                      onBlur={handleBlur("password")}
+                      value={values.password}
+                      placeholderTextColor={vars["ios-default-text"]}
+                      placeholder="New password"
+                    />
+                  </FormGroup>
+                </View>
+                <View>
+                  <FormGroup
+                    validationError={
+                      errors.passwordConfirmation &&
+                      touched.passwordConfirmation &&
+                      errors.passwordConfirmation
+                    }
+                  >
+                    <FormGroup.Password
+                      iconColor="#086AFB"
+                      icon={
+                        <MaterialCommunityIcons
+                          color="#086AFB"
+                          size={22}
+                          name={"key-outline"}
+                        />
+                      }
+                      rightIcon
+                      onChangeText={handleChange("passwordConfirmation")}
+                      onBlur={handleBlur("passwordConfirmation")}
+                      value={values.passwordConfirmation}
+                      placeholderTextColor={vars["ios-default-text"]}
+                      placeholder="New password again"
+                    />
+                  </FormGroup>
+                </View>
+              </WholeContainer>
+            </View>
+          </View>
+        </Pressable>
         {/* </ScrollView> */}
       </SafeAreaView>
       <View
@@ -416,7 +414,7 @@ const SecurityTab: FC<ISecurityTab> = () => {
             <Typography
               fontFamily="Nunito-SemiBold"
               fontSize={16}
-              fontWeight={600}
+              fontWeight={"600"}
             >
               Save changes
             </Typography>

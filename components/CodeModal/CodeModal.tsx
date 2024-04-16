@@ -27,7 +27,7 @@ export const CodeModal = ({
   confirmButtonText,
   loading,
   handleResendSMSVerificationCode,
-}: CodeModalProps ) => {
+}: CodeModalProps) => {
   const [code, setCode] = useState("");
   const [timeRemaining, setTimeRemaining] = useState<number>(60);
   const [isTimeToCountDown, setIsTimeToCountDown] = useState<boolean>(false);
@@ -111,7 +111,7 @@ export const CodeModal = ({
   );
 };
 
-const styles = StyleSheet.create<any>({
+const styles = StyleSheet.create({
   container: {
     width: "100%",
     justifyContent: "center",
@@ -122,19 +122,19 @@ const styles = StyleSheet.create<any>({
   noCode: {
     color: vars["accent-pink"],
     fontSize: 14,
-    fontWeight: 400,
+    fontWeight: "400",
     marginTop: 12,
   },
   noCodeResend: {
     color: vars["accent-pink"],
     fontSize: 12,
-    fontWeight: 400,
+    fontWeight: "400",
     marginTop: 12,
   },
   transactionDetails: {
     marginBottom: 20,
     fontSize: 14,
-    fontWeight: 400,
+    fontWeight: "400",
   },
   buttonContainer: {
     display: "flex",
@@ -156,12 +156,12 @@ const styles = StyleSheet.create<any>({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: 500,
+    fontWeight: "500",
   },
   headerSubtitle: {
     color: "#696F7A",
     fontSize: 14,
-    fontWeight: 300,
+    fontWeight: "300",
     paddingTop: 12,
   },
 });

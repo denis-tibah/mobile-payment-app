@@ -135,7 +135,11 @@ const ProfileDetails: FC<IProfileDetails> = ({
   return (
     <View style={styles.card}>
       <View style={styles.cardTitle}>
-        <Typography fontSize={18} fontFamily="Nunito-SemiBold" fontWeight={600}>
+        <Typography
+          fontSize={18}
+          fontFamily="Nunito-SemiBold"
+          fontWeight={"600"}
+        >
           Profile Details
         </Typography>
       </View>
@@ -392,7 +396,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
               >
                 <Typography
                   fontSize={16}
-                  fontWeight={600}
+                  fontWeight={"600"}
                   fontFamily="Nunito-SemiBold"
                   marginLeft={8}
                 >
@@ -406,7 +410,7 @@ const ProfileDetails: FC<IProfileDetails> = ({
               >
                 <Typography
                   fontSize={16}
-                  fontWeight={600}
+                  fontWeight={"600"}
                   fontFamily="Nunito-SemiBold"
                   marginLeft={8}
                 >

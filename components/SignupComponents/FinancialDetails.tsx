@@ -122,7 +122,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
           <View>
             <Typography
               fontSize={16}
-              fontWeight={600}
+              fontWeight={"600"}
               fontFamily="Nunito-SemiBold"
               marginLeft={10}
               marginBottom={4}
@@ -205,7 +205,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
           <View>
             <Typography
               fontSize={16}
-              fontWeight={600}
+              fontWeight={"600"}
               fontFamily="Nunito-SemiBold"
               marginLeft={10}
               marginBottom={4}
@@ -237,7 +237,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                     {!selectedSourceOfWealth ? (
                       <Typography
                         fontSize={16}
-                        fontWeight={600}
+                        fontWeight={"600"}
                         fontFamily="Nunito-SemiBold"
                         marginLeft={8}
                         color={vars["medium-grey"]}
@@ -347,7 +347,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
           <View>
             <Typography
               fontSize={16}
-              fontWeight={600}
+              fontWeight={"600"}
               fontFamily="Nunito-SemiBold"
               marginLeft={10}
               marginBottom={4}
@@ -375,7 +375,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
                     {!selectedEmploymentStatus ? (
                       <Typography
                         fontSize={16}
-                        fontWeight={600}
+                        fontWeight={"600"}
                         fontFamily="Nunito-SemiBold"
                         marginLeft={8}
                         color={vars["medium-grey"]}
@@ -570,7 +570,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
               >
                 <Typography
                   fontSize={16}
-                  fontWeight={600}
+                  fontWeight={"600"}
                   fontFamily="Nunito-SemiBold"
                   marginLeft={8}
                 >
@@ -584,7 +584,7 @@ const FinancialDetails: FC<IFinancialDetails> = ({
               >
                 <Typography
                   fontSize={16}
-                  fontWeight={600}
+                  fontWeight={"600"}
                   fontFamily="Nunito-SemiBold"
                   marginLeft={8}
                 >

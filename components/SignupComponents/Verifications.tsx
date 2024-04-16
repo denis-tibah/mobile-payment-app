@@ -431,7 +431,7 @@ const Verifications: FC<IVerifications> = ({
                       >
                         <Typography
                           fontSize={16}
-                          fontWeight={600}
+                          fontWeight={"600"}
                           fontFamily="Nunito-SemiBold"
                           marginLeft={8}
                         >
@@ -459,7 +459,7 @@ const Verifications: FC<IVerifications> = ({
                     >
                       <Typography
                         fontSize={16}
-                        fontWeight={600}
+                        fontWeight={"600"}
                         fontFamily="Nunito-SemiBold"
                         marginLeft={8}
                       >
@@ -507,7 +507,7 @@ const Verifications: FC<IVerifications> = ({
                   color="#000"
                   fontFamily="Nunito-SemiBold"
                   fontSize={18}
-                  fontWeight={600}
+                  fontWeight={"600"}
                 >
                   {bottomSheetContent?.header}
                 </Typography>
@@ -520,7 +520,7 @@ const Verifications: FC<IVerifications> = ({
                   <Typography
                     fontFamily="Mukta-Regular"
                     fontSize={14}
-                    fontWeight={400}
+                    fontWeight={"400"}
                   >
                     If you have not yet received the verification code, press
                     the button below to resend it.
@@ -619,7 +619,7 @@ const Verifications: FC<IVerifications> = ({
                 >
                   <Typography
                     fontSize={16}
-                    fontWeight={600}
+                    fontWeight={"600"}
                     fontFamily="Nunito-SemiBold"
                     marginLeft={8}
                   >

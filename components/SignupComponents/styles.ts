@@ -80,7 +80,7 @@ export const styles = StyleSheet.create({
   termsHeaderText: {
     color: "#696F7A",
     fontFamily: "Mukta-Regular",
-    fontWeight: 500,
+    fontWeight: "500",
     fontSize: 14,
     marginLeft: 24,
     marginBottom: 18,

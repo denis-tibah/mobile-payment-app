@@ -384,7 +384,8 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                         leftIcon={
                           <AntDesign
                             name="customerservice"
-                            size={14}
+                            //size={14}
+                            style={{ fontSize: 14 }}
                             color={vars["accent-pink"]}
                           />
                         }

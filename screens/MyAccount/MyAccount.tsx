@@ -67,18 +67,17 @@ export function MyAccount({ navigation }: any) {
   const groupedByDateTransactionsProcessing =
     dataTransactionsProcessing?.transactions_grouped_by_date;
 
-//added by Aristos 9-04-2024
-const {
-  data: dataTransactionsPending,
-  isLoading: isloadingTransactionsPending,
-  isUninitialized: isUninitializedTransactionsPending,
-  refetch: refetchTransactionsPending,
-} = useGetTransactionsQuery(transactionsParams({ status: "PENDING" }), {
-  skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
-});
-const groupedByDateTransactionsPending =
-  dataTransactionsPending?.transactions_grouped_by_date;
-
+  //added by Aristos 9-04-2024
+  const {
+    data: dataTransactionsPending,
+    isLoading: isloadingTransactionsPending,
+    isUninitialized: isUninitializedTransactionsPending,
+    refetch: refetchTransactionsPending,
+  } = useGetTransactionsQuery(transactionsParams({ status: "PENDING" }), {
+    skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
+  });
+  const groupedByDateTransactionsPending =
+    dataTransactionsPending?.transactions_grouped_by_date;
 
   const {
     data: dataTransactionsCompleted,
@@ -297,7 +296,7 @@ const groupedByDateTransactionsPending =
             >
               <Typography
                 color={"medium-grey2"}
-                fontWeight={400}
+                fontWeight={"400"}
                 fontSize={12}
                 marginTop={4}
                 lineHeight={14}
@@ -324,7 +323,7 @@ const groupedByDateTransactionsPending =
             >
               <Typography
                 color={"medium-grey2"}
-                fontWeight={400}
+                fontWeight={"400"}
                 fontSize={12}
                 marginTop={4}
                 lineHeight={14}

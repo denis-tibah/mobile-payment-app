@@ -249,14 +249,14 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           setBottomSheetMessage({
             message: errorMessage,
           });
-          if (Platform.OS === "ios") {
+          /* if (Platform.OS === "ios") {
             setStatusMessage({
               header: "Error",
               body: errorMessage,
               isOpen: true,
               isError: true,
             });
-          }
+          } */
         }
       } else {
         setStatusMessage({
@@ -753,7 +753,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
               }}
             >
               {isSuccessProcessPaymentV2 ? "Payment Successful" : null}
-              {isErrorProcessPaymentV2 ? "Payment Failed" : null}
+              {isErrorProcessPaymentV2 ? "Payment rejected" : null}
             </Text>
           </View>
           <View

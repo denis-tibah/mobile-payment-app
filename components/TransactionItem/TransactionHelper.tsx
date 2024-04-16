@@ -13,7 +13,7 @@ const displayTitle = ({ title }: { title: string }) => {
       color="#086AFB"
       fontFamily="Nunito-SemiBold"
       fontSize={11}
-      fontWeight={600}
+      fontWeight={"600"}
     >
       {title}
     </Typography>
@@ -62,7 +62,7 @@ const displayValue = ({
         color="#000"
         fontFamily="Mukta-Regular"
         fontSize={13}
-        fontWeight={600}
+        fontWeight={"600"}
       >
         {/* for amount value */}
         {hasCurrency ? formatAmountTableValue(content, currencyType) : null}

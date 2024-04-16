@@ -456,7 +456,7 @@ export function Card({ navigation, route }: any) {
                   >
                     <Typography
                       fontSize={16}
-                      fontWeight={600}
+                      fontWeight={"600"}
                       marginLeft={8}
                       fontFamily={"Nunito-SemiBold"}
                     >
@@ -501,7 +501,7 @@ export function Card({ navigation, route }: any) {
                   >
                     <Typography
                       fontSize={16}
-                      fontWeight={600}
+                      fontWeight={"600"}
                       // marginLeft={8}
                       fontFamily={"Nunito-SemiBold"}
                     >
@@ -530,7 +530,7 @@ export function Card({ navigation, route }: any) {
                   </View>
                   <Typography
                     fontSize={16}
-                    fontWeight={600}
+                    fontWeight={"600"}
                     fontFamily={"Nunito-SemiBold"}
                   >
                     See Card Transactions
@@ -573,7 +573,7 @@ export function Card({ navigation, route }: any) {
                   </View>
                   <Typography
                     fontSize={16}
-                    fontWeight={600}
+                    fontWeight={"600"}
                     fontFamily={"Nunito-SemiBold"}
                   >
                     Manage Payment Method
@@ -608,7 +608,7 @@ export function Card({ navigation, route }: any) {
                   </View>
                   <Typography
                     fontSize={16}
-                    fontWeight={600}
+                    fontWeight={"600"}
                     fontFamily={"Nunito-SemiBold"}
                   >
                     Lost Card
@@ -643,7 +643,7 @@ export function Card({ navigation, route }: any) {
                   </View>
                   <Typography
                     fontSize={16}
-                    fontWeight={600}
+                    fontWeight={"600"}
                     fontFamily={"Nunito-SemiBold"}
                   >
                     {isTerminatedCardShown
@@ -689,7 +689,7 @@ export function Card({ navigation, route }: any) {
           >
             <Typography
               fontSize={18}
-              fontWeight={600}
+              fontWeight={"600"}
               fontFamily={"Nunito-SemiBold"}
             >
               <MaterialCommunityIcons
@@ -733,7 +733,7 @@ export function Card({ navigation, route }: any) {
             }}
             draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
           >
-            <Typography fontSize={16} fontWeight={600}>
+            <Typography fontSize={16} fontWeight={"600"}>
               {isTerminatedCardShown
                 ? "Hide Terminated Cards?"
                 : "Show Terminated Cards?"}
@@ -799,7 +799,7 @@ export function Card({ navigation, route }: any) {
           >
             <Typography
               fontSize={16}
-              fontWeight={600}
+              fontWeight={"600"}
               fontFamily={"Nunito-Bold"}
             >
               Terminate This Card?
@@ -815,7 +815,7 @@ export function Card({ navigation, route }: any) {
               }}
             />
 
-            <Typography fontSize={16} fontWeight={400} color={"#000"}>
+            <Typography fontSize={16} fontWeight={"400"} color={"#000"}>
               Are you sure you want to terminate this card?
             </Typography>
             {/* <Vie}}/> */}
@@ -893,12 +893,12 @@ export function Card({ navigation, route }: any) {
             }}
             draggableIconStyles={{ backgroundColor: "#DDD", width: 90 }}
           >
-            <Typography fontSize={16} fontWeight={600} fontFamily={"Nunito"}>
+            <Typography fontSize={16} fontWeight={"600"} fontFamily={"Nunito"}>
               Show Card
             </Typography>
             <Typography
               fontSize={14}
-              fontWeight={400}
+              fontWeight={"400"}
               color={vars["shade-grey"]}
             >
               You will receive an sms to your mobile device. Please enter this

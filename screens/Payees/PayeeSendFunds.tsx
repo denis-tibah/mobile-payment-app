@@ -41,6 +41,7 @@ import CheckIcon from "../../assets/icons/Check";
 import Euro from "../../assets/icons/Euro";
 import { arrayChecker, screenNames, widthGlobal } from "../../utils/helpers";
 import { styles } from "./styles";
+import WholeContainer from "../../layout/WholeContainer";
 
 const PayeeSendFunds = ({ navigation, route }: any) => {
   const { params }: any = route || { params: {} };
@@ -114,27 +115,6 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
     },
   ] = useProcessPaymentV2Mutation();
 
-  console.log(
-    "🚀 ~ PayeeSendFunds ~ dataProcessPaymentV2:",
-    dataProcessPaymentV2
-  );
-  console.log(
-    "🚀 ~ PayeeSendFunds ~ errorProcessPaymentV2:",
-    errorProcessPaymentV2
-  );
-  console.log(
-    "🚀 ~ PayeeSendFunds ~ isSuccessProcessPaymentV2:",
-    isSuccessProcessPaymentV2
-  );
-  console.log(
-    "🚀 ~ PayeeSendFunds ~ isErrorProcessPaymentV2:",
-    isErrorProcessPaymentV2
-  );
-  console.log(
-    "🚀 ~ PayeeSendFunds ~ isLoadingProcessPaymentV2:",
-    isLoadingProcessPaymentV2
-  );
-
   const { data: userAccountInformation } = useGetAccountDetailsQuery({
     accountId: userData?.id || 0,
     accessToken: userTokens?.access_token,
@@ -192,12 +172,19 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
               isError: true,
             });
           }
+        } else {
+          setStatusMessage({
+            header: "Error",
+            body: "Something went wrong on payment initialization",
+            isOpen: true,
+            isError: true,
+          });
         }
       }
     }
   }, [isLoadingInitPaymentV2, isErrorInitPaymentV2, errorInitPaymentV2]);
 
-  // for otp
+  // for successfull otp
   useEffect(() => {
     if (!isLoadingGetOTPV2 && isSuccessGetOTPV2) {
       if (dataGetOTPV2?.message) {
@@ -207,9 +194,8 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
       }
     }
   }, [isLoadingGetOTPV2, isSuccessGetOTPV2, dataGetOTPV2]);
-
+  // for failed otp
   useEffect(() => {
-    console.log("🚀 ~ useEffect ~ isErrorInitGetOTPV2:", isErrorInitGetOTPV2);
     if (!isLoadingGetOTPV2 && isErrorInitGetOTPV2) {
       setStatusMessage({
         header: "Error",
@@ -241,11 +227,6 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
   ]);
   //for rejected  process payment
   useEffect(() => {
-    console.log(
-      "🚀 ~ useEffect ~ errorProcessPaymentV2:",
-      errorProcessPaymentV2
-    );
-
     if (!isLoadingProcessPaymentV2 && isErrorProcessPaymentV2) {
       if (
         errorProcessPaymentV2?.data?.code === 400 ||
@@ -277,6 +258,13 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
             });
           }
         }
+      } else {
+        setStatusMessage({
+          header: "Error",
+          body: "Semething went wrong while processing your payment",
+          isOpen: true,
+          isError: true,
+        });
       }
     }
   }, [
@@ -422,7 +410,6 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
   };
 
   const onCloseModal = (): void => {
-    console.log("closing asap");
     setStatusMessage({
       header: "",
       body: "",
@@ -450,53 +437,65 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           isError={statusMessage.isError}
           onClose={onCloseModal}
         />
-        <View style={{ paddingRight: 6 }}>
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <TouchableOpacity
-                style={styles.headerLeftIcon}
-                onPress={() => navigation.pop()}
-              >
+        <WholeContainer>
+          <View style={styles.headerText}>
+            <View style={styles.headerLeftIcon}>
+              <TouchableOpacity onPress={() => navigation.pop()}>
                 <ArrowLeftLine size={18} color="blue" />
               </TouchableOpacity>
-              <View>
+            </View>
+            <View style={{ paddingHorizontal: 14, width: "100%" }}>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
                 <Typography
                   fontSize={14}
                   color="#000"
-                  textAlign="left"
                   fontFamily="Nunito-SemiBold"
                 >
                   {receiverName}
                 </Typography>
+
+                <Typography
+                  fontSize={14}
+                  color="#000"
+                  marginRight={24}
+                  fontFamily="Nunito-SemiBold"
+                >
+                  Your Balance
+                </Typography>
+              </View>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
                 <Typography
                   fontSize={12}
                   color={vars["shade-grey"]}
-                  textAlign="left"
                   fontFamily="Nunito-SemiBold"
                 >
                   {receiverIban}
                 </Typography>
+                <Typography
+                  fontSize={12}
+                  color={vars["shade-grey"]}
+                  fontFamily="Nunito-SemiBold"
+                  marginRight={24}
+                >
+                  € {accountBalance}
+                </Typography>
               </View>
             </View>
-            <View style={{ paddingRight: 5 }}>
-              <Typography
-                fontSize={14}
-                color="#000"
-                textAlign="left"
-                fontFamily="Nunito-SemiBold"
-              >
-                Your Balance
-              </Typography>
-              <Typography
-                fontSize={12}
-                color={vars["shade-grey"]}
-                textAlign="right"
-                fontFamily="Nunito-SemiBold"
-              >
-                € {accountBalance}
-              </Typography>
-            </View>
           </View>
+        </WholeContainer>
+        <View style={{ paddingRight: 6 }}>
           <View
             style={{
               backgroundColor: "#fff",
@@ -529,10 +528,10 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                   placeholder="Amount to send"
                   iconColor="blue"
                   style={{ height: 42 }}
-                  icon={<Euro size={22} />}
+                  icon={<Euro size={"22"} />}
                 />
               </FormGroup>
-              {errors.amount === "This amount is above your daily limit" &&
+              {/* {errors.amount === "This amount is above your daily limit" &&
                 touched.amount && (
                   <TouchableOpacity
                     style={{
@@ -554,11 +553,11 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                     }}
                   >
                     <ChangeLimits />
-                    <Text style={{ color: "#FF7171", fontSize: 10, top: -2 }}>
+                    <Text style={{ color: "#FF7171", fontSize: "10", top: -2 }}>
                       Change your limits
                     </Text>
                   </TouchableOpacity>
-                )}
+                )} */}
             </View>
             <FormGroup
               validationError={
@@ -608,7 +607,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           leftIcon={
             <AntDesign
               name="checkcircleo"
-              size={16}
+              style={{ fontSize: 16 }}
               color={vars["accent-pink"]}
             />
           }
@@ -696,6 +695,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
           />
           <Button
             onPress={() => {
+              console.log("submitting");
               refRBSheetCodeOTP?.current?.close();
               handleProcessPayment({ code });
             }}
@@ -704,7 +704,8 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
             leftIcon={
               <AntDesign
                 name="checkcircleo"
-                size={16}
+                //size={16}
+                style={{ fontSize: 16 }}
                 color={vars["accent-pink"]}
               />
             }
@@ -767,7 +768,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
               color="#000"
               fontSize={14}
               marginLeft={6}
-              fontWeight={400}
+              fontWeight={"400"}
               fontFamily="Mukta-Regular"
             >
               {bottomSheetMessage?.message}
@@ -816,7 +817,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                     gap: 4,
                   }}
                 >
-                  <CheckIcon color="white" size={18} />
+                  <CheckIcon color="white" size={"18"} />
                   <Text
                     style={[
                       styles.textConfirmation,
@@ -861,7 +862,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
               color="#000"
               fontSize={14}
               marginLeft={6}
-              fontWeight={400}
+              fontWeight={"400"}
               fontFamily="Mukta-Regular"
             >
               {bottomSheetMessage?.message}

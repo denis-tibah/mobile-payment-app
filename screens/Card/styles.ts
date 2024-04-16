@@ -3,9 +3,9 @@ import vars from "../../styles/vars";
 
 export const styles: any = StyleSheet.create<any>({
   row: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 14,
     paddingVertical: "2%",
     paddingHorizontal: 5,
@@ -17,7 +17,7 @@ export const styles: any = StyleSheet.create<any>({
   noCode: {
     color: vars["accent-pink"],
     fontSize: 14,
-    fontWeight: 400,
+    fontWeight: "400",
     marginTop: 12,
     textAlign: "center",
   },
@@ -58,9 +58,9 @@ export const styles: any = StyleSheet.create<any>({
     marginVertical: 5,
   },
   listItemInnerText: {
-    textAligjt: 'left',
-    width: '40%',
-    color: '#fd7a7a'
+    textAligjt: "left",
+    width: "40%",
+    color: "#fd7a7a",
   },
   cardSection: {
     backgroundColor: "white",
@@ -120,7 +120,7 @@ export const styles: any = StyleSheet.create<any>({
     borderBottomWidth: 1,
   },
   listCardTransactions: {
-    textAlign: 'left',
+    textAlign: "left",
     backgroundColor: "white",
     display: "flex",
     // paddingTop: 5,

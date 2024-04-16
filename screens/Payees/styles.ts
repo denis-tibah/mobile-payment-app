@@ -46,23 +46,33 @@ export const styles: any = StyleSheet.create<any>({
   header: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     backgroundColor: "#fff",
     paddingTop: 25,
     paddingHorizontal: 10,
+  },
+  headerText: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    paddingVertical: 16,
   },
   headerLeft: {
     display: "flex",
     flexDirection: "row",
   },
   headerLeftIcon: {
-    height: wp(23),
-    width: wp(23),
-    borderRadius: wp(23),
-    top: hp(-2.7),
-    margin: 7,
+    /* height: wp(23),
+    width: wp(23), */
+    height: 40,
+    width: 40,
+    padding: 12,
+    /* borderRadius: wp(23), */
+    borderRadius: 100,
+    /* top: hp(-2.7),
+    margin: 7, */
     backgroundColor: "#F5F9FF",
-    padding: wp(7.5),
+    /* padding: wp(7.5), */
   },
   dropdown: {
     width: "93%",

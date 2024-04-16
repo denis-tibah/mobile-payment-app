@@ -1,6 +1,6 @@
 import { useState, FC, Fragment } from "react";
 import { View, ScrollView, useWindowDimensions } from "react-native";
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 
 import Typography from "../Typography";
 import { heightGlobal } from "../../utils/helpers";
@@ -20,8 +20,8 @@ const LimitsTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
   const layout = useWindowDimensions();
   const [limitIndex, setLimitIndex] = useState(0);
   const [routes] = useState([
-    { key: 'account', title: 'Account' },
-    { key: 'card', title: 'Card' },
+    { key: "account", title: "Account" },
+    { key: "card", title: "Card" },
   ]);
 
   return (
@@ -29,9 +29,9 @@ const LimitsTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
       <TabView
         style={{
           // flex: 1,
-          backgroundColor: '#fff',
-          height: heightGlobal * .73,
-          overflow: 'scroll',
+          backgroundColor: "#fff",
+          height: heightGlobal * 0.73,
+          overflow: "scroll",
         }}
         renderTabBar={(props) => (
           <View style={{ backgroundColor: "#fff" }}>
@@ -42,7 +42,7 @@ const LimitsTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
               renderLabel={({ route, focused, color }) => (
                 <Typography
                   fontSize={16}
-                  fontWeight={600}
+                  fontWeight={"600"}
                   color={focused ? "#e7038e" : "#4D4D4D"}
                 >
                   {route.title}
@@ -57,7 +57,7 @@ const LimitsTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
         initialLayout={{ width: layout.width, height: layout.height }}
       />
     </ScrollView>
-  )
+  );
 };
 
 export default LimitsTab;

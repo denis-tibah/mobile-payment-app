@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import vars from "../../styles/vars";
 
-export const styles: any = StyleSheet.create<any>({
+export const styles: any = StyleSheet.create({
   base: {
     backgroundColor: "#FFFFFF",
     height: 60,
@@ -85,11 +85,11 @@ export const styles: any = StyleSheet.create<any>({
     fontFamily: "Nunito-Regular",
     fontSize: 14,
     paddingRight: 10,
-    fontWeight: 600,
+    fontWeight: "600",
   },
   transactionStatus: {
     fontSize: 12,
-    fontWeight: 600,
+    fontWeight: "600",
     paddingTop: 2,
     paddingBottom: 2,
     paddingLeft: 10,

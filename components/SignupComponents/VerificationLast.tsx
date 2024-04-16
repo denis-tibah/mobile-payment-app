@@ -161,7 +161,11 @@ const VerificationLast: FC<IVerificationLast> = ({
         onClose={onCloseModal}
       />
       <View style={styles.cardTitle}>
-        <Typography fontSize={18} fontFamily="Nunito-SemiBold" fontWeight={600}>
+        <Typography
+          fontSize={18}
+          fontFamily="Nunito-SemiBold"
+          fontWeight={"600"}
+        >
           Last step from your free account
         </Typography>
       </View>
@@ -172,7 +176,7 @@ const VerificationLast: FC<IVerificationLast> = ({
             <Typography
               fontSize={16}
               fontFamily="Mukta-Regular"
-              fontWeight={600}
+              fontWeight={"600"}
               marginBottom={10}
             >
               Thank you for completing your account registration.
@@ -180,7 +184,7 @@ const VerificationLast: FC<IVerificationLast> = ({
             <Typography
               fontSize={16}
               fontFamily="Mukta-Regular"
-              fontWeight={600}
+              fontWeight={"600"}
               marginBottom={24}
             >
               The last step of the registration is to{" "}
@@ -202,7 +206,7 @@ const VerificationLast: FC<IVerificationLast> = ({
             <Typography
               fontSize={16}
               fontFamily="Mukta-Regular"
-              fontWeight={600}
+              fontWeight={"600"}
               marginBottom={10}
               color={vars["accent-blue"]}
             >
@@ -219,7 +223,7 @@ const VerificationLast: FC<IVerificationLast> = ({
               <Typography
                 fontSize={16}
                 fontFamily="Mukta-Regular"
-                fontWeight={600}
+                fontWeight={"600"}
                 marginLeft={5}
               >
                 Your ID document
@@ -236,7 +240,7 @@ const VerificationLast: FC<IVerificationLast> = ({
               <Typography
                 fontSize={16}
                 fontFamily="Mukta-Regular"
-                fontWeight={600}
+                fontWeight={"600"}
                 marginLeft={5}
               >
                 Access you your webcam/mobile camera
@@ -257,14 +261,14 @@ const VerificationLast: FC<IVerificationLast> = ({
             <Typography
               fontSize={16}
               fontFamily="Mukta-Regular"
-              fontWeight={600}
+              fontWeight={"600"}
             >
               We use a third party identity provider called{" "}
               <Text
                 style={{
                   color: vars["accent-blue"],
                   fontFamily: "Mukta-Regular",
-                  fontWeight: 600,
+                  fontWeight: "600",
                 }}
               >
                 SumSub
@@ -282,7 +286,7 @@ const VerificationLast: FC<IVerificationLast> = ({
               <Button color="light-pink" onPress={handleDoItLater}>
                 <Typography
                   fontSize={16}
-                  fontWeight={600}
+                  fontWeight={"600"}
                   fontFamily="Nunito-SemiBold"
                   marginLeft={8}
                 >
@@ -296,7 +300,7 @@ const VerificationLast: FC<IVerificationLast> = ({
               >
                 <Typography
                   fontSize={16}
-                  fontWeight={600}
+                  fontWeight={"600"}
                   fontFamily="Nunito-SemiBold"
                   marginLeft={8}
                 >

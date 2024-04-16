@@ -117,7 +117,7 @@ export default function PaymentReceivedScreen({
                 color="#696F7A"
                 fontSize={14}
                 marginLeft={6}
-                fontWeight={400}
+                fontWeight={"400"}
                 fontFamily="Mukta-Regular"
               >
                 {transactionDetails.message}
@@ -150,7 +150,7 @@ const styles: any = StyleSheet.create<any>({
     justifyContent: "center",
     marginTop: 20,
     fontSize: 14,
-    fontWeight: 400,
+    fontWeight: "400",
   },
   buttonContainer: {
     display: "flex",

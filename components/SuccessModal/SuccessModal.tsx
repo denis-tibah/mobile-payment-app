@@ -63,7 +63,7 @@ const styles = StyleSheet.create<any>({
   },
   text: {
     fontSize: 18,
-    fontWeight: 400,
+    fontWeight: "400",
     marginTop: 24,
   },
   buttonContainer: {
@@ -83,6 +83,6 @@ const styles = StyleSheet.create<any>({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: 500,
+    fontWeight: "500",
   },
 });

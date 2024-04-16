@@ -216,8 +216,6 @@ export const payeeSlice = createApi({
     }),
     processPaymentV2: builder.mutation({
       query: ({ bodyParams, paramsHeader }) => {
-        console.log("🚀 ~ paramsHeader:", paramsHeader);
-        console.log("🚀 ~ bodyParams:", bodyParams);
         return {
           url: `/payment/process`,
           method: "POST",

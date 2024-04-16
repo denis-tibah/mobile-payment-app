@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import vars from "../../styles/vars";
 
-export const styles = StyleSheet.create<any>({
+export const styles = StyleSheet.create({
   cardContainer: {
     position: "relative",
     display: "flex",
@@ -32,7 +32,7 @@ export const styles = StyleSheet.create<any>({
   timer: {
     color: "#000",
     fontSize: 12,
-    fontWeight: 500,
+    fontWeight: "500",
     position: "absolute",
     top: 10,
     right: 10,
@@ -40,13 +40,13 @@ export const styles = StyleSheet.create<any>({
   title: {
     color: vars["accent-blue"],
     fontSize: 20,
-    fontWeight: 500,
+    fontWeight: "500",
     marginBottom: 16,
   },
   pin: {
     color: "#000",
     textAlign: "center",
     fontSize: 24,
-    fontWeight: 600,
+    fontWeight: "600",
   },
 });

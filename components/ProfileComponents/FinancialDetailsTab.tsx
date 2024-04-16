@@ -167,7 +167,7 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
                   <WholeContainer>
                     <Typography
                       fontSize={16}
-                      fontWeight={600}
+                      fontWeight={"600"}
                       fontFamily="Nunito-SemiBold"
                       marginLeft={10}
                       marginBottom={4}
@@ -205,7 +205,7 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
                   <WholeContainer>
                     <Typography
                       fontSize={16}
-                      fontWeight={600}
+                      fontWeight={"600"}
                       fontFamily="Nunito-SemiBold"
                       marginLeft={10}
                       marginBottom={4}
@@ -239,7 +239,7 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
                             {!selectedSourceOfWealth ? (
                               <Typography
                                 fontSize={16}
-                                fontWeight={600}
+                                fontWeight={"600"}
                                 fontFamily="Nunito-SemiBold"
                                 marginLeft={8}
                                 color={vars["medium-grey"]}
@@ -343,7 +343,7 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
                   <WholeContainer>
                     <Typography
                       fontSize={16}
-                      fontWeight={600}
+                      fontWeight={"600"}
                       fontFamily="Nunito-SemiBold"
                       marginLeft={10}
                       marginBottom={4}
@@ -373,7 +373,7 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
                             {!selectedEmploymentStatus ? (
                               <Typography
                                 fontSize={16}
-                                fontWeight={600}
+                                fontWeight={"600"}
                                 fontFamily="Nunito-SemiBold"
                                 marginLeft={8}
                                 color={vars["medium-grey"]}
@@ -488,7 +488,7 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
                 <Typography
                   fontFamily="Nunito-SemiBold"
                   fontSize={16}
-                  fontWeight={600}
+                  fontWeight={"600"}
                 >
                   Save changes
                 </Typography>

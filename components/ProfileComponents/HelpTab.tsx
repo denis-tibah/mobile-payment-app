@@ -307,7 +307,7 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
               size={20}
               name="ticket-outline"
             />
-            <Typography fontSize={16} marginLeft={8} fontWeight={600}>
+            <Typography fontSize={16} marginLeft={8} fontWeight={"600"}>
               Create ticket
             </Typography>
           </View>
@@ -412,7 +412,7 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
                 <Typography
                   fontFamily="Nunito-SemiBold"
                   fontSize={16}
-                  fontWeight={600}
+                  fontWeight={"600"}
                 >
                   Send ticket
                 </Typography>

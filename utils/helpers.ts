@@ -23,7 +23,8 @@ export function formatDateTableValue(date = "") {
 //added by Aristos
 export function formatAmountTableValue(amount: any = "", currency = "") {
   if (!amount || !currency) return Number.parseFloat("0").toFixed(2);
-  return `${Number(amount) > 0 ? "+ " : "- "}${Math.abs(
+  // return `${Number(amount) > 0 ? "+ " : "- "}${Math.abs(
+    return `${Number(amount) > 0 ? " " : "- "}${Math.abs(
     Number.parseFloat(amount)
   ).toFixed(2)}`;
 }

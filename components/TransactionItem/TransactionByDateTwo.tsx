@@ -650,7 +650,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                   isPositiveAmountWithSign(totalAmount) === 1 ? "green" : "red"
                 }
               >
-                {totalAmount}
+                {'€'} {totalAmount}
               </Typography>
             ) : null}
           </View>

@@ -153,7 +153,7 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
         <SafeAreaView>
           {/* <ScrollView> */}
           <View>
-            <Spinner visible={isLoadingCreateTicketReq} />
+            {/* <Spinner visible={isLoadingCreateTicketReq} /> */}
             <SuccessModal
               isOpen={statusMessage?.isOpen}
               title={statusMessage.header}

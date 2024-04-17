@@ -6,6 +6,7 @@ import {
   RefreshControl,
   Text,
   Dimensions,
+  FlatList,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -48,6 +49,7 @@ import {
 import { RootState } from "../../store";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface DateRangeType {
   dateTo: {
@@ -68,7 +70,7 @@ const initialSearchFieldData: SearchFilter = {
   status: "",
   from_date: "2022-01-01",
   to_date: currentDate.toISOString().split("T")[0],
-  limit: 300,
+  limit: 5,
   page: 1,
   group_date: false,
 };
@@ -127,7 +129,6 @@ export function Transactions({ navigation, route }: any) {
   ] = useLazyGetCardTransactionsQuery();
 
   const fetchTransactionsWithFilters = async (value?: SearchFilter) => {
-   
     if (userData && userData?.id) {
       let search: SearchFilter = {
         ...(value ? value : initialSearchFieldData),
@@ -135,7 +136,7 @@ export function Transactions({ navigation, route }: any) {
         accessToken: userTokens?.access_token,
         tokenZiyl: userTokens?.token_ziyl,
       };
-//  console.log("****SearchFilter is ******" ,search);
+      //  console.log("****SearchFilter is ******" ,search);
 
       getTransactionsWithFilter(search)
         .then((res) => {
@@ -406,6 +407,47 @@ export function Transactions({ navigation, route }: any) {
     });
   };
 
+  const gameItemExtractorKey = (item: any, index: any) => {
+    return index.toString();
+  };
+
+  const loadMore = () => {
+    console.log("loadmore");
+  };
+
+  const isCloseToBottom = ({
+    layoutMeasurement,
+    contentOffset,
+    contentSize,
+  }) => {
+    const paddingToBottom = 20;
+    return (
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom
+    );
+  };
+
+  const renderList = (list: any) => {
+    return (
+      <Fragment>
+        <TransactionByDateTwo
+          key={list?.item?.date}
+          shownData={{
+            date: list?.item?.date,
+            currency: !searchFieldData?.card_id
+              ? list?.item?.transactions[0].currency
+              : "",
+          }}
+          transactionsByDate={list?.item?.transactions}
+          totalAmount={
+            !searchFieldData?.card_id ? list?.item?.closing_balance : ""
+          }
+          cardId={searchFieldData?.card_id}
+        />
+      </Fragment>
+    );
+  };
+
   const displayListItems = () => {
     if (isLoadingTransations || isLoadingCardTransactions) {
       return (
@@ -422,7 +464,7 @@ export function Transactions({ navigation, route }: any) {
     }
 
     if (transactionsList.length > 0) {
-      return transactionsList.map((tx: any) => {
+      /* return transactionsList.map((tx: any) => {
         return (
           <Fragment>
             <TransactionByDateTwo
@@ -439,7 +481,22 @@ export function Transactions({ navigation, route }: any) {
             />
           </Fragment>
         );
-      });
+      }); */
+      return (
+        <FlatList
+          contentContainerStyle={{ flexGrow: 1 }}
+          data={transactionsList.map((transactionList: any) => transactionList)}
+          keyExtractor={gameItemExtractorKey}
+          renderItem={(item) => (
+            <View style={{ flex: 1 }}>{renderList(item)}</View>
+          )}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.3}
+          /* onEndReached={loadMore}
+        onEndReachedThreshold={0.3}
+        ListFooterComponent={isFetchingNextPage ? renderSpinner : null} */
+        />
+      );
     }
     return (
       <View style={styles.listHead}>
@@ -531,7 +588,7 @@ export function Transactions({ navigation, route }: any) {
       </Typography>
     );
   };
-
+  const [prevScrollPosition, setPrevScrollPosition] = useState(0);
   return (
     <MainLayout navigation={navigation}>
       <Spinner
@@ -549,6 +606,19 @@ export function Transactions({ navigation, route }: any) {
             }}
           />
         }
+        onScroll={({ nativeEvent }) => {
+          const currentScrollPosition = nativeEvent.contentOffset.y;
+          if (currentScrollPosition > prevScrollPosition) {
+            if (isCloseToBottom(nativeEvent)) {
+              console.log("close");
+              loadMore();
+            }
+          } else {
+            console.log("Scrolling up");
+          }
+          setPrevScrollPosition(currentScrollPosition);
+        }}
+        scrollEventThrottle={10000}
       >
         <View style={styles.container}>
           <Heading
@@ -735,9 +805,6 @@ export function Transactions({ navigation, route }: any) {
                   },
                 });
               }}
-              /* disabled={
-                searchFieldData.card_id !== "" && isCardTransactionShown
-              } */
             >
               {showPickerDateFilter.dateTo.value &&
                 getFormattedDateFromUnixDotted(

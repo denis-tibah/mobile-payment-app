@@ -143,12 +143,7 @@ export const styles: any = StyleSheet.create<any>({
   paginateTextNextPrev: {
     marginBottom: 2,
   },
-  /*   balanceFirstThird: {
-    flexGrow: 1.9,
-  }, */
-  /*   pendingBalance: {
-    flexGrow: 1.1,
-  }, */
+
   balancesContainer: {
     display: "flex",
     flexDirection: "row",
@@ -160,11 +155,9 @@ export const styles: any = StyleSheet.create<any>({
     backgroundColor: "white",
     flexShrink: 1,
     borderRadius: 14,
-    borderBottomWidth: 6,
-    paddingTop: 6,
-    paddingBottom: 6,
-    paddingLeft: 8,
+    overflow: "hidden",
   },
+  balanceItemBorderColor: { height: 6, marginTop: 9 },
   accordionBodyContainer: {
     backgroundColor: "#F5F9FF",
     shadowOpacity: 0.1,

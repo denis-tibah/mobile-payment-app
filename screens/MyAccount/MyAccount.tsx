@@ -268,75 +268,99 @@ export function MyAccount({ navigation }: any) {
             <View
               style={[
                 styles.balanceItem,
-                { borderBottomColor: "#E7038E", width: "37.33%" },
+                {
+                  width: "37.33%",
+                },
               ]}
             >
-              <Typography
-                color={"medium-grey2"}
-                fontWeight={400}
-                fontSize={12}
-                marginTop={4}
-                lineHeight={14}
-              >
-                Current Balance
-              </Typography>
-              <Typography color={"accent-pink"} fontWeight={800} fontSize={18}>
-                {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
-                  formatCurrencyToLocalEnTwo(
-                    userAccountInformation?.data?.curbal
-                  ) || "0.00"
-                }`}
-              </Typography>
+              <View style={{ paddingTop: 4, paddingLeft: 6 }}>
+                <Typography
+                  color={"medium-grey2"}
+                  fontWeight={"400"}
+                  fontSize={12}
+                >
+                  Current Balance
+                </Typography>
+                <Typography
+                  color={"accent-pink"}
+                  fontWeight={"800"}
+                  fontSize={18}
+                >
+                  {`${getCurrency(
+                    userAccountInformation?.data?.currency || 0
+                  )} ${
+                    formatCurrencyToLocalEnTwo(
+                      userAccountInformation?.data?.curbal
+                    ) || "0.00"
+                  }`}
+                </Typography>
+              </View>
+              <View
+                style={[
+                  styles.balanceItemBorderColor,
+                  { backgroundColor: "#E7038E" },
+                ]}
+              />
             </View>
-            <View
-              style={[
-                styles.balanceItem,
-                { borderBottomColor: "#FBB445", width: "26.33%" },
-              ]}
-            >
-              <Typography
-                color={"medium-grey2"}
-                fontWeight={"400"}
-                fontSize={12}
-                marginTop={4}
-                lineHeight={14}
-              >
-                Pending
-              </Typography>
-              <Typography
-                color={"accent-orange"}
-                fontWeight={800}
-                fontSize={18}
-              >
-                {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
-                  formatCurrencyToLocalEnTwo(
-                    userAccountInformation?.data?.blocked_amount
-                  ) || "0.00"
-                }`}
-              </Typography>
+            <View style={[styles.balanceItem, { width: "26.33%" }]}>
+              <View style={{ paddingTop: 4, paddingLeft: 6 }}>
+                <Typography
+                  color={"medium-grey2"}
+                  fontWeight={"400"}
+                  fontSize={12}
+                >
+                  Pending
+                </Typography>
+                <Typography
+                  color={"accent-orange"}
+                  fontWeight={800}
+                  fontSize={18}
+                >
+                  {`${getCurrency(
+                    userAccountInformation?.data?.currency || 0
+                  )} ${
+                    formatCurrencyToLocalEnTwo(
+                      userAccountInformation?.data?.blocked_amount
+                    ) || "0.00"
+                  }`}
+                </Typography>
+              </View>
+              <View
+                style={[
+                  styles.balanceItemBorderColor,
+                  { backgroundColor: "#FBB445" },
+                ]}
+              />
             </View>
-            <View
-              style={[
-                styles.balanceItem,
-                { borderBottomColor: "#0DCA9D", width: "37.33%" },
-              ]}
-            >
-              <Typography
-                color={"medium-grey2"}
-                fontWeight={"400"}
-                fontSize={12}
-                marginTop={4}
-                lineHeight={14}
-              >
-                Available Balance
-              </Typography>
-              <Typography color={"accent-green"} fontWeight={800} fontSize={18}>
-                {`${getCurrency(userAccountInformation?.data?.currency || 0)} ${
-                  formatCurrencyToLocalEnTwo(
-                    userAccountInformation?.data?.avlbal
-                  ) || "0.00"
-                }`}
-              </Typography>
+            <View style={[styles.balanceItem, { width: "37.33%" }]}>
+              <View style={{ paddingTop: 4, paddingLeft: 6 }}>
+                <Typography
+                  color={"medium-grey2"}
+                  fontWeight={"400"}
+                  fontSize={12}
+                >
+                  Available Balance
+                </Typography>
+                <Typography
+                  color={"accent-green"}
+                  fontWeight={800}
+                  fontSize={18}
+                >
+                  {`${getCurrency(
+                    userAccountInformation?.data?.currency || 0
+                  )} ${
+                    formatCurrencyToLocalEnTwo(
+                      userAccountInformation?.data?.avlbal
+                    ) || "0.00"
+                  }`}
+                </Typography>
+              </View>
+              <View
+                style={[
+                  styles.balanceItemBorderColor,
+                  { backgroundColor: "#0DCA9D" },
+                ]}
+              />
             </View>
           </View>
           <View>

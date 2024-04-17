@@ -97,6 +97,10 @@ export const styles: any = StyleSheet.create({
     fontFamily: "Mukta-SemiBold",
     borderRadius: 15,
   },
+  transactionStatusHasLineThrough: {
+    textDecorationLine: "line-through",
+    textDecorationStyle: "solid",
+  },
   valueDetailMobileStatusSuccess: {
     color: "#0DCA9D",
     backgroundColor: "#E7FAF5",

@@ -120,6 +120,12 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
           }
           const keyId = transaction?.reference_no;
 
+          const transactionStatusHasLineThrough =
+            transaction?.status &&
+            ["SUCCESS", "PENDING"].includes(transaction?.status)
+              ? false
+              : true;
+
           return (
             <>
               <View
@@ -277,6 +283,9 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                                 transaction?.status === defaultStatus
                                   ? styles.valueDetailMobileStatusSuccess
                                   : styles.valueDetailMobileStatusFailed,
+                                transactionStatusHasLineThrough
+                                  ? styles.transactionStatusHasLineThrough
+                                  : "",
                               ]}
                             >
                               {transaction?.status}
@@ -655,7 +664,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                   isPositiveAmountWithSign(totalAmount) === 1 ? "green" : "red"
                 }
               >
-                {'€'} {totalAmount}
+                € {totalAmount}
               </Typography>
             ) : null}
           </View>

@@ -49,7 +49,6 @@ import {
 import { RootState } from "../../store";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 interface DateRangeType {
   dateTo: {
@@ -70,9 +69,9 @@ const initialSearchFieldData: SearchFilter = {
   status: "",
   from_date: "2022-01-01",
   to_date: currentDate.toISOString().split("T")[0],
-  limit: 5,
+  limit: 8,
   page: 1,
-  group_date: false,
+  group_date: true,
 };
 
 const initialDateRange: DateRangeType = {
@@ -97,11 +96,6 @@ export function Transactions({ navigation, route }: any) {
 
   const windowDimensions = Dimensions.get("screen");
 
-  const [
-    getTransactionsWithFilter,
-    { data: transactionsWithFilter, isLoading: isLoadingTransations },
-  ] = useLazyGetTransactionsQuery();
-
   const [isSearchTextOpen, setIsSearchTextOpen] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -112,6 +106,12 @@ export function Transactions({ navigation, route }: any) {
     useState<DateRangeType>(initialDateRange);
   const [transactionsList, setTransactionsList] = useState<any[]>([]);
   const [isFetchCardsInfo, setIsFetchCardInfo] = useState<boolean>(false);
+  const [pageProperties, setPageProperties] = useState<any>({});
+
+  const [
+    getTransactionsWithFilter,
+    { data: transactionsWithFilter, isLoading: isLoadingTransations },
+  ] = useLazyGetTransactionsQuery();
 
   const { data: userCardsList, isLoading: isLoadingUserCardList } =
     useGetCardV2Query(
@@ -172,10 +172,16 @@ export function Transactions({ navigation, route }: any) {
       transactionsWithFilter?.transactions_grouped_by_date &&
       arrayChecker(transactionsWithFilter?.transactions_grouped_by_date)
     ) {
+      setIsLoading(false);
+      const copyTransactionsWithFilter = {};
+      Object.assign(copyTransactionsWithFilter, { ...transactionsWithFilter });
+      delete copyTransactionsWithFilter.transactions_grouped_by_date;
+      setPageProperties({ ...copyTransactionsWithFilter });
       setTransactionsList([
         ...transactionsWithFilter?.transactions_grouped_by_date,
       ]);
     }
+
     if (searchFieldData?.card_id) {
       if (
         cardTransactions?.data?.transactions &&
@@ -191,6 +197,19 @@ export function Transactions({ navigation, route }: any) {
     cardTransactions?.data?.transactions,
     searchFieldData?.card_id,
   ]);
+
+  useEffect(() => {
+    console.log("🚀 ~ Transactions ~ pageProperties:", pageProperties);
+    if (pageProperties?.limit) {
+      console.log("exec 2");
+      const filterWithPagination = {
+        ...searchFieldData,
+        limit: pageProperties?.limit,
+      };
+      setIsLoading(true);
+      fetchTransactionsWithFilters(filterWithPagination);
+    }
+  }, [pageProperties]);
 
   const listOfActiveCards = sortUserActiveToInactiveCards(userCardsList);
   const activeCard = listOfActiveCards?.find(
@@ -321,26 +340,6 @@ export function Transactions({ navigation, route }: any) {
     });
   };
 
-  /* const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      const _currentPage = currentPage - 1;
-      fetchTransactionsWithFilters({
-        ...searchFieldData,
-        page: _currentPage,
-      });
-    }
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < lastPage) {
-      const _currentPage = currentPage + 1;
-      fetchTransactionsWithFilters({
-        ...searchFieldData,
-        page: _currentPage,
-      });
-    }
-  }; */
-
   const hideDatePicker = ({ dateType }: { dateType: string }) => {
     setShowPickerDateFilter((prevState): any => {
       const dateObj = {};
@@ -411,15 +410,11 @@ export function Transactions({ navigation, route }: any) {
     return index.toString();
   };
 
-  const loadMore = () => {
-    console.log("loadmore");
-  };
-
   const isCloseToBottom = ({
     layoutMeasurement,
     contentOffset,
     contentSize,
-  }) => {
+  }: any) => {
     const paddingToBottom = 20;
     return (
       layoutMeasurement.height + contentOffset.y >=
@@ -464,7 +459,7 @@ export function Transactions({ navigation, route }: any) {
     }
 
     if (transactionsList.length > 0) {
-      /* return transactionsList.map((tx: any) => {
+      return transactionsList.map((tx: any) => {
         return (
           <Fragment>
             <TransactionByDateTwo
@@ -481,8 +476,8 @@ export function Transactions({ navigation, route }: any) {
             />
           </Fragment>
         );
-      }); */
-      return (
+      });
+      /* return (
         <FlatList
           contentContainerStyle={{ flexGrow: 1 }}
           data={transactionsList.map((transactionList: any) => transactionList)}
@@ -490,13 +485,9 @@ export function Transactions({ navigation, route }: any) {
           renderItem={(item) => (
             <View style={{ flex: 1 }}>{renderList(item)}</View>
           )}
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.3}
-          /* onEndReached={loadMore}
-        onEndReachedThreshold={0.3}
-        ListFooterComponent={isFetchingNextPage ? renderSpinner : null} */
+          scrollEnabled={false}
         />
-      );
+      ); */
     }
     return (
       <View style={styles.listHead}>
@@ -610,15 +601,31 @@ export function Transactions({ navigation, route }: any) {
           const currentScrollPosition = nativeEvent.contentOffset.y;
           if (currentScrollPosition > prevScrollPosition) {
             if (isCloseToBottom(nativeEvent)) {
-              console.log("close");
-              loadMore();
+              if (pageProperties?.to && pageProperties?.total) {
+                if (pageProperties?.to <= pageProperties?.total) {
+                  console.log("exec 1");
+                  const parsedPagePropertiesTo = parseInt(
+                    pageProperties?.to,
+                    10
+                  );
+                  const addedPagePropertiesTo = parsedPagePropertiesTo + 8;
+                  console.log(
+                    "🚀 ~ Transactions ~ addedPagePropertiesTo:",
+                    addedPagePropertiesTo
+                  );
+                  setPageProperties({
+                    ...pageProperties,
+                    limit: addedPagePropertiesTo,
+                  });
+                }
+              }
             }
           } else {
             console.log("Scrolling up");
           }
           setPrevScrollPosition(currentScrollPosition);
         }}
-        scrollEventThrottle={10000}
+        scrollEventThrottle={1000}
       >
         <View style={styles.container}>
           <Heading
@@ -673,17 +680,6 @@ export function Transactions({ navigation, route }: any) {
         )}
         <View style={{ backgroundColor: "#fff" }}>
           <View>{displayListItems()}</View>
-          {/* <Seperator backgroundColor={vars["grey"]} />
-          {!isCardTransactionShown && (
-            <View style={{ bottom: 0 }}>
-              <Pagination
-                handlePreviousPage={handlePreviousPage}
-                handleNextPage={handleNextPage}
-                page={currentPage || 0}
-                lastPage={lastPage || 0}
-              />
-            </View>
-          )} */}
         </View>
       </ScrollView>
       <SwipableBottomSheet

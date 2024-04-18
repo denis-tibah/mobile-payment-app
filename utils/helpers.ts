@@ -300,7 +300,7 @@ export function getFormattedDateAndTime(dateToFormat: any) {
     .toString()
     .padStart(2, "0")}`;*/
   //return formattedDateAndTime;
-  return dateToFormat ? dateToFormat.replaceAll("-", ".") : "";
+  return dateToFormat ? dateToFormat.replace(/-/g, ".") : "";
 }
 export function getFormattedDateAndTimeAndSeconds({
   dateToFormat,

@@ -22,7 +22,7 @@ import {
   employmentStatus,
   employmentStatusTwo,
 } from "../../data/options";
-/* import { useCreateTicketRequestMutation } from "../../redux/profile/profileSliceV2"; */
+import { useCreateTicketRequestMutation } from "../../redux/profile/profileSliceV2";
 import { RootState } from "../../store";
 import WholeContainer from "../../layout/WholeContainer";
 import Typography from "../Typography";
@@ -61,7 +61,7 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
   }>({ key: "", value: "", passedValue: "" });
 
   // ASK SANTI FOR STATUS CODES OF /createticketfinxp
-  /* const [
+   const [
     createTicketMutation,
     {
       isLoading: isLoadingCreateTicketReq,
@@ -86,7 +86,7 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
   console.log(
     "🚀 ~ FinancialDetailsTab ~ dataCreateTicketReq:",
     dataCreateTicketReq
-  ); */
+  ); 
 
   useEffect(() => {
     if (profileData?.UserProfile?.employmentStatus) {

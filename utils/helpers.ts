@@ -1,9 +1,11 @@
+import "intl";
+import "intl/locale-data/jsonp/en";
 import { Dimensions } from "react-native";
+import dateFns from "date-fns";
+
 import { dateFormatter } from "./dates";
 import { Transaction } from "../models/Transactions";
 import { TRANSACTIONS_STATUS } from "./constants";
-import { err } from "react-native-svg/lib/typescript/xml";
-import dateFns from "date-fns";
 
 export const { width: widthGlobal, height: heightGlobal } =
   Dimensions.get("window");
@@ -341,6 +343,42 @@ export function getFormattedDateAndTimeV2(dateToFormat: any) {
     .padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
   return formattedDate;
 }
+//based on BE date as string 2024-01-25 10:02:09
+export const formatDateV3 = (inputDate: any) => {
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  let formattedDate = "";
+  if (inputDate) {
+    // Split the input date string into date and time parts
+    const [datePart, timePart] = inputDate.split(" ");
+
+    // Extract year, month, and day from the date part
+    const [year, month, day] = datePart.split("-").map(Number);
+
+    // Extract hours, minutes, and seconds from the time part
+    const [hours, minutes, seconds] = timePart.split(":").map(Number);
+
+    // Format the date using the extracted components
+    formattedDate = `${day} ${
+      months[month - 1]
+    } ${year} ${hours}:${minutes}:${seconds}`;
+  }
+
+  return formattedDate;
+};
 
 export const convertDateToDottedName = (date: string) => {
   const [year, month, day] = date.split("-");
@@ -399,13 +437,21 @@ export function convertDateToDottedNameV2(dateString: string) {
 }
 
 export function convertDateToName(timestamp: any) {
-  let currentTimestamp = new Date(parseInt(timestamp));
-
-  return new Intl.DateTimeFormat("en-UK", {
+  // old code
+  /* return new Intl.DateTimeFormat("en-UK", {
     year: "numeric",
     month: "long",
     day: "2-digit",
-  }).format(timestamp);
+  }).format(timestamp); */
+
+  const option = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    weekday: "long",
+  } as const;
+
+  return new Intl.DateTimeFormat("en-UK", option as any).format(timestamp);
 }
 
 function isNumeric(value: string) {

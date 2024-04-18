@@ -155,6 +155,9 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         {transaction?.name || transaction?.purpose}
                       </Typography>
                     </View>
+                    {transactionStatusHasLineThrough ? (
+                      <View style={styles.transactionStatusHasLineThrough} />
+                    ) : null}
                     <View
                       style={{
                         display: "flex",
@@ -283,9 +286,6 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                                 transaction?.status === defaultStatus
                                   ? styles.valueDetailMobileStatusSuccess
                                   : styles.valueDetailMobileStatusFailed,
-                                transactionStatusHasLineThrough
-                                  ? styles.transactionStatusHasLineThrough
-                                  : "",
                               ]}
                             >
                               {transaction?.status}

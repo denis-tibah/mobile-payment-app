@@ -79,6 +79,7 @@ export const styles: any = StyleSheet.create({
     /* flexWrap: "wrap", */
     justifyContent: "space-between",
     backgroundColor: "#fff",
+    position: "relative",
   },
   nameDetailMobile: {
     color: "#086AFB",
@@ -98,8 +99,12 @@ export const styles: any = StyleSheet.create({
     borderRadius: 15,
   },
   transactionStatusHasLineThrough: {
-    textDecorationLine: "line-through",
-    textDecorationStyle: "solid",
+    borderBottomWidth: 1,
+    borderBottomColor: "black",
+    position: "absolute",
+    width: "80%",
+    left: "5%",
+    bottom: "50%",
   },
   valueDetailMobileStatusSuccess: {
     color: "#0DCA9D",

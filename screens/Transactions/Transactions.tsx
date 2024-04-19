@@ -25,11 +25,7 @@ import SearchIcon from "../../assets/icons/Search";
 import Euro from "../../assets/icons/Euro";
 import Filter from "../../assets/icons/Filter";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
-import {
-  SearchFilter,
-  clearTransactions,
-  setTransationsData,
-} from "../../redux/transaction/transactionSlice";
+import { SearchFilter } from "../../redux/transaction/transactionSlice";
 import { CardStatus, transactionStatusOptions } from "../../utils/constants";
 import {
   useGetCardV2Query,
@@ -42,10 +38,10 @@ import {
   getFormattedDateFromUnixDotted,
   hp,
   sortUserActiveToInactiveCards,
-  widthGlobal,
   wp,
   formattedDateForQuery,
 } from "../../utils/helpers";
+import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { RootState } from "../../store";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
@@ -69,7 +65,7 @@ const initialSearchFieldData: SearchFilter = {
   status: "",
   from_date: "2022-01-01",
   to_date: currentDate.toISOString().split("T")[0],
-  limit: 8,
+  limit: 10,
   page: 1,
   group_date: true,
 };
@@ -107,10 +103,23 @@ export function Transactions({ navigation, route }: any) {
   const [transactionsList, setTransactionsList] = useState<any[]>([]);
   const [isFetchCardsInfo, setIsFetchCardInfo] = useState<boolean>(false);
   const [pageProperties, setPageProperties] = useState<any>({});
+  const [prevScrollPosition, setPrevScrollPosition] = useState(0);
+  const [statusMessage, setStatusMessage] = useState<{
+    header: string;
+    body: string;
+    isOpen: boolean;
+    isError: boolean;
+  }>({ header: "", body: "", isOpen: false, isError: false });
 
   const [
     getTransactionsWithFilter,
-    { data: transactionsWithFilter, isLoading: isLoadingTransations },
+    {
+      data: transactionsWithFilter,
+      isSuccess: isSuccessTransactionsWithFilter,
+      isLoading: isLoadingTransactions,
+      error: errorTransactionsWithFilter,
+      isError: isErrorTransactionsWithFilter,
+    },
   ] = useLazyGetTransactionsQuery();
 
   const { data: userCardsList, isLoading: isLoadingUserCardList } =
@@ -125,7 +134,13 @@ export function Transactions({ navigation, route }: any) {
 
   const [
     getCartTransactions,
-    { data: cardTransactions, isLoading: isLoadingCardTransactions },
+    {
+      data: cardTransactions,
+      isLoading: isLoadingCardTransactions,
+      isSuccess: isSuccessCardTransactions,
+      isError: isErrorCardTransactions,
+      error: errorCardTransactions,
+    },
   ] = useLazyGetCardTransactionsQuery();
 
   const fetchTransactionsWithFilters = async (value?: SearchFilter) => {
@@ -136,22 +151,10 @@ export function Transactions({ navigation, route }: any) {
         accessToken: userTokens?.access_token,
         tokenZiyl: userTokens?.token_ziyl,
       };
+      console.log("🚀 ~ fetchTransactionsWithFilters ~ search:", search);
       //  console.log("****SearchFilter is ******" ,search);
 
-      getTransactionsWithFilter(search)
-        .then((res) => {
-          if (res.data) {
-            const { data: _transactions } = res;
-            dispatch<any>(setTransationsData(_transactions));
-          }
-        })
-        .catch((err) => {
-          console.log("error");
-          console.log({ err });
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+      getTransactionsWithFilter(search);
       setSearchFieldData(search);
     }
   };
@@ -162,31 +165,47 @@ export function Transactions({ navigation, route }: any) {
     dispatch<any>(setIsCardTransactionShown(false));
     return () => {
       clearFilter();
-      dispatch<any>(clearTransactions());
     };
   }, []);
 
   useEffect(() => {
+    const copyCardOrTransactionsWithFilter = {};
+    // fetching transaction history
     if (
       (!searchFieldData?.card_id || searchFieldData?.card_id === "") &&
+      !isLoadingTransactions &&
+      isSuccessTransactionsWithFilter &&
       transactionsWithFilter?.transactions_grouped_by_date &&
       arrayChecker(transactionsWithFilter?.transactions_grouped_by_date)
     ) {
+      //set page transaction property for pagination
       setIsLoading(false);
-      const copyTransactionsWithFilter = {};
-      Object.assign(copyTransactionsWithFilter, { ...transactionsWithFilter });
-      delete copyTransactionsWithFilter.transactions_grouped_by_date;
-      setPageProperties({ ...copyTransactionsWithFilter });
+      Object.assign(copyCardOrTransactionsWithFilter, {
+        ...transactionsWithFilter,
+      });
+      delete copyCardOrTransactionsWithFilter.transactions_grouped_by_date;
+      setPageProperties({ ...copyCardOrTransactionsWithFilter });
+
       setTransactionsList([
         ...transactionsWithFilter?.transactions_grouped_by_date,
       ]);
     }
 
+    //fetching card transactions and card page properties
     if (searchFieldData?.card_id) {
       if (
+        !isLoadingCardTransactions &&
+        isSuccessCardTransactions &&
         cardTransactions?.data?.transactions &&
         arrayChecker(cardTransactions?.data?.transactions)
       ) {
+        //set page card transaction property for pagination
+        setIsLoading(false);
+        Object.assign(copyCardOrTransactionsWithFilter, {
+          ...cardTransactions?.data,
+        });
+        delete copyCardOrTransactionsWithFilter?.transactions;
+        setPageProperties({ ...copyCardOrTransactionsWithFilter });
         setTransactionsList([...cardTransactions?.data?.transactions]);
       } else {
         setTransactionsList([]);
@@ -196,18 +215,73 @@ export function Transactions({ navigation, route }: any) {
     transactionsWithFilter?.transactions_grouped_by_date,
     cardTransactions?.data?.transactions,
     searchFieldData?.card_id,
+    isLoadingTransactions,
+    isLoadingCardTransactions,
+    isSuccessTransactionsWithFilter,
+    isSuccessCardTransactions,
+  ]);
+
+  // transaction with filter error status
+  useEffect(() => {
+    if (!isLoadingTransactions && isErrorTransactionsWithFilter) {
+      const statusCode = errorTransactionsWithFilter?.data?.code
+        ? errorTransactionsWithFilter?.data?.code
+        : "";
+      const errorMessage = errorTransactionsWithFilter?.data?.message
+        ? errorTransactionsWithFilter?.data?.message
+        : "";
+      setStatusMessage({
+        header: "Error",
+        body: `${statusCode}${statusCode ? ": " : ""}${errorMessage}`,
+        isOpen: true,
+        isError: true,
+      });
+      setTransactionsList([]);
+    }
+  }, [
+    isLoadingTransactions,
+    isErrorTransactionsWithFilter,
+    errorTransactionsWithFilter,
+  ]);
+
+  // card transaction error status
+  useEffect(() => {
+    if (!isLoadingCardTransactions && isErrorCardTransactions) {
+      const statusCode = errorCardTransactions?.data?.code
+        ? errorCardTransactions?.data?.code
+        : "";
+      const errorMessage =
+        errorCardTransactions?.data?.errors &&
+        arrayChecker(errorCardTransactions?.data?.errors) &&
+        errorCardTransactions?.data?.errors.length > 0
+          ? errorCardTransactions?.data?.errors[0]
+          : "Something went wrong while fetching card history transactions";
+
+      setStatusMessage({
+        header: "Error",
+        body: `${statusCode}${statusCode ? ": " : ""}${errorMessage}`,
+        isOpen: true,
+        isError: true,
+      });
+    }
+  }, [
+    isLoadingCardTransactions,
+    isErrorCardTransactions,
+    errorCardTransactions,
   ]);
 
   useEffect(() => {
-    console.log("🚀 ~ Transactions ~ pageProperties:", pageProperties);
     if (pageProperties?.limit) {
-      console.log("exec 2");
       const filterWithPagination = {
         ...searchFieldData,
         limit: pageProperties?.limit,
       };
       setIsLoading(true);
-      fetchTransactionsWithFilters(filterWithPagination);
+      if (searchFieldData?.card_id) {
+        handleFetchCardTransactions(searchFieldData.card_id);
+      } else {
+        fetchTransactionsWithFilters(filterWithPagination);
+      }
     }
   }, [pageProperties]);
 
@@ -241,20 +315,17 @@ export function Transactions({ navigation, route }: any) {
       from_date: dateFrom,
       to_date: dateTo,
       group_date: true,
-      limit: 100,
+      limit: pageProperties?.limit || 10,
       page: 1,
       type: "ALL",
       card_id: cardId,
     };
+    console.log(
+      "🚀 ~ handleFetchCardTransactions ~ cardTransactionsFilter:",
+      cardTransactionsFilter
+    );
 
-    getCartTransactions(cardTransactionsFilter)
-      .catch((err) => {
-        console.log("error");
-        console.log({ err });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    getCartTransactions(cardTransactionsFilter);
   };
 
   const handleBackgroundChangeActiveInactive = (card: any): string => {
@@ -322,17 +393,6 @@ export function Transactions({ navigation, route }: any) {
     const userId = userData?.id;
     if (!userId) {
       return;
-    }
-    if (key === "min_amount") {
-      if (searchFieldData.max_amount && amount > searchFieldData.max_amount) {
-        alert("Amount from should be less than Amount to");
-        return;
-      }
-    } else {
-      if (searchFieldData.min_amount && amount < searchFieldData.min_amount) {
-        alert("Amount to should be greater than Amount from");
-        return;
-      }
     }
     setSearchFieldData({
       ...searchFieldData,
@@ -406,6 +466,15 @@ export function Transactions({ navigation, route }: any) {
     });
   };
 
+  const onCloseModal = (): void => {
+    setStatusMessage({
+      header: "",
+      body: "",
+      isOpen: false,
+      isError: false,
+    });
+  };
+
   const gameItemExtractorKey = (item: any, index: any) => {
     return index.toString();
   };
@@ -422,7 +491,29 @@ export function Transactions({ navigation, route }: any) {
     );
   };
 
-  const renderList = (list: any) => {
+  const onSubmitFilterTransactions = () => {
+    setIsLoading(true);
+    refRBSheet?.current?.close();
+    !isCardTransactionShown
+      ? fetchTransactionsWithFilters(searchFieldData)
+      : handleFetchCardTransactions(
+          searchFieldData.card_id || activeCard?.cardreferenceId.toString()
+        );
+  };
+
+  const handleSubmitFilterTransactions = () => {
+    if (searchFieldData?.min_amount && searchFieldData?.max_amount) {
+      if (searchFieldData?.min_amount > searchFieldData?.max_amount) {
+        alert("Minimum amount should not be greater than maximum amount");
+      } else {
+        onSubmitFilterTransactions();
+      }
+    } else {
+      onSubmitFilterTransactions();
+    }
+  };
+
+  const renderTransactionList = (list: any) => {
     return (
       <Fragment>
         <TransactionByDateTwo
@@ -444,7 +535,7 @@ export function Transactions({ navigation, route }: any) {
   };
 
   const displayListItems = () => {
-    if (isLoadingTransations || isLoadingCardTransactions) {
+    if (isLoadingTransactions) {
       return (
         <View style={styles.listHead}>
           <Typography
@@ -459,7 +550,7 @@ export function Transactions({ navigation, route }: any) {
     }
 
     if (transactionsList.length > 0) {
-      return transactionsList.map((tx: any) => {
+      /* return transactionsList.map((tx: any) => {
         return (
           <Fragment>
             <TransactionByDateTwo
@@ -476,18 +567,18 @@ export function Transactions({ navigation, route }: any) {
             />
           </Fragment>
         );
-      });
-      /* return (
+      }); */
+      return (
         <FlatList
           contentContainerStyle={{ flexGrow: 1 }}
           data={transactionsList.map((transactionList: any) => transactionList)}
           keyExtractor={gameItemExtractorKey}
           renderItem={(item) => (
-            <View style={{ flex: 1 }}>{renderList(item)}</View>
+            <View style={{ flex: 1 }}>{renderTransactionList(item)}</View>
           )}
           scrollEnabled={false}
         />
-      ); */
+      );
     }
     return (
       <View style={styles.listHead}>
@@ -500,6 +591,56 @@ export function Transactions({ navigation, route }: any) {
           No transactions found
         </Typography>
       </View>
+    );
+  };
+
+  const renderCardList = (card: any) => {
+    return (
+      <TouchableOpacity
+        style={{
+          backgroundColor: handleBackgroundChangeActiveInactive(card?.item),
+          paddingVertical: 10,
+          paddingHorizontal: 18,
+          borderRadius: 99,
+          marginHorizontal: 3,
+          width: 151,
+          height: 40,
+        }}
+        onPress={() => {
+          if (searchFieldData?.card_id === card?.item?.cardreferenceId) {
+            setSearchFieldData({
+              ...searchFieldData,
+              card_id: "",
+            });
+            clearFilter();
+            setIsCardTransactionShown(false);
+            return;
+          }
+          dispatch<any>(setIsCardTransactionShown(true));
+          setSearchFieldData({
+            ...searchFieldData,
+            group_date: true,
+            card_id: card?.item?.cardreferenceId,
+          });
+        }}
+      >
+        <Typography
+          fontSize={14}
+          color={
+            searchFieldData.card_id === card?.item?.cardreferenceId
+              ? "#fff"
+              : card?.item?.cardStatus === CardStatus.INACTIVE
+              ? vars["accent-yellow"]
+              : card?.item?.lostYN === "N"
+              ? card?.item?.type === "P"
+                ? vars["accent-blue"]
+                : vars["accent-pink"]
+              : vars["accent-grey"]
+          }
+        >
+          {card?.item?.pan}
+        </Typography>
+      </TouchableOpacity>
     );
   };
 
@@ -521,55 +662,15 @@ export function Transactions({ navigation, route }: any) {
           <Typography fontSize={14} color="#696F7A">
             Your cards
           </Typography>
-          <ScrollView horizontal>
-            {listOfActiveCards?.map((card: any, index: number) => (
-              <TouchableOpacity
-                style={{
-                  backgroundColor: handleBackgroundChangeActiveInactive(card),
-                  paddingVertical: 10,
-                  paddingHorizontal: 18,
-                  borderRadius: 99,
-                  marginHorizontal: 3,
-                  width: 151,
-                  height: 40,
-                }}
-                onPress={() => {
-                  if (searchFieldData.card_id === card.cardreferenceId) {
-                    setSearchFieldData({
-                      ...searchFieldData,
-                      card_id: "",
-                    });
-                    clearFilter();
-                    setIsCardTransactionShown(false);
-                    return;
-                  }
-                  dispatch<any>(setIsCardTransactionShown(true));
-                  setSearchFieldData({
-                    ...searchFieldData,
-                    group_date: true,
-                    card_id: card.cardreferenceId,
-                  });
-                }}
-              >
-                <Typography
-                  fontSize={14}
-                  color={
-                    searchFieldData.card_id === card.cardreferenceId
-                      ? "#fff"
-                      : card.cardStatus === CardStatus.INACTIVE
-                      ? vars["accent-yellow"]
-                      : card.lostYN === "N"
-                      ? card.type === "P"
-                        ? vars["accent-blue"]
-                        : vars["accent-pink"]
-                      : vars["accent-grey"]
-                  }
-                >
-                  {card.pan}
-                </Typography>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          <FlatList
+            contentContainerStyle={{ flexGrow: 1 }}
+            data={listOfActiveCards.map(
+              (listOfActiveCard: any) => listOfActiveCard
+            )}
+            keyExtractor={gameItemExtractorKey}
+            renderItem={(item) => renderCardList(item)}
+            horizontal
+          />
         </Fragment>
       );
     }
@@ -579,11 +680,20 @@ export function Transactions({ navigation, route }: any) {
       </Typography>
     );
   };
-  const [prevScrollPosition, setPrevScrollPosition] = useState(0);
+
   return (
     <MainLayout navigation={navigation}>
       <Spinner
-        visible={isLoadingTransations || isLoadingCardTransactions || isLoading}
+        visible={
+          isLoadingTransactions || isLoadingCardTransactions || isLoading
+        }
+      />
+      <SuccessModal
+        isOpen={statusMessage?.isOpen}
+        title={statusMessage.header}
+        text={statusMessage.body}
+        isError={statusMessage.isError}
+        onClose={onCloseModal}
       />
       <ScrollView
         bounces={true}
@@ -602,13 +712,12 @@ export function Transactions({ navigation, route }: any) {
           if (currentScrollPosition > prevScrollPosition) {
             if (isCloseToBottom(nativeEvent)) {
               if (pageProperties?.to && pageProperties?.total) {
-                if (pageProperties?.to <= pageProperties?.total) {
-                  console.log("exec 1");
+                if (pageProperties?.to < pageProperties?.total) {
                   const parsedPagePropertiesTo = parseInt(
                     pageProperties?.to,
                     10
                   );
-                  const addedPagePropertiesTo = parsedPagePropertiesTo + 8;
+                  const addedPagePropertiesTo = parsedPagePropertiesTo + 10;
                   console.log(
                     "🚀 ~ Transactions ~ addedPagePropertiesTo:",
                     addedPagePropertiesTo
@@ -723,30 +832,14 @@ export function Transactions({ navigation, route }: any) {
             </Text>
           </TouchableOpacity>
         </View>
-        <Divider
-          style={{
-            marginVertical: 8,
-            width: widthGlobal,
-            backgroundColor: vars["accent-grey"],
-            height: 1,
-            opacity: 0.3,
-            overflow: "visible",
-          }}
-        />
+        <Divider style={[styles.divider, { marginVertical: 8 }]} />
         <View style={{ display: "flex", flexDirection: "row" }}>
           <View style={{ flex: 1, flexWrap: "wrap" }}>
             <Typography fontSize={14} color="#696F7A">
               Start date
             </Typography>
             <Button
-              style={{
-                width: 131,
-                backgroundColor: "gey",
-                marginTop: 1,
-                lineHeight: 25,
-                borderWidth: 1,
-                borderColor: vars["accent-blue"],
-              }}
+              style={styles.buttonStyles}
               color="black-only"
               onPress={() => {
                 setShowPickerDateFilter({
@@ -780,14 +873,7 @@ export function Transactions({ navigation, route }: any) {
               Finish date
             </Typography>
             <Button
-              style={{
-                width: 131,
-                backgroundColor: "grey",
-                marginTop: 1,
-                lineHeight: 25,
-                borderWidth: 1,
-                borderColor: vars["accent-blue"],
-              }}
+              style={styles.buttonStyles}
               color="black-only"
               onPress={() => {
                 setShowPickerDateFilter({
@@ -818,16 +904,7 @@ export function Transactions({ navigation, route }: any) {
         <Typography fontSize={10} color="#696F7A">
           maximum date range is 60 days
         </Typography>
-        <Divider
-          style={{
-            marginVertical: 15,
-            width: widthGlobal,
-            backgroundColor: vars["accent-grey"],
-            height: 1,
-            opacity: 0.2,
-            overflow: "visible",
-          }}
-        />
+        <Divider style={[styles.divider, { marginVertical: 15 }]} />
         {!searchFieldData?.card_id ? (
           <Fragment>
             <Typography fontSize={14} color="#696F7A">
@@ -886,7 +963,6 @@ export function Transactions({ navigation, route }: any) {
             </ScrollView>
             <Divider style={{ marginVertical: 15 }} />
             <View style={{ display: "flex", flexDirection: "row" }}>
-              {/* two input fields for amount range: amount from and amount to */}
               <View style={{ flex: 1, flexWrap: "wrap", paddingRight: 10 }}>
                 <Typography fontSize={14} color="#696F7A">
                   Amount from
@@ -936,40 +1012,13 @@ export function Transactions({ navigation, route }: any) {
                 />
               </View>
             </View>
-            <Divider
-              style={{
-                marginVertical: 15,
-                width: widthGlobal,
-                backgroundColor: vars["accent-grey"],
-                height: 1,
-                opacity: 0.2,
-                overflow: "visible",
-              }}
-            />
+            <Divider style={[styles.divider, { marginVertical: 15 }]} />
           </Fragment>
         ) : null}
         {displayCardList()}
-        <Divider
-          style={{
-            marginVertical: 15,
-            width: widthGlobal,
-            backgroundColor: vars["accent-grey"],
-            height: 1,
-            opacity: 0.2,
-            overflow: "visible",
-          }}
-        />
+        <Divider style={[styles.divider, { marginVertical: 15 }]} />
         <Button
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            width: "100%",
-            backgroundColor: "grey",
-            marginTop: 10,
-            lineHeight: 25,
-            borderColor: "none",
-          }}
+          style={styles.submitButton}
           color="light-pink"
           leftIcon={
             <AntDesign
@@ -978,16 +1027,7 @@ export function Transactions({ navigation, route }: any) {
               color={vars["accent-pink"]}
             />
           }
-          onPress={() => {
-            setIsLoading(true);
-            refRBSheet?.current?.close();
-            !isCardTransactionShown
-              ? fetchTransactionsWithFilters(searchFieldData)
-              : handleFetchCardTransactions(
-                  searchFieldData.card_id ||
-                    activeCard?.cardreferenceId.toString()
-                );
-          }}
+          onPress={handleSubmitFilterTransactions}
         >
           <Typography
             fontSize={16}

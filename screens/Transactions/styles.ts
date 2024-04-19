@@ -1,9 +1,9 @@
 import { StyleSheet } from "react-native";
-import { hp } from "../../utils/helpers";
+import { hp, widthGlobal } from "../../utils/helpers";
+import vars from "../../styles/vars";
 
 export const styles: any = StyleSheet.create<any>({
   container: {
-    // marginTop: 26,
     zIndex: 1,
   },
   containerBottomSheetHeader: {
@@ -11,7 +11,6 @@ export const styles: any = StyleSheet.create<any>({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    // backgroundColor: '#F5F9FF',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 12,
@@ -101,5 +100,30 @@ export const styles: any = StyleSheet.create<any>({
     justifyContent: "space-around",
     minWidth: 330,
     marginLeft: -300,
+  },
+  divider: {
+    width: widthGlobal,
+    backgroundColor: vars["accent-grey"],
+    height: 1,
+    opacity: 0.2,
+    overflow: "visible",
+  },
+  buttonStyles: {
+    width: 131,
+    backgroundColor: "gey",
+    marginTop: 1,
+    lineHeight: 25,
+    borderWidth: 1,
+    borderColor: vars["accent-blue"],
+  },
+  submitButtonStyle: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    width: "100%",
+    backgroundColor: "grey",
+    marginTop: 10,
+    lineHeight: 25,
+    borderColor: "none",
   },
 });

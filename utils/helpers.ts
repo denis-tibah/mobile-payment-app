@@ -487,7 +487,7 @@ export const formatCurrencyToLocalEnTwo = (currency: string) => {
 };
 
 export const arrayChecker = (arr: any[]): Boolean => {
-  return arr && Array.isArray(arr) && arr.length > 0 ? true : false;
+  return arr && Array.isArray(arr) ? true : false;
 };
 
 export const fieldHasValue = (value: any) => {

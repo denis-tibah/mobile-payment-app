@@ -5,9 +5,10 @@ import {
   TouchableOpacity,
   RefreshControl,
   Text,
-  Dimensions,
   FlatList,
+  Platform,
 } from "react-native";
+import { responsiveHeight as rh } from "react-native-responsive-dimensions";
 import { useDispatch, useSelector } from "react-redux";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Divider } from "react-native-paper";
@@ -90,8 +91,6 @@ export function Transactions({ navigation, route }: any) {
     (state: RootState) => state?.card?.isCardTransactionShown
   );
 
-  const windowDimensions = Dimensions.get("screen");
-
   const [isSearchTextOpen, setIsSearchTextOpen] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -121,7 +120,6 @@ export function Transactions({ navigation, route }: any) {
       isError: isErrorTransactionsWithFilter,
     },
   ] = useLazyGetTransactionsQuery();
-
   const { data: userCardsList, isLoading: isLoadingUserCardList } =
     useGetCardV2Query(
       {
@@ -152,8 +150,6 @@ export function Transactions({ navigation, route }: any) {
         tokenZiyl: userTokens?.token_ziyl,
       };
       console.log("🚀 ~ fetchTransactionsWithFilters ~ search:", search);
-      //  console.log("****SearchFilter is ******" ,search);
-
       getTransactionsWithFilter(search);
       setSearchFieldData(search);
     }
@@ -484,7 +480,7 @@ export function Transactions({ navigation, route }: any) {
     contentOffset,
     contentSize,
   }: any) => {
-    const paddingToBottom = 20;
+    const paddingToBottom = 30;
     return (
       layoutMeasurement.height + contentOffset.y >=
       contentSize.height - paddingToBottom
@@ -718,10 +714,6 @@ export function Transactions({ navigation, route }: any) {
                     10
                   );
                   const addedPagePropertiesTo = parsedPagePropertiesTo + 10;
-                  console.log(
-                    "🚀 ~ Transactions ~ addedPagePropertiesTo:",
-                    addedPagePropertiesTo
-                  );
                   setPageProperties({
                     ...pageProperties,
                     limit: addedPagePropertiesTo,
@@ -729,8 +721,6 @@ export function Transactions({ navigation, route }: any) {
                 }
               }
             }
-          } else {
-            console.log("Scrolling up");
           }
           setPrevScrollPosition(currentScrollPosition);
         }}
@@ -798,8 +788,8 @@ export function Transactions({ navigation, route }: any) {
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
           height: searchFieldData?.card_id
-            ? windowDimensions.height - 455
-            : windowDimensions.height - 260,
+            ? rh(Platform.OS === "android" ? 40 : 50)
+            : rh(Platform.OS === "android" ? 64 : 79),
           backgroundColor: "#FFF",
           borderTopLeftRadius: 14,
           borderTopRightRadius: 14,

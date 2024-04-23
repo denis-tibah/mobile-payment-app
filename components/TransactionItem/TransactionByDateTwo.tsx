@@ -50,6 +50,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
   shownData,
   cardId,
 }) => {
+  console.log("🚀 ~ cardId:", cardId);
   const { navigate }: any = useNavigation();
 
   const [, setTicketParams] = useAtom(helpTabticketParams);
@@ -155,7 +156,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         {transaction?.name || transaction?.purpose}
                       </Typography>
                     </View>
-                    {transactionStatusHasLineThrough ? (
+                    {!cardId && transactionStatusHasLineThrough ? (
                       <View style={styles.transactionStatusHasLineThrough} />
                     ) : null}
                     <View

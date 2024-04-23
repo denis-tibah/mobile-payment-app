@@ -567,7 +567,7 @@ export function Transactions({ navigation, route }: any) {
       return (
         <FlatList
           contentContainerStyle={{ flexGrow: 1 }}
-          data={transactionsList.map((transactionList: any) => transactionList)}
+          data={transactionsList}
           keyExtractor={gameItemExtractorKey}
           renderItem={(item) => (
             <View style={{ flex: 1 }}>{renderTransactionList(item)}</View>
@@ -660,9 +660,13 @@ export function Transactions({ navigation, route }: any) {
           </Typography>
           <FlatList
             contentContainerStyle={{ flexGrow: 1 }}
-            data={listOfActiveCards.map(
-              (listOfActiveCard: any) => listOfActiveCard
-            )}
+            data={
+              listOfActiveCards &&
+              arrayChecker(listOfActiveCards) &&
+              listOfActiveCards.length > 0
+                ? listOfActiveCards
+                : []
+            }
             keyExtractor={gameItemExtractorKey}
             renderItem={(item) => renderCardList(item)}
             horizontal

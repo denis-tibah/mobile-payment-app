@@ -311,6 +311,8 @@ export function getFormattedDateAndTimeAndSeconds({
   dateToFormat: any;
   hasTimeAndSeconds?: boolean;
 }) {
+  if (!dateToFormat || dateToFormat === "" || dateToFormat === undefined)
+    return "";
   const date = new Date(dateToFormat);
   const time = hasTimeAndSeconds ? "hh:mm:ss" : "";
   // uniform date as per QA

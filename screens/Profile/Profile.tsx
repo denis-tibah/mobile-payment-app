@@ -1102,7 +1102,7 @@ export function Profile({ route, navigation }: any) {
                             </View>
                             <Typography
                               fontSize={18}
-                              fontWeight={600}
+                              fontWeight={"600"}
                               marginLeft={8}
                             >
                               Security
@@ -1131,7 +1131,7 @@ export function Profile({ route, navigation }: any) {
                             </View>
                             <Typography
                               fontSize={18}
-                              fontWeight={600}
+                              fontWeight={"600"}
                               marginLeft={8}
                             >
                               Financial data
@@ -1158,7 +1158,7 @@ export function Profile({ route, navigation }: any) {
                             </View>
                             <Typography
                               fontSize={18}
-                              fontWeight={600}
+                              fontWeight={"600"}
                               marginLeft={8}
                             >
                               Notifications
@@ -1185,7 +1185,7 @@ export function Profile({ route, navigation }: any) {
                             </View>
                             <Typography
                               fontSize={18}
-                              fontWeight={600}
+                              fontWeight={"600"}
                               marginLeft={8}
                             >
                               Limits
@@ -1216,7 +1216,7 @@ export function Profile({ route, navigation }: any) {
                             </View>
                             <Typography
                               fontSize={18}
-                              fontWeight={600}
+                              fontWeight={"600"}
                               marginLeft={8}
                             >
                               Help
@@ -1247,7 +1247,7 @@ export function Profile({ route, navigation }: any) {
                             </View>
                             <Typography
                               fontSize={18}
-                              fontWeight={600}
+                              fontWeight={"600"}
                               marginLeft={8}
                             >
                               Logout
@@ -1294,7 +1294,7 @@ export function Profile({ route, navigation }: any) {
                           </View>
                           <Typography
                             fontSize={18}
-                            fontWeight={600}
+                            fontWeight={"600"}
                             fontFamily="Nunito-SemiBold"
                           >
                             {tabSelection}

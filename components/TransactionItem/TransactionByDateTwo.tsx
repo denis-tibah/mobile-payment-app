@@ -50,7 +50,6 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
   shownData,
   cardId,
 }) => {
-  console.log("🚀 ~ cardId:", cardId);
   const { navigate }: any = useNavigation();
 
   const [, setTicketParams] = useAtom(helpTabticketParams);

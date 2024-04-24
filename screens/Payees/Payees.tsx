@@ -349,7 +349,7 @@ export function Payees({ navigation }: any) {
                               <Typography
                                 color={vars["accent-blue"]}
                                 fontSize={10}
-                                fontWeight={600}
+                                fontWeight={"600"}
                                 fontFamily="Nunito-Bold"
                               >
                                 {getNameInitials(item.name)}
@@ -364,7 +364,7 @@ export function Payees({ navigation }: any) {
                               <Typography
                                 color="#000"
                                 fontSize={14}
-                                fontWeight={600}
+                                fontWeight={"600"}
                                 fontFamily="Nunito-Bold"
                               >
                                 {item.name}
@@ -400,7 +400,7 @@ export function Payees({ navigation }: any) {
                                 paddingLeft={wp(3)}
                                 color="#000"
                                 fontSize={14}
-                                fontWeight={600}
+                                fontWeight={"600"}
                                 fontFamily="Nunito-SemiBold"
                               >
                                 {getFormattedDateFromUnixDotted(
@@ -449,7 +449,7 @@ export function Payees({ navigation }: any) {
                               <Typography
                                 color="accent-blue"
                                 fontSize={12}
-                                fontWeight={600}
+                                fontWeight={"600"}
                                 fontFamily="Nunito-Bold"
                               >
                                 IBAN
@@ -457,7 +457,7 @@ export function Payees({ navigation }: any) {
                               <Typography
                                 color="#000"
                                 fontSize={14}
-                                fontWeight={600}
+                                fontWeight={"600"}
                               >
                                 {item.iban}
                               </Typography>
@@ -471,7 +471,7 @@ export function Payees({ navigation }: any) {
                               <Typography
                                 color="accent-blue"
                                 fontSize={12}
-                                fontWeight={600}
+                                fontWeight={"600"}
                                 fontFamily="Nunito-Bold"
                               >
                                 BIC
@@ -479,7 +479,7 @@ export function Payees({ navigation }: any) {
                               <Typography
                                 color="#000"
                                 fontSize={14}
-                                fontWeight={400}
+                                fontWeight={"400"}
                               >
                                 {item.bic}
                               </Typography>
@@ -509,7 +509,7 @@ export function Payees({ navigation }: any) {
                               <Typography
                                 color="accent-blue"
                                 fontSize={12}
-                                fontWeight={600}
+                                fontWeight={"600"}
                                 fontFamily="Nunito-Bold"
                               >
                                 Added
@@ -517,7 +517,7 @@ export function Payees({ navigation }: any) {
                               <Typography
                                 color="#000"
                                 fontSize={14}
-                                fontWeight={400}
+                                fontWeight={"400"}
                               >
                                 {getFormattedDateFromUnixDotted(
                                   item.created_at
@@ -560,7 +560,7 @@ export function Payees({ navigation }: any) {
                                   <Typography
                                     color={"#FF7171"}
                                     fontSize={12}
-                                    fontWeight={600}
+                                    fontWeight={"600"}
                                     fontFamily="Nunito-Bold"
                                     paddingLeft={5}
                                   >
@@ -612,7 +612,7 @@ export function Payees({ navigation }: any) {
           <Typography
             color="#000"
             fontSize={16}
-            fontWeight={600}
+            fontWeight={"600"}
             fontFamily="Nunito-Bold"
             marginLeft={15}
             marginBottom={30}
@@ -720,7 +720,7 @@ export function Payees({ navigation }: any) {
                 <Typography
                   color={vars["accent-pink"]}
                   fontSize={16}
-                  fontWeight={600}
+                  fontWeight={"600"}
                   fontFamily="Nunito-Bold"
                 >
                   Save Payee
@@ -750,7 +750,7 @@ export function Payees({ navigation }: any) {
           <Typography
             color="#000"
             fontSize={18}
-            fontWeight={600}
+            fontWeight={"600"}
             fontFamily="Nunito-Bold"
             style={{ marginTop: 10, marginBottom: 20 }}
           >
@@ -815,7 +815,7 @@ export function Payees({ navigation }: any) {
           <Typography
             color="#000"
             fontSize={16}
-            fontWeight={600}
+            fontWeight={"600"}
             textAlign="center"
             fontFamily="Nunito-SemiBold"
             style={{ marginTop: 10, marginBottom: 20 }}
@@ -873,7 +873,7 @@ export function Payees({ navigation }: any) {
               <Typography
                 color={vars["accent-pink"]}
                 fontSize={14}
-                fontWeight={600}
+                fontWeight={"600"}
                 fontFamily="Nunito-Bold"
               >
                 Yes
@@ -889,7 +889,7 @@ export function Payees({ navigation }: any) {
               <Typography
                 color={vars["accent-blue"]}
                 fontSize={14}
-                fontWeight={600}
+                fontWeight={"600"}
                 fontFamily="Nunito-Bold"
               >
                 No

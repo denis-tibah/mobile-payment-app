@@ -332,7 +332,7 @@ elevation: 5
                               <Typography
                                 color="#000"
                                 fontSize={12}
-                                fontWeight={600}
+                                fontWeight={"600"}
                                 fontFamily="Nunito-Bold"
                               >
                                 {getNameInitials(item.name)}
@@ -443,7 +443,7 @@ elevation: 5
               <Typography
                 color="#000"
                 fontSize={16}
-                fontWeight={600}
+                fontWeight={"600"}
                 fontFamily="Nunito-Bold"
                 // style={{marginLeft: 15, paddingLeft: 15, borderLeftWidth: 1, borderLeftColor: vars['grey']}}
               >
@@ -572,7 +572,7 @@ elevation: 5
           <Typography
             color="#000"
             fontSize={18}
-            fontWeight={600}
+            fontWeight={"600"}
             fontFamily="Nunito-Bold"
             style={{ marginTop: 10, marginBottom: 20 }}
           >

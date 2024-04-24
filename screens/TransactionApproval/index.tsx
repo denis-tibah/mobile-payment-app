@@ -149,7 +149,7 @@ export default function TransactionApprovalScreen({
               color="#FFFF"
               fontSize={18}
               marginLeft={6}
-              fontWeight={600}
+              fontWeight={"600"}
             >
               Approve payment
             </Typography>

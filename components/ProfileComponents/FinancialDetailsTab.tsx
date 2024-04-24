@@ -1,9 +1,7 @@
 import { useState, useEffect, FC, Fragment } from "react";
-import { View, ScrollView, Pressable, SafeAreaView } from "react-native";
+import { View, Pressable, SafeAreaView } from "react-native";
 import { useSelector } from "react-redux";
 import { useFormik } from "formik";
-import Spinner from "react-native-loading-spinner-overlay/lib";
-import DropDownPicker from "react-native-dropdown-picker";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { SelectList } from "react-native-dropdown-select-list";
@@ -61,7 +59,7 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
   }>({ key: "", value: "", passedValue: "" });
 
   // ASK SANTI FOR STATUS CODES OF /createticketfinxp
-   const [
+  const [
     createTicketMutation,
     {
       isLoading: isLoadingCreateTicketReq,
@@ -86,7 +84,7 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
   console.log(
     "🚀 ~ FinancialDetailsTab ~ dataCreateTicketReq:",
     dataCreateTicketReq
-  ); 
+  );
 
   useEffect(() => {
     if (profileData?.UserProfile?.employmentStatus) {

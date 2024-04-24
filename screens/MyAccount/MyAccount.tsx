@@ -272,7 +272,7 @@ export function MyAccount({ navigation }: any) {
         <View style={styles.listHead}>
           <Typography
             fontFamily="Nunito-Regular"
-            fontWeight={600}
+            fontWeight={"600"}
             fontSize={14}
           >
             Loading...
@@ -289,7 +289,7 @@ export function MyAccount({ navigation }: any) {
         <View style={styles.listHead}>
           <Typography
             fontFamily="Nunito-Regular"
-            fontWeight={600}
+            fontWeight={"600"}
             fontSize={14}
           >
             No Transactions Found
@@ -455,7 +455,7 @@ export function MyAccount({ navigation }: any) {
                 </Typography>
                 <Typography
                   color={"accent-orange"}
-                  fontWeight={800}
+                  fontWeight={"800"}
                   fontSize={18}
                 >
                   {`${getCurrency(
@@ -485,7 +485,7 @@ export function MyAccount({ navigation }: any) {
                 </Typography>
                 <Typography
                   color={"accent-green"}
-                  fontWeight={800}
+                  fontWeight={"800"}
                   fontSize={18}
                 >
                   {`${getCurrency(
@@ -563,7 +563,7 @@ export function MyAccount({ navigation }: any) {
                 paddingVertical: 4,
               }}
             >
-              <Typography fontSize={18} marginLeft={8} fontWeight={600}>
+              <Typography fontSize={18} marginLeft={8} fontWeight={"600"}>
                 Turn on the biometric authentication
               </Typography>
             </View>
@@ -579,7 +579,7 @@ export function MyAccount({ navigation }: any) {
             <View style={{ paddingVertical: 22 }}>
               <Typography
                 fontSize={14}
-                fontWeight={600}
+                fontWeight={"600"}
                 color={vars["medium-grey2"]}
               >
                 For security reason we suggest to turn on the biometric

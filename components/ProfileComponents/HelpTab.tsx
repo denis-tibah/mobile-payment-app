@@ -1,12 +1,19 @@
 import { useState, FC, useRef, Fragment, useEffect } from "react";
-import { View, ScrollView, Pressable, Image, Dimensions } from "react-native";
+import {
+  View,
+  ScrollView,
+  Pressable,
+  Image,
+  Dimensions,
+  SafeAreaView,
+} from "react-native";
 import { useSelector } from "react-redux";
 import { useFormik } from "formik";
-import DropDownPicker from "react-native-dropdown-picker";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Feather from "react-native-vector-icons/Feather";
 import Spinner from "react-native-loading-spinner-overlay/lib";
+import { SelectList } from "react-native-dropdown-select-list";
 
 import { Seperator } from "../Seperator/Seperator";
 import ArrowRightIcon from "../../assets/icons/ArrowRight";
@@ -15,7 +22,7 @@ import FormGroup from "../FormGroup";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import Button from "../Button";
 import { helpTabCreateTicketSchema } from "../../utils/formikSchema";
-import { ticketType } from "../../data/options";
+import { ticketType, ticketTypeTwo } from "../../data/options";
 import { useCreateHelpTicketMutation } from "../../redux/profile/profileSliceV2";
 import { RootState } from "../../store";
 import vars from "../../styles/vars";
@@ -42,19 +49,22 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const refRBSheet = useRef();
 
-  const [openListForTicketType, setOpenListForTicketType] =
-    useState<boolean>(false);
-
   const [statusMessage, setStatusMessage] = useState<{
     header: string;
     body: string;
     isOpen: boolean;
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
+
   const [dimensions, setDimensions] = useState({
     window: windowDimensions,
     screen: screenDimensions,
   });
+  const [defaultBugReport, setDefaultBugReport] = useState<{
+    key: string;
+    value: string;
+  }>({ key: "", value: "" });
+  const [selectedBugReport, setSelectedBugReport] = useState<string>("");
 
   const [
     createHelpTicket,
@@ -120,7 +130,7 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
         });
         setFieldValue("type", "");
         setFieldValue("ticketValue", "");
-        refRBSheet.current.close();
+        refRBSheet?.current?.close();
       }
     }
   }, [
@@ -144,10 +154,9 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
         if (arrayChecker(dataCreateHelpTicket?.message)) {
           message = dataCreateHelpTicket?.message.join(", ");
         } else {
-          console.log("goes to this");
           message = dataCreateHelpTicket?.message;
         }
-        refRBSheet.current.close();
+        refRBSheet?.current?.close();
       }
 
       setStatusMessage({
@@ -165,14 +174,19 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
 
   useEffect(() => {
     if (isOpenBottomSheet) {
-      refRBSheet.current.open();
+      refRBSheet?.current?.open();
     } else {
-      refRBSheet.current.close();
+      refRBSheet?.current?.close();
     }
   }, [isOpenBottomSheet]);
 
   useEffect(() => {
     if (passedTicketType && transactionReferenceNumber) {
+      const bugReport = ticketTypeTwo.find(
+        (param) => param?.value.toLowerCase() === passedTicketType.toLowerCase()
+      );
+      setDefaultBugReport(bugReport || { key: "", value: "" });
+
       setFieldValue("type", passedTicketType);
       setFieldValue(
         "ticketValue",
@@ -185,16 +199,16 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
 
   return (
     <Fragment>
-      <ScrollView style={{}}>
+      <SuccessModal
+        isOpen={statusMessage?.isOpen}
+        title={statusMessage.header}
+        text={statusMessage.body}
+        isError={statusMessage.isError}
+        onClose={onCloseModal}
+      />
+      <ScrollView>
+        <Spinner visible={isLoadingCreateHelpTicket} />
         <View style={{ backgroundColor: "#ffff" }}>
-          <Spinner visible={isLoadingCreateHelpTicket} />
-          <SuccessModal
-            isOpen={statusMessage?.isOpen}
-            title={statusMessage.header}
-            text={statusMessage.body}
-            isError={statusMessage.isError}
-            onClose={onCloseModal}
-          />
           <Pressable>
             <View style={{ paddingBottom: 12, paddingTop: 16 }}>
               <View
@@ -258,7 +272,7 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
                     fontSize={18}
                     color="light-pink"
                     onPress={() => {
-                      refRBSheet.current.open();
+                      refRBSheet?.current?.open();
                     }}
                   >
                     Create ticket
@@ -280,6 +294,10 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
         closeOnPressMask={false}
         onClose={() => {
           handleCloseBottomSheet();
+          setFieldValue("type", "");
+          setFieldValue("ticketValue", "");
+          setSelectedBugReport("");
+          setDefaultBugReport({ key: "", value: "" });
         }}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
@@ -327,40 +345,64 @@ const HelpTab: FC<IFinancialDetailsTab> = ({
             <FormGroup
               validationError={errors.type && touched.type && errors.type}
             >
-              <View style={styles.dropdownWrapper}>
-                <View style={styles.dropDownIconContainerLeft}>
-                  <FontAwesome5
-                    size={20}
-                    color="#086AFB"
-                    name={"globe-europe"}
-                  />
+              <View>
+                <View style={{ position: "absolute", top: 12, left: 14 }}>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <FontAwesome5
+                      size={20}
+                      color="#086AFB"
+                      name={"globe-europe"}
+                    />
+                    {!selectedBugReport ? (
+                      <Typography
+                        fontSize={16}
+                        fontWeight={"600"}
+                        fontFamily="Nunito-SemiBold"
+                        marginLeft={8}
+                        color={vars["medium-grey"]}
+                      >
+                        Bug report
+                      </Typography>
+                    ) : null}
+                  </View>
                 </View>
                 <View>
-                  <DropDownPicker
-                    schema={{ label: "label", value: "value" }}
-                    onSelectItem={(value: any) => {
-                      const { value: type } = value;
-
-                      setValues({
-                        ...values,
-                        type: type,
-                      });
+                  <SelectList
+                    defaultOption={defaultBugReport}
+                    setSelected={(val: string) => {
+                      setSelectedBugReport(val);
                     }}
-                    listMode="MODAL"
-                    items={ticketType}
-                    value={values?.type}
-                    setOpen={setOpenListForTicketType}
-                    open={openListForTicketType}
-                    style={styles.dropdown}
-                    dropDownContainerStyle={styles.dropdownContainer}
-                    placeholder="Bug report"
-                    placeholderStyle={{
-                      color: vars["medium-grey"],
+                    onSelect={() => {
+                      setFieldValue("type", selectedBugReport.toLowerCase());
                     }}
+                    data={ticketType}
+                    save="value"
+                    arrowicon={<ArrowRightIcon size={16} color="blue" />}
+                    search={false}
+                    searchicon={
+                      <FontAwesome5
+                        size={20}
+                        color="#086AFB"
+                        name={"globe-europe"}
+                      />
+                    }
+                    boxStyles={{
+                      borderRadius: 50,
+                      borderColor: vars["accent-blue"],
+                    }}
+                    dropdownStyles={{
+                      borderColor: vars["accent-blue"],
+                    }}
+                    inputStyles={{ marginLeft: 20 }}
+                    // remove text in placeholder
+                    placeholder=" "
                   />
-                </View>
-                <View style={styles.dropDownIconContainerRight}>
-                  <ArrowRightIcon size={16} color="blue" />
                 </View>
               </View>
             </FormGroup>

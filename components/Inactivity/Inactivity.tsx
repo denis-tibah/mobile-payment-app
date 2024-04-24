@@ -15,10 +15,7 @@ type InactivityProps = {
   closePopup: () => void;
 };
 
-const Inactivity: React.FC<InactivityProps> = ({
-  isOpen,
-  closePopup,
-}) => {
+const Inactivity: React.FC<InactivityProps> = ({ isOpen, closePopup }) => {
   const dispatch = useDispatch();
   const [countDown, setCountDown] = useState<number>(30);
 
@@ -28,29 +25,28 @@ const Inactivity: React.FC<InactivityProps> = ({
   };
 
   useEffect(() => {
-    let interval:  NodeJS.Timeout;
-      if (countDown > 0 && isOpen) {
-        interval = setInterval(() => {
-          setCountDown((countDown) => countDown - 1);
-        }, 1000);
-      } else if (countDown === 0) {
-        closePopup();
-        setCountDown(30);
-
-      }
+    let interval: NodeJS.Timeout;
+    if (countDown > 0 && isOpen) {
+      interval = setInterval(() => {
+        setCountDown((countDown) => countDown - 1);
+      }, 1000);
+    } else if (countDown === 0) {
+      closePopup();
+      setCountDown(30);
+    }
     return () => clearInterval(interval);
   }, [isOpen, countDown]);
 
   return (
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isOpen}
-        onRequestClose={() => {
-          closePopup();
-        }}
-        // headerTitle={"Inactivity Detected"}
-      >
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={isOpen}
+      onRequestClose={() => {
+        closePopup();
+      }}
+      // headerTitle={"Inactivity Detected"}
+    >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           <View style={styles.container}>
@@ -66,11 +62,8 @@ const Inactivity: React.FC<InactivityProps> = ({
           </View>
           <View style={styles.actionCointaner}>
             <View>
-              <Button
-                color="light-pink"
-                onPress={handleContinueActivity}
-              >
-                <Typography fontFamily={'Nunito-SemiBold'}>Continue</Typography>
+              <Button color="light-pink" onPress={handleContinueActivity}>
+                <Typography fontFamily={"Nunito-SemiBold"}>Continue</Typography>
               </Button>
             </View>
             <View>
@@ -82,35 +75,32 @@ const Inactivity: React.FC<InactivityProps> = ({
                 }}
                 // style={{right:0, position: "relative"}}
               >
-                <Typography fontFamily={'Nunito-SemiBold'}>Sign out</Typography>
+                <Typography fontFamily={"Nunito-SemiBold"}>Sign out</Typography>
               </Button>
             </View>
-
           </View>
         </View>
       </View>
-      
-
     </Modal>
   );
-}
+};
 export default Inactivity;
 
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 22,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: "rgba(0,0,0,0.3)",
   },
   modalView: {
     margin: 15,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 20,
     padding: 30,
     // alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -125,24 +115,24 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   buttonOpen: {
-    backgroundColor: '#F194FF',
+    backgroundColor: "#F194FF",
   },
   buttonClose: {
-    backgroundColor: '#2196F3',
+    backgroundColor: "#2196F3",
   },
   textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   modalText: {
     marginBottom: 15,
-    textAlign: 'center',
+    textAlign: "center",
   },
   container: {
     display: "flex",
     flexDirection: "column",
-    paddingHorizontal: '5%',
+    paddingHorizontal: "5%",
     justifyContent: "center",
   },
   actionCointaner: {
@@ -153,7 +143,7 @@ const styles = StyleSheet.create({
     // backgroundColor: "#ACACAC",
   },
   title: {
-    margin: 'auto',
+    margin: "auto",
   },
   rightAction: {
     marginLeft: "auto",

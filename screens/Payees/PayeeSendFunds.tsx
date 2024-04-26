@@ -57,14 +57,10 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
 
   const accountIban = userData?.iban || "";
 
+   {/* disabled by Aristos 26-04-2026 */}
   // const receiverName: string = params?.item.name || "";
 
-   const receiverName: string = params?.item?.transaction_direction === "outgoing"  ? params?.item?.name || params?.item?.debtor_name || "" : "";
-
-  // let receiverName: string = "";
-  //   if(params?.item?.transaction_direction === "outgoing"){
-  //       receiverName = params?.item?.name || params?.item?.debtor_name || "";
-  //   }
+   const receiverName: string = params?.item?.transaction_direction === "outgoing"  ? params?.item?.name || "" : params?.item?.debtor_name || "";
 
   const receiverIban: string = params?.item.iban || "";
 
@@ -466,13 +462,8 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                   color="#000"
                   fontFamily="Nunito-SemiBold"
                 >
-                  {/* disabled by Aristos 26-04-2026 */}
+                 
                   {receiverName}
-
-                  {/* added by Aristos 26-04-2026 */}
-                  {/* {params?.item.transaction_direction === "outgoing" ? (
-                          params?.item.name
-                      ) :  params?.item.debtor_name } */}
 
                 </Typography>
 

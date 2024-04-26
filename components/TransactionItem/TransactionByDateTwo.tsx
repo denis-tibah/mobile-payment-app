@@ -152,7 +152,16 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         fontWeight={"400"}
                         paddingRight={24}
                       >
-                        {transaction?.name || transaction?.purpose}
+                        {/* disabled by Aristos 26-04-2026 */}
+                        {/* {transaction?.name || transaction?.purpose} */}
+
+                        {/* added by Aristos 26-04-2026 */}
+                        {transaction?.transaction_direction === "outgoing" ? (
+                           transaction?.name || transaction?.purpose
+                        ) :   transaction?.debtor_name || transaction?.purpose }
+
+
+
                       </Typography>
                     </View>
                     {transactionStatusHasLineThrough ? (

@@ -5,10 +5,12 @@ export interface Transaction {
   closing_balance: string | null;
   running_balance: string | null;
   currency: string;
+  transaction_direction:string;
   description: string;
   iban: string;
   id: number | string | null;
   name: string;
+  debtor_name:string;
   opening_balance: string | null;
   reference_no: string | null;
   service: any;
@@ -40,10 +42,12 @@ export interface transactions {
   closing_balance: string | null;
   running_balance: string | null;
   currency: string;
+  transaction_direction:string;
   description: string;
   iban: string;
   id: number;
   name: string;
+  debtor_name:string;
   opening_balance: string | null;
   reference_no: string | null;
   service: any;

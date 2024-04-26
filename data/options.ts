@@ -186,3 +186,19 @@ export const ticketType = [
     value: "transactions",
   },
 ];
+
+export const ticketTypeTwo = [
+  { key: "Technical", value: "technical" },
+  { key: "Access", value: "access" },
+  { key: "Payment", value: "payment" },
+  {
+    key: "Beneficiary",
+    value: "beneficiary",
+  },
+  { key: "Card", value: "card" },
+  { key: "Profile", value: "profile" },
+  {
+    key: "Transactions",
+    value: "transactions",
+  },
+];

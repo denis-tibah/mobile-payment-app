@@ -210,7 +210,7 @@ export function SignupScreen({ navigation, route }: any) {
                 color="#FFFF"
                 fontSize={18}
                 marginLeft={6}
-                fontWeight={600}
+                fontWeight={"600"}
               >
                 {modalContent.header}
               </Typography>
@@ -225,7 +225,7 @@ export function SignupScreen({ navigation, route }: any) {
             }}
           >
             <WholeContainer>
-              <Typography color="#0DCA9D" fontSize={14} fontWeight={600}>
+              <Typography color="#0DCA9D" fontSize={14} fontWeight={"600"}>
                 {modalContent.body}
               </Typography>
             </WholeContainer>

@@ -5,9 +5,11 @@ import {
   RefreshControl,
   Dimensions,
   Switch,
+  FlatList,
 } from "react-native";
 import { useSelector } from "react-redux";
 import * as SecureStore from "expo-secure-store";
+import Spinner from "react-native-loading-spinner-overlay/lib";
 
 import MainLayout from "../../layout/Main";
 import { styles } from "./style";
@@ -18,10 +20,9 @@ import {
   formatCurrencyToLocalEnTwo,
   arrayChecker,
 } from "../../utils/helpers";
-import Spinner from "react-native-loading-spinner-overlay/lib";
 import TransactionByDateTwo from "../../components/TransactionItem/TransactionByDateTwo";
 import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
-import { useGetTransactionsQuery } from "../../redux/transaction/transactionV2Slice";
+import { useLazyGetTransactionsQuery } from "../../redux/transaction/transactionV2Slice";
 import AccordionItem from "../../components/AccordionItem";
 import ProgressClock from "../../assets/icons/ProgressClock";
 import FaceIdIcon from "../../assets/icons/FaceId";
@@ -38,17 +39,17 @@ export function MyAccount({ navigation }: any) {
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const currentDate = new Date();
+  const refRBSheet = useRef();
 
-  const transactionsParams = ({ status }: any) => {
+  const transactionsParams = ({ status, limit }: any) => {
     return {
       accountId: userData?.id || 0,
       accessToken: userTokens?.access_token,
       tokenZiyl: userTokens?.token_ziyl,
       status,
       direction: "desc",
-      limit: 100,
+      limit: limit || 10,
       page: 1,
-      sort: "date",
       from_date: "2023-11-01",
       to_date: currentDate.toISOString().split("T")[0],
       group_date: true,
@@ -56,37 +57,37 @@ export function MyAccount({ navigation }: any) {
   };
 
   //changed Processing to Pending by Aristos 9-04-2024
-  const {
+  /* const {
     data: dataTransactionsProcessing,
     isLoading: isloadingTransactionsProcessing,
-    isUninitialized: isUninitializedTransactionsProcessing,
     refetch: refetchTransactionsProcessing,
   } = useGetTransactionsQuery(transactionsParams({ status: "PROCESSING" }), {
     skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
   });
   const groupedByDateTransactionsProcessing =
-    dataTransactionsProcessing?.transactions_grouped_by_date;
+    dataTransactionsProcessing?.transactions_grouped_by_date; */
 
-  //added by Aristos 9-04-2024
-  const {
-    data: dataTransactionsPending,
-    isLoading: isloadingTransactionsPending,
-    isUninitialized: isUninitializedTransactionsPending,
-    refetch: refetchTransactionsPending,
-  } = useGetTransactionsQuery(transactionsParams({ status: "PENDING" }), {
-    skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
-  });
+  const [
+    getPendingTransactions,
+    {
+      data: dataPendingTransactions,
+      isLoading: isloadingPendingTransactions,
+      isFetching: isFetchingPendingTransactions,
+      isSuccess: isSuccessPendingTransactions,
+    },
+  ] = useLazyGetTransactionsQuery();
   const groupedByDateTransactionsPending =
-    dataTransactionsPending?.transactions_grouped_by_date;
+    dataPendingTransactions?.transactions_grouped_by_date;
 
-  const {
-    data: dataTransactionsCompleted,
-    isLoading: isloadingTransactionsCompleted,
-    isUninitialized: isUninitializedTransactionsCompleted,
-    refetch: refetchTransactionsCompleted,
-  } = useGetTransactionsQuery(transactionsParams({ status: "SUCCESS" }), {
-    skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
-  });
+  const [
+    getCompletedTransactions,
+    {
+      data: dataTransactionsCompleted,
+      isLoading: isloadingCompletedTransactions,
+      isFetching: isFetchingCompletedTransactions,
+      isSuccess: isSuccessTransactionsCompleted,
+    },
+  ] = useLazyGetTransactionsQuery();
   const groupedByDateTransactionsCompleted =
     dataTransactionsCompleted?.transactions_grouped_by_date;
 
@@ -96,9 +97,6 @@ export function MyAccount({ navigation }: any) {
     tokenZiyl: userTokens?.token_ziyl,
   });
 
-  const refRBSheet = useRef();
-
-  const [refreshing, setRefreshing] = useState<boolean>(false);
   const [storageData, setStorageData] = useState<{
     email: string;
     password: string;
@@ -106,13 +104,21 @@ export function MyAccount({ navigation }: any) {
     email: "",
     password: "",
   });
-
   const [triggerBiometric, setTriggerBiometric] = useState(false);
   const [dimensions, setDimensions] = useState({
     window: windowDimensions,
     screen: screenDimensions,
   });
   const [enableBiometric, setEnableBiometric] = useState<boolean>(false);
+  const [
+    pageCompletedTransactionsProperties,
+    setPageCompletedTransactionsProperties,
+  ] = useState<any>({});
+  const [
+    pagePendingTransactionsProperties,
+    setPagePendingTransactionsProperties,
+  ] = useState<any>({});
+  const [prevScrollPosition, setPrevScrollPosition] = useState(0);
 
   useEffect(() => {
     const handleGetBiometricStatus = async () => {
@@ -125,6 +131,19 @@ export function MyAccount({ navigation }: any) {
   }, []);
 
   useEffect(() => {
+    getCompletedTransactions(
+      transactionsParams({ status: "SUCCESS", limit: 10 })
+    );
+    getPendingTransactions(
+      transactionsParams({ status: "PENDING", limit: 10 })
+    );
+
+    setTimeout(() => {
+      setTriggerBiometric(true);
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
     const handleBiometricStatus = async (enableBiometric: boolean) => {
       await SecureStore.setItemAsync(
         "enableBiometric",
@@ -133,26 +152,6 @@ export function MyAccount({ navigation }: any) {
     };
     handleBiometricStatus(enableBiometric);
   }, [enableBiometric]);
-
-  /* const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      const _currentPage = currentPage - 1;
-      fetchTransactions({ pageNumber: _currentPage });
-    }
-  }; */
-
-  /*   const handleNextPage = () => {
-    if (currentPage < lastPage) {
-      const _currentPage = currentPage + 1;
-      fetchTransactions({ pageNumber: _currentPage });
-    }
-  }; */
-
-  useEffect(() => {
-    setTimeout(() => {
-      setTriggerBiometric(true);
-    }, 1000);
-  }, []);
 
   useEffect(() => {
     const getUserEmailPassword = async () => {
@@ -173,8 +172,8 @@ export function MyAccount({ navigation }: any) {
   useEffect(() => {
     if (triggerBiometric) {
       if (
-        !isloadingTransactionsPending &&
-        !isloadingTransactionsCompleted &&
+        !isloadingPendingTransactions &&
+        !isloadingCompletedTransactions &&
         !enableBiometric
       ) {
         refRBSheet?.current?.open();
@@ -182,9 +181,90 @@ export function MyAccount({ navigation }: any) {
     }
   }, [
     triggerBiometric,
-    isloadingTransactionsPending,
-    isloadingTransactionsCompleted,
+    isloadingPendingTransactions,
+    isloadingCompletedTransactions,
   ]);
+
+  useEffect(() => {
+    if (!isloadingCompletedTransactions && isSuccessTransactionsCompleted) {
+      const copyCardOrTransactionsWithFilter = {};
+      Object.assign(copyCardOrTransactionsWithFilter, {
+        ...dataTransactionsCompleted,
+      });
+      delete copyCardOrTransactionsWithFilter.transactions_grouped_by_date;
+      setPageCompletedTransactionsProperties({
+        ...copyCardOrTransactionsWithFilter,
+      });
+    }
+
+    if (!isloadingPendingTransactions && isSuccessPendingTransactions) {
+      const copyCardOrTransactionsWithFilter = {};
+      Object.assign(copyCardOrTransactionsWithFilter, {
+        ...dataPendingTransactions,
+      });
+      delete copyCardOrTransactionsWithFilter.transactions_grouped_by_date;
+      setPagePendingTransactionsProperties({
+        ...copyCardOrTransactionsWithFilter,
+      });
+    }
+  }, [
+    isloadingCompletedTransactions,
+    isSuccessTransactionsCompleted,
+    dataTransactionsCompleted,
+    isloadingPendingTransactions,
+    isSuccessPendingTransactions,
+    dataPendingTransactions,
+  ]);
+
+  useEffect(() => {
+    if (pageCompletedTransactionsProperties?.limit) {
+      const params = transactionsParams({
+        status: "SUCCESS",
+        limit: pageCompletedTransactionsProperties?.limit,
+      });
+      getCompletedTransactions(params);
+    }
+    if (pagePendingTransactionsProperties?.limit) {
+      const params = transactionsParams({
+        status: "PENDING",
+        limit: pagePendingTransactionsProperties?.limit,
+      });
+      getPendingTransactions(params);
+    }
+  }, [pageCompletedTransactionsProperties, pagePendingTransactionsProperties]);
+
+  const isCloseToBottom = ({
+    layoutMeasurement,
+    contentOffset,
+    contentSize,
+  }: any) => {
+    const paddingToBottom = 30;
+    return (
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom
+    );
+  };
+
+  const gameItemExtractorKey = (item: any, index: any) => {
+    return index.toString();
+  };
+
+  const renderTransactionList = (list: any) => {
+    return (
+      <Fragment>
+        <TransactionByDateTwo
+          key={list?.item?.date}
+          shownData={{
+            date: list?.item?.date,
+            totalAmount: list?.item.closing_balance,
+            currency: list?.item.transactions[0].currency,
+          }}
+          transactionsByDate={list?.item?.transactions}
+          totalAmount={list?.item.closing_balance}
+        />
+      </Fragment>
+    );
+  };
 
   const displayListItems = (isLoading: any, items: any): JSX.Element | null => {
     if (isLoading) {
@@ -192,7 +272,7 @@ export function MyAccount({ navigation }: any) {
         <View style={styles.listHead}>
           <Typography
             fontFamily="Nunito-Regular"
-            fontWeight={600}
+            fontWeight={"600"}
             fontSize={14}
           >
             Loading...
@@ -209,7 +289,7 @@ export function MyAccount({ navigation }: any) {
         <View style={styles.listHead}>
           <Typography
             fontFamily="Nunito-Regular"
-            fontWeight={600}
+            fontWeight={"600"}
             fontSize={14}
           >
             No Transactions Found
@@ -219,8 +299,7 @@ export function MyAccount({ navigation }: any) {
     }
     return (
       <View style={{ paddingVertical: 6 }}>
-        <View>
-          {items &&
+        {/* {items &&
             arrayChecker(items) &&
             items.length > 0 &&
             items.map((item: any) => {
@@ -236,8 +315,16 @@ export function MyAccount({ navigation }: any) {
                   totalAmount={item.closing_balance}
                 />
               );
-            })}
-        </View>
+            })} */}
+        <FlatList
+          contentContainerStyle={{ flexGrow: 1 }}
+          data={items && arrayChecker(items) && items.length > 0 ? items : []}
+          keyExtractor={gameItemExtractorKey}
+          renderItem={(item) => (
+            <View style={{ flex: 1 }}>{renderTransactionList(item)}</View>
+          )}
+          scrollEnabled={false}
+        />
       </View>
     );
   };
@@ -247,22 +334,77 @@ export function MyAccount({ navigation }: any) {
       <MainLayout navigation={navigation}>
         <Spinner
           visible={
-            /* paginateRefresh || */
-            /* isLoading || */
-            isloadingTransactionsPending || isloadingTransactionsCompleted
+            isloadingPendingTransactions ||
+            isloadingCompletedTransactions ||
+            isFetchingCompletedTransactions ||
+            isFetchingPendingTransactions
           }
         />
         <ScrollView
           bounces={true}
           refreshControl={
             <RefreshControl
-              refreshing={refreshing}
+              refreshing={false}
               onRefresh={() => {
-                refetchTransactionsPending();
-                refetchTransactionsCompleted();
+                getPendingTransactions(
+                  transactionsParams({ status: "PENDING", limit: 10 })
+                );
+                getCompletedTransactions(
+                  transactionsParams({ status: "SUCCCESS", limit: 10 })
+                );
               }}
             />
           }
+          onScroll={({ nativeEvent }) => {
+            const currentScrollPosition = nativeEvent.contentOffset.y;
+            if (currentScrollPosition > prevScrollPosition) {
+              if (isCloseToBottom(nativeEvent)) {
+                if (
+                  pageCompletedTransactionsProperties?.to &&
+                  pageCompletedTransactionsProperties?.total
+                ) {
+                  if (
+                    pageCompletedTransactionsProperties?.to <
+                    pageCompletedTransactionsProperties?.total
+                  ) {
+                    const parsedPagePropertiesTo = parseInt(
+                      pageCompletedTransactionsProperties?.to,
+                      10
+                    );
+                    const addedPagePropertiesTo = parsedPagePropertiesTo + 10;
+                    setPageCompletedTransactionsProperties({
+                      ...pageCompletedTransactionsProperties,
+                      limit: addedPagePropertiesTo,
+                    });
+                  }
+                }
+
+                if (
+                  pagePendingTransactionsProperties?.to &&
+                  pagePendingTransactionsProperties?.total
+                ) {
+                  if (
+                    pagePendingTransactionsProperties?.to <
+                    pagePendingTransactionsProperties?.total
+                  ) {
+                    const parsedPagePropertiesTo = parseInt(
+                      pagePendingTransactionsProperties?.to,
+                      10
+                    );
+                    const addedPagePropertiesTo = parsedPagePropertiesTo + 10;
+                    setPagePendingTransactionsProperties({
+                      ...pagePendingTransactionsProperties,
+                      limit: addedPagePropertiesTo,
+                    });
+                  }
+                }
+              } else {
+                console.log("scrolling up");
+              }
+            }
+            setPrevScrollPosition(currentScrollPosition);
+          }}
+          scrollEventThrottle={9000}
         >
           <View style={styles.balancesContainer}>
             <View
@@ -313,7 +455,7 @@ export function MyAccount({ navigation }: any) {
                 </Typography>
                 <Typography
                   color={"accent-orange"}
-                  fontWeight={800}
+                  fontWeight={"800"}
                   fontSize={18}
                 >
                   {`${getCurrency(
@@ -343,7 +485,7 @@ export function MyAccount({ navigation }: any) {
                 </Typography>
                 <Typography
                   color={"accent-green"}
-                  fontWeight={800}
+                  fontWeight={"800"}
                   fontSize={18}
                 >
                   {`${getCurrency(
@@ -374,7 +516,7 @@ export function MyAccount({ navigation }: any) {
               >
                 <View style={styles.accordionBodyContainer}>
                   {displayListItems(
-                    isloadingTransactionsPending,
+                    isloadingPendingTransactions,
                     groupedByDateTransactionsPending
                   )}
                 </View>
@@ -390,19 +532,12 @@ export function MyAccount({ navigation }: any) {
               >
                 <View style={styles.accordionBodyContainer}>
                   {displayListItems(
-                    isloadingTransactionsCompleted,
+                    isloadingCompletedTransactions,
                     groupedByDateTransactionsCompleted
                   )}
                 </View>
               </AccordionItem>
             </View>
-            {/* Aristos: temp disabled this */}
-            {/* <Pagination
-            handlePreviousPage={handlePreviousPage}
-            page={currentPage || 0}
-            lastPage={lastPage || 0}
-            handleNextPage={handleNextPage}
-          /> */}
           </View>
         </ScrollView>
       </MainLayout>
@@ -428,7 +563,7 @@ export function MyAccount({ navigation }: any) {
                 paddingVertical: 4,
               }}
             >
-              <Typography fontSize={18} marginLeft={8} fontWeight={600}>
+              <Typography fontSize={18} marginLeft={8} fontWeight={"600"}>
                 Turn on the biometric authentication
               </Typography>
             </View>
@@ -444,7 +579,7 @@ export function MyAccount({ navigation }: any) {
             <View style={{ paddingVertical: 22 }}>
               <Typography
                 fontSize={14}
-                fontWeight={600}
+                fontWeight={"600"}
                 color={vars["medium-grey2"]}
               >
                 For security reason we suggest to turn on the biometric

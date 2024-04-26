@@ -164,7 +164,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
 
                       </Typography>
                     </View>
-                    {transactionStatusHasLineThrough ? (
+                    {!cardId && transactionStatusHasLineThrough ? (
                       <View style={styles.transactionStatusHasLineThrough} />
                     ) : null}
                     <View

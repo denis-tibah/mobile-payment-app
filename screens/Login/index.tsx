@@ -421,21 +421,27 @@ export function LoginScreen({ navigation }: any) {
               <Typography
                 fontSize={18}
                 fontFamily="Nunito-SemiBold"
-                fontWeight={600}
+                fontWeight={"600"}
               >
                 Sign in
               </Typography>
               <View style={styles.cardTitleSubheader}>
                 <Typography
                   fontFamily="Mukta-Regular"
-                  fontWeight={500}
+                  fontWeight={"500"}
                   fontSize={14}
                   color={vars["medium-grey-lighter"]}
                 >
                   Don't have an account?{" "}
                 </Typography>
                 <Pressable onPress={() => navigate("signup")}>
-                  <Typography color="accent-pink">Sign up</Typography>
+                  <Typography
+                    color="accent-pink"
+                    fontWeight={"500"}
+                    fontFamily="Nunito-SemiBold"
+                  >
+                    Sign up
+                  </Typography>
                 </Pressable>
               </View>
             </View>
@@ -480,7 +486,12 @@ export function LoginScreen({ navigation }: any) {
                 </View>
                 <View style={styles.cardBodyLink}>
                   <Pressable onPress={() => navigate("forgottenPassword")}>
-                    <Typography color="accent-blue" fontFamily="Mukta-Regular">
+                    <Typography
+                      color="accent-blue"
+                      fontFamily="Mukta-Regular"
+                      fontWeight="500"
+                      marginBottom={12}
+                    >
                       Forgot Password?
                     </Typography>
                   </Pressable>
@@ -560,6 +571,7 @@ export function LoginScreen({ navigation }: any) {
               textAlign="center"
               color="#fff"
               fontFamily="Nunito-SemiBold"
+              fontWeight="500"
             >
               v{appVersion}
             </Typography>
@@ -568,6 +580,7 @@ export function LoginScreen({ navigation }: any) {
               textAlign="center"
               color="#fff"
               fontFamily="Nunito-SemiBold"
+              fontWeight="500"
             ></Typography>
           )}
         </View>

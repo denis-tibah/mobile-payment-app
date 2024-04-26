@@ -13,16 +13,19 @@ import { Seperator } from "../../components/Seperator/Seperator";
 import Typography from "../../components/Typography";
 import FormGroup from "../../components/FormGroup";
 import vars from "../../styles/vars";
-import { ResetPasswordPayloadRequest, resetPassword } from "../../redux/auth/authSlice";
+import {
+  ResetPasswordPayloadRequest,
+  resetPassword,
+} from "../../redux/auth/authSlice";
 import FixedBottomAction from "../../components/FixedBottomAction";
 import { styles } from "./styles";
 
-const ResetPassword: React.FC = ({navigation, route}: any) => {
+const ResetPassword: React.FC = ({ navigation, route }: any) => {
   const { navigate }: any = useNavigation();
   const dispatch = useDispatch();
   const navigationParams = route.params;
-  const [email, setEmail] = useState<string>('');
-  const [resetToken, setResetToken] = useState<string>('');
+  const [email, setEmail] = useState<string>("");
+  const [resetToken, setResetToken] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleResetPassword = async (values: any) => {
@@ -32,10 +35,12 @@ const ResetPassword: React.FC = ({navigation, route}: any) => {
       email,
       password,
       password_confirmation: confirmPassword,
-      token: resetToken
+      token: resetToken,
     };
     try {
-      const response = await dispatch<any>(resetPassword(resetPayload)).unwrap();
+      const response = await dispatch<any>(
+        resetPassword(resetPayload)
+      ).unwrap();
       if (response.code === 201 || response.code === 200) {
         setIsLoading(false);
         navigate(screenNames.login);
@@ -64,7 +69,7 @@ const ResetPassword: React.FC = ({navigation, route}: any) => {
               <Typography
                 fontSize={18}
                 fontFamily="Nunito-SemiBold"
-                fontWeight={600}
+                fontWeight={"600"}
               >
                 Change Password
               </Typography>
@@ -74,31 +79,23 @@ const ResetPassword: React.FC = ({navigation, route}: any) => {
               initialValues={{
                 email: "",
                 password: "",
-                confirmPassword: ""
+                confirmPassword: "",
               }}
               validate={(values) => {
-                  const errors: any = {};
-                  if (!values.password) {
-                    errors.password = "Password is required";
-                  } else if (!values.confirmPassword) {
-                    errors.confirmPassword = "Confirm password is required";
-                  } else if (values.password !== values.confirmPassword) {
-                    errors.confirmPassword = "Passwords do not match";
-                  }
-                  console.log(errors);
-                  return errors;
+                const errors: any = {};
+                if (!values.password) {
+                  errors.password = "Password is required";
+                } else if (!values.confirmPassword) {
+                  errors.confirmPassword = "Confirm password is required";
+                } else if (values.password !== values.confirmPassword) {
+                  errors.confirmPassword = "Passwords do not match";
                 }
-              }
+                console.log(errors);
+                return errors;
+              }}
               onSubmit={handleResetPassword}
             >
-              {({
-                handleSubmit,
-                handleChange,
-                handleBlur,
-                values,
-                errors
-              }) =>
-              (
+              {({ handleSubmit, handleChange, handleBlur, values, errors }) => (
                 <View>
                   <View style={styles.cardBody}>
                     <View>
@@ -114,9 +111,7 @@ const ResetPassword: React.FC = ({navigation, route}: any) => {
                       </FormGroup>
                     </View>
                     <View style={styles.passwordField}>
-                      <FormGroup
-                        validationError={ errors.password }
-                      >
+                      <FormGroup validationError={errors.password}>
                         <FormGroup.Password
                           icon={<LockIcon />}
                           rightIcon
@@ -129,8 +124,7 @@ const ResetPassword: React.FC = ({navigation, route}: any) => {
                       </FormGroup>
                     </View>
                     <View style={styles.passwordField}>
-                      <FormGroup validationError={ errors.confirmPassword }
-                      >
+                      <FormGroup validationError={errors.confirmPassword}>
                         <FormGroup.Password
                           icon={<LockIcon />}
                           rightIcon
@@ -156,14 +150,13 @@ const ResetPassword: React.FC = ({navigation, route}: any) => {
                     </Button>
                   </FixedBottomAction>
                 </View>
-              )
-            }
+              )}
             </Formik>
           </View>
         </View>
       </View>
     </MainLayout>
   );
-}
+};
 
 export default ResetPassword;

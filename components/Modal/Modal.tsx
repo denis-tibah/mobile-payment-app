@@ -1,4 +1,4 @@
-import { isValidElement } from "react";
+import { isValidElement, useState, useEffect } from "react";
 import { Modal as ReactNativeModal, View } from "react-native";
 import Typography from "../Typography";
 import { styles } from "./styles";
@@ -15,6 +15,17 @@ export function Modal({
   animationType = "slide",
   ...props
 }: any) {
+  // bugfix for ios
+  const [modalIntervalFinished, setModalIntervalFinished] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        setModalIntervalFinished(true);
+      }, 250);
+    }
+  }, [isOpen]);
+
   if (footer && !isValidElement(footer)) {
     console.error("footer component is not a valid react element");
   }
@@ -32,7 +43,12 @@ export function Modal({
   return (
     isOpen && (
       <View style={styles.centeredView}>
-        <ReactNativeModal animationType={animationType} transparent {...props}>
+        <ReactNativeModal
+          animationType={animationType}
+          transparent
+          {...props}
+          visible={modalIntervalFinished && isOpen}
+        >
           <View style={styles.centeredView}>
             <View style={styles.shadowBox}>
               {headerTitle && (

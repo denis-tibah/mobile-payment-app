@@ -104,7 +104,7 @@ export default function PaymentReceivedScreen({
               color="#FFFF"
               fontSize={18}
               marginLeft={6}
-              fontWeight={600}
+              fontWeight={"600"}
             >
               Payment recieved
             </Typography>

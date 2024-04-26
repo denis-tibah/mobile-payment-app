@@ -4,14 +4,11 @@ import { useFormik } from "formik";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useSelector } from "react-redux";
-import { Platform } from "react-native";
 import { ProgressBar } from "react-native-paper";
 import { ScrollView } from "react-native-gesture-handler";
 import Spinner from "react-native-loading-spinner-overlay";
-import { responsiveHeight as rh } from "react-native-responsive-dimensions";
 
 import SwipableBottomSheet from "../../SwipableBottomSheet";
-
 import {
   arrayChecker,
   calculatePercentage,
@@ -26,7 +23,6 @@ import {
 } from "../../../redux/setting/settingSliceV2";
 import { RootState } from "../../../store";
 import { limitsTabSchema } from "../../../utils/formikSchema";
-import { Seperator } from "../../Seperator/Seperator";
 import vars from "../../../styles/vars";
 import WholeContainer from "../../../layout/WholeContainer";
 import Button from "../../Button";
@@ -47,6 +43,40 @@ const AccountLimits: React.FC<AccountLimitProps> = (): JSX.Element => {
     isOpen: boolean;
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
+  const [selectedLimit, setSelectedLimit] = useState<{
+    id: number | null;
+    limit: string;
+    limit_reached: number;
+    type: string;
+  }>({ id: 0, limit: "", limit_reached: 0, type: "" });
+  const [UIProperties, setUIProperties] = useState<{
+    colorBar: string;
+    floatPercentage: number | null;
+  }>({ colorBar: "", floatPercentage: 0 });
+  const [bottomSheetHeight, setBottomSheetHeight] = useState<number>(0);
+  console.log("🚀 ~ bottomSheetHeight:", bottomSheetHeight);
+
+  useEffect(() => {
+    let percentage;
+    let colorBar = "#0DCA9D";
+    if (selectedLimit?.limit_reached) {
+      const limitReached = selectedLimit?.limit_reached
+        ? Number(selectedLimit?.limit_reached)
+        : 0;
+      const limit = selectedLimit?.limit ? Number(selectedLimit?.limit) : 0;
+      percentage = calculatePercentage(limitReached, limit);
+
+      if ((percentage || 0) <= 0.3) {
+        colorBar = "#0DCA9D";
+      } else if ((percentage || 0) <= 0.6) {
+        colorBar = "#FBB445";
+      } else if ((percentage || 0) <= 0.1) {
+        colorBar = "#FF7171";
+      }
+
+      setUIProperties({ colorBar, floatPercentage: percentage });
+    }
+  }, [selectedLimit]);
 
   const {
     isLoading: isLoadingGetLimits,
@@ -62,7 +92,6 @@ const AccountLimits: React.FC<AccountLimitProps> = (): JSX.Element => {
       skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
     }
   );
-  console.log("🚀 ~ dataGetLimits:", dataGetLimits);
 
   const [
     updateLimit,
@@ -163,7 +192,7 @@ const AccountLimits: React.FC<AccountLimitProps> = (): JSX.Element => {
           <Pressable>
             <View style={{ marginTop: 16 }}>
               {arrayChecker(dataGetLimits) && dataGetLimits.length > 0
-                ? dataGetLimits.map((params: any, index: number) => {
+                ? dataGetLimits.map((params: any) => {
                     return (
                       <WholeContainer>
                         <View
@@ -177,8 +206,8 @@ const AccountLimits: React.FC<AccountLimitProps> = (): JSX.Element => {
                         >
                           <Typography
                             fontSize={16}
-                            fontWeight="600"
-                            fontFamily="Nunito-Regular"
+                            fontWeight="400"
+                            fontFamily="Mukta-Regular"
                           >
                             {capitalizeName(params?.type)}
                           </Typography>
@@ -192,12 +221,13 @@ const AccountLimits: React.FC<AccountLimitProps> = (): JSX.Element => {
                               />
                             }
                             onPress={() => {
+                              setSelectedLimit({ ...params });
                               refRBSheet?.current?.open();
                             }}
                           >
                             <Typography
-                              fontWeight="600"
-                              fontSize={14}
+                              fontWeight="500"
+                              fontSize={12}
                               fontFamily="Mukta-SemiBold"
                             >
                               {params?.limit}
@@ -208,141 +238,18 @@ const AccountLimits: React.FC<AccountLimitProps> = (): JSX.Element => {
                     );
                   })
                 : null}
-              {/* <View>
-                {arrayChecker(dataGetLimits)
-                  ? dataGetLimits.map((params: any, index: number) => {
-                      const limitReached = params?.limit_reached
-                        ? Number(params?.limit_reached)
-                        : 0;
-                      const limit = params?.limit ? Number(params?.limit) : 0;
-                      const floatPercentage = calculatePercentage(
-                        limitReached,
-                        limit
-                      );
-
-                      let colorBar = "#0DCA9D";
-                      if ((floatPercentage || 0) <= 0.3) {
-                        colorBar = "#0DCA9D";
-                      } else if ((floatPercentage || 0) <= 0.6) {
-                        colorBar = "#FBB445";
-                      } else if ((floatPercentage || 0) <= 0.1) {
-                        colorBar = "#FF7171";
-                      }
-
-                      const capitalizeName = (name: string) => {
-                        return name.charAt(0).toUpperCase() + name.slice(1);
-                      };
-
-                      return (
-                        <View>
-                          <View
-                            style={{ paddingHorizontal: 18, paddingBottom: 12 }}
-                          >
-                            <Typography
-                              marginLeft={12}
-                              marginBottom={12}
-                              fontSize={16}
-                              color="#4D4D4D"
-                            >
-                              {capitalizeName(params?.type)} limit
-                            </Typography>
-                            <FormGroup>
-                              <FormGroup.Input
-                                keyboardType="number-pad"
-                                returnKeyType={"done"}
-                                onChangeText={handleChange(`${params?.type}`)}
-                                onBlur={handleBlur(`${params?.type}`)}
-                                value={values[params?.limit] || ""}
-                                placeholderTextColor={vars["ios-default-text"]}
-                                placeholder={`€${params?.limit}`}
-                                iconColor="#086AFB"
-                                icon={<LimitsIcon size={14} />}
-                                disabled
-                              />
-                            </FormGroup>
-                            <View
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "center",
-                              }}
-                            >
-                              <View style={{ width: "94%" }}>
-                                <ProgressBar
-                                  progress={floatPercentage || 0}
-                                  color={colorBar}
-                                />
-                              </View>
-                            </View>
-                            <View
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "center",
-                              }}
-                            >
-                              <View
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "row",
-                                  justifyContent: "flex-end",
-                                  width: "94%",
-                                }}
-                              >
-                                <Typography fontSize={16} color="medium-grey2">
-                                  € {params?.limit_reached} / {params?.limit}
-                                </Typography>
-                              </View>
-                            </View>
-                          </View>
-                          {index + 1 < dataGetLimits.length ? (
-                            <Seperator
-                              backgroundColor={vars["grey"]}
-                              marginTop={4}
-                              marginBottom={24}
-                            />
-                          ) : null}
-                        </View>
-                      );
-                    })
-                  : null}
-              </View> */}
             </View>
           </Pressable>
         </View>
       </ScrollView>
-      <View style={styles.footerContent}>
-        <View style={styles.downloadBtnMain}>
-          <WholeContainer>
-            <Button
-              color="light-pink"
-              leftIcon={
-                <Ionicons
-                  color="#e7038e"
-                  size={20}
-                  name={"checkmark-circle-outline"}
-                />
-              }
-              onPress={handleSubmit}
-            >
-              <Typography
-                fontFamily="Nunito-SemiBold"
-                fontSize={16}
-                fontWeight={"600"}
-              >
-                Save changes
-              </Typography>
-            </Button>
-          </WholeContainer>
-        </View>
-      </View>
+
       <SwipableBottomSheet
         rbSheetRef={refRBSheet}
         closeOnDragDown={true}
         closeOnPressMask={false}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
-          height: rh(Platform.OS === "android" ? 30 : 40),
+          height: bottomSheetHeight + 45,
           backgroundColor: "#FFF",
           borderTopLeftRadius: 14,
           borderTopRightRadius: 14,
@@ -351,7 +258,100 @@ const AccountLimits: React.FC<AccountLimitProps> = (): JSX.Element => {
           paddingHorizontal: 15,
         }}
         draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
-      ></SwipableBottomSheet>
+      >
+        <View
+          onLayout={(event) => {
+            const { height } = event.nativeEvent.layout;
+            setBottomSheetHeight(height);
+          }}
+        >
+          <Typography
+            marginBottom={18}
+            fontSize={16}
+            fontFamily="Mukta-Regular"
+            color="#4D4D4D"
+            fontWeight="500"
+          >
+            {capitalizeName(selectedLimit?.type)} limit
+          </Typography>
+          <FormGroup>
+            <FormGroup.Input
+              keyboardType="number-pad"
+              returnKeyType={"done"}
+              onChangeText={handleChange(`${selectedLimit?.type}`)}
+              onBlur={handleBlur(`${selectedLimit?.type}`)}
+              value={values[selectedLimit?.limit]}
+              placeholderTextColor={vars["ios-default-text"]}
+              placeholder={`€${selectedLimit?.limit}`}
+              iconColor="#086AFB"
+              icon={<LimitsIcon size={14} />}
+              disabled
+            />
+          </FormGroup>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
+          >
+            <View style={{ width: "94%" }}>
+              <ProgressBar
+                progress={UIProperties.floatPercentage || 0}
+                color={UIProperties.colorBar}
+              />
+            </View>
+          </View>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
+          >
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-end",
+                width: "94%",
+              }}
+            >
+              <Typography
+                fontSize={14}
+                fontWeight="400"
+                color="medium-grey2"
+                fontFamily="Mukta-Regular"
+              >
+                € {selectedLimit?.limit_reached} / {selectedLimit?.limit}
+              </Typography>
+            </View>
+          </View>
+          <View style={[styles.footerContent, { marginTop: 20 }]}>
+            <View style={styles.downloadBtnMain}>
+              <Button
+                color="light-pink"
+                leftIcon={
+                  <Ionicons
+                    color="#e7038e"
+                    size={20}
+                    name={"checkmark-circle-outline"}
+                  />
+                }
+                onPress={handleSubmit}
+              >
+                <Typography
+                  fontFamily="Nunito-SemiBold"
+                  fontSize={16}
+                  fontWeight={"600"}
+                >
+                  Submit
+                </Typography>
+              </Button>
+            </View>
+          </View>
+        </View>
+      </SwipableBottomSheet>
     </Fragment>
   );
 };

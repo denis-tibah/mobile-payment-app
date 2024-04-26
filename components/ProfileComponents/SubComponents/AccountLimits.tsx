@@ -1,13 +1,22 @@
 import { Pressable, View } from "react-native";
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useRef } from "react";
+import { useFormik } from "formik";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useSelector } from "react-redux";
+import { Platform } from "react-native";
 import { ProgressBar } from "react-native-paper";
 import { ScrollView } from "react-native-gesture-handler";
 import Spinner from "react-native-loading-spinner-overlay";
-import { useFormik } from "formik";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { responsiveHeight as rh } from "react-native-responsive-dimensions";
 
-import { arrayChecker, calculatePercentage } from "../../../utils/helpers";
+import SwipableBottomSheet from "../../SwipableBottomSheet";
+
+import {
+  arrayChecker,
+  calculatePercentage,
+  capitalizeName,
+} from "../../../utils/helpers";
 import Typography from "../../Typography";
 import FormGroup from "../../FormGroup";
 import LimitsIcon from "../../../assets/icons/Limit";
@@ -30,6 +39,8 @@ const AccountLimits: React.FC<AccountLimitProps> = (): JSX.Element => {
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const userData = useSelector((state: RootState) => state?.auth?.userData);
 
+  const refRBSheet = useRef();
+
   const [statusMessage, setStatusMessage] = useState<{
     header: string;
     body: string;
@@ -51,6 +62,7 @@ const AccountLimits: React.FC<AccountLimitProps> = (): JSX.Element => {
       skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
     }
   );
+  console.log("🚀 ~ dataGetLimits:", dataGetLimits);
 
   const [
     updateLimit,
@@ -150,7 +162,53 @@ const AccountLimits: React.FC<AccountLimitProps> = (): JSX.Element => {
           />
           <Pressable>
             <View style={{ marginTop: 16 }}>
-              <View>
+              {arrayChecker(dataGetLimits) && dataGetLimits.length > 0
+                ? dataGetLimits.map((params: any, index: number) => {
+                    return (
+                      <WholeContainer>
+                        <View
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: 16,
+                          }}
+                        >
+                          <Typography
+                            fontSize={16}
+                            fontWeight="600"
+                            fontFamily="Nunito-Regular"
+                          >
+                            {capitalizeName(params?.type)}
+                          </Typography>
+                          <Button
+                            color="light-blue"
+                            leftIcon={
+                              <FontAwesome
+                                color="#086AFB"
+                                size={14}
+                                name={"euro"}
+                              />
+                            }
+                            onPress={() => {
+                              refRBSheet?.current?.open();
+                            }}
+                          >
+                            <Typography
+                              fontWeight="600"
+                              fontSize={14}
+                              fontFamily="Mukta-SemiBold"
+                            >
+                              {params?.limit}
+                            </Typography>
+                          </Button>
+                        </View>
+                      </WholeContainer>
+                    );
+                  })
+                : null}
+              {/* <View>
                 {arrayChecker(dataGetLimits)
                   ? dataGetLimits.map((params: any, index: number) => {
                       const limitReached = params?.limit_reached
@@ -248,7 +306,7 @@ const AccountLimits: React.FC<AccountLimitProps> = (): JSX.Element => {
                       );
                     })
                   : null}
-              </View>
+              </View> */}
             </View>
           </Pressable>
         </View>
@@ -278,6 +336,22 @@ const AccountLimits: React.FC<AccountLimitProps> = (): JSX.Element => {
           </WholeContainer>
         </View>
       </View>
+      <SwipableBottomSheet
+        rbSheetRef={refRBSheet}
+        closeOnDragDown={true}
+        closeOnPressMask={false}
+        wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
+        containerStyles={{
+          height: rh(Platform.OS === "android" ? 30 : 40),
+          backgroundColor: "#FFF",
+          borderTopLeftRadius: 14,
+          borderTopRightRadius: 14,
+          elevation: 12,
+          shadowColor: "#52006A",
+          paddingHorizontal: 15,
+        }}
+        draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
+      ></SwipableBottomSheet>
     </Fragment>
   );
 };

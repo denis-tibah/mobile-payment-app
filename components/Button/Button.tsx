@@ -9,6 +9,8 @@ export function Button({
   rightIcon,
   leftIcon,
   onPress,
+  basePaddingRight = 0,
+  basePaddingLeft = 0,
   selected = false,
   loading = false,
   disabled = false,
@@ -21,6 +23,8 @@ export function Button({
         style={[
           style,
           styles.base,
+          basePaddingRight && { paddingRight: basePaddingRight },
+          basePaddingLeft && { paddingLeft: basePaddingLeft },
           disabled && styles.disabled,
           (rightIcon || leftIcon) && styles.buttonIconContainer,
           color && styles[color],

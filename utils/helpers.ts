@@ -158,6 +158,10 @@ export function capitalizeFirstLetter(str: string): string {
   return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
 }
 
+export const capitalizeName = (name: string) => {
+  return name ? name.charAt(0).toUpperCase() + name.slice(1) : "";
+};
+
 export const transactionStatusOptions = Object.keys(TRANSACTIONS_STATUS).map(
   (value) => {
     return {

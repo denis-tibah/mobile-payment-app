@@ -60,9 +60,9 @@ export function Avatar({
     } else {
       avatarSource = { uri: src };
     }
-  } else if (profileData?.UserProfile?.profileimage) {
+  } else if (profileData?.userProfile?.profileimage) {
     avatarSource = {
-      uri: `data:image/jpeg;base64,${profileData?.UserProfile?.profileimage}`,
+      uri: `data:image/jpeg;base64,${profileData?.userProfile?.profileimage}`,
     };
   } else {
     avatarSource = DefaultAvatar;

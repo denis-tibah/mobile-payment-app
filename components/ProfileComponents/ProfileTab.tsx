@@ -254,10 +254,10 @@ const ProfileTab: FC<IProfileTab> = () => {
                 }}
               >
                 <View style={{ width: "20%" }}>
-                  {profileData?.UserProfile?.profileimage ? (
+                  {profileData?.userProfile?.profileimage ? (
                     <Avatar
                       isBase64Image
-                      src={profileData?.UserProfile?.profileimage}
+                      src={profileData?.userProfile?.profileimage}
                       fileUpload
                       size="large"
                       icon={<Camera color="blue" size={34} />}
@@ -292,7 +292,6 @@ const ProfileTab: FC<IProfileTab> = () => {
                             });
                           }}
                           listMode="MODAL"
-                          // setValue={setSelectedSalutation}
                           items={salutations}
                           value={values?.salutation}
                           setOpen={setOpenListForSalutation}
@@ -455,21 +454,6 @@ const ProfileTab: FC<IProfileTab> = () => {
                   />
                 </FormGroup>
               </View>
-              {/*  <View style={styles.formContainer}>
-                <FormGroup>
-                  <FormGroup.Input
-                    keyboardType="default"
-                    returnKeyType={"done"}
-                    onChangeText={handleChange("state")}
-                    onBlur={handleBlur("state")}
-                    value={values.state}
-                    placeholderTextColor={vars["ios-default-text"]}
-                    placeholder="State"
-                    iconColor="blue"
-                    icon={<MapIcon />}
-                  />
-                </FormGroup>
-              </View> */}
               <View style={styles.formContainer}>
                 <FormGroup>
                   <FormGroup.Input

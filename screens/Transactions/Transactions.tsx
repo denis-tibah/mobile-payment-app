@@ -683,11 +683,7 @@ export function Transactions({ navigation, route }: any) {
 
   return (
     <MainLayout navigation={navigation}>
-      <Spinner
-        visible={
-          isLoadingTransactions || isLoadingCardTransactions || isLoading
-        }
-      />
+      <Spinner visible={isLoadingTransactions || isLoadingCardTransactions} />
       <SuccessModal
         isOpen={statusMessage?.isOpen}
         title={statusMessage.header}

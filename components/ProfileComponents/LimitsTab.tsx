@@ -1,6 +1,7 @@
 import { useState, FC, Fragment } from "react";
-import { View, ScrollView, useWindowDimensions } from "react-native";
+import { View, ScrollView, useWindowDimensions, Platform } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
+import { responsiveHeight as rh } from "react-native-responsive-dimensions";
 
 import Button from "../../components/Button";
 import EuroIcon from "../../assets/icons/Euro";
@@ -39,8 +40,8 @@ const LimitsTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
         }}
         style={{
           backgroundColor: "#fff",
-          height: heightGlobal * 0.73,
-          overflow: "scroll",
+          height:
+            Platform.OS === "android" ? rh(100) - 60 : heightGlobal * 0.77,
         }}
         renderTabBar={(props) => (
           <View

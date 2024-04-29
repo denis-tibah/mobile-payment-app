@@ -54,7 +54,6 @@ const AccountLimits: React.FC<AccountLimitProps> = (): JSX.Element => {
     floatPercentage: number | null;
   }>({ colorBar: "", floatPercentage: 0 });
   const [bottomSheetHeight, setBottomSheetHeight] = useState<number>(0);
-  console.log("🚀 ~ bottomSheetHeight:", bottomSheetHeight);
 
   useEffect(() => {
     let percentage;
@@ -216,7 +215,7 @@ const AccountLimits: React.FC<AccountLimitProps> = (): JSX.Element => {
                             leftIcon={
                               <FontAwesome
                                 color="#086AFB"
-                                size={14}
+                                size={12}
                                 name={"euro"}
                               />
                             }

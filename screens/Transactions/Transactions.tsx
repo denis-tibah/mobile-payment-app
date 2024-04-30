@@ -60,12 +60,13 @@ interface DateRangeType {
 }
 
 const currentDate = new Date();
-
+const pastDate = subDays(currentDate, 90);
+const formattedPastDate = format(pastDate, "yyyy-MM-dd");
 const initialSearchFieldData: SearchFilter = {
   accountId: "",
   direction: "desc",
   status: "",
-  from_date: "2022-01-01",
+  from_date: formattedPastDate,
   to_date: currentDate.toISOString().split("T")[0],
   limit: 10,
   page: 1,

@@ -60,8 +60,8 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
    {/* disabled by Aristos 26-04-2026 */}
   // const receiverName: string = params?.item.name || "";
 
-   const receiverName: string = params?.item?.transaction_direction === "outgoing"  ? params?.item?.name || "" : params?.item?.debtor_name || "";
-
+  //  const receiverName: string = params?.item?.transaction_direction === "outgoing"  ? params?.item?.name || "" : params?.item?.debtor_name || "";
+  const receiverName: string = params?.item?.transaction_direction === undefined  ? params?.item?.name || "" : params?.item?.transaction_direction === "outgoing" ? params?.item?.name || "" : params?.item?.debtor_name || "";
   const receiverIban: string = params?.item.iban || "";
 
   const [timeRemaining, setTimeRemaining] = useState<number>(60);

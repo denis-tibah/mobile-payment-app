@@ -8456,7 +8456,7 @@ react-native-reanimated@3.5.1:
 
 react-native-responsive-dimensions@^3.1.1:
   version "3.1.1"
-  resolved "https://registry.yarnpkg.com//-/react-native-responsive-dimensions-3.1.1.tgz#c4daf977b30a909f21164de53a8ba4c9451efefc"
+  resolved "https://registry.npmjs.org/react-native-responsive-dimensions/-/react-native-responsive-dimensions-3.1.1.tgz"
   integrity sha512-Vo2OhWsphq0HgKsmeZOeyW+c+vsFn1ZaCFkGDgdeCEEiLriT76jGA1JlUjtrj27hvyo/xzeTlBZ+vBso1A84fw==
 
 react-native-root-siblings@^4.0.0, react-native-root-siblings@^4.1.1:

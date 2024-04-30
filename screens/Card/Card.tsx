@@ -521,7 +521,10 @@ export function Card({ navigation, route }: any) {
                 style={styles.cardActionItem}
                 onPress={() => {
                   // dispatch<any>(setIsCardTransactionShown(true));
-                  navigation.navigate("Transactions");
+                  navigation.navigate("Transactions", {
+                    isShowCardTransaction: true,
+                    cardId: selectedCard?.cardreferenceId,
+                  });
                 }}
               >
                 <View style={{ display: "flex", flexDirection: "row" }}>

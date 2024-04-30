@@ -159,10 +159,21 @@ export function Transactions({ navigation, route }: any) {
     setIsLoading(true);
     fetchTransactionsWithFilters();
     dispatch<any>(setIsCardTransactionShown(false));
+    setIsFetchCardInfo(true);
     return () => {
       clearFilter();
     };
   }, []);
+
+  useEffect(() => {
+    if (route?.params?.isShowCardTransaction && route?.params?.cardId) {
+      setSearchFieldData({
+        ...initialSearchFieldData,
+        card_id: route?.params?.cardId,
+      });
+      handleFetchCardTransactions(route?.params?.cardId);
+    }
+  }, [route]);
 
   useEffect(() => {
     const copyCardOrTransactionsWithFilter = {};

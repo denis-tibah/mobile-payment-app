@@ -178,70 +178,65 @@ const AccountLimits: React.FC<AccountLimitProps> = (): JSX.Element => {
 
   return (
     <Fragment>
-      <ScrollView>
-        <View style={{ backgroundColor: "#ffff" }}>
-          <Spinner visible={isLoadingGetLimits || isLoadingUpdateLimits} />
-          <SuccessModal
-            isOpen={statusMessage?.isOpen}
-            title={statusMessage.header}
-            text={statusMessage.body}
-            isError={statusMessage.isError}
-            onClose={onCloseModal}
-          />
-          <Pressable>
-            <View style={{ marginTop: 16 }}>
-              {arrayChecker(dataGetLimits) && dataGetLimits.length > 0
-                ? dataGetLimits.map((params: any) => {
-                    return (
-                      <WholeContainer>
-                        <View
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            marginBottom: 16,
-                          }}
+      <View style={{ backgroundColor: "#ffff" }}>
+        <Spinner visible={isLoadingGetLimits || isLoadingUpdateLimits} />
+        <SuccessModal
+          isOpen={statusMessage?.isOpen}
+          title={statusMessage.header}
+          text={statusMessage.body}
+          isError={statusMessage.isError}
+          onClose={onCloseModal}
+        />
+        <Pressable>
+          <View style={{ marginTop: 16 }}>
+            {arrayChecker(dataGetLimits) && dataGetLimits.length > 0
+              ? dataGetLimits.map((params: any) => {
+                  return (
+                    <View
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: 16,
+                      }}
+                    >
+                      <Typography
+                        fontSize={16}
+                        fontWeight="400"
+                        fontFamily="Mukta-Regular"
+                      >
+                        {capitalizeName(params?.type)}
+                      </Typography>
+                      <Button
+                        color="light-blue"
+                        leftIcon={
+                          <FontAwesome
+                            color="#086AFB"
+                            size={12}
+                            name={"euro"}
+                          />
+                        }
+                        onPress={() => {
+                          setSelectedLimit({ ...params });
+                          refRBSheet?.current?.open();
+                        }}
+                      >
+                        <Typography
+                          fontWeight="500"
+                          fontSize={12}
+                          fontFamily="Mukta-SemiBold"
                         >
-                          <Typography
-                            fontSize={16}
-                            fontWeight="400"
-                            fontFamily="Mukta-Regular"
-                          >
-                            {capitalizeName(params?.type)}
-                          </Typography>
-                          <Button
-                            color="light-blue"
-                            leftIcon={
-                              <FontAwesome
-                                color="#086AFB"
-                                size={12}
-                                name={"euro"}
-                              />
-                            }
-                            onPress={() => {
-                              setSelectedLimit({ ...params });
-                              refRBSheet?.current?.open();
-                            }}
-                          >
-                            <Typography
-                              fontWeight="500"
-                              fontSize={12}
-                              fontFamily="Mukta-SemiBold"
-                            >
-                              {params?.limit}
-                            </Typography>
-                          </Button>
-                        </View>
-                      </WholeContainer>
-                    );
-                  })
-                : null}
-            </View>
-          </Pressable>
-        </View>
-      </ScrollView>
-
+                          {params?.limit}
+                        </Typography>
+                      </Button>
+                    </View>
+                  );
+                })
+              : null}
+          </View>
+        </Pressable>
+      </View>
       <SwipableBottomSheet
         rbSheetRef={refRBSheet}
         closeOnDragDown={true}

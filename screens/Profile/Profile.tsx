@@ -13,6 +13,7 @@ import Feather from "react-native-vector-icons/Feather";
 import { useAtom } from "jotai";
 import { TouchableOpacity } from "react-native";
 import { Snackbar } from "react-native-paper";
+import { responsiveHeight as rh } from "react-native-responsive-dimensions";
 
 import MainLayout from "../../layout/Main";
 import Button from "../../components/Button";

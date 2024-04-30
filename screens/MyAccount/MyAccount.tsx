@@ -10,6 +10,7 @@ import {
 import { useSelector } from "react-redux";
 import * as SecureStore from "expo-secure-store";
 import Spinner from "react-native-loading-spinner-overlay/lib";
+import { subDays, format } from "date-fns";
 
 import MainLayout from "../../layout/Main";
 import { styles } from "./style";
@@ -42,6 +43,9 @@ export function MyAccount({ navigation }: any) {
   const refRBSheet = useRef();
 
   const transactionsParams = ({ status, limit }: any) => {
+    const pastDate = subDays(currentDate, 90);
+    const formattedPastDate = format(pastDate, "yyyy-MM-dd");
+
     return {
       accountId: userData?.id || 0,
       accessToken: userTokens?.access_token,
@@ -50,7 +54,7 @@ export function MyAccount({ navigation }: any) {
       direction: "desc",
       limit: limit || 10,
       page: 1,
-      from_date: "2023-11-01",
+      from_date: formattedPastDate,
       to_date: currentDate.toISOString().split("T")[0],
       group_date: true,
     };

@@ -1,24 +1,21 @@
 import { useState, FC, Fragment } from "react";
-import { View, ScrollView, useWindowDimensions, Platform } from "react-native";
-import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-import { responsiveHeight as rh } from "react-native-responsive-dimensions";
+import { View, ScrollView, useWindowDimensions } from "react-native";
+import {
+  responsiveHeight as rh,
+  responsiveWidth as rw,
+} from "react-native-responsive-dimensions";
 
 import Button from "../../components/Button";
 import EuroIcon from "../../assets/icons/Euro";
 import Typography from "../Typography";
-import { heightGlobal } from "../../utils/helpers";
 import AccountLimits from "./SubComponents/AccountLimits";
 import CardLimit from "./SubComponents/CardLimits";
 import CardIcon from "../../assets/icons/Card";
+import WholeContainer from "../../layout/WholeContainer";
 
 interface ISecurityTab {
   cleanUpTabSelection: () => void;
 }
-
-const renderScene = SceneMap({
-  account: AccountLimits,
-  card: CardLimit,
-});
 
 const LimitsTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
   const layout = useWindowDimensions();
@@ -27,73 +24,84 @@ const LimitsTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
     { key: "account", title: "Account" },
     { key: "card", title: "Card" },
   ]);
+  const [focusedTab, setFocusedTab] = useState<string>("account");
+
+  const displayButtons = (type: string, title: string) => {
+    return (
+      <Button
+        leftIcon={
+          type === "account" ? (
+            <EuroIcon
+              color={focusedTab === type ? "white" : "blue"}
+              size={14}
+            />
+          ) : (
+            <CardIcon
+              color={focusedTab === type ? "white" : "blue"}
+              size={14}
+            />
+          )
+        }
+        style={{
+          width: rw(42),
+        }}
+        color={focusedTab === type ? "blue" : "light-blue"}
+        basePaddingRight={36}
+        basePaddingLeft={36}
+        onPress={() => {
+          setFocusedTab((prevState) =>
+            prevState === "account" ? "card" : "account"
+          );
+        }}
+      >
+        <Typography fontWeight="600" fontSize={14} fontFamily="Nunito-SemiBold">
+          {title}
+        </Typography>
+      </Button>
+    );
+  };
 
   return (
-    <ScrollView>
-      <TabView
-        navigationState={{ index: limitIndex, routes }}
-        renderScene={renderScene}
-        onIndexChange={setLimitIndex}
-        initialLayout={{
-          width: layout.width,
-          height: layout.height,
-        }}
+    <Fragment>
+      <View
         style={{
           backgroundColor: "#fff",
-          height:
-            Platform.OS === "android" ? rh(100) - 60 : heightGlobal * 0.77,
+          overflow: "hidden",
         }}
-        renderTabBar={(props) => (
+      >
+        <WholeContainer>
           <View
             style={{
               backgroundColor: "#fffff",
-              paddingRight: 8,
-              paddingLeft: 14,
+              display: "flex",
+              flexBasis: 1,
+              flexDirection: "row",
+              justifyContent: "space-around",
+              marginTop: 16,
+              marginBottom: 20,
+              width: "100%",
             }}
           >
-            <TabBar
-              {...props}
-              tabStyle={{
-                paddingVertical: 16,
-                paddingHorizontal: 0,
-              }}
-              pressColor="transparent"
-              indicatorStyle={{ backgroundColor: "transparent" }}
-              style={{
-                backgroundColor: "#fffff",
-                width: "100%",
-              }}
-              renderLabel={({ route, focused }) => (
-                <Button
-                  leftIcon={
-                    route.title.toLowerCase() === "account" ? (
-                      <EuroIcon color={focused ? "white" : "blue"} size={14} />
-                    ) : (
-                      <CardIcon color={focused ? "white" : "blue"} size={14} />
-                    )
-                  }
-                  style={{
-                    width: "100%",
-                  }}
-                  color={focused ? "blue" : "light-blue"}
-                  basePaddingRight={36}
-                  basePaddingLeft={36}
-                  onPress={() => {}}
-                >
-                  <Typography
-                    fontWeight="600"
-                    fontSize={14}
-                    fontFamily="Nunito-SemiBold"
-                  >
-                    {route.title}
-                  </Typography>
-                </Button>
-              )}
-            />
+            {displayButtons("account", "Account")}
+            {displayButtons("card", "Card")}
           </View>
-        )}
-      />
-    </ScrollView>
+          <View style={{ marginHorizontal: 8 }}>
+            <ScrollView>
+              {focusedTab === "account" ? (
+                <View style={{ height: rh(70) }}>
+                  <AccountLimits />
+                </View>
+              ) : null}
+              {focusedTab === "card" ? (
+                <View /* style={{ height: rh(100) }} */>
+                  <CardLimit />
+                </View>
+              ) : null}
+            </ScrollView>
+          </View>
+        </WholeContainer>
+      </View>
+    </Fragment>
   );
 };
 

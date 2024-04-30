@@ -1,20 +1,15 @@
 import React, { Fragment, useEffect, useState, useRef } from "react";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 import Typography from "../../Typography";
-import {
-  heightGlobal,
-  arrayChecker,
-  capitalizeName,
-} from "../../../utils/helpers";
+import { arrayChecker, capitalizeName } from "../../../utils/helpers";
 import { useLazyGetCardLimitQuery } from "../../../redux/card/cardSliceV2";
 import FormGroup from "../../FormGroup";
 import vars from "../../../styles/vars";
 import LimitsIcon from "../../../assets/icons/Limit";
 import Button from "../../Button";
-import WholeContainer from "../../../layout/WholeContainer";
 import SwipableBottomSheet from "../../SwipableBottomSheet";
 import { Seperator } from "../../Seperator/Seperator";
 import { styles } from "../styles";
@@ -163,17 +158,13 @@ const CardLimit: React.FC<CardLimitProps> = (): JSX.Element => {
   };
 
   return (
-    <ScrollView
-      style={{
-        backgroundColor: "#fff",
-      }}
-    >
-      <View style={{ height: heightGlobal }}>
+    <Fragment>
+      <View>
         <View style={{ marginTop: 16 }}>
           {arrayChecker(cardLimitsProperties) && cardLimitsProperties.length > 0
             ? cardLimitsProperties.map((params: any, index: number) => {
                 return (
-                  <WholeContainer>
+                  <Fragment>
                     <Typography
                       fontWeight="600"
                       fontSize={16}
@@ -213,7 +204,7 @@ const CardLimit: React.FC<CardLimitProps> = (): JSX.Element => {
                         marginBottom={16}
                       />
                     ) : null}
-                  </WholeContainer>
+                  </Fragment>
                 );
               })
             : null}
@@ -294,7 +285,7 @@ const CardLimit: React.FC<CardLimitProps> = (): JSX.Element => {
           </View>
         </View>
       </SwipableBottomSheet>
-    </ScrollView>
+    </Fragment>
   );
 };
 export default CardLimit;

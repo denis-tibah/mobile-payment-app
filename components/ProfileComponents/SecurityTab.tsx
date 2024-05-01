@@ -18,7 +18,7 @@ import Spinner from "react-native-loading-spinner-overlay/lib";
 import Typography from "../Typography";
 import FormGroup from "../FormGroup";
 import Button from "../Button";
-import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
+import { SuccessModal } from "../SuccessModal/SuccessModal";
 import { Seperator } from "../Seperator/Seperator";
 import TwoFactorAuthenticationIcon from "../../assets/icons/TwoFactorAuthentication";
 import { securityTabSchema } from "../../utils/formikSchema";

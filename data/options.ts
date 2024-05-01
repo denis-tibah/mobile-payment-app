@@ -24,6 +24,12 @@ export const salutations = [
   { label: "Mrs", value: "Mrs" },
 ];
 
+export const salutations2 = [
+  { key: "Mr", value: "Mr" },
+  { key: "Ms", value: "Ms" },
+  { key: "Mrs", value: "Mrs" },
+];
+
 export const noOfMonths = [
   null,
   "1",

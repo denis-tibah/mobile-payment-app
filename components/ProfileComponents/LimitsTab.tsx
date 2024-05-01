@@ -5,7 +5,7 @@ import {
   responsiveWidth as rw,
 } from "react-native-responsive-dimensions";
 
-import Button from "../../components/Button";
+import Button from "../Button";
 import EuroIcon from "../../assets/icons/Euro";
 import Typography from "../Typography";
 import AccountLimits from "./SubComponents/AccountLimits";

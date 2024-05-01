@@ -13,6 +13,8 @@ import DropDownPicker from "react-native-dropdown-picker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Entypo from "react-native-vector-icons/Entypo";
+import { SelectList } from "react-native-dropdown-select-list";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 import Button from "../Button";
 import FormGroup from "../FormGroup";
@@ -31,8 +33,8 @@ import DobIcon from "../../assets/icons/Birthday";
 import { Avatar } from "../../components/Avatar/Avatar";
 import MapIcon from "../../assets/icons/Map";
 import CityIcon from "../../assets/icons/City";
-import { countries } from "../../data/ISO3166";
-import { salutations } from "../../data/options";
+import { countries, countries2 } from "../../data/ISO3166";
+import { salutations, salutations2 } from "../../data/options";
 import { editProfileSchema } from "../../utils/formikSchema";
 import { useCreateTicketRequestMutation } from "../../redux/profile/profileSliceV2";
 import { RootState } from "../../store";
@@ -61,6 +63,17 @@ const ProfileTab: FC<IProfileTab> = () => {
   const [isDatePickerVisible, setDatePickerVisibility] =
     useState<boolean>(false);
   const [displayedDOB, setDisplayedDOB] = useState<string>("");
+  const [defaultCountry, setDefaultCountry] = useState<{
+    key: string;
+    value: string;
+  }>({ key: "", value: "" });
+
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [defaultSalutation, setDefaulSalutation] = useState<{
+    key: string;
+    value: string;
+  }>({ key: "", value: "" });
+  const [selectedSalutation, setSelectedSalutation] = useState<string>("");
 
   const formatDOBToDash = (paramDOB: string): string | null => {
     const splitTimeAndDate: string[] | boolean = paramDOB
@@ -200,6 +213,32 @@ const ProfileTab: FC<IProfileTab> = () => {
     }
   }, [profileData?.dob, values?.dob]);
 
+  // for setting default country in form
+  useEffect(() => {
+    if (profileData?.country) {
+      const countryFromDb = countries2.find(
+        (param) => param.key === profileData?.country
+      );
+
+      setDefaultCountry({
+        key: countryFromDb?.key || "",
+        value: countryFromDb?.value || "",
+      });
+      setSelectedCountry(countryFromDb?.key || "");
+    }
+  }, [profileData?.country]);
+
+  // for setting default salutation in form
+  useEffect(() => {
+    if (profileData?.salutation) {
+      setDefaulSalutation({
+        key: profileData?.salutation || "",
+        value: profileData?.salutation || "",
+      });
+      setSelectedSalutation(profileData?.salutation || "");
+    }
+  }, [profileData?.salutation]);
+
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
@@ -245,7 +284,7 @@ const ProfileTab: FC<IProfileTab> = () => {
                 style={{
                   display: "flex",
                   flexDirection: "row",
-                  alignItems: "center",
+                  alignItems: "flex-start",
                   width: "100%",
                   marginBottom: 18,
                   marginLeft: 4,
@@ -277,7 +316,7 @@ const ProfileTab: FC<IProfileTab> = () => {
                       errors.salutation
                     }
                   >
-                    <View style={styles.dropdownWrapper}>
+                    {/* <View style={styles.dropdownWrapper}>
                       <View style={styles.dropDownIconContainerLeft}>
                         <SalutationIcon size={16} color="blue" />
                       </View>
@@ -306,6 +345,56 @@ const ProfileTab: FC<IProfileTab> = () => {
                       </View>
                       <View style={styles.dropDownIconContainerRight}>
                         <ArrowRightIcon size={16} color="blue" />
+                      </View>
+                    </View> */}
+
+                    <View>
+                      <View style={{ position: "absolute", top: 12, left: 14 }}>
+                        <View
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                          }}
+                        >
+                          <SalutationIcon size={16} color="blue" />
+                          {!selectedSalutation ? (
+                            <Typography
+                              fontSize={16}
+                              fontWeight={"600"}
+                              fontFamily="Nunito-SemiBold"
+                              marginLeft={8}
+                              color={vars["medium-grey"]}
+                            >
+                              Salutation
+                            </Typography>
+                          ) : null}
+                        </View>
+                      </View>
+                      <View>
+                        <SelectList
+                          defaultOption={defaultSalutation}
+                          setSelected={(val: string) => {
+                            setSelectedSalutation(val);
+                          }}
+                          onSelect={() => {
+                            setFieldValue("salutation", selectedSalutation);
+                          }}
+                          data={salutations2}
+                          save="value"
+                          arrowicon={<ArrowRightIcon size={16} color="blue" />}
+                          search={false}
+                          boxStyles={{
+                            borderRadius: 50,
+                            borderColor: vars["accent-blue"],
+                          }}
+                          dropdownStyles={{
+                            borderColor: vars["accent-blue"],
+                          }}
+                          inputStyles={{ marginLeft: 20 }}
+                          // remove text in placeholder
+                          placeholder=" "
+                        />
                       </View>
                     </View>
                   </FormGroup>
@@ -471,7 +560,7 @@ const ProfileTab: FC<IProfileTab> = () => {
               </View>
               <View>
                 <FormGroup>
-                  <View style={styles.dropdownWrapper}>
+                  {/* <View style={styles.dropdownWrapper}>
                     <View style={styles.dropDownIconContainerLeft}>
                       <Entypo size={18} color="#086AFB" name={"globe"} />
                     </View>
@@ -500,6 +589,74 @@ const ProfileTab: FC<IProfileTab> = () => {
                     </View>
                     <View style={styles.dropDownIconContainerRight}>
                       <ArrowRightIcon size={16} color="blue" />
+                    </View>
+                  </View> */}
+                  <View>
+                    <View style={{ position: "absolute", top: 12, left: 14 }}>
+                      <View
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Entypo size={18} color="#086AFB" name={"globe"} />
+                        {!selectedCountry ? (
+                          <Typography
+                            fontSize={16}
+                            fontWeight={"600"}
+                            fontFamily="Nunito-SemiBold"
+                            marginLeft={8}
+                            color={vars["medium-grey"]}
+                          >
+                            Select country
+                          </Typography>
+                        ) : null}
+                      </View>
+                    </View>
+                    <View>
+                      <SelectList
+                        defaultOption={defaultCountry}
+                        setSelected={(val: string) => {
+                          setSelectedCountry(val);
+                        }}
+                        onSelect={() => {
+                          const keySelectedCountry = countries2.find(
+                            (param) =>
+                              param?.value.toLowerCase() ===
+                              selectedCountry.toLowerCase()
+                          )?.key;
+                          setFieldValue(
+                            "country",
+                            keySelectedCountry || selectedCountry || ""
+                          );
+                        }}
+                        notFoundText="No country found"
+                        data={countries2}
+                        save="value"
+                        searchPlaceholder=" "
+                        arrowicon={<ArrowRightIcon size={16} color="blue" />}
+                        search={false}
+                        /* searchicon={
+                          <FontAwesome5
+                            size={20}
+                            color="#086AFB"
+                            name={"globe-europe"}
+                          />
+                        } */
+                        searchicon={<View />}
+                        boxStyles={{
+                          borderRadius: 50,
+                          borderColor: vars["accent-blue"],
+                        }}
+                        dropdownStyles={{
+                          borderColor: vars["accent-blue"],
+                        }}
+                        inputStyles={{ marginLeft: 20 }}
+                        maxHeight={300}
+                        // remove text in placeholder
+                        placeholder=" "
+                      />
                     </View>
                   </View>
                 </FormGroup>

@@ -354,7 +354,7 @@ export function MyAccount({ navigation }: any) {
                   transactionsParams({ status: "PENDING", limit: 10 })
                 );
                 getCompletedTransactions(
-                  transactionsParams({ status: "SUCCCESS", limit: 10 })
+                  transactionsParams({ status: "SUCCESS", limit: 10 })
                 );
               }}
             />

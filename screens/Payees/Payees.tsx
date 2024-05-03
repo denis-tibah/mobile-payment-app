@@ -342,15 +342,16 @@ export function Payees({ navigation }: any) {
                                 padding: 6,
                                 borderRadius: 99,
                                 backgroundColor: "#F5F4F4",
-                                width: 28,
-                                height: 28,
+                                width: 36,
+                                height: 36,
                               }}
                             >
                               <Typography
                                 color={vars["accent-blue"]}
-                                fontSize={10}
-                                fontWeight={"600"}
-                                fontFamily="Nunito-Bold"
+                                fontSize={14}
+                                fontWeight={"500"}
+                                fontFamily="Mukta-Regular"
+                                textAlign="center"
                               >
                                 {getNameInitials(item.name)}
                               </Typography>
@@ -364,8 +365,8 @@ export function Payees({ navigation }: any) {
                               <Typography
                                 color="#000"
                                 fontSize={14}
-                                fontWeight={"600"}
-                                fontFamily="Nunito-Bold"
+                                fontWeight={"400"}
+                                fontFamily="Mukta-Regular"
                               >
                                 {item.name}
                               </Typography>
@@ -387,21 +388,21 @@ export function Payees({ navigation }: any) {
                                 top: hp(0.2),
                                 display: "flex",
                                 flexDirection: "row",
-                                marginRight: wp(5),
+                                alignItems: "center",
                               }}
                             >
-                              <View style={{ top: hp(0.7) }}>
+                              <View>
                                 <CalenderEmpty
                                   color={vars["accent-grey"]}
-                                  size={14}
+                                  size={12}
                                 />
                               </View>
                               <Typography
                                 paddingLeft={wp(3)}
                                 color="#000"
                                 fontSize={14}
-                                fontWeight={"600"}
-                                fontFamily="Nunito-SemiBold"
+                                fontWeight={"400"}
+                                fontFamily="Mukta-Regular"
                               >
                                 {getFormattedDateFromUnixDotted(
                                   item.created_at
@@ -409,7 +410,14 @@ export function Payees({ navigation }: any) {
                               </Typography>
                             </View>
                           </TouchableOpacity>
-                          <View style={{ paddingTop: 3, paddingLeft: 8 }}>
+                          <View
+                            style={{
+                              paddingLeft: 8,
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                            }}
+                          >
                             <TouchableOpacity
                               onPress={() => {
                                 navigation.navigate(
@@ -448,9 +456,9 @@ export function Payees({ navigation }: any) {
                             >
                               <Typography
                                 color="accent-blue"
-                                fontSize={12}
-                                fontWeight={"600"}
-                                fontFamily="Nunito-Bold"
+                                fontSize={14}
+                                fontWeight={"400"}
+                                fontFamily="Mukta-SemiBold"
                               >
                                 IBAN
                               </Typography>
@@ -458,6 +466,7 @@ export function Payees({ navigation }: any) {
                                 color="#000"
                                 fontSize={14}
                                 fontWeight={"600"}
+                                fontFamily="Mukta-Regular"
                               >
                                 {item.iban}
                               </Typography>
@@ -470,9 +479,9 @@ export function Payees({ navigation }: any) {
                             >
                               <Typography
                                 color="accent-blue"
-                                fontSize={12}
+                                fontSize={14}
                                 fontWeight={"600"}
-                                fontFamily="Nunito-Bold"
+                                fontFamily="Mukta-SemiBold"
                               >
                                 BIC
                               </Typography>
@@ -480,6 +489,7 @@ export function Payees({ navigation }: any) {
                                 color="#000"
                                 fontSize={14}
                                 fontWeight={"400"}
+                                fontFamily="Mukta-Regular"
                               >
                                 {item.bic}
                               </Typography>

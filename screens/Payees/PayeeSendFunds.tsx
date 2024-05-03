@@ -1,12 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  View,
-  TouchableOpacity,
-  Text,
-  Dimensions,
-  Platform,
-  Image,
-} from "react-native";
+import { View, TouchableOpacity, Text, Platform, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { Divider } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
@@ -15,6 +8,7 @@ import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Spinner from "react-native-loading-spinner-overlay";
+import { subDays, format } from "date-fns";
 
 import ArrowLeftLine from "../../assets/icons/ArrowLeftLine";
 import vars from "../../styles/vars";
@@ -27,6 +21,10 @@ import {
   useGetOTPV2Mutation,
   useProcessPaymentV2Mutation,
 } from "../../redux/payee/payeeSlice";
+import {
+  useGetTransactionsQuery,
+  useLazyGetTransactionsQuery,
+} from "../../redux/transaction/transactionV2Slice";
 import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import ModalBottomSheet from "../../components/ModalBottomSheet/ModalBottomSheet";
@@ -57,11 +55,36 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
 
   const accountIban = userData?.iban || "";
 
-   {/* disabled by Aristos 26-04-2026 */}
+  const transactionsParams = ({ status, limit }: any) => {
+    const pastDate = subDays(new Date(), 90);
+    const formattedPastDate = format(pastDate, "yyyy-MM-dd");
+
+    return {
+      accountId: userData?.id || 0,
+      accessToken: userTokens?.access_token,
+      tokenZiyl: userTokens?.token_ziyl,
+      status,
+      direction: "desc",
+      limit: limit || 10,
+      page: 1,
+      from_date: formattedPastDate,
+      to_date: new Date().toISOString().split("T")[0],
+      group_date: true,
+    };
+  };
+
+  {
+    /* disabled by Aristos 26-04-2026 */
+  }
   // const receiverName: string = params?.item.name || "";
 
   //  const receiverName: string = params?.item?.transaction_direction === "outgoing"  ? params?.item?.name || "" : params?.item?.debtor_name || "";
-  const receiverName: string = params?.item?.transaction_direction === undefined  ? params?.item?.name || "" : params?.item?.transaction_direction === "outgoing" ? params?.item?.name || "" : params?.item?.debtor_name || "";
+  const receiverName: string =
+    params?.item?.transaction_direction === undefined
+      ? params?.item?.name || ""
+      : params?.item?.transaction_direction === "outgoing"
+      ? params?.item?.name || ""
+      : params?.item?.debtor_name || "";
   const receiverIban: string = params?.item.iban || "";
 
   const [timeRemaining, setTimeRemaining] = useState<number>(60);
@@ -79,6 +102,8 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
   const [bottomSheetMessage, setBottomSheetMessage] = useState<{
     message: string;
   }>({ message: "" });
+  const [isSuccessPaymentForRefetch, setIsSuccessPayment] =
+    useState<string>("");
 
   const enableResend = timeRemaining === 0;
 
@@ -107,7 +132,6 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
       data: dataGetOTPV2,
     },
   ] = useGetOTPV2Mutation();
-  console.log("🚀 ~ PayeeSendFunds ~ errorGetOTPV2:", errorGetOTPV2);
 
   const [
     processPaymentV2,
@@ -119,6 +143,30 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
       data: dataProcessPaymentV2,
     },
   ] = useProcessPaymentV2Mutation();
+  const { refetch: refetchSuccessTransactions } = useGetTransactionsQuery(
+    transactionsParams({ status: "SUCCESS" }),
+    {
+      refetchOnMountOrArgChange: true,
+      skip: isSuccessPaymentForRefetch === "isFetch" ? false : true,
+    }
+  );
+  const { refetch: refetchPendingTransactions } = useGetTransactionsQuery(
+    transactionsParams({ status: "PROCESSING" }),
+    {
+      refetchOnMountOrArgChange: true,
+      skip: isSuccessPaymentForRefetch === "isFetch" ? false : true,
+    }
+  );
+  const { refetch: refetchAllTransactions } = useGetTransactionsQuery(
+    transactionsParams({ status: "" }),
+    {
+      refetchOnMountOrArgChange: true,
+      skip: isSuccessPaymentForRefetch === "isFetch" ? false : true,
+    }
+  );
+
+  const [getTransactions, { data: dataTransactionsCompleted }] =
+    useLazyGetTransactionsQuery();
 
   const { data: userAccountInformation } = useGetAccountDetailsQuery({
     accountId: userData?.id || 0,
@@ -223,6 +271,10 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
             ? dataProcessPaymentV2?.message
             : "Your payment has been verified",
         });
+        // refetch transactions for real time display on my account and transaction history page
+        setTimeout(() => {
+          setIsSuccessPayment("isFetch");
+        }, 5000);
       }
     }
   }, [
@@ -230,6 +282,16 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
     isSuccessProcessPaymentV2,
     dataProcessPaymentV2,
   ]);
+
+  useEffect(() => {
+    if (isSuccessPaymentForRefetch === "isFetch") {
+      refetchPendingTransactions();
+      refetchAllTransactions();
+      refetchSuccessTransactions();
+      setIsSuccessPayment("");
+    }
+  }, [isSuccessPaymentForRefetch]);
+
   //for rejected  process payment
   useEffect(() => {
     if (!isLoadingProcessPaymentV2 && isErrorProcessPaymentV2) {
@@ -462,9 +524,7 @@ const PayeeSendFunds = ({ navigation, route }: any) => {
                   color="#000"
                   fontFamily="Nunito-SemiBold"
                 >
-                 
                   {receiverName}
-
                 </Typography>
 
                 <Typography

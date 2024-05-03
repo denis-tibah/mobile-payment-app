@@ -262,7 +262,7 @@ const ProfileTab: FC<IProfileTab> = () => {
   };
 
   return (
-    <ScrollView>
+    <ScrollView nestedScrollEnabled>
       <View style={{ backgroundColor: "#fff" }}>
         <Spinner visible={isLoadingCreateTicketReq} />
         <SuccessModal

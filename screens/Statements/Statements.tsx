@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Text } from "react-native";
+import { Text, Alert } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { printAsync } from "expo-print";
 import Spinner from "react-native-loading-spinner-overlay/lib";
@@ -149,7 +149,23 @@ export function Statements({ navigation }: any) {
             const { statements } = res;
             if (statements && statements?.length > 0) {
               setLoading(false);
-              await handleGeneratePDF(statements, statementFilterWithDateRange);
+              Alert.alert("Statement is ready for download", "", [
+                {
+                  text: "Cancel",
+                  onPress: () => {},
+                  style: "cancel",
+                },
+                {
+                  text: "OK",
+                  onPress: async () => {
+                    await handleGeneratePDF(
+                      statements,
+                      statementFilterWithDateRange
+                    );
+                  },
+                },
+              ]);
+              //await handleGeneratePDF(statements, statementFilterWithDateRange);
             } else {
               setLoading(false);
               alert("You dont have transaction for selected dates");

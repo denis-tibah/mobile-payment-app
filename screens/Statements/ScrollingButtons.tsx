@@ -1,11 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, ScrollView, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { format, subMonths, addMonths, set } from 'date-fns';
-import vars from '../../styles/vars';
+import React, { useEffect, useRef, useState } from "react";
+import {
+  View,
+  ScrollView,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+} from "react-native";
+import { format, subMonths, addMonths, set } from "date-fns";
+import vars from "../../styles/vars";
 
 type ScrollingButtonsProps = {
   onScrollOptions: (params: any) => void;
-}
+};
 
 const ScrollingButtons: React.FC<ScrollingButtonsProps> = ({
   onScrollOptions,
@@ -24,8 +30,8 @@ const ScrollingButtons: React.FC<ScrollingButtonsProps> = ({
   const generateMonth = (buttonNumber: number) => {
     const currentDateWithOffset = subMonths(currentDate, buttonNumber - 1);
     return {
-      monthly: format(currentDateWithOffset, 'MMMM yyyy'),
-      raw: currentDateWithOffset
+      monthly: format(currentDateWithOffset, "MMMM yyyy"),
+      raw: currentDateWithOffset,
     };
   };
 
@@ -49,27 +55,35 @@ const ScrollingButtons: React.FC<ScrollingButtonsProps> = ({
   const renderButtons = () => {
     const buttons = [];
     for (let i = 1; i <= buttonCount; i++) {
-      buttons.push(
-        <TouchableOpacity
-          key={i}
-          style={[
-            styles.button,
-            selectedButton === i ? styles.selectedButton : null,
-          ]}
-          onPress={() => handleButtonPress(i)}
-          onLayout={handleLayout}
-        >
-          <Text style={selectedButton === i ? styles.selectedButtonText : styles.buttonText}>
-            {generateMonth(i).monthly}
-          </Text>
-        </TouchableOpacity>
-      );
+      if (i !== 1) {
+        buttons.push(
+          <TouchableOpacity
+            key={i}
+            style={[
+              styles.button,
+              selectedButton === i ? styles.selectedButton : null,
+            ]}
+            onPress={() => handleButtonPress(i)}
+            onLayout={handleLayout}
+          >
+            <Text
+              style={
+                selectedButton === i
+                  ? styles.selectedButtonText
+                  : styles.buttonText
+              }
+            >
+              {generateMonth(i).monthly}
+            </Text>
+          </TouchableOpacity>
+        );
+      }
     }
     return buttons;
   };
 
   useEffect(() => {
-    handleButtonPress(1);
+    handleButtonPress(2);
   }, []);
 
   return (
@@ -92,29 +106,29 @@ let buttonHeight = 0; // Variable to store the button height
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'column',
+    flexDirection: "column",
     padding: 10,
   },
   button: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 10,
     margin: 5,
     height: 40,
-    borderRadius: 50
+    borderRadius: 50,
   },
   selectedButton: {
-    backgroundColor: vars['accent-blue'],
-    borderRadius: 50
+    backgroundColor: vars["accent-blue"],
+    borderRadius: 50,
   },
   buttonText: {
     // fontWeight: 'bold',
-    color: vars['accent-blue'],
-    textAlign: 'center',
+    color: vars["accent-blue"],
+    textAlign: "center",
   },
   selectedButtonText: {
     // fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'center',
+    color: "#fff",
+    textAlign: "center",
   },
 });
 

@@ -54,7 +54,7 @@ export function Typography({
       style={{
         fontFamily: fontFamily ?? "Mukta-Regular",
         fontSize: fontSize ?? 14,
-        fontWeight: convertedFontWeight ?? "normal",
+        fontWeight: convertedFontWeight || "normal",
         color: vars[color] ?? color,
         ...props,
       }}

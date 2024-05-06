@@ -97,6 +97,10 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
     return (
       <>
         {transactions.map((transaction: Transaction, index: number) => {
+          /* console.log(
+            "🚀 ~ {transactions.map ~ transaction:",
+            transaction?.reference_no
+          ); */
           /* delete transaction?.status;
           Object.assign(transaction, { status: "PENDING" }); */
           let amountColor = "red";
@@ -118,7 +122,10 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
               amountColor = "green";
             }
           }
-          const keyId = transaction?.reference_no;
+          const keyId =
+            transaction?.reference_no ||
+            transaction?.transaction_id ||
+            transaction?.transaction_uuid;
 
           const transactionStatusHasLineThrough =
             transaction?.status &&
@@ -127,11 +134,8 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
               : true;
 
           return (
-            <>
-              <View
-                style={styles.detailMobileForEachTransactionContainer}
-                key={keyId}
-              >
+            <Fragment key={keyId}>
+              <View style={styles.detailMobileForEachTransactionContainer}>
                 <TouchableOpacity onPress={() => handleToggleDetails(index)}>
                   <View style={styles.detailMobileForEachTransactionWrapper}>
                     <View style={styles.nameContainer}>
@@ -156,12 +160,9 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                         {/* {transaction?.name || transaction?.purpose} */}
 
                         {/* added by Aristos 26-04-2026 */}
-                        {transaction?.transaction_direction === "outgoing" ? (
-                           transaction?.name || transaction?.purpose
-                        ) :   transaction?.debtor_name || transaction?.purpose }
-
-
-
+                        {transaction?.transaction_direction === "outgoing"
+                          ? transaction?.name || transaction?.purpose
+                          : transaction?.debtor_name || transaction?.purpose}
                       </Typography>
                     </View>
                     {!cardId && transactionStatusHasLineThrough ? (
@@ -634,7 +635,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                   </View>
                 </Pressable>
               ) : null}
-            </>
+            </Fragment>
           );
         })}
       </>

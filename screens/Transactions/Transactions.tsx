@@ -716,7 +716,7 @@ export function Transactions({ navigation, route }: any) {
             }}
           />
         }
-        onScroll={({ nativeEvent }) => {
+        onScrollEndDrag={({ nativeEvent }) => {
           const currentScrollPosition = nativeEvent.contentOffset.y;
           if (currentScrollPosition > prevScrollPosition) {
             if (isCloseToBottom(nativeEvent)) {
@@ -737,7 +737,7 @@ export function Transactions({ navigation, route }: any) {
           }
           setPrevScrollPosition(currentScrollPosition);
         }}
-        scrollEventThrottle={1000}
+        scrollEventThrottle={64}
       >
         <View style={styles.container}>
           <Heading

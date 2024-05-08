@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import * as SecureStore from "expo-secure-store";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { subDays, format } from "date-fns";
+import Animated from "react-native-reanimated";
 
 import MainLayout from "../../layout/Main";
 import { styles } from "./style";
@@ -359,7 +360,7 @@ export function MyAccount({ navigation }: any) {
               }}
             />
           }
-          onScroll={({ nativeEvent }) => {
+          onScrollEndDrag={({ nativeEvent }) => {
             const currentScrollPosition = nativeEvent.contentOffset.y;
             if (currentScrollPosition > prevScrollPosition) {
               if (isCloseToBottom(nativeEvent)) {
@@ -408,7 +409,7 @@ export function MyAccount({ navigation }: any) {
             }
             setPrevScrollPosition(currentScrollPosition);
           }}
-          scrollEventThrottle={9000}
+          scrollEventThrottle={64}
         >
           <View style={styles.balancesContainer}>
             <View

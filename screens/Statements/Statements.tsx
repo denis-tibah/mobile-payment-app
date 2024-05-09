@@ -149,23 +149,7 @@ export function Statements({ navigation }: any) {
             const { statements } = res;
             if (statements && statements?.length > 0) {
               setLoading(false);
-              Alert.alert("Statement is ready for download", "", [
-                {
-                  text: "Cancel",
-                  onPress: () => {},
-                  style: "cancel",
-                },
-                {
-                  text: "OK",
-                  onPress: async () => {
-                    await handleGeneratePDF(
-                      statements,
-                      statementFilterWithDateRange
-                    );
-                  },
-                },
-              ]);
-              //await handleGeneratePDF(statements, statementFilterWithDateRange);
+              await handleGeneratePDF(statements, statementFilterWithDateRange);
             } else {
               setLoading(false);
               alert("You dont have transaction for selected dates");

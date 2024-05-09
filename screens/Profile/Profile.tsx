@@ -258,7 +258,7 @@ export function Profile({ route, navigation }: any) {
                             </Typography>
                             <View style={styles.textIbanBicCurrencyContainer}>
                               <Typography fontSize={16} color="#000000">
-                                {userAccountDetails?.data?.info?.bic}
+                                {userAccountDetails?.data?.info?.bic}XXX
                               </Typography>
                               <TouchableOpacity
                                 onPress={() =>

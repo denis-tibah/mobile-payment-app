@@ -1,7 +1,13 @@
 import "intl";
 import "intl/locale-data/jsonp/en";
 import { Dimensions } from "react-native";
-import dateFns from "date-fns";
+import dateFns, {
+  format,
+  isEqual,
+  lastDayOfMonth,
+  getMonth,
+  subMonths,
+} from "date-fns";
 
 import { dateFormatter } from "./dates";
 import { Transaction } from "../models/Transactions";
@@ -570,4 +576,15 @@ export const formattedDateForQuery = (
     ? dateFns.format(new Date(paramDate), "yyyy-MM-dd")
     : formattedDefaultDate;
   return formattedDate;
+};
+
+export const isFirstDayOfMonthAndLastMonthName = () => {
+  const today = new Date();
+  const firstDateOfMonth = format(today, "yyyy-MM-31");
+  const currentDay = format(today, "yyyy-MM-dd");
+  const previousMonth = format(subMonths(firstDateOfMonth, 1), "LLLL");
+  const currentYear = format(today, "yyyy");
+  const dateIsEqual = isEqual(firstDateOfMonth, currentDay);
+  // returns boolean
+  return { dateIsEqual, previousMonth, currentYear };
 };

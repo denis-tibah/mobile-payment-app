@@ -6,7 +6,8 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Feather from "react-native-vector-icons/Feather";
 
 import { getProfile } from "../../redux/profile/profileSlice";
-import { isFirstDayOfMonthAndLastMonthName } from "../../utils/helpers";
+import { dateFunctions } from "../../utils/helpers";
+import useGeneratePDF from "../../hooks/useGeneratePDF";
 import { Seperator } from "../Seperator/Seperator";
 import SwipableBottomSheet from "../SwipableBottomSheet";
 import { styles } from "./styles";
@@ -17,6 +18,8 @@ import WholeContainer from "../../layout/WholeContainer";
 
 export function Header({ navigation }: any): any {
   const auth = useSelector((state: any) => state.auth);
+  const userId = auth?.userData?.id;
+
   const profileData = useSelector((state: any) => state.profile?.profile)?.data;
 
   const route = useRoute();
@@ -24,8 +27,15 @@ export function Header({ navigation }: any): any {
 
   const dispatch = useDispatch();
 
-  const { dateIsEqual, previousMonth, currentYear } =
-    isFirstDayOfMonthAndLastMonthName();
+  const { handleSetDate, isGeneratingPDF, resetPDFParams } = useGeneratePDF();
+
+  const {
+    dateIsEqual,
+    previousMonth,
+    currentYear,
+    previousMonthFirstDay,
+    lastDateOfPrevMonth,
+  } = dateFunctions();
 
   const [bottomSheetHeight, setBottomSheetHeight] = useState<number>(0);
 
@@ -68,19 +78,21 @@ export function Header({ navigation }: any): any {
                     />
                   </View>
                 </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    refRBSheet?.current?.open();
-                  }}
-                >
-                  <View style={{ position: "absolute", top: -6, right: -5 }}>
-                    <MaterialIcons
-                      color="#E7038E"
-                      size={20}
-                      name={"notifications-active"}
-                    />
-                  </View>
-                </TouchableWithoutFeedback>
+                {dateIsEqual ? (
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      refRBSheet?.current?.open();
+                    }}
+                  >
+                    <View style={{ position: "absolute", top: -6, right: -5 }}>
+                      <MaterialIcons
+                        color="#E7038E"
+                        size={20}
+                        name={"notifications-active"}
+                      />
+                    </View>
+                  </TouchableWithoutFeedback>
+                ) : null}
               </View>
             </View>
           )}
@@ -90,7 +102,9 @@ export function Header({ navigation }: any): any {
         rbSheetRef={refRBSheet}
         closeOnDragDown={true}
         closeOnPressMask={false}
-        onClose={() => {}}
+        onClose={() => {
+          resetPDFParams();
+        }}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
           height: bottomSheetHeight + 45,
@@ -149,16 +163,26 @@ export function Header({ navigation }: any): any {
               </Typography>
               <Button
                 color="light-blue"
+                onPress={() => {
+                  handleSetDate({
+                    previousMonthFirstDay,
+                    lastDateOfPrevMonth,
+                    userId,
+                  });
+                }}
                 leftIcon={
                   <Feather color="#086AFB" size={16} name={"download"} />
                 }
+                disabled={isGeneratingPDF}
               >
                 <Typography
                   fontWeight="600"
                   fontSize={16}
                   fontFamily="Nunito-SemiBold"
                 >
-                  Download monthly statement
+                  {isGeneratingPDF
+                    ? "Downloading..."
+                    : "Download monthly statement"}
                 </Typography>
               </Button>
             </View>

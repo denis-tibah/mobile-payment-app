@@ -578,13 +578,31 @@ export const formattedDateForQuery = (
   return formattedDate;
 };
 
-export const isFirstDayOfMonthAndLastMonthName = () => {
+export const dateFunctions = () => {
   const today = new Date();
-  const firstDateOfMonth = format(today, "yyyy-MM-31");
-  const currentDay = format(today, "yyyy-MM-dd");
+  const firstDateOfMonth = format(today, "yyyy-MM-01");
   const previousMonth = format(subMonths(firstDateOfMonth, 1), "LLLL");
+  const previousMonthCompleteDate = format(
+    subMonths(firstDateOfMonth, 1),
+    "yyyy-MM-dd"
+  );
+  const lastDateOfPrevMonth = format(
+    lastDayOfMonth(previousMonthCompleteDate),
+    "yyyy-MM-dd"
+  );
+  const currentDay = format(today, "yyyy-MM-dd");
+  const previousMonthFirstDay = format(
+    subMonths(firstDateOfMonth, 1),
+    "yyyy-MM-dd"
+  );
   const currentYear = format(today, "yyyy");
   const dateIsEqual = isEqual(firstDateOfMonth, currentDay);
   // returns boolean
-  return { dateIsEqual, previousMonth, currentYear };
+  return {
+    dateIsEqual,
+    previousMonth,
+    currentYear,
+    previousMonthFirstDay,
+    lastDateOfPrevMonth,
+  };
 };

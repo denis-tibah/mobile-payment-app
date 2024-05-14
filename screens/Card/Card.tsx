@@ -54,6 +54,7 @@ import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 import { Seperator } from "../../components/Seperator/Seperator";
 import { managePaymentMethods } from "../../utils/constants";
 import { styles } from "./styles";
+import useDigitalSignature from "../../hooks/useDigitalSignature";
 
 const DEFAULT_CARD_ENROLLMENT_STATUS = {
   title: "",
@@ -82,6 +83,8 @@ export function Card({ navigation, route }: any) {
   const isCardTransactionShown = useSelector(
     (state: RootState) => state?.card?.isCardTransactionShown
   );
+
+  const { handleGenerateSignature, signatureData } = useDigitalSignature();
 
   const [cardPin, setCardPin] = useState<string>("");
   const [remainingTime, setRemainingTime] = useState(30);
@@ -340,10 +343,11 @@ export function Card({ navigation, route }: any) {
       setIsSelectedCardTerminated(false);
     }
   }, [selectedCard]);
-
+  console.log("🚀 ~ Card ~ signatureData:", signatureData);
   useEffect(() => {
     setIsLoading(true);
     handleGetCards();
+    handleGenerateSignature({ secretMessage: "ip boy" });
     dispatch<any>(setIsCardTransactionShown(false));
   }, []);
 

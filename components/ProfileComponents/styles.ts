@@ -143,4 +143,12 @@ export const styles = StyleSheet.create({
     shadowRadius: 7.49,
     elevation: 12,
   },
+  listHead: {
+    display: "flex",
+    flexDirection: "row",
+    paddingTop: 12,
+    paddingBottom: 12,
+    justifyContent: "space-between",
+    backgroundColor: "#fff",
+  },
 });

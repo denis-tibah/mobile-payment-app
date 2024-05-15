@@ -22,6 +22,7 @@ import { registrationV2 } from "./redux/registration/registrationSliceV2";
 import { payeeSlice } from "./redux/payee/payeeSlice";
 import { profileV2 } from "./redux/profile/profileSliceV2";
 import { settingV2 } from "./redux/setting/settingSliceV2";
+import { notifications } from "./redux/notifications/notificationSlice";
 
 export const reducers = combineReducers({
   auth: authSlice,
@@ -42,6 +43,7 @@ export const reducers = combineReducers({
   [payeeSlice.reducerPath]: payeeSlice.reducer,
   [profileV2.reducerPath]: profileV2.reducer,
   [settingV2.reducerPath]: settingV2.reducer,
+  [notifications.reducerPath]: notifications.reducer,
 });
 
 export interface RootState {
@@ -63,6 +65,7 @@ export interface RootState {
   payee: any;
   profileV2: any;
   settingV2: any;
+  notifications: any;
 }
 
 const rootReducer = (state: RootState | undefined, action: any) => {
@@ -115,7 +118,8 @@ export const store = configureStore({
       registrationV2.middleware,
       payeeSlice.middleware,
       profileV2.middleware,
-      settingV2.middleware
+      settingV2.middleware,
+      notifications.middleware
     ),
   ],
 });

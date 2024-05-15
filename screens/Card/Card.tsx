@@ -16,6 +16,7 @@ import Carousel from "react-native-snap-carousel";
 import { AntDesign } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Spinner from "react-native-loading-spinner-overlay/lib";
+import * as SecureStore from "expo-secure-store";
 
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
@@ -343,13 +344,29 @@ export function Card({ navigation, route }: any) {
       setIsSelectedCardTerminated(false);
     }
   }, [selectedCard]);
-  console.log("🚀 ~ Card ~ signatureData:", signatureData);
+
   useEffect(() => {
     setIsLoading(true);
     handleGetCards();
-    handleGenerateSignature({ secretMessage: "ip boy" });
+
+    handleGenerateSignature({ secretMessage: "digital signature" });
     dispatch<any>(setIsCardTransactionShown(false));
   }, []);
+
+  const handleAddSignatureToStore = async (signature: string) => {
+    await SecureStore.setItemAsync("digital_signature", signature);
+  };
+
+  useEffect(() => {
+    if (signatureData?.publicKey && signatureData?.privateKey) {
+      const stringifiedSignature = JSON.stringify({
+        token: "ACCESS_TOKEN",
+        value: signatureData,
+      });
+
+      handleAddSignatureToStore(stringifiedSignature);
+    }
+  }, [signatureData]);
 
   return (
     <MainLayout navigation={navigation}>

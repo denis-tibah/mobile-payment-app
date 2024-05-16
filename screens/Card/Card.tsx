@@ -349,7 +349,9 @@ export function Card({ navigation, route }: any) {
     setIsLoading(true);
     handleGetCards();
 
-    handleGenerateSignature({ secretMessage: "digital signature" });
+    handleGenerateSignature({
+      secretMessage: "122313",
+    });
     dispatch<any>(setIsCardTransactionShown(false));
   }, []);
 
@@ -359,6 +361,7 @@ export function Card({ navigation, route }: any) {
 
   useEffect(() => {
     if (signatureData?.publicKey && signatureData?.privateKey) {
+      console.log("🚀 ~ useEffect ~ signatureData:", signatureData);
       const stringifiedSignature = JSON.stringify({
         token: "ACCESS_TOKEN",
         value: signatureData,

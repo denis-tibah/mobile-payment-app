@@ -1,31 +1,23 @@
-import { useState, useEffect, FC } from "react";
+import { useState, useEffect, useRef, FC, Fragment } from "react";
 import {
   View,
-  ScrollView,
   Pressable,
   Switch,
   Platform,
   FlatList,
-  SafeAreaView,
   TouchableWithoutFeedback,
 } from "react-native";
 import { useSelector } from "react-redux";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import Feather from "react-native-vector-icons/Feather";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 
 import Typography from "../Typography";
-import FixedBottomAction from "../../components/FixedBottomAction";
 import ArrowRightIcon from "../../assets/icons/ArrowRight";
-import FormGroup from "../FormGroup";
-import Button from "../Button";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { Seperator } from "../Seperator/Seperator";
 import WholeContainer from "../../layout/WholeContainer";
-import TwoFactorAuthenticationIcon from "../../assets/icons/TwoFactorAuthentication";
-import { securityTabSchema } from "../../utils/formikSchema";
 import {
   useGetProfileQuery,
   useUpdateNotificationsMutation,
@@ -38,6 +30,9 @@ import { RootState } from "../../store";
 import { styles } from "./styles";
 import vars from "../../styles/vars";
 import { arrayChecker } from "../../utils/helpers";
+import useGeneratePDF from "../../hooks/useGeneratePDF";
+import SwipableBottomSheet from "../SwipableBottomSheet";
+import Statements from "../Notification/Statements";
 
 interface INotificationsTab {
   cleanUpTabSelection: () => void;
@@ -50,6 +45,10 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
 
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
 
+  const { resetPDFParams } = useGeneratePDF();
+
+  const refRBSheet = useRef();
+
   const [statusMessage, setStatusMessage] = useState<{
     header: string;
     body: string;
@@ -58,6 +57,8 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
   }>({ header: "", body: "", isOpen: false, isError: false });
   const [emailNotifications, setEmailNotifications] = useState<boolean>(false);
   /* const [notificationLimit, setNotificationLimit] = useState<boolean>(false); */
+  const [bottomSheetHeight, setBottomSheetHeight] = useState<number>(0);
+  const [notification, setNotication] = useState<any>({});
 
   const {
     isLoading: isLoadingGetProfile,
@@ -89,6 +90,8 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
 
   const {
     isLoading: isLoadingGetNotifications,
+    isError: isErrorGetNotifications,
+    error: errorGetNotifications,
     data: dataNotifications,
     refetch: refetchNotifications,
   } = useGetNotificationsQuery(
@@ -105,9 +108,9 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
     {
       isLoading: isLoadingReadNotification,
       isError: isErrorReadNotification,
-      isSuccess: isSuccessReadNotification,
+      /* isSuccess: isSuccessReadNotification, */
       error: errorReadNotification,
-      data: dataReadNotification,
+      /* data: dataReadNotification, */
     },
   ] = useReadNotificationMutation();
 
@@ -131,6 +134,31 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
       }
     }
   }, [isLoadingUpdateNotifications, isSuccessUpdateNotifications]);
+
+  useEffect(() => {
+    if (!isLoadingReadNotification && isErrorReadNotification) {
+      setStatusMessage({
+        header: `Error: ${errorReadNotification?.data?.code}`,
+        body:
+          errorReadNotification?.data?.message ||
+          "Something went wrong while reading message",
+        isOpen: true,
+        isError: true,
+      });
+    }
+  }, [isLoadingReadNotification, isErrorReadNotification]);
+
+  useEffect(() => {
+    if (!isLoadingGetNotifications && isErrorGetNotifications) {
+      setStatusMessage({
+        header: `Error: ${errorGetNotifications?.data?.code}`,
+        body:
+          errorGetNotifications?.data?.message || "Unable to get notifications",
+        isOpen: true,
+        isError: true,
+      });
+    }
+  }, [isLoadingGetNotifications, isErrorGetNotifications]);
 
   const onCloseModal = (): void => {
     setStatusMessage({
@@ -163,13 +191,21 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
     return (
       <TouchableWithoutFeedback
         onPress={() => {
-          console.log("🚀 ~ renderTransactionList ~ item:", item);
-          const bodyParams = {
-            notificationId: item?.item?.id || "",
-            tokenZiyl: userTokens?.token_ziyl || "",
-          };
-          readNotification(bodyParams);
-          refetchNotifications();
+          setNotication((prevState) => {
+            if (item?.item) {
+              return { ...item?.item };
+            }
+            return prevState;
+          });
+          refRBSheet?.current?.open();
+          if (!item?.item?.readByUser) {
+            const bodyParams = {
+              notificationId: item?.item?.id || "",
+              tokenZiyl: userTokens?.token_ziyl || "",
+            };
+            readNotification(bodyParams);
+            refetchNotifications();
+          }
         }}
       >
         <View>
@@ -271,59 +307,65 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
     );
   };
 
+  const handleCloseBottomSheet = () => {
+    refRBSheet?.current?.close();
+  };
+
   return (
-    <View style={{ backgroundColor: "#ffff" }}>
-      <Spinner
-        visible={
-          isLoadingUpdateNotifications ||
-          isLoadingGetProfile ||
-          isLoadingGetNotifications
-        }
-      />
-      <SuccessModal
-        isOpen={statusMessage?.isOpen}
-        title={statusMessage.header}
-        text={statusMessage.body}
-        isError={statusMessage.isError}
-        onClose={onCloseModal}
-      />
-      <Pressable>
-        <View>
-          <WholeContainer>
-            <View
-              style={[
-                styles.toggleSliderContainer,
-                {
-                  ...Platform.select({
-                    ios: {
-                      marginVertical: 8,
-                    },
-                  }),
-                },
-              ]}
-            >
-              <View style={styles.toggleSliderContainerText}>
-                <Fontisto color="#086AFB" size={22} name={"email"} />
-                <Typography fontSize={16} marginLeft={6}>
-                  Recieve email notifications
-                </Typography>
+    <Fragment>
+      <View style={{ backgroundColor: "#ffff" }}>
+        <Spinner
+          visible={
+            isLoadingUpdateNotifications ||
+            isLoadingGetProfile ||
+            isLoadingGetNotifications ||
+            isLoadingReadNotification
+          }
+        />
+        <SuccessModal
+          isOpen={statusMessage?.isOpen}
+          title={statusMessage.header}
+          text={statusMessage.body}
+          isError={statusMessage.isError}
+          onClose={onCloseModal}
+        />
+        <Pressable>
+          <View>
+            <WholeContainer>
+              <View
+                style={[
+                  styles.toggleSliderContainer,
+                  {
+                    ...Platform.select({
+                      ios: {
+                        marginVertical: 8,
+                      },
+                    }),
+                  },
+                ]}
+              >
+                <View style={styles.toggleSliderContainerText}>
+                  <Fontisto color="#086AFB" size={22} name={"email"} />
+                  <Typography fontSize={16} marginLeft={6}>
+                    Recieve email notifications
+                  </Typography>
+                </View>
+                <Switch
+                  trackColor={{ false: "#767577", true: "#81b0ff" }}
+                  thumbColor={emailNotifications ? "white" : vars["light-blue"]}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={(e) => {
+                    handleToggleNotification(e);
+                  }}
+                  value={emailNotifications}
+                />
               </View>
-              <Switch
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={emailNotifications ? "white" : vars["light-blue"]}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={(e) => {
-                  handleToggleNotification(e);
-                }}
-                value={emailNotifications}
-              />
-            </View>
-            {/* <Seperator
+              {/* <Seperator
               backgroundColor={vars["v2-light-grey"]}
               marginBottom={12}
             /> */}
-            {/* temporary hiding as per aristos, 05/15/24 */}
-            {/*  <View
+              {/* temporary hiding as per aristos, 05/15/24 */}
+              {/*  <View
                 style={[
                   styles.toggleSliderContainer,
                   {
@@ -349,11 +391,63 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
                   value={notificationLimit}
                 />
               </View> */}
+            </WholeContainer>
+          </View>
+        </Pressable>
+        {displayListItems()}
+      </View>
+      <SwipableBottomSheet
+        rbSheetRef={refRBSheet}
+        closeOnDragDown={true}
+        closeOnPressMask={false}
+        onClose={() => {
+          resetPDFParams();
+        }}
+        wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
+        containerStyles={{
+          height: bottomSheetHeight + 45,
+          backgroundColor: "#ffffff",
+          borderTopLeftRadius: 14,
+          borderTopRightRadius: 14,
+          elevation: 12,
+          shadowColor: "#52006A",
+        }}
+        draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
+      >
+        <View
+          style={{
+            backgroundColor: "white",
+          }}
+          onLayout={(event) => {
+            const { height } = event.nativeEvent.layout;
+            setBottomSheetHeight(height);
+          }}
+        >
+          <WholeContainer>
+            <View
+              style={{
+                paddingVertical: 6,
+                marginBottom: 12,
+              }}
+            >
+              <Typography
+                fontWeight="600"
+                fontSize={18}
+                fontFamily="Nunito-SemiBold"
+              >
+                {notification?.title ? notification?.title : ""}
+              </Typography>
+            </View>
           </WholeContainer>
+          <Seperator backgroundColor={"#DDDDDD"} />
+          {notification?.requestType === "STATEMENTS_READY" ? (
+            <Fragment>
+              <Statements onCloseBottomSheet={handleCloseBottomSheet} />
+            </Fragment>
+          ) : null}
         </View>
-      </Pressable>
-      {displayListItems()}
-    </View>
+      </SwipableBottomSheet>
+    </Fragment>
   );
 };
 

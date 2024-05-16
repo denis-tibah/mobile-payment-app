@@ -78,7 +78,8 @@ export function Header({ navigation }: any): any {
                     />
                   </View>
                 </TouchableWithoutFeedback>
-                {dateIsEqual ? (
+                {/* FE implementation of statement alert with bell icon 05/16 */}
+                {/* {dateIsEqual ? (
                   <TouchableWithoutFeedback
                     onPress={() => {
                       refRBSheet?.current?.open();
@@ -92,7 +93,7 @@ export function Header({ navigation }: any): any {
                       />
                     </View>
                   </TouchableWithoutFeedback>
-                ) : null}
+                ) : null} */}
               </View>
             </View>
           )}
@@ -202,7 +203,7 @@ export function Header({ navigation }: any): any {
                     fontWeight={"300"}
                     color="#E7038E"
                   >
-                    Check you statements statement
+                    Check your statements statement
                   </Typography>
                 </View>
               </TouchableWithoutFeedback>

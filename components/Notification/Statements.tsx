@@ -1,0 +1,100 @@
+import { useState, useEffect, useRef, FC, Fragment } from "react";
+import { View, TouchableWithoutFeedback } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import Feather from "react-native-vector-icons/Feather";
+
+import Typography from "../Typography";
+import Button from "../Button";
+import WholeContainer from "../../layout/WholeContainer";
+import useGeneratePDF from "../../hooks/useGeneratePDF";
+import { dateFunctions } from "../../utils/helpers";
+import { styles } from "./style";
+
+interface IStatements {
+  onCloseBottomSheet: () => void;
+}
+
+const Statements: FC<IStatements> = ({ onCloseBottomSheet }) => {
+  const { navigate }: any = useNavigation();
+  const { handleSetDate, isGeneratingPDF } = useGeneratePDF();
+  const {
+    previousMonthFirstDay,
+    lastDateOfPrevMonth,
+    previousMonth,
+    currentYear,
+  } = dateFunctions();
+  const auth = useSelector((state: any) => state.auth);
+  const userId = auth?.userData?.id;
+
+  return (
+    <Fragment>
+      <WholeContainer>
+        <View style={{ paddingVertical: 32 }}>
+          <Typography
+            fontFamily="Mukta-Regular"
+            fontSize={14}
+            fontWeight={"400"}
+            color="#696F7A"
+            marginBottom={16}
+          >
+            You can download your{" "}
+            <Typography
+              fontFamily="Mukta-Bold"
+              fontSize={14}
+              fontWeight={"700"}
+            >
+              {previousMonth} {currentYear}
+            </Typography>{" "}
+            statement
+          </Typography>
+          <Button
+            color="light-blue"
+            onPress={() => {
+              handleSetDate({
+                previousMonthFirstDay,
+                lastDateOfPrevMonth,
+                userId,
+              });
+            }}
+            leftIcon={<Feather color="#086AFB" size={16} name={"download"} />}
+            disabled={isGeneratingPDF}
+          >
+            <Typography
+              fontWeight="600"
+              fontSize={16}
+              fontFamily="Nunito-SemiBold"
+            >
+              {isGeneratingPDF
+                ? "Downloading..."
+                : "Download monthly statement"}
+            </Typography>
+          </Button>
+        </View>
+      </WholeContainer>
+      <View style={styles.footerContent}>
+        <View style={styles.downloadBtnMain}>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              onCloseBottomSheet();
+              navigate("statements");
+            }}
+          >
+            <View>
+              <Typography
+                fontFamily="Nunito-Regular"
+                fontSize={14}
+                fontWeight={"300"}
+                color="#E7038E"
+              >
+                Check your statements statement
+              </Typography>
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
+      </View>
+    </Fragment>
+  );
+};
+
+export default Statements;

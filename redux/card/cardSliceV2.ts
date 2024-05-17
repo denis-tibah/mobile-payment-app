@@ -156,6 +156,15 @@ export const cardsV2 = createApi({
         method: "GET",
       }),
     }),
+    showCardDetailsV2: builder.query({
+      query: (bodyParams) => {
+        return {
+          url: `/card/show`,
+          method: "POST",
+          body: bodyParams,
+        };
+      },
+    }),
   }),
 });
 
@@ -174,4 +183,5 @@ export const {
   useLazyShowCardPinNumberQuery,
   useShowCardRegistrationFinxpMutation,
   useLazyGetCardLimitQuery,
+  useLazyShowCardDetailsV2Query,
 } = cardsV2;

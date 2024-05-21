@@ -73,7 +73,7 @@ export default function useDigitalSignature() {
   };
 
   const generateSignature = () => {
-    rsa.generateKeyPair({ bits: 1024, workers: 2 }, (err, keypair) => {
+    rsa.generateKeyPair({ bits: 2048, workers: 2 }, (err, keypair) => {
       if (err) {
         console.error("Key generation error:", err);
         return;

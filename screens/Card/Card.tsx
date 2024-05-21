@@ -110,7 +110,7 @@ export function Card({ navigation, route }: any) {
     cvc: string;
     pin: string;
   }>({ cardNumber: "", cvc: "", pin: "" });
-  console.log("🚀 ~ Card ~ cardDetailsDecrypted:", cardDetailsDecrypted);
+
   const [encryptedCardDetails, setEncryptedCardDetails] = useState<{
     isLoadingEncryptedCardDetails: boolean;
     isSuccessEncryptedCardDetails: boolean;
@@ -122,7 +122,6 @@ export function Card({ navigation, route }: any) {
     encryptedCardDetailsData: {},
     isErrorEncryptedCardDetails: false,
   });
-  console.log("🚀 ~ Card ~ encryptedCardDetails:", encryptedCardDetails);
 
   const resetEncryptedCardDetailsData = () => {
     setEncryptedCardDetails({
@@ -164,7 +163,6 @@ export function Card({ navigation, route }: any) {
         if (
           encryptedCardDetails?.encryptedCardDetailsData?.cardNumberEncrypted
         ) {
-          console.log("decrypte executes 1");
           cardNumber = decryptRsa({
             encryptedData:
               encryptedCardDetails?.encryptedCardDetailsData
@@ -180,7 +178,6 @@ export function Card({ navigation, route }: any) {
         }
 
         if (encryptedCardDetails?.encryptedCardDetailsData?.cvc2Encrypted) {
-          console.log("decrypte executes 2");
           cvc = decryptRsa({
             encryptedData:
               encryptedCardDetails?.encryptedCardDetailsData?.cvc2Encrypted,
@@ -196,7 +193,6 @@ export function Card({ navigation, route }: any) {
         }
 
         if (encryptedCardDetails?.encryptedCardDetailsData?.pinEncrypted) {
-          console.log("decrypte executes 3");
           pin = decryptRsa({
             encryptedData:
               encryptedCardDetails?.encryptedCardDetailsData?.pinEncrypted,
@@ -450,7 +446,6 @@ export function Card({ navigation, route }: any) {
       signatureData?.publicKeyWithoutPadding &&
       signatureData?.privateKeyWithPadding
     ) {
-      console.log("🚀 ~ useEffect ~ signatureData:", signatureData);
       const signature = {
         type: "ACCESS_TOKEN",
         value: signatureData,

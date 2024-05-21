@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 
 const useTimer = () => {
-  // State to store the timeout identifiers, intervals, and timer status
   const [timeoutIds, setTimeoutIds] = useState<any>({});
   const [isRunning, setIsRunning] = useState<any>({});
   const [isTimesUp, setIsTimesUp] = useState<any>({});

@@ -16,7 +16,6 @@ import Carousel from "react-native-snap-carousel";
 import { AntDesign } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Spinner from "react-native-loading-spinner-overlay/lib";
-import * as SecureStore from "expo-secure-store";
 
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
@@ -35,7 +34,6 @@ import {
 } from "../../redux/card/cardSlice";
 import { getUserActiveCards, screenNames } from "../../utils/helpers";
 import { CardView } from "../../components/Card/CardView";
-import { GetCardModal } from "./GetCardModal";
 import { RootState } from "../../store";
 import { ICardDetails } from "../../models/interface";
 import vars from "../../styles/vars";
@@ -49,26 +47,15 @@ import ManagePaymentMethod from "./Components/ManagePayment";
 import { NewPinCodeInputBoxes } from "../../components/FormGroup/FormGroup";
 import {
   useLazySendSmsLostCardVerificationQuery,
-  useLazyShowCardDetailsQuery,
   useLazyShowCardDetailsV2Query,
 } from "../../redux/card/cardSliceV2";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
-import { Seperator } from "../../components/Seperator/Seperator";
 import { managePaymentMethods } from "../../utils/constants";
 import { styles } from "./styles";
 import useDigitalSignature from "../../hooks/useDigitalSignature";
 import useSecureStoreCreateDelete from "../../hooks/useSecureStoreCreateDelete";
 import useTimer from "../../hooks/useTimer";
 
-const DEFAULT_CARD_ENROLLMENT_STATUS = {
-  title: "",
-  text: "",
-  isError: false,
-};
-
-const paymentManageOptions = managePaymentMethods.map(
-  (option: any) => option.value
-);
 const windowDimensions = Dimensions.get("window");
 const screenDimensions = Dimensions.get("screen");
 
@@ -81,15 +68,10 @@ export function Card({ navigation, route }: any) {
   const refCarousel = useRef(null);
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
-  const profile = useSelector((state: any) => state.profile?.profile);
-  const userEmail = profile?.data.email;
-
-  const isCardTransactionShown = useSelector(
-    (state: RootState) => state?.card?.isCardTransactionShown
-  );
 
   const { generateSignature, signatureData, decryptRsa } =
     useDigitalSignature();
+  console.log("🚀 ~ Card ~ signatureData:", signatureData);
   const { startTimer, isTimesUp, stopTimer } = useTimer();
   const {
     error,
@@ -118,11 +100,7 @@ export function Card({ navigation, route }: any) {
   );
   const [isTimeToCountDown, setIsTimeToCountDown] = useState<boolean>(false);
   const timeRemaining = 30;
-  const [enrollmentCardStatus, setEnrollmentCardStatus] = useState<{
-    title: string;
-    text: string;
-    isError: boolean;
-  }>(DEFAULT_CARD_ENROLLMENT_STATUS);
+
   const [dimensions, setDimensions] = useState({
     window: windowDimensions,
     screen: screenDimensions,
@@ -133,26 +111,29 @@ export function Card({ navigation, route }: any) {
     pin: string;
   }>({ cardNumber: "", cvc: "", pin: "" });
   console.log("🚀 ~ Card ~ cardDetailsDecrypted:", cardDetailsDecrypted);
+  const [encryptedCardDetails, setEncryptedCardDetails] = useState<{
+    isLoadingEncryptedCardDetails: boolean;
+    isSuccessEncryptedCardDetails: boolean;
+    encryptedCardDetailsData: any;
+    isErrorEncryptedCardDetails: boolean;
+  }>({
+    isLoadingEncryptedCardDetails: false,
+    isSuccessEncryptedCardDetails: false,
+    encryptedCardDetailsData: {},
+    isErrorEncryptedCardDetails: false,
+  });
+  console.log("🚀 ~ Card ~ encryptedCardDetails:", encryptedCardDetails);
 
-  const [
-    showCardDetails,
-    {
-      isLoading: showCardDetailsIsLoading,
-      isSuccess: showCardDetailsIsSuccess,
-      data: showCardDetailsData,
-      isError: showCardDetailsIsError,
-    },
-  ] = useLazyShowCardDetailsQuery();
-  const [
-    showCardDetailsV2,
-    {
-      isLoading: isLoadingShowCardDetailsV2,
-      isSuccess: isSuccessShowCardDetailsV2,
-      data: showCardDetailsV2Data,
-      error: showCardDetailsV2Error,
-      isError: isErrorShowCardDetailsV2,
-    },
-  ] = useLazyShowCardDetailsV2Query();
+  const resetEncryptedCardDetailsData = () => {
+    setEncryptedCardDetails({
+      isLoadingEncryptedCardDetails: false,
+      isSuccessEncryptedCardDetails: false,
+      encryptedCardDetailsData: {},
+      isErrorEncryptedCardDetails: false,
+    });
+  };
+
+  const [showCardDetailsV2] = useLazyShowCardDetailsV2Query();
 
   const [terminatedThisCard] = useLazySendSmsLostCardVerificationQuery();
   const shownCardsOnCarousel = isTerminatedCardShown
@@ -163,51 +144,82 @@ export function Card({ navigation, route }: any) {
     ? cardsActiveList
     : [];
 
+  // to show decrypted card details
   useEffect(() => {
-    let decryptObg = {};
-
-    if (!isLoadingShowCardDetailsV2 && isSuccessShowCardDetailsV2) {
+    const {
+      isLoadingEncryptedCardDetails,
+      isSuccessEncryptedCardDetails,
+      isErrorEncryptedCardDetails,
+    } = encryptedCardDetails;
+    let cardNumber: string;
+    let cvc: string;
+    let pin: string;
+    if (!isLoadingEncryptedCardDetails && isSuccessEncryptedCardDetails) {
       // set timer for digital_signature for 5mins
-      startTimer("digital_signature", 60000 * 5);
+      startTimer("digital_signature", 60000 * 2);
+      //set timer for decrypted card info deletion
+      startTimer("decrypted_card_info_local_state", 30000);
+
       if (storageData?.value?.privateKeyWithPadding) {
-        if (showCardDetailsV2Data?.data?.cardNumberEncrypted) {
-          console.log("cardNumberEncrypted");
-          const cardNumber = decryptRsa({
-            encryptedData: showCardDetailsV2Data?.data?.cardNumberEncrypted,
+        if (
+          encryptedCardDetails?.encryptedCardDetailsData?.cardNumberEncrypted
+        ) {
+          console.log("decrypte executes 1");
+          cardNumber = decryptRsa({
+            encryptedData:
+              encryptedCardDetails?.encryptedCardDetailsData
+                ?.cardNumberEncrypted,
             privateKeyPem: storageData?.value?.privateKeyWithPadding,
           });
-          Object.assign({ ...decryptObg, cardNumber });
+          if (cardNumber) {
+            setCardDetailsDecrypted((prevState) => ({
+              ...prevState,
+              cardNumber,
+            }));
+          }
         }
 
-        if (showCardDetailsV2Data?.data?.cvc2Encrypted) {
-          console.log("cvc2Encrypted");
-          const cvc = decryptRsa({
-            encryptedData: showCardDetailsV2Data?.data?.cvc2Encrypted,
+        if (encryptedCardDetails?.encryptedCardDetailsData?.cvc2Encrypted) {
+          console.log("decrypte executes 2");
+          cvc = decryptRsa({
+            encryptedData:
+              encryptedCardDetails?.encryptedCardDetailsData?.cvc2Encrypted,
             privateKeyPem: storageData?.value?.privateKeyWithPadding,
           });
-          Object.assign({ ...decryptObg, cvc });
+
+          if (cvc) {
+            setCardDetailsDecrypted((prevState) => ({
+              ...prevState,
+              cvc,
+            }));
+          }
         }
 
-        if (showCardDetailsV2Data?.data?.pinEncrypted) {
-          console.log("pinEncrypted");
-          const pin = decryptRsa({
-            encryptedData: showCardDetailsV2Data?.data?.pinEncrypted,
+        if (encryptedCardDetails?.encryptedCardDetailsData?.pinEncrypted) {
+          console.log("decrypte executes 3");
+          pin = decryptRsa({
+            encryptedData:
+              encryptedCardDetails?.encryptedCardDetailsData?.pinEncrypted,
             privateKeyPem: storageData?.value?.privateKeyWithPadding,
           });
-          Object.assign({ ...decryptObg, pin });
+          if (pin) {
+            setCardDetailsDecrypted((prevState) => ({
+              ...prevState,
+              pin,
+            }));
+          }
         }
       }
 
-      if (Object.keys(decryptObg).length > 0) {
-        console.log("🚀 ~ useEffect ~ decryptObg:", decryptObg);
-      }
-      console.log("🚀 ~ useEffect ~ decryptObg:", decryptObg);
+      setTimeout(() => {
+        resetEncryptedCardDetailsData();
+      }, 7000);
     }
   }, [
-    isLoadingShowCardDetailsV2,
-    isSuccessShowCardDetailsV2,
-    showCardDetailsV2Data,
-    storageData,
+    encryptedCardDetails?.isLoadingEncryptedCardDetails,
+    encryptedCardDetails?.isSuccessEncryptedCardDetails,
+    encryptedCardDetails,
+    storageData?.value?.privateKeyWithPadding,
   ]);
 
   useEffect(() => {
@@ -216,6 +228,18 @@ export function Card({ navigation, route }: any) {
       deleteStorageData("digital_signature");
     }
   }, [isTimesUp?.digital_signature]);
+
+  useEffect(() => {
+    if (isTimesUp?.decrypted_card_info_local_state) {
+      stopTimer("decrypted_card_info_local_state");
+
+      setCardDetailsDecrypted({
+        cardNumber: "",
+        cvc: "",
+        pin: "",
+      });
+    }
+  }, [isTimesUp?.decrypted_card_info_local_state]);
 
   const handlePinCodeChange = (value: string) => {
     setCardPin(value);
@@ -338,6 +362,7 @@ export function Card({ navigation, route }: any) {
           card={item}
           pin={cardPin}
           timer={remainingTime}
+          cardDetailsDecrypted={cardDetailsDecrypted}
         />
       </Pressable>
     );
@@ -367,22 +392,6 @@ export function Card({ navigation, route }: any) {
   const handleCopyToClipboard = async () => {
     await Clipboard.setStringAsync(cardDetails?.cardNumber || "");
   };
-
-  useEffect(() => {
-    if (showCardDetailsIsSuccess) {
-      setCardPin(showCardDetailsData?.cardPin);
-      setRemainingTime(30);
-      setCardDetails({
-        cardreferenceId: cardsActiveList[0]?.cardreferenceId,
-        card: cardsActiveList[0],
-        cardImage: showCardDetailsData?.cardImageBase64,
-        cardNumber: showCardDetailsData?.cardNumber,
-      });
-    }
-    if (showCardDetailsIsError) {
-      Alert.alert("Error", "Something went wrong");
-    }
-  }, [showCardDetailsIsSuccess, showCardDetailsIsError]);
 
   const checkIfCardIsFrozen = (card: any) => {
     if (card.frozenYN === "N" && card.cardStatus === "active") {
@@ -432,7 +441,6 @@ export function Card({ navigation, route }: any) {
     setIsLoading(true);
     handleGetCards();
     //get digital signature
-    generateSignature();
     dispatch<any>(setIsCardTransactionShown(false));
   }, []);
 
@@ -442,6 +450,7 @@ export function Card({ navigation, route }: any) {
       signatureData?.publicKeyWithoutPadding &&
       signatureData?.privateKeyWithPadding
     ) {
+      console.log("🚀 ~ useEffect ~ signatureData:", signatureData);
       const signature = {
         type: "ACCESS_TOKEN",
         value: signatureData,
@@ -450,14 +459,6 @@ export function Card({ navigation, route }: any) {
       getStorageData("digital_signature");
     }
   }, [signatureData]);
-
-  /*   if (showCardDetailsV2Data?.data?.cardNumberEncrypted) {
-    const gg = decryptRsa({
-      encryptedData: showCardDetailsV2Data?.data?.cardNumberEncrypted,
-      privateKeyPem: signatureData?.privateKeyWithPadding,
-    });
-    console.log("🚀 ~ Card ~ gg:", gg);
-  } */
 
   return (
     <MainLayout navigation={navigation}>
@@ -474,7 +475,11 @@ export function Card({ navigation, route }: any) {
           }}
         />
       )}
-      <Spinner visible={isLoading || isLoadingShowCardDetailsV2} />
+      <Spinner
+        visible={
+          isLoading || encryptedCardDetails?.isLoadingEncryptedCardDetails
+        }
+      />
       <View style={{ flex: 1, backgroundColor: "#fff" }}>
         <ScrollView
           bounces={true}
@@ -537,6 +542,11 @@ export function Card({ navigation, route }: any) {
                 layout="default"
                 lockScrollWhileSnapping={true}
                 onSnapToItem={(index) => {
+                  setCardDetailsDecrypted({
+                    cardNumber: "",
+                    cvc: "",
+                    pin: "",
+                  });
                   if (isTerminatedCardShown) {
                     setSelectedCard(shownCardsOnCarousel[index]);
                   } else {
@@ -562,6 +572,7 @@ export function Card({ navigation, route }: any) {
                     color="light-blue"
                     onPress={() => {
                       refRBSShowCard?.current?.open();
+                      generateSignature();
                       requestShowCard();
                     }}
                     leftIcon={<EyeIcon color="blue" size={14} />}
@@ -614,7 +625,6 @@ export function Card({ navigation, route }: any) {
                     <Typography
                       fontSize={16}
                       fontWeight={"600"}
-                      // marginLeft={8}
                       fontFamily={"Nunito-SemiBold"}
                     >
                       {selectedCard?.frozenYN === "Y"
@@ -632,7 +642,6 @@ export function Card({ navigation, route }: any) {
               <TouchableOpacity
                 style={styles.cardActionItem}
                 onPress={() => {
-                  // dispatch<any>(setIsCardTransactionShown(true));
                   navigation.navigate("Transactions", {
                     isShowCardTransaction: true,
                     cardId: selectedCard?.cardreferenceId,
@@ -986,7 +995,6 @@ export function Card({ navigation, route }: any) {
                 onPress={() => refRBSTerminateThisCard?.current?.close()}
                 style={{ color: "#fff", width: 140 }}
                 color="grey"
-                // leftIcon={<EyeIcon color="pink" size={14} />}
               >
                 No
               </Button>
@@ -996,6 +1004,9 @@ export function Card({ navigation, route }: any) {
             rbSheetRef={refRBSShowCard}
             closeOnDragDown={true}
             closeOnPressMask={false}
+            onClose={() => {
+              deleteStorageData("digital_signature");
+            }}
             height={340}
             wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
             containerStyles={{
@@ -1057,32 +1068,11 @@ export function Card({ navigation, route }: any) {
                   if (!cardPin && !userID) {
                     return;
                   }
-                  setIsLoading(true);
-                  showCardDetails({
-                    account_id: userID,
-                    otp: cardPin,
-                    card_id: Number(selectedCard?.cardreferenceId),
-                  })
-                    .unwrap()
-                    .then((res: any) => {
-                      if (res) {
-                        setCardPin("");
-                        setRemainingTime(30);
-                        setCardDetails({
-                          cardreferenceId: cardsActiveList[0]?.cardreferenceId,
-                          card: cardsActiveList[0],
-                          cardImage: res.cardImageBase64,
-                          cardNumber: res?.cardNumber,
-                        });
-                      }
-                    })
-                    .catch((error: any) => {
-                      console.log({ error });
-                    })
-                    .finally(() => {
-                      setIsLoading(false);
-                      refRBSShowCard?.current?.close();
-                    });
+
+                  setEncryptedCardDetails((prevState) => ({
+                    ...prevState,
+                    isLoadingEncryptedCardDetails: true,
+                  }));
                   const bodyParams = {
                     account_id: userID,
                     otp: cardPin,
@@ -1093,7 +1083,37 @@ export function Card({ navigation, route }: any) {
                       encoded: storageData?.value?.publicKeyWithoutPadding,
                     },
                   };
-                  showCardDetailsV2(bodyParams);
+                  showCardDetailsV2(bodyParams)
+                    .unwrap()
+                    .then((res: any) => {
+                      if (res?.code === 200 || res?.code === "200") {
+                        setEncryptedCardDetails((prevState) => ({
+                          ...prevState,
+                          isLoadingEncryptedCardDetails: false,
+                          isSuccessEncryptedCardDetails: true,
+                          encryptedCardDetailsData: { ...res.data },
+                        }));
+                      }
+                      setEncryptedCardDetails((prevState) => ({
+                        ...prevState,
+                        isLoadingEncryptedCardDetails: false,
+                      }));
+                    })
+                    .catch((error: any) => {
+                      console.log({ error });
+                      setEncryptedCardDetails((prevState) => ({
+                        ...prevState,
+                        isLoadingEncryptedCardDetails: false,
+                        isErrorEncryptedCardDetails: true,
+                      }));
+                    })
+                    .finally(() => {
+                      setEncryptedCardDetails((prevState) => ({
+                        ...prevState,
+                        isLoadingEncryptedCardDetails: false,
+                      }));
+                      refRBSShowCard?.current?.close();
+                    });
                 }}
                 style={{ color: "#fff", width: 140 }}
                 color="light-pink"
@@ -1110,7 +1130,6 @@ export function Card({ navigation, route }: any) {
               </Button>
             </View>
           </SwipableBottomSheet>
-          {/* <Spinner visible={orderCardIsLoading} /> */}
         </ScrollView>
       </View>
     </MainLayout>

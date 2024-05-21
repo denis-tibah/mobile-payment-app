@@ -7,9 +7,13 @@ export default function useDigitalSignature() {
   const [signatureData, setSignatureData] = useState<{
     publicKeyWithoutPadding: string;
     privateKeyWithPadding: string;
+    pemCertificate: string;
+    pemCertificateWithoutPadding: string;
   }>({
     publicKeyWithoutPadding: "",
     privateKeyWithPadding: "",
+    pemCertificate: "",
+    pemCertificateWithoutPadding: "",
   });
 
   // Function to strip the header and footer
@@ -59,7 +63,12 @@ export default function useDigitalSignature() {
         md: forge.md.sha1.create(),
       },
     });
-
+    setSignatureData({
+      publicKeyWithoutPadding: "",
+      privateKeyWithPadding: "",
+      pemCertificate: "",
+      pemCertificateWithoutPadding: "",
+    });
     return decryptedData.toString("utf8");
   };
 
@@ -70,6 +79,48 @@ export default function useDigitalSignature() {
         return;
       }
 
+      // Create an X.509 certificate
+      const cert = forge.pki.createCertificate();
+      cert.publicKey = keypair.publicKey;
+      cert.serialNumber = "01";
+      cert.validity.notBefore = new Date();
+      cert.validity.notAfter = new Date();
+      cert.validity.notAfter.setMinutes(
+        cert.validity.notBefore.getMinutes() + 2
+      );
+
+      const attrs = [
+        {
+          name: "commonName",
+          value: "zazoo.com",
+        },
+        {
+          name: "countryName",
+          value: "Cyprus",
+        },
+        {
+          shortName: "ST",
+          value: "Nicosia",
+        },
+        {
+          name: "localityName",
+          value: "Zazoo",
+        },
+        {
+          name: "organizationName",
+          value: "Zazoo",
+        },
+        {
+          shortName: "OU",
+          value: "Zazoo",
+        },
+      ];
+      cert.setSubject(attrs);
+      cert.setIssuer(attrs);
+
+      // Self-sign the certificate
+      cert.sign(keypair.privateKey, forge.md.sha256.create());
+
       // Generate PEM-encoded public and private keys
       const publicKeyWithPadding = forge.pki.publicKeyToPem(keypair.publicKey);
       const privateKeyWithPadding = forge.pki.privateKeyToPem(
@@ -77,12 +128,22 @@ export default function useDigitalSignature() {
       );
       const publicKeyWithoutPadding = stripPemFormatting(publicKeyWithPadding);
 
+      // PEM-encoded certificate
+      const pemCertificate = forge.pki.certificateToPem(cert);
+      const pemCertificateWithoutPadding = stripPemFormatting(pemCertificate);
+
       setSignatureData({
         publicKeyWithoutPadding,
         privateKeyWithPadding,
+        pemCertificate,
+        pemCertificateWithoutPadding,
       });
     });
   };
 
-  return { generateSignature, signatureData, decryptRsa };
+  return {
+    generateSignature,
+    signatureData,
+    decryptRsa,
+  };
 }

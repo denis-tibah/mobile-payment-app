@@ -11,6 +11,7 @@ import Spinner from "react-native-loading-spinner-overlay/lib";
 import * as Clipboard from "expo-clipboard";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import { useAtom } from "jotai";
 import { TouchableOpacity } from "react-native";
 import { Snackbar } from "react-native-paper";
@@ -38,9 +39,11 @@ import FinancialDetailsTab from "../../components/ProfileComponents/FinancialDet
 import NotificationsTab from "../../components/ProfileComponents/NotificationsTab";
 import LimitsTab from "../../components/ProfileComponents/LimitsTab";
 import HelpTab from "../../components/ProfileComponents/HelpTab";
+import NotificationsSettingsTab from "../../components/ProfileComponents/NotificationsSettingsTab";
 import { helpTabticketParams } from "../../utils/globalStates";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import Typography from "../../components/Typography";
+import WholeContainer from "../../layout/WholeContainer";
 
 export interface SelectOption {
   label: string;
@@ -137,6 +140,9 @@ export function Profile({ route, navigation }: any) {
             handleCloseBottomSheet={handleCloseBottomSheet}
           />
         );
+      }
+      case "Notifications settings": {
+        return <NotificationsSettingsTab />;
       }
       default:
         return null;
@@ -508,6 +514,7 @@ export function Profile({ route, navigation }: any) {
                     <View
                       style={{
                         backgroundColor: "#fff",
+
                         ...Platform.select({
                           ios: {
                             shadowColor: "#000",
@@ -522,20 +529,66 @@ export function Profile({ route, navigation }: any) {
                         }),
                       }}
                     >
-                      <TouchableOpacity onPress={() => setTabSelection("")}>
-                        <View style={styles.containerBackBtn}>
-                          <View style={styles.btnBack}>
-                            <ArrowBackIcon color="blue" size={14} />
-                          </View>
-                          <Typography
-                            fontSize={18}
-                            fontWeight={"600"}
-                            fontFamily="Nunito-SemiBold"
+                      <WholeContainer>
+                        <View
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <TouchableOpacity
+                            onPress={() => {
+                              setTabSelection((prevState) => {
+                                if (prevState === "Notifications settings") {
+                                  return "Notifications";
+                                }
+                                return "";
+                              });
+                            }}
                           >
-                            {tabSelection}
-                          </Typography>
+                            <View
+                              style={[
+                                styles.containerBackBtn,
+                                { marginLeft: 0 },
+                              ]}
+                            >
+                              <View style={styles.btnBack}>
+                                <ArrowBackIcon color="blue" size={14} />
+                              </View>
+                              <Typography
+                                fontSize={18}
+                                fontWeight={"600"}
+                                fontFamily="Nunito-SemiBold"
+                              >
+                                {tabSelection}
+                              </Typography>
+                            </View>
+                          </TouchableOpacity>
+                          {tabSelection === "Notifications" ? (
+                            <TouchableOpacity
+                              onPress={() => {
+                                handleShowTab("Notifications settings");
+                              }}
+                            >
+                              <View style={styles.containerBackBtn}>
+                                <View
+                                  style={[
+                                    styles.btnBack,
+                                    { backgroundColor: "#FFF0F9" },
+                                  ]}
+                                >
+                                  <AntDesign
+                                    color={vars["accent-pink"]}
+                                    size={20}
+                                    name={"setting"}
+                                  />
+                                </View>
+                              </View>
+                            </TouchableOpacity>
+                          ) : null}
                         </View>
-                      </TouchableOpacity>
+                      </WholeContainer>
                     </View>
                   </View>
                   {displayTabSelection()}

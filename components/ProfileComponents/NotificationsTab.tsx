@@ -1,15 +1,6 @@
 import { useState, useEffect, useRef, FC, Fragment } from "react";
-import {
-  View,
-  Pressable,
-  Switch,
-  Platform,
-  FlatList,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { View, FlatList, TouchableWithoutFeedback } from "react-native";
 import { useSelector } from "react-redux";
-import Fontisto from "react-native-vector-icons/Fontisto";
-import Feather from "react-native-vector-icons/Feather";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 
@@ -18,10 +9,6 @@ import ArrowRightIcon from "../../assets/icons/ArrowRight";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { Seperator } from "../Seperator/Seperator";
 import WholeContainer from "../../layout/WholeContainer";
-import {
-  useGetProfileQuery,
-  useUpdateNotificationsMutation,
-} from "../../redux/profile/profileSliceV2";
 import {
   useGetNotificationsQuery,
   useReadNotificationMutation,
@@ -39,10 +26,6 @@ interface INotificationsTab {
 }
 
 const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
-  const profileData = useSelector(
-    (state: RootState) => state?.profile?.profile
-  )?.data;
-
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
 
   const { resetPDFParams } = useGeneratePDF();
@@ -55,38 +38,8 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
     isOpen: boolean;
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
-  const [emailNotifications, setEmailNotifications] = useState<boolean>(false);
-  /* const [notificationLimit, setNotificationLimit] = useState<boolean>(false); */
   const [bottomSheetHeight, setBottomSheetHeight] = useState<number>(0);
   const [notification, setNotication] = useState<any>({});
-
-  const {
-    isLoading: isLoadingGetProfile,
-    /* isError: isErrorGetProfile,
-    isSuccess: isSuccessGetProfile,
-    error: errorGetProfile, */
-    data: dataGetProfile,
-    refetch,
-  } = useGetProfileQuery(
-    {
-      accessToken: userTokens?.access_token,
-      tokenZiyl: userTokens?.token_ziyl,
-    },
-    {
-      skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
-    }
-  );
-
-  const [
-    updateNotificationsMutation,
-    {
-      isLoading: isLoadingUpdateNotifications,
-      /* isError: isErrorUpdateNotifications, */
-      isSuccess: isSuccessUpdateNotifications,
-      /* error: errorUpdateNotifications, */
-      data: dataUpdateNotifications,
-    },
-  ] = useUpdateNotificationsMutation();
 
   const {
     isLoading: isLoadingGetNotifications,
@@ -113,27 +66,6 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
       /* data: dataReadNotification, */
     },
   ] = useReadNotificationMutation();
-
-  useEffect(() => {
-    setEmailNotifications(
-      dataGetProfile?.UserProfile?.EnableAlertsYN === "Y" ? true : false
-    );
-  }, [dataGetProfile?.UserProfile?.EnableAlertsYN]);
-
-  useEffect(() => {
-    if (!isLoadingUpdateNotifications && isSuccessUpdateNotifications) {
-      if (dataUpdateNotifications?.code === "200") {
-        refetch();
-        setStatusMessage({
-          header: "Success",
-          body:
-            dataUpdateNotifications?.message || "Changing notification success",
-          isOpen: true,
-          isError: false,
-        });
-      }
-    }
-  }, [isLoadingUpdateNotifications, isSuccessUpdateNotifications]);
 
   useEffect(() => {
     if (!isLoadingReadNotification && isErrorReadNotification) {
@@ -169,29 +101,16 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
     });
   };
 
-  const handleToggleNotification = (toggleValue: boolean) => {
-    setEmailNotifications(toggleValue);
-
-    const bodyParams = {
-      email: profileData?.email,
-      enableYN: toggleValue ? "Y" : "N",
-    };
-    updateNotificationsMutation({
-      bodyParams,
-      accessToken: userTokens?.access_token,
-      tokenZiyl: userTokens?.token_ziyl,
-    });
-  };
-
   const gameItemExtractorKey = (item: any, index: any) => {
     return index.toString();
   };
 
   const renderNotificationList = (item: any) => {
+    console.log("🚀 ~ renderNotificationList ~ item:", item);
     return (
       <TouchableWithoutFeedback
         onPress={() => {
-          setNotication((prevState) => {
+          setNotication((prevState: any) => {
             if (item?.item) {
               return { ...item?.item };
             }
@@ -209,7 +128,10 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
         }}
       >
         <View>
-          <Seperator backgroundColor={"#F5F4F4"} height={2} />
+          {item?.index > 0 ? (
+            <Seperator backgroundColor={"#F5F4F4"} height={2} />
+          ) : null}
+
           <WholeContainer>
             <View
               style={{
@@ -279,12 +201,12 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
       );
     }
     if (
-      arrayChecker(dataNotifications?.data) &&
-      dataNotifications?.data.length > 0
+      arrayChecker(dataNotifications?.data?.notifications) &&
+      dataNotifications?.data?.notifications.length > 0
     ) {
       return (
         <FlatList
-          data={dataNotifications?.data || []}
+          data={dataNotifications?.data?.notifications || []}
           keyExtractor={gameItemExtractorKey}
           scrollEnabled={false}
           renderItem={(item) => (
@@ -294,16 +216,18 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
       );
     }
     return (
-      <View style={styles.listHead}>
-        <Typography
-          fontSize={16}
-          color={vars["black"]}
-          fontFamily="Nunito-Regular"
-          fontWeight={"600"}
-        >
-          No notification found
-        </Typography>
-      </View>
+      <WholeContainer>
+        <View style={styles.listHead}>
+          <Typography
+            fontSize={16}
+            color={vars["black"]}
+            fontFamily="Nunito-Regular"
+            fontWeight={"600"}
+          >
+            No notification found
+          </Typography>
+        </View>
+      </WholeContainer>
     );
   };
 
@@ -315,12 +239,7 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
     <Fragment>
       <View style={{ backgroundColor: "#ffff" }}>
         <Spinner
-          visible={
-            isLoadingUpdateNotifications ||
-            isLoadingGetProfile ||
-            isLoadingGetNotifications ||
-            isLoadingReadNotification
-          }
+          visible={isLoadingGetNotifications || isLoadingReadNotification}
         />
         <SuccessModal
           isOpen={statusMessage?.isOpen}
@@ -329,71 +248,6 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
           isError={statusMessage.isError}
           onClose={onCloseModal}
         />
-        <Pressable>
-          <View>
-            <WholeContainer>
-              <View
-                style={[
-                  styles.toggleSliderContainer,
-                  {
-                    ...Platform.select({
-                      ios: {
-                        marginVertical: 8,
-                      },
-                    }),
-                  },
-                ]}
-              >
-                <View style={styles.toggleSliderContainerText}>
-                  <Fontisto color="#086AFB" size={22} name={"email"} />
-                  <Typography fontSize={16} marginLeft={6}>
-                    Recieve email notifications
-                  </Typography>
-                </View>
-                <Switch
-                  trackColor={{ false: "#767577", true: "#81b0ff" }}
-                  thumbColor={emailNotifications ? "white" : vars["light-blue"]}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={(e) => {
-                    handleToggleNotification(e);
-                  }}
-                  value={emailNotifications}
-                />
-              </View>
-              {/* <Seperator
-              backgroundColor={vars["v2-light-grey"]}
-              marginBottom={12}
-            /> */}
-              {/* temporary hiding as per aristos, 05/15/24 */}
-              {/*  <View
-                style={[
-                  styles.toggleSliderContainer,
-                  {
-                    ...Platform.select({
-                      ios: {
-                        marginVertical: 8,
-                      },
-                    }),
-                  },
-                ]}
-              >
-                <View style={styles.toggleSliderContainerText}>
-                  <Feather color="#086AFB" size={22} name={"bell"} />
-                  <Typography fontSize={16} marginLeft={6}>
-                    Notifications when limit is reached
-                  </Typography>
-                </View>
-                <Switch
-                  trackColor={{ false: "#767577", true: "#81b0ff" }}
-                  thumbColor={notificationLimit ? "white" : vars["light-blue"]}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={(e) => setNotificationLimit(e)}
-                  value={notificationLimit}
-                />
-              </View> */}
-            </WholeContainer>
-          </View>
-        </Pressable>
         {displayListItems()}
       </View>
       <SwipableBottomSheet

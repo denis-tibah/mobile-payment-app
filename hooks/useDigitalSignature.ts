@@ -7,8 +7,8 @@ export default function useDigitalSignature() {
   const [signatureData, setSignatureData] = useState<{
     publicKeyWithoutPadding: string;
     privateKeyWithPadding: string;
-    pemCertificate: string;
-    pemCertificateWithoutPadding: string;
+    pemCertificate?: string;
+    pemCertificateWithoutPadding?: string;
   }>({
     publicKeyWithoutPadding: "",
     privateKeyWithPadding: "",
@@ -66,8 +66,8 @@ export default function useDigitalSignature() {
     setSignatureData({
       publicKeyWithoutPadding: "",
       privateKeyWithPadding: "",
-      pemCertificate: "",
-      pemCertificateWithoutPadding: "",
+      /* pemCertificate: "",
+      pemCertificateWithoutPadding: "", */
     });
     return decryptedData.toString("utf8");
   };
@@ -135,8 +135,8 @@ export default function useDigitalSignature() {
       setSignatureData({
         publicKeyWithoutPadding,
         privateKeyWithPadding,
-        pemCertificate,
-        pemCertificateWithoutPadding,
+        /* pemCertificate,
+        pemCertificateWithoutPadding, */
       });
     });
   };

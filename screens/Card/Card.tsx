@@ -71,7 +71,7 @@ export function Card({ navigation, route }: any) {
 
   const { generateSignature, signatureData, decryptRsa } =
     useDigitalSignature();
-  console.log("🚀 ~ Card ~ signatureData:", signatureData);
+
   const { startTimer, isTimesUp, stopTimer } = useTimer();
   const {
     error,

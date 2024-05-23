@@ -164,13 +164,15 @@ const CardLimit: React.FC<CardLimitProps> = (): JSX.Element => {
           {arrayChecker(cardLimitsProperties) && cardLimitsProperties.length > 0
             ? cardLimitsProperties.map((params: any, index: number) => {
                 return (
-                  <Fragment>
+                  <Fragment key={params?.key}>
                     <Typography
                       fontWeight="600"
                       fontSize={16}
                       fontFamily="Nunito-Regular"
                     >
-                      {params?.header}
+                      {params?.data?.daily || params?.data?.monthly
+                        ? params?.header
+                        : ""}
                     </Typography>
                     {params?.data?.daily ? (
                       <View
@@ -198,7 +200,8 @@ const CardLimit: React.FC<CardLimitProps> = (): JSX.Element => {
                         {displayLimits(params, "Monthly")}
                       </View>
                     ) : null}
-                    {index + 1 < cardLimitsProperties.length ? (
+                    {(params?.data?.daily || params?.data?.monthly) &&
+                    index + 1 < cardLimitsProperties.length ? (
                       <Seperator
                         backgroundColor={vars["v2-light-grey"]}
                         marginBottom={16}

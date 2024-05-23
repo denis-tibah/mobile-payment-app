@@ -13,7 +13,7 @@ const useSecureStoreCreateDelete = () => {
     }
   };
 
-  const getStorageData = async (key: string) => {
+  /* const getStorageData = async (key: string) => {
     try {
       const promiseStoredData = await SecureStore.getItemAsync(key);
       const storedData = promiseStoredData
@@ -29,11 +29,40 @@ const useSecureStoreCreateDelete = () => {
       setError(error);
       return null;
     }
+  }; */
+
+  const getStorageData = async (key: string) => {
+    try {
+      const promiseStoredData = await SecureStore.getItemAsync(key);
+      const storedData = promiseStoredData
+        ? JSON.parse(promiseStoredData)
+        : null;
+      setStorageData((prevState: any) => ({
+        ...prevState,
+        [key]: storedData,
+      }));
+    } catch (error: any) {
+      setError(error);
+      return null;
+    }
   };
+
+  /* const deleteStorageData = async (key: string) => {
+    try {
+      await SecureStore.deleteItemAsync(key);
+    } catch (error: any) {
+      setError(error);
+    }
+  }; */
 
   const deleteStorageData = async (key: string) => {
     try {
       await SecureStore.deleteItemAsync(key);
+      setStorageData((prevState: any) => {
+        const newState = { ...prevState };
+        delete newState[key];
+        return newState;
+      });
     } catch (error: any) {
       setError(error);
     }

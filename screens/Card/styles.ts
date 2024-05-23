@@ -105,8 +105,8 @@ export const styles: any = StyleSheet.create<any>({
   },
   clipboardContainer: {
     position: "absolute",
-    bottom: 62,
-    right: -20,
+    bottom: 130,
+    left: 70,
   },
   listHeadCardTransactions: {
     backgroundColor: "white",

@@ -60,11 +60,13 @@ export const cardsV2 = createApi({
       invalidatesTags: ["cardsV2"] as any,
     }),
     sendSmsShowPinVerification: builder.query({
-      query: ({ type }) => ({
-        url: `/cardotpfinxp`,
-        method: "POST",
-        body: { type },
-      }),
+      query: (params) => {
+        return {
+          url: `/cardotpfinxp`,
+          method: "POST",
+          body: params,
+        };
+      },
     }),
     orderCard: builder.query({
       query: ({ accountUuid, email, cardType, currency, otp }) => ({

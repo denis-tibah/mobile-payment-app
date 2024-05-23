@@ -27,7 +27,6 @@ import EyeIcon from "../../assets/icons/Eye";
 import CopyClipboard from "../../assets/icons/CopyClipboard";
 import {
   getCards,
-  sendSmsShowCardVerification,
   setCardAsFrozen,
   setIsCardTransactionShown,
   terminateCard,
@@ -35,7 +34,6 @@ import {
 import { getUserActiveCards, screenNames } from "../../utils/helpers";
 import { CardView } from "../../components/Card/CardView";
 import { RootState } from "../../store";
-import { ICardDetails } from "../../models/interface";
 import vars from "../../styles/vars";
 import TerminatingCardModal from "./TerminatingCardModal";
 import { Divider } from "react-native-paper";
@@ -48,13 +46,14 @@ import { NewPinCodeInputBoxes } from "../../components/FormGroup/FormGroup";
 import {
   useLazySendSmsLostCardVerificationQuery,
   useLazyShowCardDetailsV2Query,
+  useLazySendSmsShowPinVerificationQuery,
 } from "../../redux/card/cardSliceV2";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
-import { managePaymentMethods } from "../../utils/constants";
 import { styles } from "./styles";
 import useDigitalSignature from "../../hooks/useDigitalSignature";
 import useSecureStoreCreateDelete from "../../hooks/useSecureStoreCreateDelete";
 import useTimer from "../../hooks/useTimer";
+import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 
 const windowDimensions = Dimensions.get("window");
 const screenDimensions = Dimensions.get("screen");
@@ -71,8 +70,8 @@ export function Card({ navigation, route }: any) {
 
   const { generateSignature, signatureData, decryptRsa } =
     useDigitalSignature();
-
   const { startTimer, isTimesUp, stopTimer } = useTimer();
+
   const {
     error,
     saveStorageData,
@@ -89,7 +88,6 @@ export function Card({ navigation, route }: any) {
     useState<boolean>(false);
   const [terminatedCardModal, setTerminatedCardModal] =
     useState<boolean>(false);
-  const [cardDetails, setCardDetails] = useState<ICardDetails>({});
   const [freezeLoading, setFreezeLoading] = useState(false);
   const [selectedCard, setSelectedCard] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -98,8 +96,7 @@ export function Card({ navigation, route }: any) {
   const [listOfCheckedOptions, setListOfCheckedOptions] = useState<string[]>(
     []
   );
-  const [isTimeToCountDown, setIsTimeToCountDown] = useState<boolean>(false);
-  const timeRemaining = 30;
+  const [resendOTP, setResendOTP] = useState<boolean>(false);
 
   const [dimensions, setDimensions] = useState({
     window: windowDimensions,
@@ -110,7 +107,6 @@ export function Card({ navigation, route }: any) {
     cvc: string;
     pin: string;
   }>({ cardNumber: "", cvc: "", pin: "" });
-
   const [encryptedCardDetails, setEncryptedCardDetails] = useState<{
     isLoadingEncryptedCardDetails: boolean;
     isSuccessEncryptedCardDetails: boolean;
@@ -122,6 +118,12 @@ export function Card({ navigation, route }: any) {
     encryptedCardDetailsData: {},
     isErrorEncryptedCardDetails: false,
   });
+  const [statusMessage, setStatusMessage] = useState<{
+    header: string;
+    body: string;
+    isOpen: boolean;
+    isError: boolean;
+  }>({ header: "", body: "", isOpen: false, isError: false });
 
   const resetEncryptedCardDetailsData = () => {
     setEncryptedCardDetails({
@@ -143,6 +145,41 @@ export function Card({ navigation, route }: any) {
     ? cardsActiveList
     : [];
 
+  const [
+    getOTP,
+    {
+      isLoading: isLoadingGetOTP,
+      isError: isErrorGetOTP,
+      isSuccess: isSuccessGetOTPV,
+      isFetching: isFetchingOTP,
+      error: OTPError,
+      data: OTPData,
+    },
+  ] = useLazySendSmsShowPinVerificationQuery();
+
+  // for successfull otp
+  useEffect(() => {
+    if (!isLoadingGetOTP && isSuccessGetOTPV && !isFetchingOTP) {
+      if (OTPData?.status === "success") {
+        refRBSShowCard?.current?.open();
+        startTimer("is_request_new_otp", 30000);
+        generateSignature();
+      }
+    }
+  }, [isLoadingGetOTP, isSuccessGetOTPV, isFetchingOTP, OTPData]);
+
+  // for failed otp
+  useEffect(() => {
+    if (!isLoadingGetOTP && !isFetchingOTP && isErrorGetOTP) {
+      setStatusMessage({
+        header: `${OTPError?.code ? `":"${OTPError?.code}` : ""}Error`,
+        body: "OTP error: Please try again",
+        isOpen: true,
+        isError: true,
+      });
+    }
+  }, [isLoadingGetOTP, isErrorGetOTP, isFetchingOTP, OTPError]);
+
   // to show decrypted card details
   useEffect(() => {
     const {
@@ -159,7 +196,10 @@ export function Card({ navigation, route }: any) {
       //set timer for decrypted card info deletion
       startTimer("decrypted_card_info_local_state", 30000);
 
-      if (storageData?.value?.privateKeyWithPadding) {
+      if (
+        storageData?.digital_signature_private_key_with_padding
+          ?.privateKeyWithPadding
+      ) {
         if (
           encryptedCardDetails?.encryptedCardDetailsData?.cardNumberEncrypted
         ) {
@@ -167,7 +207,9 @@ export function Card({ navigation, route }: any) {
             encryptedData:
               encryptedCardDetails?.encryptedCardDetailsData
                 ?.cardNumberEncrypted,
-            privateKeyPem: storageData?.value?.privateKeyWithPadding,
+            privateKeyPem:
+              storageData?.digital_signature_private_key_with_padding
+                ?.privateKeyWithPadding,
           });
           if (cardNumber) {
             setCardDetailsDecrypted((prevState) => ({
@@ -181,7 +223,9 @@ export function Card({ navigation, route }: any) {
           cvc = decryptRsa({
             encryptedData:
               encryptedCardDetails?.encryptedCardDetailsData?.cvc2Encrypted,
-            privateKeyPem: storageData?.value?.privateKeyWithPadding,
+            privateKeyPem:
+              storageData?.digital_signature_private_key_with_padding
+                ?.privateKeyWithPadding,
           });
 
           if (cvc) {
@@ -196,7 +240,9 @@ export function Card({ navigation, route }: any) {
           pin = decryptRsa({
             encryptedData:
               encryptedCardDetails?.encryptedCardDetailsData?.pinEncrypted,
-            privateKeyPem: storageData?.value?.privateKeyWithPadding,
+            privateKeyPem:
+              storageData?.digital_signature_private_key_with_padding
+                ?.privateKeyWithPadding,
           });
           if (pin) {
             setCardDetailsDecrypted((prevState) => ({
@@ -215,13 +261,15 @@ export function Card({ navigation, route }: any) {
     encryptedCardDetails?.isLoadingEncryptedCardDetails,
     encryptedCardDetails?.isSuccessEncryptedCardDetails,
     encryptedCardDetails,
-    storageData?.value?.privateKeyWithPadding,
+    storageData?.digital_signature_private_key_with_padding
+      ?.privateKeyWithPadding,
   ]);
 
   useEffect(() => {
     if (isTimesUp?.digital_signature) {
       stopTimer("digital_signature");
-      deleteStorageData("digital_signature");
+      deleteStorageData("digital_signature_public_key_without_padding");
+      deleteStorageData("digital_signature_private_key_with_padding");
     }
   }, [isTimesUp?.digital_signature]);
 
@@ -236,6 +284,13 @@ export function Card({ navigation, route }: any) {
       });
     }
   }, [isTimesUp?.decrypted_card_info_local_state]);
+
+  useEffect(() => {
+    if (isTimesUp?.is_request_new_otp) {
+      stopTimer("is_request_new_otp");
+      setResendOTP(false);
+    }
+  }, [isTimesUp?.is_request_new_otp]);
 
   const handlePinCodeChange = (value: string) => {
     setCardPin(value);
@@ -295,33 +350,6 @@ export function Card({ navigation, route }: any) {
       });
   };
 
-  const resetCard = () => {
-    setCardPin("");
-    setCardDetails({});
-    setRemainingTime(30);
-  };
-
-  const requestShowCard = async () => {
-    setIsLoading((prev) => (prev = true));
-    dispatch(
-      sendSmsShowCardVerification({
-        type: "trusted",
-      }) as any
-    )
-      .unwrap()
-      .then((res: any) => {
-        if (res) {
-          refRBSShowCard?.current?.open();
-        }
-      })
-      .catch((error: any) => {
-        console.log({ error });
-      })
-      .finally(() => {
-        setIsLoading((prev) => (prev = false));
-      });
-  };
-
   const handleOnlinePayment = async () => {
     setFreezeLoading(true);
     setIsLoading((prev) => true);
@@ -351,8 +379,8 @@ export function Card({ navigation, route }: any) {
     return (
       <Pressable key={index}>
         <CardView
-          resetHandler={() => setCardDetails({})}
-          cardDetails={cardDetails}
+          resetHandler={() => {}}
+          cardDetails={{}}
           freezeLoading={freezeLoading}
           key={index}
           card={item}
@@ -386,7 +414,7 @@ export function Card({ navigation, route }: any) {
   };
 
   const handleCopyToClipboard = async () => {
-    await Clipboard.setStringAsync(cardDetails?.cardNumber || "");
+    await Clipboard.setStringAsync(cardDetailsDecrypted?.cardNumber || "");
   };
 
   const checkIfCardIsFrozen = (card: any) => {
@@ -400,21 +428,6 @@ export function Card({ navigation, route }: any) {
       setListOfCheckedOptions(removeOnlinePaymentOption);
     }
   };
-
-  // triggered when cardDetails image is truthy
-  useEffect(() => {
-    let interval: any;
-    if (cardDetails?.cardImage) {
-      interval = setInterval(() => {
-        setRemainingTime((remainingTime) => remainingTime - 1);
-        if (remainingTime === 0) {
-          clearInterval(interval);
-          resetCard();
-        }
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [cardDetails, remainingTime]);
 
   useEffect(() => {
     if (!selectedCard) {
@@ -440,23 +453,43 @@ export function Card({ navigation, route }: any) {
     dispatch<any>(setIsCardTransactionShown(false));
   }, []);
 
-  //store digital signature in secure store
+  // store/fetch digital signature in secure store
   useEffect(() => {
-    if (
-      signatureData?.publicKeyWithoutPadding &&
-      signatureData?.privateKeyWithPadding
-    ) {
-      const signature = {
-        type: "ACCESS_TOKEN",
-        value: signatureData,
-      };
-      saveStorageData("digital_signature", signature);
-      getStorageData("digital_signature");
+    if (signatureData?.publicKeyWithoutPadding) {
+      saveStorageData("digital_signature_public_key_without_padding", {
+        publicKeyWithoutPadding: signatureData?.publicKeyWithoutPadding,
+      });
+      getStorageData("digital_signature_public_key_without_padding");
     }
-  }, [signatureData]);
+  }, [signatureData?.publicKeyWithoutPadding]);
+
+  useEffect(() => {
+    if (signatureData?.privateKeyWithPadding) {
+      saveStorageData("digital_signature_private_key_with_padding", {
+        privateKeyWithPadding: signatureData?.privateKeyWithPadding,
+      });
+      getStorageData("digital_signature_private_key_with_padding");
+    }
+  }, [signatureData?.privateKeyWithPadding]);
+
+  const onCloseModal = (): void => {
+    setStatusMessage({
+      header: "",
+      body: "",
+      isOpen: false,
+      isError: false,
+    });
+  };
 
   return (
     <MainLayout navigation={navigation}>
+      <SuccessModal
+        isOpen={statusMessage.isOpen}
+        title={statusMessage.header}
+        text={statusMessage.body}
+        isError={statusMessage.isError}
+        onClose={onCloseModal}
+      />
       {terminatedCardModal && (
         <TerminatingCardModal
           isOpen={terminatedCardModal}
@@ -472,7 +505,9 @@ export function Card({ navigation, route }: any) {
       )}
       <Spinner
         visible={
-          isLoading || encryptedCardDetails?.isLoadingEncryptedCardDetails
+          isLoading ||
+          encryptedCardDetails?.isLoadingEncryptedCardDetails ||
+          isLoadingGetOTP
         }
       />
       <View style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -521,9 +556,7 @@ export function Card({ navigation, route }: any) {
               <Carousel
                 ref={refCarousel}
                 disableIntervalMomentum
-                data={
-                  cardDetails?.cardImage ? [cardDetails] : shownCardsOnCarousel
-                }
+                data={shownCardsOnCarousel}
                 renderItem={_renderItem}
                 refreshing={isLoading}
                 enableMomentum={false}
@@ -552,7 +585,7 @@ export function Card({ navigation, route }: any) {
                   setSelectedCard(shownCardsOnCarousel[index]);
                 }}
               />
-              {cardDetails?.cardNumber ? (
+              {cardDetailsDecrypted?.cardNumber ? (
                 <TouchableOpacity onPress={handleCopyToClipboard}>
                   <View style={styles.clipboardContainer}>
                     <CopyClipboard color="light-pink" size={18} />
@@ -566,9 +599,10 @@ export function Card({ navigation, route }: any) {
                   <Button
                     color="light-blue"
                     onPress={() => {
-                      refRBSShowCard?.current?.open();
-                      generateSignature();
-                      requestShowCard();
+                      const bodyParams = {
+                        type: "trusted",
+                      };
+                      getOTP(bodyParams);
                     }}
                     leftIcon={<EyeIcon color="blue" size={14} />}
                   >
@@ -1000,7 +1034,9 @@ export function Card({ navigation, route }: any) {
             closeOnDragDown={true}
             closeOnPressMask={false}
             onClose={() => {
-              deleteStorageData("digital_signature");
+              //setCardPin("");
+              deleteStorageData("digital_signature_public_key_without_padding");
+              deleteStorageData("digital_signature_private_key_with_padding");
             }}
             height={340}
             wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
@@ -1044,18 +1080,22 @@ export function Card({ navigation, route }: any) {
               />
             </View>
             <TouchableOpacity
-              onPress={() => console.log("resend")}
-              disabled={isTimeToCountDown}
+              onPress={() => {
+                const bodyParams = {
+                  type: "trusted",
+                };
+                getOTP(bodyParams);
+              }}
+              // disabled={resendOTP ? true : false}
             >
-              {isTimeToCountDown ? (
+              {/*               {resendOTP ? (
                 <Text style={styles.noCodeResend}>
-                  Wait for {timeRemaining}s to request again.
+                  Wait for 30 seconds to request again.
                 </Text>
-              ) : (
-                <Text style={styles.noCode}>
-                  Did not get a verification code?
-                </Text>
-              )}
+              ) : null} */}
+              <Text style={styles.noCode}>
+                Did not get a verification code?
+              </Text>
             </TouchableOpacity>
             <View style={{ alignItems: "center", paddingTop: 50 }}>
               <Button
@@ -1063,7 +1103,6 @@ export function Card({ navigation, route }: any) {
                   if (!cardPin && !userID) {
                     return;
                   }
-
                   setEncryptedCardDetails((prevState) => ({
                     ...prevState,
                     isLoadingEncryptedCardDetails: true,
@@ -1075,7 +1114,10 @@ export function Card({ navigation, route }: any) {
                     public_key: {
                       format: "X.509",
                       algorithm: "RSA",
-                      encoded: storageData?.value?.publicKeyWithoutPadding,
+                      encoded:
+                        storageData
+                          ?.digital_signature_public_key_without_padding
+                          ?.publicKeyWithoutPadding,
                     },
                   };
                   showCardDetailsV2(bodyParams)

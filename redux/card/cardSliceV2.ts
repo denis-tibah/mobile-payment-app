@@ -65,6 +65,7 @@ export const cardsV2 = createApi({
           url: `/cardotpfinxp`,
           method: "POST",
           body: params,
+          invalidatesTags: ["cardsV2"],
         };
       },
     }),
@@ -164,6 +165,7 @@ export const cardsV2 = createApi({
           url: `/card/show`,
           method: "POST",
           body: bodyParams,
+          invalidatesTags: ["cardsV2"],
         };
       },
     }),

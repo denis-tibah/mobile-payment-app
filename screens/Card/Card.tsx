@@ -54,6 +54,7 @@ import useDigitalSignature from "../../hooks/useDigitalSignature";
 import useSecureStoreCreateDelete from "../../hooks/useSecureStoreCreateDelete";
 import useTimer from "../../hooks/useTimer";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
+import { arrayChecker } from "../../utils/helper";
 
 const windowDimensions = Dimensions.get("window");
 const screenDimensions = Dimensions.get("screen");
@@ -91,6 +92,7 @@ export function Card({ navigation, route }: any) {
   const [freezeLoading, setFreezeLoading] = useState(false);
   const [selectedCard, setSelectedCard] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  console.log("🚀 ~ Card ~ isLoading:", isLoading);
   const [isSelectedCardTerminated, setIsSelectedCardTerminated] =
     useState<boolean>(false);
   const [listOfCheckedOptions, setListOfCheckedOptions] = useState<string[]>(
@@ -112,12 +114,15 @@ export function Card({ navigation, route }: any) {
     isSuccessEncryptedCardDetails: boolean;
     encryptedCardDetailsData: any;
     isErrorEncryptedCardDetails: boolean;
+    encryptedCardDetailsError: any;
   }>({
     isLoadingEncryptedCardDetails: false,
     isSuccessEncryptedCardDetails: false,
     encryptedCardDetailsData: {},
     isErrorEncryptedCardDetails: false,
+    encryptedCardDetailsError: {},
   });
+
   const [statusMessage, setStatusMessage] = useState<{
     header: string;
     body: string;
@@ -131,6 +136,7 @@ export function Card({ navigation, route }: any) {
       isSuccessEncryptedCardDetails: false,
       encryptedCardDetailsData: {},
       isErrorEncryptedCardDetails: false,
+      encryptedCardDetailsError: {},
     });
   };
 
@@ -145,48 +151,12 @@ export function Card({ navigation, route }: any) {
     ? cardsActiveList
     : [];
 
-  const [
-    getOTP,
-    {
-      isLoading: isLoadingGetOTP,
-      isError: isErrorGetOTP,
-      isSuccess: isSuccessGetOTPV,
-      isFetching: isFetchingOTP,
-      error: OTPError,
-      data: OTPData,
-    },
-  ] = useLazySendSmsShowPinVerificationQuery();
+  const [getOTP] = useLazySendSmsShowPinVerificationQuery();
 
-  // for successfull otp
+  // to show decrypted card details is success
   useEffect(() => {
-    if (!isLoadingGetOTP && isSuccessGetOTPV && !isFetchingOTP) {
-      if (OTPData?.status === "success") {
-        refRBSShowCard?.current?.open();
-        startTimer("is_request_new_otp", 30000);
-        generateSignature();
-      }
-    }
-  }, [isLoadingGetOTP, isSuccessGetOTPV, isFetchingOTP, OTPData]);
-
-  // for failed otp
-  useEffect(() => {
-    if (!isLoadingGetOTP && !isFetchingOTP && isErrorGetOTP) {
-      setStatusMessage({
-        header: `${OTPError?.code ? `":"${OTPError?.code}` : ""}Error`,
-        body: "OTP error: Please try again",
-        isOpen: true,
-        isError: true,
-      });
-    }
-  }, [isLoadingGetOTP, isErrorGetOTP, isFetchingOTP, OTPError]);
-
-  // to show decrypted card details
-  useEffect(() => {
-    const {
-      isLoadingEncryptedCardDetails,
-      isSuccessEncryptedCardDetails,
-      isErrorEncryptedCardDetails,
-    } = encryptedCardDetails;
+    const { isLoadingEncryptedCardDetails, isSuccessEncryptedCardDetails } =
+      encryptedCardDetails;
     let cardNumber: string;
     let cvc: string;
     let pin: string;
@@ -195,7 +165,6 @@ export function Card({ navigation, route }: any) {
       startTimer("digital_signature", 60000 * 2);
       //set timer for decrypted card info deletion
       startTimer("decrypted_card_info_local_state", 30000);
-
       if (
         storageData?.digital_signature_private_key_with_padding
           ?.privateKeyWithPadding
@@ -263,6 +232,33 @@ export function Card({ navigation, route }: any) {
     encryptedCardDetails,
     storageData?.digital_signature_private_key_with_padding
       ?.privateKeyWithPadding,
+  ]);
+
+  useEffect(() => {
+    const {
+      isErrorEncryptedCardDetails,
+      isLoadingEncryptedCardDetails,
+      encryptedCardDetailsError,
+    } = encryptedCardDetails;
+    if (!isLoadingEncryptedCardDetails && isErrorEncryptedCardDetails) {
+      const errorMessage =
+        arrayChecker(encryptedCardDetailsError?.data?.errors) &&
+        encryptedCardDetailsError?.data?.errors.length > 0
+          ? encryptedCardDetailsError?.data?.errors[0]
+          : "Something went wrong";
+      setStatusMessage({
+        header: `${encryptedCardDetailsError?.data?.code || ""}${
+          encryptedCardDetailsError?.data?.code ? ":" : ""
+        }Error`,
+        body: `${errorMessage}`,
+        isOpen: true,
+        isError: true,
+      });
+    }
+  }, [
+    encryptedCardDetails?.isLoadingEncryptedCardDetails,
+    encryptedCardDetails?.isErrorEncryptedCardDetails,
+    encryptedCardDetails?.encryptedCardDetailsError,
   ]);
 
   useEffect(() => {
@@ -472,6 +468,34 @@ export function Card({ navigation, route }: any) {
     }
   }, [signatureData?.privateKeyWithPadding]);
 
+  const handleGetOTP = () => {
+    setIsLoading(true);
+    const bodyParams = {
+      type: "trusted",
+    };
+    getOTP(bodyParams)
+      .unwrap()
+      .then((res: any) => {
+        if (res?.status === "success") {
+          refRBSShowCard?.current?.open();
+          startTimer("is_request_new_otp", 30000);
+          generateSignature();
+        }
+        setIsLoading(false);
+      })
+      .catch((error: any) => {
+        setStatusMessage({
+          header: `${error?.status}${error?.status ? ":" : ""}Error`,
+          body: `OTP error: Please try again`,
+          isOpen: true,
+          isError: true,
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
   const onCloseModal = (): void => {
     setStatusMessage({
       header: "",
@@ -505,9 +529,8 @@ export function Card({ navigation, route }: any) {
       )}
       <Spinner
         visible={
-          isLoading ||
-          encryptedCardDetails?.isLoadingEncryptedCardDetails ||
-          isLoadingGetOTP
+          isLoading || encryptedCardDetails?.isLoadingEncryptedCardDetails
+          /* isLoadingGetOTP */
         }
       />
       <View style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -599,10 +622,11 @@ export function Card({ navigation, route }: any) {
                   <Button
                     color="light-blue"
                     onPress={() => {
-                      const bodyParams = {
+                      /* const bodyParams = {
                         type: "trusted",
                       };
-                      getOTP(bodyParams);
+                      getOTP(bodyParams); */
+                      handleGetOTP();
                     }}
                     leftIcon={<EyeIcon color="blue" size={14} />}
                   >
@@ -1029,146 +1053,135 @@ export function Card({ navigation, route }: any) {
               </Button>
             </View>
           </SwipableBottomSheet>
-          <SwipableBottomSheet
-            rbSheetRef={refRBSShowCard}
-            closeOnDragDown={true}
-            closeOnPressMask={false}
-            onClose={() => {
-              //setCardPin("");
-              deleteStorageData("digital_signature_public_key_without_padding");
-              deleteStorageData("digital_signature_private_key_with_padding");
-            }}
-            height={340}
-            wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
-            containerStyles={{
-              backgroundColor: "#FFF",
-              borderTopLeftRadius: 14,
-              borderTopRightRadius: 14,
-              elevation: 12,
-              shadowColor: "#52006A",
-              paddingHorizontal: 15,
-            }}
-            draggableIconStyles={{ backgroundColor: "#DDD", width: 90 }}
-          >
-            <Typography
-              fontSize={16}
-              fontWeight={"600"}
-              fontFamily={"Nunito-Regular"}
-            >
-              Show Card
-            </Typography>
-            <Typography
-              fontSize={14}
-              fontWeight={"400"}
-              color={vars["shade-grey"]}
-            >
-              You will receive an sms to your mobile device. Please enter this
-              code below.
-            </Typography>
-            <Divider style={{ marginVertical: 15, paddingHorizontal: 15 }} />
-            <View
-              style={{
-                display: "flex",
-                alignItems: "center",
-                paddingVertical: 8,
-              }}
-            >
-              <NewPinCodeInputBoxes
-                fieldCount={6}
-                onChange={handlePinCodeChange}
-                isNewPinCodeStyle
-              />
-            </View>
-            <TouchableOpacity
-              onPress={() => {
-                const bodyParams = {
-                  type: "trusted",
-                };
-                getOTP(bodyParams);
-              }}
-              // disabled={resendOTP ? true : false}
-            >
-              {/*               {resendOTP ? (
+        </ScrollView>
+      </View>
+      <SwipableBottomSheet
+        rbSheetRef={refRBSShowCard}
+        closeOnDragDown={true}
+        closeOnPressMask={false}
+        onClose={() => {
+          //setCardPin("");
+          deleteStorageData("digital_signature_public_key_without_padding");
+          deleteStorageData("digital_signature_private_key_with_padding");
+        }}
+        height={340}
+        wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
+        containerStyles={{
+          backgroundColor: "#FFF",
+          borderTopLeftRadius: 14,
+          borderTopRightRadius: 14,
+          elevation: 12,
+          shadowColor: "#52006A",
+          paddingHorizontal: 15,
+        }}
+        draggableIconStyles={{ backgroundColor: "#DDD", width: 90 }}
+      >
+        <Typography
+          fontSize={16}
+          fontWeight={"600"}
+          fontFamily={"Nunito-Regular"}
+        >
+          Show Card
+        </Typography>
+        <Typography fontSize={14} fontWeight={"400"} color={vars["shade-grey"]}>
+          You will receive an sms to your mobile device. Please enter this code
+          below.
+        </Typography>
+        <Divider style={{ marginVertical: 15, paddingHorizontal: 15 }} />
+        <View
+          style={{
+            display: "flex",
+            alignItems: "center",
+            paddingVertical: 8,
+          }}
+        >
+          <NewPinCodeInputBoxes
+            fieldCount={6}
+            onChange={handlePinCodeChange}
+            isNewPinCodeStyle
+          />
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            handleGetOTP();
+          }}
+          // disabled={resendOTP ? true : false}
+        >
+          {/*               {resendOTP ? (
                 <Text style={styles.noCodeResend}>
                   Wait for 30 seconds to request again.
                 </Text>
               ) : null} */}
-              <Text style={styles.noCode}>
-                Did not get a verification code?
-              </Text>
-            </TouchableOpacity>
-            <View style={{ alignItems: "center", paddingTop: 50 }}>
-              <Button
-                onPress={() => {
-                  if (!cardPin && !userID) {
-                    return;
+          <Text style={styles.noCode}>Did not get a verification code?</Text>
+        </TouchableOpacity>
+        <View style={{ alignItems: "center", paddingTop: 50 }}>
+          <Button
+            onPress={() => {
+              if (!cardPin && !userID) {
+                return;
+              }
+              setEncryptedCardDetails((prevState) => ({
+                ...prevState,
+                isLoadingEncryptedCardDetails: true,
+              }));
+              const bodyParams = {
+                account_id: userID,
+                otp: cardPin,
+                card_id: Number(selectedCard?.cardreferenceId),
+                public_key: {
+                  format: "X.509",
+                  algorithm: "RSA",
+                  encoded:
+                    storageData?.digital_signature_public_key_without_padding
+                      ?.publicKeyWithoutPadding,
+                },
+              };
+              showCardDetailsV2(bodyParams)
+                .unwrap()
+                .then((res: any) => {
+                  if (res?.code === 200 || res?.code === "200") {
+                    refRBSShowCard?.current?.close();
+                    setEncryptedCardDetails((prevState) => ({
+                      ...prevState,
+                      isLoadingEncryptedCardDetails: false,
+                      isSuccessEncryptedCardDetails: true,
+                      encryptedCardDetailsData: { ...res.data },
+                    }));
                   }
                   setEncryptedCardDetails((prevState) => ({
                     ...prevState,
-                    isLoadingEncryptedCardDetails: true,
+                    isLoadingEncryptedCardDetails: false,
                   }));
-                  const bodyParams = {
-                    account_id: userID,
-                    otp: cardPin,
-                    card_id: Number(selectedCard?.cardreferenceId),
-                    public_key: {
-                      format: "X.509",
-                      algorithm: "RSA",
-                      encoded:
-                        storageData
-                          ?.digital_signature_public_key_without_padding
-                          ?.publicKeyWithoutPadding,
-                    },
-                  };
-                  showCardDetailsV2(bodyParams)
-                    .unwrap()
-                    .then((res: any) => {
-                      if (res?.code === 200 || res?.code === "200") {
-                        setEncryptedCardDetails((prevState) => ({
-                          ...prevState,
-                          isLoadingEncryptedCardDetails: false,
-                          isSuccessEncryptedCardDetails: true,
-                          encryptedCardDetailsData: { ...res.data },
-                        }));
-                      }
-                      setEncryptedCardDetails((prevState) => ({
-                        ...prevState,
-                        isLoadingEncryptedCardDetails: false,
-                      }));
-                    })
-                    .catch((error: any) => {
-                      console.log({ error });
-                      setEncryptedCardDetails((prevState) => ({
-                        ...prevState,
-                        isLoadingEncryptedCardDetails: false,
-                        isErrorEncryptedCardDetails: true,
-                      }));
-                    })
-                    .finally(() => {
-                      setEncryptedCardDetails((prevState) => ({
-                        ...prevState,
-                        isLoadingEncryptedCardDetails: false,
-                      }));
-                      refRBSShowCard?.current?.close();
-                    });
-                }}
-                style={{ color: "#fff", width: 140 }}
-                color="light-pink"
-                leftIcon={
-                  <AntDesign
-                    name="checkcircleo"
-                    size={16}
-                    color={vars["accent-pink"]}
-                  />
-                }
-                disabled={isLoading}
-              >
-                Confirm
-              </Button>
-            </View>
-          </SwipableBottomSheet>
-        </ScrollView>
-      </View>
+                })
+                .catch((error: any) => {
+                  console.log({ error });
+                  setEncryptedCardDetails((prevState) => ({
+                    ...prevState,
+                    isLoadingEncryptedCardDetails: false,
+                    isErrorEncryptedCardDetails: true,
+                    encryptedCardDetailsError: error,
+                  }));
+                })
+                .finally(() => {
+                  resetEncryptedCardDetailsData();
+                  refRBSShowCard?.current?.close();
+                });
+            }}
+            style={{ color: "#fff", width: 140 }}
+            color="light-pink"
+            leftIcon={
+              <AntDesign
+                name="checkcircleo"
+                size={16}
+                color={vars["accent-pink"]}
+              />
+            }
+            disabled={isLoading}
+          >
+            Confirm
+          </Button>
+        </View>
+      </SwipableBottomSheet>
     </MainLayout>
   );
 }

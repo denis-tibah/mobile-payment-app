@@ -73,10 +73,10 @@ export function Card({ navigation, route }: any) {
     useDigitalSignature();
   const { startTimer, isTimesUp, stopTimer, remainingTimeCountDown } =
     useTimer();
-  console.log(
+  /* console.log(
     "🚀 ~ Card ~ remainingTimeCountDown:",
     remainingTimeCountDown["otp_timer"] / 1000
-  );
+  ); */
 
   const {
     error,
@@ -129,10 +129,6 @@ export function Card({ navigation, route }: any) {
     isErrorEncryptedCardDetails: false,
     encryptedCardDetailsError: {},
   });
-  console.log(
-    "🚀 ~ Card ~ encryptedCardDetails:",
-    encryptedCardDetails?.isLoadingEncryptedCardDetails
-  );
 
   const [statusMessage, setStatusMessage] = useState<{
     header: string;
@@ -140,7 +136,6 @@ export function Card({ navigation, route }: any) {
     isOpen: boolean;
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
-  const [openOTP, setOpenOTP] = useState<boolean>(false);
 
   const resetEncryptedCardDetailsData = () => {
     setEncryptedCardDetails({
@@ -481,8 +476,8 @@ export function Card({ navigation, route }: any) {
   }, [signatureData?.privateKeyWithPadding]);
 
   const handleGetOTP = () => {
-    setIsLoading(true);
-    //refRBSShowCard?.current?.open();
+    // setIsLoading(true);
+    refRBSShowCard?.current?.open();
     const bodyParams = {
       type: "trusted",
       accessToken: userTokens?.access_token,
@@ -492,19 +487,19 @@ export function Card({ navigation, route }: any) {
       .unwrap()
       .then((res: any) => {
         if (res?.status === "success") {
-          setOpenOTP(true);
           startTimer("otp_timer", 30000);
           generateSignature();
           setIsLoading(false);
         }
       })
       .catch((error: any) => {
-        setStatusMessage({
+        console.log("🚀 ~ handleGetOTP ~ error:", error);
+        /*  setStatusMessage({
           header: `${error?.status}${error?.status ? ":" : ""}Error`,
           body: `OTP error: Please try again`,
           isOpen: true,
           isError: true,
-        });
+        }); */
       })
       .finally(() => {
         setIsLoading(false);
@@ -519,12 +514,6 @@ export function Card({ navigation, route }: any) {
       isError: false,
     });
   };
-
-  useEffect(() => {
-    if (openOTP) {
-      refRBSShowCard?.current?.open();
-    }
-  }, [openOTP]);
 
   return (
     <MainLayout navigation={navigation}>
@@ -1069,7 +1058,6 @@ export function Card({ navigation, route }: any) {
         closeOnPressMask={false}
         onClose={() => {
           //setCardPin("");
-          setOpenOTP(false);
           deleteStorageData("digital_signature_public_key_without_padding");
           deleteStorageData("digital_signature_private_key_with_padding");
         }}

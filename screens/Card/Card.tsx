@@ -81,10 +81,12 @@ export function Card({ navigation, route }: any) {
     deleteStorageData,
   } = useSecureStoreCreateDelete();
 
-  const [cardPin, setCardPin] = useState<string>("");
-  const [remainingTime, setRemainingTime] = useState(30);
+  const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const cardData = useSelector((state: RootState) => state?.card?.data);
   const cardsActiveList = getUserActiveCards(cardData);
+
+  const [cardPin, setCardPin] = useState<string>("");
+  const [remainingTime, setRemainingTime] = useState(30);
   const [isTerminatedCardShown, setIsTerminatedCardShown] =
     useState<boolean>(false);
   const [terminatedCardModal, setTerminatedCardModal] =
@@ -122,6 +124,10 @@ export function Card({ navigation, route }: any) {
     isErrorEncryptedCardDetails: false,
     encryptedCardDetailsError: {},
   });
+  console.log(
+    "🚀 ~ Card ~ encryptedCardDetails:",
+    encryptedCardDetails?.isLoadingEncryptedCardDetails
+  );
 
   const [statusMessage, setStatusMessage] = useState<{
     header: string;
@@ -472,11 +478,13 @@ export function Card({ navigation, route }: any) {
     setIsLoading(true);
     const bodyParams = {
       type: "trusted",
+      accessToken: userTokens?.access_token,
+      tokenZiyl: userTokens?.token_ziyl,
     };
     getOTP(bodyParams)
       .unwrap()
       .then((res: any) => {
-        if (res?.status === "success") {
+        if (res) {
           console.log("here");
           refRBSShowCard?.current?.open();
           startTimer("is_request_new_otp", 30000);
@@ -531,7 +539,6 @@ export function Card({ navigation, route }: any) {
       <Spinner
         visible={
           isLoading || encryptedCardDetails?.isLoadingEncryptedCardDetails
-          /* isLoadingGetOTP */
         }
       />
       <View style={{ flex: 1, backgroundColor: "#fff" }}>

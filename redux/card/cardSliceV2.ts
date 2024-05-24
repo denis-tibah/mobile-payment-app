@@ -61,10 +61,18 @@ export const cardsV2 = createApi({
     }),
     sendSmsShowPinVerification: builder.query({
       query: (params) => {
+        console.log("🚀 ~ params:", params);
         return {
           url: `/cardotpfinxp`,
           method: "POST",
-          body: params,
+          headers: {
+            "Content-Type": "application/json",
+            AuthorizationFinxp: `Bearer ${params?.accessToken}`,
+            Authorization: `Bearer ${params?.tokenZiyl}`,
+          },
+          body: {
+            type: params?.type,
+          },
           invalidatesTags: ["cardsV2"],
         };
       },
@@ -105,7 +113,7 @@ export const cardsV2 = createApi({
         },
       }),
     }),
-    sendSmsShowPinVerificationTwo: builder.mutation({
+    /*  sendSmsShowPinVerificationTwo: builder.mutation({
       query: ({ type }) => ({
         url: `/cardotpfinxp`,
         method: "POST",
@@ -114,7 +122,7 @@ export const cardsV2 = createApi({
         },
         invalidatesTags: ["cardsV2"],
       }),
-    }),
+    }), */
     getCardV2: builder.query({
       query: () => ({
         url: `/getcardsfinxpV2`,
@@ -175,7 +183,7 @@ export const cardsV2 = createApi({
 export const {
   useLazyGetCardTransactionsQuery,
   useLazySendSmsShowPinVerificationQuery,
-  useSendSmsShowPinVerificationTwoMutation,
+  /* useSendSmsShowPinVerificationTwoMutation, */
   useLazyOrderCardQuery,
   useSendSmsLostCardVerificationQuery,
   useLazySendSmsLostCardVerificationQuery,

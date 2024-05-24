@@ -4,7 +4,7 @@ const useTimer = () => {
   const [timeoutIds, setTimeoutIds] = useState<any>({});
   const [isRunning, setIsRunning] = useState<any>({});
   const [isTimesUp, setIsTimesUp] = useState<any>({});
-  const [remainingTime, setRemainingTime] = useState<any>({});
+  const [remainingTimeCountDown, setRemainingTime] = useState<any>({});
 
   // Function to start the timer
   const startTimer = (name: string, interval: number) => {
@@ -89,7 +89,7 @@ const useTimer = () => {
     };
   }, []);
 
-  return { startTimer, isTimesUp, stopTimer, remainingTime };
+  return { startTimer, isTimesUp, stopTimer, remainingTimeCountDown };
   // Return the startTimer, isTimesUp, and stopTimer functions remainingTime
 };
 

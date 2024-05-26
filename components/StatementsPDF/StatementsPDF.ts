@@ -234,7 +234,7 @@ const statementsPDFGenerator = async ({
             <div style="height: 25px; width: 100%">
               <h5 style="text-align: right;"> Curreny: EUR </h5>
             </div>
-            <div style="height: 25px; width: 100%">
+            <div style="height: 25px; width: 100%; display: none">
               <h5 style="text-align: right;"> Current Balance: ${
                 accountData?.currentBalance || ""
               }</h5>

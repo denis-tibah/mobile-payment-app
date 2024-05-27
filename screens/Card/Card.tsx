@@ -79,13 +79,13 @@ export function Card({ navigation, route }: any) {
     remainingTimeCountDown["otp_timer"] / 1000
   ); */
 
-  const {
+  /* const {
     error,
     saveStorageData,
     storageData,
     getStorageData,
     deleteStorageData,
-  } = useSecureStoreCreateDelete();
+  } = useSecureStoreCreateDelete(); */
 
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const cardData = useSelector((state: RootState) => state?.card?.data);

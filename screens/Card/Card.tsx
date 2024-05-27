@@ -71,6 +71,7 @@ export function Card({ navigation, route }: any) {
 
   const { generateSignature, signatureData, decryptRsa } =
     useDigitalSignature();
+  console.log("🚀 ~ Card ~ signatureData:", signatureData);
   const { startTimer, isTimesUp, stopTimer, remainingTimeCountDown } =
     useTimer();
   /* console.log(
@@ -173,8 +174,9 @@ export function Card({ navigation, route }: any) {
       //set timer for decrypted card info deletion
       startTimer("decrypted_card_info_local_state", 30000);
       if (
-        storageData?.digital_signature_private_key_with_padding
-          ?.privateKeyWithPadding
+        /* storageData?.digital_signature_private_key_with_padding
+          ?.privateKeyWithPadding */
+        signatureData?.privateKeyWithPadding
       ) {
         if (
           encryptedCardDetails?.encryptedCardDetailsData?.cardNumberEncrypted
@@ -183,9 +185,9 @@ export function Card({ navigation, route }: any) {
             encryptedData:
               encryptedCardDetails?.encryptedCardDetailsData
                 ?.cardNumberEncrypted,
-            privateKeyPem:
-              storageData?.digital_signature_private_key_with_padding
-                ?.privateKeyWithPadding,
+            privateKeyPem: signatureData?.privateKeyWithPadding,
+            /* storageData?.digital_signature_private_key_with_padding
+                ?.privateKeyWithPadding, */
           });
           if (cardNumber) {
             setCardDetailsDecrypted((prevState) => ({
@@ -199,9 +201,9 @@ export function Card({ navigation, route }: any) {
           cvc = decryptRsa({
             encryptedData:
               encryptedCardDetails?.encryptedCardDetailsData?.cvc2Encrypted,
-            privateKeyPem:
-              storageData?.digital_signature_private_key_with_padding
-                ?.privateKeyWithPadding,
+            privateKeyPem: signatureData?.privateKeyWithPadding,
+            /* storageData?.digital_signature_private_key_with_padding
+                ?.privateKeyWithPadding, */
           });
 
           if (cvc) {
@@ -216,9 +218,9 @@ export function Card({ navigation, route }: any) {
           pin = decryptRsa({
             encryptedData:
               encryptedCardDetails?.encryptedCardDetailsData?.pinEncrypted,
-            privateKeyPem:
-              storageData?.digital_signature_private_key_with_padding
-                ?.privateKeyWithPadding,
+            privateKeyPem: signatureData?.privateKeyWithPadding,
+            /* storageData?.digital_signature_private_key_with_padding
+                ?.privateKeyWithPadding, */
           });
           if (pin) {
             setCardDetailsDecrypted((prevState) => ({
@@ -237,8 +239,9 @@ export function Card({ navigation, route }: any) {
     encryptedCardDetails?.isLoadingEncryptedCardDetails,
     encryptedCardDetails?.isSuccessEncryptedCardDetails,
     encryptedCardDetails,
-    storageData?.digital_signature_private_key_with_padding
-      ?.privateKeyWithPadding,
+    signatureData?.privateKeyWithPadding,
+    /* storageData?.digital_signature_private_key_with_padding
+      ?.privateKeyWithPadding, */
   ]);
 
   useEffect(() => {
@@ -271,8 +274,8 @@ export function Card({ navigation, route }: any) {
   useEffect(() => {
     if (isTimesUp?.digital_signature) {
       stopTimer("digital_signature");
-      deleteStorageData("digital_signature_public_key_without_padding");
-      deleteStorageData("digital_signature_private_key_with_padding");
+      /* deleteStorageData("digital_signature_public_key_without_padding");
+      deleteStorageData("digital_signature_private_key_with_padding"); */
     }
   }, [isTimesUp?.digital_signature]);
 
@@ -457,7 +460,7 @@ export function Card({ navigation, route }: any) {
   }, []);
 
   // store/fetch digital signature in secure store
-  useEffect(() => {
+  /* useEffect(() => {
     if (signatureData?.publicKeyWithoutPadding) {
       saveStorageData("digital_signature_public_key_without_padding", {
         publicKeyWithoutPadding: signatureData?.publicKeyWithoutPadding,
@@ -473,11 +476,10 @@ export function Card({ navigation, route }: any) {
       });
       getStorageData("digital_signature_private_key_with_padding");
     }
-  }, [signatureData?.privateKeyWithPadding]);
+  }, [signatureData?.privateKeyWithPadding]); */
 
   const handleGetOTP = () => {
-    // setIsLoading(true);
-    refRBSShowCard?.current?.open();
+    setIsLoading(true);
     const bodyParams = {
       type: "trusted",
       accessToken: userTokens?.access_token,
@@ -486,7 +488,9 @@ export function Card({ navigation, route }: any) {
     getOTP(bodyParams)
       .unwrap()
       .then((res: any) => {
+        console.log("🚀 ~ .then ~ res:", res);
         if (res?.status === "success") {
+          refRBSShowCard?.current?.open();
           startTimer("otp_timer", 30000);
           generateSignature();
           setIsLoading(false);
@@ -494,12 +498,12 @@ export function Card({ navigation, route }: any) {
       })
       .catch((error: any) => {
         console.log("🚀 ~ handleGetOTP ~ error:", error);
-        /*  setStatusMessage({
+        setStatusMessage({
           header: `${error?.status}${error?.status ? ":" : ""}Error`,
           body: `OTP error: Please try again`,
           isOpen: true,
           isError: true,
-        }); */
+        });
       })
       .finally(() => {
         setIsLoading(false);
@@ -1058,8 +1062,8 @@ export function Card({ navigation, route }: any) {
         closeOnPressMask={false}
         onClose={() => {
           //setCardPin("");
-          deleteStorageData("digital_signature_public_key_without_padding");
-          deleteStorageData("digital_signature_private_key_with_padding");
+          /* deleteStorageData("digital_signature_public_key_without_padding");
+          deleteStorageData("digital_signature_private_key_with_padding"); */
         }}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
@@ -1128,9 +1132,9 @@ export function Card({ navigation, route }: any) {
                 public_key: {
                   format: "X.509",
                   algorithm: "RSA",
-                  encoded:
-                    storageData?.digital_signature_public_key_without_padding
-                      ?.publicKeyWithoutPadding,
+                  encoded: signatureData?.publicKeyWithoutPadding,
+                  /* storageData?.digital_signature_public_key_without_padding
+                      ?.publicKeyWithoutPadding, */
                 },
               };
               showCardDetailsV2(bodyParams)

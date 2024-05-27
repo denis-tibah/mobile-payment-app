@@ -16,6 +16,7 @@ import Carousel from "react-native-snap-carousel";
 import { AntDesign } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Spinner from "react-native-loading-spinner-overlay/lib";
+import { RSA } from "react-native-rsa-native";
 
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
@@ -69,9 +70,8 @@ export function Card({ navigation, route }: any) {
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
 
-  const { generateSignature, signatureData, decryptRsa } =
-    useDigitalSignature();
-  console.log("🚀 ~ Card ~ signatureData:", signatureData);
+  /* const { generateSignature, signatureData, decryptRsa } =
+    useDigitalSignature(); */
   const { startTimer, isTimesUp, stopTimer, remainingTimeCountDown } =
     useTimer();
   /* console.log(
@@ -107,6 +107,7 @@ export function Card({ navigation, route }: any) {
     []
   );
   const [resendOTP, setResendOTP] = useState<boolean>(false);
+  const [signatureRSA, setSignatureRSA] = useState<any>({});
 
   const [dimensions, setDimensions] = useState({
     window: windowDimensions,
@@ -161,8 +162,66 @@ export function Card({ navigation, route }: any) {
 
   const [getOTP] = useLazySendSmsShowPinVerificationQuery();
 
-  // to show decrypted card details is success
+  const generateKeys = async () => {
+    //4096 Is the key size
+    let keyPair = await RSA.generateKeys(4096);
+    // console.warn("keyPair ", keyPair);
+    setSignatureRSA({ ...keyPair });
+    return keyPair;
+  };
+
+  /* const generateRSASignature = async (dataToEncrypt: any) => {
+    //data to be signed
+    let data = dataToEncrypt; //Generate key pair
+    let keyPair = await generateKeys(); //Sign the data
+    let signature = RSA.signWithAlgorithm(
+      data,
+      keyPair.private,
+      RSA.SHA512withRSA as any
+    );
+    console.warn("signature ", signature);
+    setSignatureRSA({ ...signature });
+    return signature;
+  }; */
+
+  const encryptMessage = async (message: any, keys: any) => {
+    const encodedMessage = await RSA.encrypt(message, keys.public);
+    console.warn("encodedMessage  ", encodedMessage);
+    return encodedMessage;
+  };
+
+  const decryptMessage = async (encodedMessage: any, keys: any) => {
+    const message = await RSA.decrypt(encodedMessage, keys.private);
+    console.warn("message  ", message);
+    return message;
+  };
+
+  const testEncryptDecrypt = async (message: any) => {
+    // let keys=generateRSASignature(message);
+    let keys = await generateKeys();
+    let enc = encryptMessage(message, keys);
+    let dec = decryptMessage((await enc).toString(), keys);
+    console.warn("message  ", message);
+    console.warn("message enc  ", (await enc).toString());
+    console.warn("message dec ", (await dec).toString());
+  };
+
   useEffect(() => {
+    const test = async () => {
+      generateKeys();
+    };
+    test();
+  }, []);
+
+  useEffect(() => {
+    console.log("🚀 ~ Card ~ signatureRSA:", signatureRSA);
+    if (signatureRSA?.public) {
+      encryptMessage("secret", signatureRSA);
+    }
+  }, [signatureRSA]);
+
+  // to show decrypted card details is success
+  /* useEffect(() => {
     const { isLoadingEncryptedCardDetails, isSuccessEncryptedCardDetails } =
       encryptedCardDetails;
     let cardNumber: string;
@@ -174,8 +233,6 @@ export function Card({ navigation, route }: any) {
       //set timer for decrypted card info deletion
       startTimer("decrypted_card_info_local_state", 30000);
       if (
-        /* storageData?.digital_signature_private_key_with_padding
-          ?.privateKeyWithPadding */
         signatureData?.privateKeyWithPadding
       ) {
         if (
@@ -186,8 +243,6 @@ export function Card({ navigation, route }: any) {
               encryptedCardDetails?.encryptedCardDetailsData
                 ?.cardNumberEncrypted,
             privateKeyPem: signatureData?.privateKeyWithPadding,
-            /* storageData?.digital_signature_private_key_with_padding
-                ?.privateKeyWithPadding, */
           });
           if (cardNumber) {
             setCardDetailsDecrypted((prevState) => ({
@@ -202,8 +257,7 @@ export function Card({ navigation, route }: any) {
             encryptedData:
               encryptedCardDetails?.encryptedCardDetailsData?.cvc2Encrypted,
             privateKeyPem: signatureData?.privateKeyWithPadding,
-            /* storageData?.digital_signature_private_key_with_padding
-                ?.privateKeyWithPadding, */
+
           });
 
           if (cvc) {
@@ -219,8 +273,7 @@ export function Card({ navigation, route }: any) {
             encryptedData:
               encryptedCardDetails?.encryptedCardDetailsData?.pinEncrypted,
             privateKeyPem: signatureData?.privateKeyWithPadding,
-            /* storageData?.digital_signature_private_key_with_padding
-                ?.privateKeyWithPadding, */
+
           });
           if (pin) {
             setCardDetailsDecrypted((prevState) => ({
@@ -240,9 +293,7 @@ export function Card({ navigation, route }: any) {
     encryptedCardDetails?.isSuccessEncryptedCardDetails,
     encryptedCardDetails,
     signatureData?.privateKeyWithPadding,
-    /* storageData?.digital_signature_private_key_with_padding
-      ?.privateKeyWithPadding, */
-  ]);
+  ]); */
 
   useEffect(() => {
     const {
@@ -478,8 +529,8 @@ export function Card({ navigation, route }: any) {
     }
   }, [signatureData?.privateKeyWithPadding]); */
 
-  const handleGetOTP = () => {
-    generateSignature();
+  const handleGetOTP = async () => {
+    // generateSignature();
     /* setIsLoading(true);
     const bodyParams = {
       type: "trusted",
@@ -1133,7 +1184,7 @@ export function Card({ navigation, route }: any) {
                 public_key: {
                   format: "X.509",
                   algorithm: "RSA",
-                  encoded: signatureData?.publicKeyWithoutPadding,
+                  /* encoded: signatureData?.publicKeyWithoutPadding, */
                   /* storageData?.digital_signature_public_key_without_padding
                       ?.publicKeyWithoutPadding, */
                 },

@@ -118,6 +118,7 @@ export function Card({ navigation, route }: any) {
     cvc: string;
     pin: string;
   }>({ cardNumber: "", cvc: "", pin: "" });
+  console.log("🚀 ~ Card ~ cardDetailsDecrypted:", cardDetailsDecrypted);
   const [encryptedCardDetails, setEncryptedCardDetails] = useState<{
     isLoadingEncryptedCardDetails: boolean;
     isSuccessEncryptedCardDetails: boolean;
@@ -162,12 +163,19 @@ export function Card({ navigation, route }: any) {
 
   const [getOTP] = useLazySendSmsShowPinVerificationQuery();
 
+  // Function to strip the header and footer
+  const stripPemFormatting = (pem: any) => {
+    return pem
+      .replace(/-----BEGIN [\s\S]+?-----/, "")
+      .replace(/-----END [\s\S]+?-----/, "")
+      .replace(/\r?\n|\r/g, ""); // Remove all newlines
+  };
+
   const generateKeys = async () => {
     //4096 Is the key size
     let keyPair = await RSA.generateKeys(4096);
-    // console.warn("keyPair ", keyPair);
     setSignatureRSA({ ...keyPair });
-    return keyPair;
+    // return keyPair;
   };
 
   /* const generateRSASignature = async (dataToEncrypt: any) => {
@@ -184,16 +192,50 @@ export function Card({ navigation, route }: any) {
     return signature;
   }; */
 
-  const encryptMessage = async (message: any, keys: any) => {
-    const encodedMessage = await RSA.encrypt(message, keys.public);
+  const encryptMessage = async ({
+    encryptedData,
+    publicKey,
+  }: {
+    encryptedData: any;
+    publicKey: any;
+  }) => {
+    const encodedMessage = await RSA.encrypt(encryptedData, publicKey);
     console.warn("encodedMessage  ", encodedMessage);
     return encodedMessage;
   };
 
-  const decryptMessage = async (encodedMessage: any, keys: any) => {
-    const message = await RSA.decrypt(encodedMessage, keys.private);
-    console.warn("message  ", message);
-    return message;
+  const decryptMessage = async ({
+    encryptedData,
+    privateKey,
+    type,
+  }: {
+    encryptedData: any;
+    privateKey: any;
+    type: any;
+  }) => {
+    if (type === "cardNumber") {
+      const decryptedMessage = await RSA.decrypt(encryptedData, privateKey);
+      setCardDetailsDecrypted((prevState) => ({
+        ...prevState,
+        cardNumber: decryptedMessage,
+      }));
+    }
+
+    if (type === "cvc") {
+      const decryptedMessage = await RSA.decrypt(encryptedData, privateKey);
+      setCardDetailsDecrypted((prevState) => ({
+        ...prevState,
+        cvc: decryptedMessage,
+      }));
+    }
+
+    if (type === "pin") {
+      const decryptedMessage = await RSA.decrypt(encryptedData, privateKey);
+      setCardDetailsDecrypted((prevState) => ({
+        ...prevState,
+        pin: decryptedMessage,
+      }));
+    }
   };
 
   const testEncryptDecrypt = async (message: any) => {
@@ -206,22 +248,15 @@ export function Card({ navigation, route }: any) {
     console.warn("message dec ", (await dec).toString());
   };
 
-  useEffect(() => {
-    const test = async () => {
-      generateKeys();
-    };
-    test();
-  }, []);
-
-  useEffect(() => {
+  /* useEffect(() => {
     console.log("🚀 ~ Card ~ signatureRSA:", signatureRSA);
     if (signatureRSA?.public) {
       encryptMessage("secret", signatureRSA);
     }
-  }, [signatureRSA]);
+  }, [signatureRSA]); */
 
   // to show decrypted card details is success
-  /* useEffect(() => {
+  useEffect(() => {
     const { isLoadingEncryptedCardDetails, isSuccessEncryptedCardDetails } =
       encryptedCardDetails;
     let cardNumber: string;
@@ -232,32 +267,36 @@ export function Card({ navigation, route }: any) {
       // startTimer("digital_signature", 60000 * 2);
       //set timer for decrypted card info deletion
       startTimer("decrypted_card_info_local_state", 30000);
-      if (
-        signatureData?.privateKeyWithPadding
-      ) {
+      if (signatureRSA?.private) {
         if (
           encryptedCardDetails?.encryptedCardDetailsData?.cardNumberEncrypted
         ) {
-          cardNumber = decryptRsa({
+          decryptMessage({
             encryptedData:
               encryptedCardDetails?.encryptedCardDetailsData
                 ?.cardNumberEncrypted,
-            privateKeyPem: signatureData?.privateKeyWithPadding,
+            privateKey: signatureRSA?.private,
+            type: "cardNumber",
+          });
+          /*  cardNumber = decryptMessage({
+            encryptedData:
+              encryptedCardDetails?.encryptedCardDetailsData
+                ?.cardNumberEncrypted,
+            privateKey: signatureRSA?.private,
           });
           if (cardNumber) {
             setCardDetailsDecrypted((prevState) => ({
               ...prevState,
               cardNumber,
             }));
-          }
+          } */
         }
 
         if (encryptedCardDetails?.encryptedCardDetailsData?.cvc2Encrypted) {
-          cvc = decryptRsa({
+          /* cvc = decryptRsa({
             encryptedData:
               encryptedCardDetails?.encryptedCardDetailsData?.cvc2Encrypted,
             privateKeyPem: signatureData?.privateKeyWithPadding,
-
           });
 
           if (cvc) {
@@ -265,22 +304,33 @@ export function Card({ navigation, route }: any) {
               ...prevState,
               cvc,
             }));
-          }
+          } */
+          decryptMessage({
+            encryptedData:
+              encryptedCardDetails?.encryptedCardDetailsData?.cvc2Encrypted,
+            privateKey: signatureRSA?.private,
+            type: "cvc",
+          });
         }
 
         if (encryptedCardDetails?.encryptedCardDetailsData?.pinEncrypted) {
-          pin = decryptRsa({
+          /* pin = decryptRsa({
             encryptedData:
               encryptedCardDetails?.encryptedCardDetailsData?.pinEncrypted,
             privateKeyPem: signatureData?.privateKeyWithPadding,
-
           });
           if (pin) {
             setCardDetailsDecrypted((prevState) => ({
               ...prevState,
               pin,
             }));
-          }
+          } */
+          decryptMessage({
+            encryptedData:
+              encryptedCardDetails?.encryptedCardDetailsData?.pinEncrypted,
+            privateKey: signatureRSA?.private,
+            type: "pin",
+          });
         }
       }
 
@@ -292,8 +342,8 @@ export function Card({ navigation, route }: any) {
     encryptedCardDetails?.isLoadingEncryptedCardDetails,
     encryptedCardDetails?.isSuccessEncryptedCardDetails,
     encryptedCardDetails,
-    signatureData?.privateKeyWithPadding,
-  ]); */
+    signatureRSA?.private,
+  ]);
 
   useEffect(() => {
     const {
@@ -530,8 +580,9 @@ export function Card({ navigation, route }: any) {
   }, [signatureData?.privateKeyWithPadding]); */
 
   const handleGetOTP = async () => {
+    generateKeys();
     // generateSignature();
-    /* setIsLoading(true);
+    setIsLoading(true);
     const bodyParams = {
       type: "trusted",
       accessToken: userTokens?.access_token,
@@ -559,7 +610,7 @@ export function Card({ navigation, route }: any) {
       })
       .finally(() => {
         setIsLoading(false);
-      }); */
+      });
   };
 
   const onCloseModal = (): void => {
@@ -1184,6 +1235,9 @@ export function Card({ navigation, route }: any) {
                 public_key: {
                   format: "X.509",
                   algorithm: "RSA",
+                  encoded: signatureRSA?.public
+                    ? stripPemFormatting(signatureRSA?.public)
+                    : "",
                   /* encoded: signatureData?.publicKeyWithoutPadding, */
                   /* storageData?.digital_signature_public_key_without_padding
                       ?.publicKeyWithoutPadding, */

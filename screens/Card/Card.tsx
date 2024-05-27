@@ -479,7 +479,8 @@ export function Card({ navigation, route }: any) {
   }, [signatureData?.privateKeyWithPadding]); */
 
   const handleGetOTP = () => {
-    setIsLoading(true);
+    generateSignature();
+    /* setIsLoading(true);
     const bodyParams = {
       type: "trusted",
       accessToken: userTokens?.access_token,
@@ -492,7 +493,7 @@ export function Card({ navigation, route }: any) {
         if (res?.status === "success") {
           refRBSShowCard?.current?.open();
           //startTimer("otp_timer", 30000);
-          generateSignature();
+
           setIsLoading(false);
         }
       })
@@ -507,7 +508,7 @@ export function Card({ navigation, route }: any) {
       })
       .finally(() => {
         setIsLoading(false);
-      });
+      }); */
   };
 
   const onCloseModal = (): void => {

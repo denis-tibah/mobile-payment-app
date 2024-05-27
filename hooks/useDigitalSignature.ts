@@ -2,6 +2,8 @@ import "react-native-url-polyfill/auto";
 import { useState, useEffect } from "react";
 import forge from "node-forge";
 const rsa = forge.pki.rsa;
+import * as WebBrowser from "expo-web-browser";
+import { generateKeysInBackground } from "./worker";
 
 export default function useDigitalSignature() {
   const [signatureData, setSignatureData] = useState<{
@@ -72,7 +74,7 @@ export default function useDigitalSignature() {
     return decryptedData.toString("utf8");
   };
 
-  const generateSignature = () => {
+  const generateSignatureEx = () => {
     rsa.generateKeyPair({ bits: 2048, workers: 2 }, (err, keypair) => {
       if (err) {
         console.error("Key generation error:", err);
@@ -139,6 +141,22 @@ export default function useDigitalSignature() {
         pemCertificateWithoutPadding, */
       });
     });
+  };
+
+  const generateSignature = async () => {
+    try {
+      const { publicKeyWithPadding, privateKeyWithPadding, pemCertificate } =
+        await generateKeysInBackground(2048, 2);
+
+      setSignatureData({
+        publicKeyWithoutPadding: stripPemFormatting(publicKeyWithPadding),
+        privateKeyWithPadding,
+        pemCertificate,
+        pemCertificateWithoutPadding: stripPemFormatting(pemCertificate),
+      });
+    } catch (error) {
+      console.error("Key generation error:", error);
+    }
   };
 
   return {

@@ -170,7 +170,7 @@ export function Card({ navigation, route }: any) {
     let pin: string;
     if (!isLoadingEncryptedCardDetails && isSuccessEncryptedCardDetails) {
       // set timer for digital_signature for 5mins
-      startTimer("digital_signature", 60000 * 2);
+      // startTimer("digital_signature", 60000 * 2);
       //set timer for decrypted card info deletion
       startTimer("decrypted_card_info_local_state", 30000);
       if (
@@ -271,13 +271,13 @@ export function Card({ navigation, route }: any) {
     encryptedCardDetails?.encryptedCardDetailsError,
   ]);
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (isTimesUp?.digital_signature) {
       stopTimer("digital_signature");
-      /* deleteStorageData("digital_signature_public_key_without_padding");
-      deleteStorageData("digital_signature_private_key_with_padding"); */
+      deleteStorageData("digital_signature_public_key_without_padding");
+      deleteStorageData("digital_signature_private_key_with_padding");
     }
-  }, [isTimesUp?.digital_signature]);
+  }, [isTimesUp?.digital_signature]); */
 
   useEffect(() => {
     if (isTimesUp?.decrypted_card_info_local_state) {
@@ -291,12 +291,12 @@ export function Card({ navigation, route }: any) {
     }
   }, [isTimesUp?.decrypted_card_info_local_state]);
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (isTimesUp?.is_request_new_otp) {
       stopTimer("is_request_new_otp");
       setResendOTP(false);
     }
-  }, [isTimesUp?.is_request_new_otp]);
+  }, [isTimesUp?.is_request_new_otp]); */
 
   const handlePinCodeChange = (value: string) => {
     setCardPin(value);
@@ -491,7 +491,7 @@ export function Card({ navigation, route }: any) {
         console.log("🚀 ~ .then ~ res:", res);
         if (res?.status === "success") {
           refRBSShowCard?.current?.open();
-          startTimer("otp_timer", 30000);
+          //startTimer("otp_timer", 30000);
           generateSignature();
           setIsLoading(false);
         }

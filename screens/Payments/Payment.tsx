@@ -50,6 +50,7 @@ import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 import { RefreshControl } from "react-native";
 import { SearchFilter } from "../../redux/transaction/transactionSlice";
 import { useLazyGetTransactionsQuery } from "../../redux/transaction/transactionV2Slice";
+import moment from "moment";
 
 export function Payment({ navigation }: any) {
   const dispatch = useDispatch();
@@ -85,22 +86,27 @@ export function Payment({ navigation }: any) {
   const formattedTransactionsForPayments =
     formatTransactionsForPaymentScreen(transactionsData);
 
-  {/* disabled by Aristos 26-04-2026 */}
+  {
+    /* disabled by Aristos 26-04-2026 */
+  }
   // const filteredFormattedTransactionsForPayments =
   //   formattedTransactionsForPayments?.filter((item: any) => {
   //     return item.name.toLowerCase().includes(searchName.toLowerCase());
   //   });
 
- {/* added by Aristos 26-04-2026 */}
+  {
+    /* added by Aristos 26-04-2026 */
+  }
   const filteredFormattedTransactionsForPayments =
-  formattedTransactionsForPayments?.filter((item: any) => {
-    if (item?.transaction_direction === "outgoing" ) {
+    formattedTransactionsForPayments?.filter((item: any) => {
+      if (item?.transaction_direction === "outgoing") {
         return item.name.toLowerCase().includes(searchName.toLowerCase());
-    } else {
-        return item.debtor_name.toLowerCase().includes(searchName.toLowerCase());
-    }
-  
-  });
+      } else {
+        return item.debtor_name
+          .toLowerCase()
+          .includes(searchName.toLowerCase());
+      }
+    });
 
   const handleGetTransactionsForPayments = async () => {
     let search: SearchFilter = {
@@ -291,14 +297,18 @@ elevation: 5
                 filteredFormattedTransactionsForPayments
                   .sort((a: any, b: any) => {
                     if (selectedFilterForPayees === "1") {
-                      {/* disabled by Aristos 26-04-2026 */}
+                      {
+                        /* disabled by Aristos 26-04-2026 */
+                      }
                       // return a.name.localeCompare(b.name);
-                          {/* added by Aristos 26-04-2026 */}
-                       if(a.transaction_direction === "outgoing" ) {
+                      {
+                        /* added by Aristos 26-04-2026 */
+                      }
+                      if (a.transaction_direction === "outgoing") {
                         return a.name.localeCompare(b.name);
-                       } else {
+                      } else {
                         return a.debtor_name.localeCompare(b.name);
-                       }
+                      }
                     }
                     if (selectedFilterForPayees === "2") {
                       return (
@@ -312,15 +322,18 @@ elevation: 5
                         new Date(b.transaction_datetime).getTime()
                       );
                     }
-                      {/* disabled by Aristos 26-04-2026 */}
+                    {
+                      /* disabled by Aristos 26-04-2026 */
+                    }
                     // return a.name.localeCompare(b.name);
-                        {/* added by Aristos 26-04-2026 */}
-                    if(a.transaction_direction === "outgoing" ) {
-                        return a.name.localeCompare(b.name);
-                      } else {
-                        return a.debtor_name.localeCompare(b.name);
-                      }
-
+                    {
+                      /* added by Aristos 26-04-2026 */
+                    }
+                    if (a.transaction_direction === "outgoing") {
+                      return a.name.localeCompare(b.name);
+                    } else {
+                      return a.debtor_name.localeCompare(b.name);
+                    }
                   })
                   .map((item: any, index: number) => {
                     return (
@@ -363,13 +376,12 @@ elevation: 5
                                 fontWeight={"600"}
                                 fontFamily="Nunito-Bold"
                               >
-                         {/* disabled by Aristos 26-04-2026 */}
+                                {/* disabled by Aristos 26-04-2026 */}
                                 {/* {getNameInitials(item.name)} */}
-                        {/* added by Aristos 26-04-2026 */}
-                                {item?.transaction_direction === "outgoing" ? (
-                                   getNameInitials(item.name)
-                              ) :  getNameInitials(item.debtor_name) }
-
+                                {/* added by Aristos 26-04-2026 */}
+                                {item?.transaction_direction === "outgoing"
+                                  ? getNameInitials(item.name)
+                                  : getNameInitials(item.debtor_name)}
                               </Typography>
                             </View>
                             <View style={{ paddingLeft: 10 }}>
@@ -379,14 +391,12 @@ elevation: 5
                                 fontWeight={"400"}
                                 fontFamily="Mukta-Regular"
                               >
-                              {/* disabled by Aristos 26-04-2026 */}
-                                  {/* {item.name} */}
-                              {/* added by Aristos 26-04-2026 */}
-                                  {item?.transaction_direction === "outgoing" ? (
-                                        item.name
-                                    ) : item.debtor_name }
-                        
-
+                                {/* disabled by Aristos 26-04-2026 */}
+                                {/* {item.name} */}
+                                {/* added by Aristos 26-04-2026 */}
+                                {item?.transaction_direction === "outgoing"
+                                  ? item.name
+                                  : item.debtor_name}
                               </Typography>
                               <Typography
                                 color="#808080"
@@ -411,8 +421,8 @@ elevation: 5
                                 fontFamily="Mukta-Regular"
                               >
                                 {/*the format of this date coming from BE is YYYY-MM-DD HH:MM:SS */}
-                                {getFormattedDateAndTime(
-                                  item.transaction_datetime
+                                {moment(item.transaction_datetime).format(
+                                  "DD.MM.YYYY HH:mm:ss"
                                 )}
                               </Typography>
                               <Typography

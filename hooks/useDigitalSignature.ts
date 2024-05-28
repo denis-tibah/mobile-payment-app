@@ -2,7 +2,6 @@ import "react-native-url-polyfill/auto";
 import { useState, useEffect } from "react";
 import forge from "node-forge";
 const rsa = forge.pki.rsa;
-import * as WebBrowser from "expo-web-browser";
 import { generateKeysInBackground } from "./worker";
 
 export default function useDigitalSignature() {
@@ -65,12 +64,11 @@ export default function useDigitalSignature() {
         md: forge.md.sha1.create(),
       },
     });
-    setSignatureData({
+    console.log("🚀 ~ useDigitalSignature ~ decryptedData:", decryptedData);
+    /*  setSignatureData({
       publicKeyWithoutPadding: "",
       privateKeyWithPadding: "",
-      /* pemCertificate: "",
-      pemCertificateWithoutPadding: "", */
-    });
+    }); */
     return decryptedData.toString("utf8");
   };
 

@@ -32,6 +32,7 @@ const useTimer = () => {
             clearInterval(intervalId);
             setIsRunning((prevState: any) => ({ ...prevState, [name]: false }));
             setIsTimesUp((prevState: any) => ({ ...prevState, [name]: true }));
+            newTime[name] = 0; // Ensure it doesn't go below 0
           }
           return newTime;
         });

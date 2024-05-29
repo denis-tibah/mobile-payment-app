@@ -2,6 +2,7 @@ import "react-native-url-polyfill/auto";
 import { useState, useEffect } from "react";
 import forge from "node-forge";
 const rsa = forge.pki.rsa;
+const pki = forge.pki;
 import { generateKeysInBackground } from "./worker";
 
 export default function useDigitalSignature() {
@@ -51,6 +52,7 @@ export default function useDigitalSignature() {
     encryptedData: string;
     privateKeyPem: string;
   }) => {
+    console.log("decrypting");
     // Parse RSA private key
     const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
 
@@ -157,9 +159,19 @@ export default function useDigitalSignature() {
     }
   };
 
+  const convertPublicKeyPKCS1ToPKCS8 = (pkcs1Key: string) => {
+    if (!pkcs1Key) return "";
+    // Convert PEM encoded PKCS#1 public key to PKCS#8
+    const publicKey = forge.pki.publicKeyFromPem(pkcs1Key);
+    // convert a Forge public key to PEM-format
+    const pem = pki.publicKeyToPem(publicKey);
+    return pem;
+  };
+
   return {
     generateSignature,
     signatureData,
     decryptRsa,
+    convertPublicKeyPKCS1ToPKCS8,
   };
 }

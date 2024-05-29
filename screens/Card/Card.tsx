@@ -70,14 +70,12 @@ export function Card({ navigation, route }: any) {
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
 
-  const { /*  generateSignature, signatureData, */ decryptRsa } =
-    useDigitalSignature();
+  const {
+    /*  generateSignature, signatureData, */ decryptRsa,
+    convertPublicKeyPKCS1ToPKCS8,
+  } = useDigitalSignature();
   const { startTimer, isTimesUp, stopTimer, remainingTimeCountDown } =
     useTimer();
-  /* console.log(
-    "🚀 ~ Card ~ remainingTimeCountDown:",
-    remainingTimeCountDown["otp_timer"] / 1000
-  ); */
 
   /* const {
     error,
@@ -194,14 +192,24 @@ export function Card({ navigation, route }: any) {
 
   const generateKeys = async () => {
     //4096 Is the key size
-    let keyPair = await RSA.generateKeys(4096);
+    let keyPair = await RSA.generateKeys(2048);
     setSignatureRSA({
       privateKey: keyPair?.private,
-      publicKey: keyPair?.public,
+      publicKey:
+        keyPair?.public && Platform.OS === "android"
+          ? convertPublicKeyPKCS1ToPKCS8(keyPair?.public)
+          : keyPair?.public,
       publicKeyWithoutPadding: keyPair?.public
-        ? stripPemFormatting(keyPair?.public)
+        ? stripPemFormatting(
+            Platform.OS === "android"
+              ? convertPublicKeyPKCS1ToPKCS8(keyPair?.public)
+              : keyPair?.public
+          )
         : "",
     });
+    if (Platform.OS === "android") {
+      console.log("android");
+    }
   };
 
   /* const generateRSASignature = async (dataToEncrypt: any) => {
@@ -231,6 +239,7 @@ export function Card({ navigation, route }: any) {
       encodedMessage,
       base64,
     }));
+    await RSA.importPublicKey(publicKey);
     return encodedMessage;
   };
 
@@ -405,8 +414,6 @@ export function Card({ navigation, route }: any) {
   /* useEffect(() => {
     if (isTimesUp?.digital_signature) {
       stopTimer("digital_signature");
-      deleteStorageData("digital_signature_public_key_without_padding");
-      deleteStorageData("digital_signature_private_key_with_padding");
     }
   }, [isTimesUp?.digital_signature]); */
 
@@ -422,6 +429,20 @@ export function Card({ navigation, route }: any) {
     }
   }, [isTimesUp?.decrypted_card_info_local_state]);
 
+  /* useEffect(() => {
+    console.log(
+      "🚀 ~ Card ~ remainingTimeCountDown",
+      remainingTimeCountDown["test_timer"] / 1000
+    );
+    console.log(
+      "🚀 ~ useEffect ~ isTimesUp?.test_timer:",
+      isTimesUp?.test_timer
+    );
+    if (isTimesUp?.test_timer) {
+      stopTimer("test_timer");
+    }
+  }, [isTimesUp?.test_timer, remainingTimeCountDown["test_timer"]]);
+ */
   /* useEffect(() => {
     if (isTimesUp?.is_request_new_otp) {
       stopTimer("is_request_new_otp");
@@ -522,7 +543,9 @@ export function Card({ navigation, route }: any) {
           key={index}
           card={item}
           pin={cardPin}
-          timer={remainingTime}
+          timer={
+            remainingTimeCountDown["decrypted_card_info_local_state"] / 1000
+          }
           cardDetailsDecrypted={cardDetailsDecrypted}
         />
       </Pressable>
@@ -586,6 +609,7 @@ export function Card({ navigation, route }: any) {
   useEffect(() => {
     setIsLoading(true);
     handleGetCards();
+    // startTimer("test_timer", 20000);
     //get digital signature
     dispatch<any>(setIsCardTransactionShown(false));
   }, []);
@@ -668,7 +692,7 @@ export function Card({ navigation, route }: any) {
     }
   }, [signatureRSA?.encodedMessage, signatureRSA?.private]); */
 
-  /* useEffect(() => {
+  /*  useEffect(() => {
     const pv = `-----BEGIN RSA PRIVATE KEY-----
     MIIJKAIBAAKCAgEAxqgarU6eDtfnJ+wlgEJXxTNRG/K67+xF8JeAH7xGindfkbvslYTUr5cRZtV/8bF6WiPALWrl97EGNcY4FEz5/+yXJCvFONNcDGmfzEDHdubfK45+J+ljPf7yzkFV2LxlBlNjaRQM7irusStwodUsYB10yH/l3DwdT5xMIDaiqZ0N8sNVSy927RtXMtETmWcIaq2KWG1u2u1ilF87EBAdxNnhKybke4xN0IxzeuWZewYfyyV4r2gFRqAwN08FPS5aP7Inpo5vkc8py2X3mc8/4cSvV3aPl43HqS7TN09R5dJra5i1md3oIV7b9NqJAYRuiB16lw4RQ/xdRZnP3I6lf0STQNBfZ3c4bmztBpuYnGDMACnLZgDPJ38sANwnZzhUP3BziAWmHvwcrt9a3yHxeu3T0ZorSCY6pObzXnlLB23pHrr7SDQ7LdmkRat65OVkA4A/AhGyHs0E872X7nkNvhYlE4XCaiSF+66WUuPfKWfz7CVVP+FbjbXdGD3LHTQ/JVplkCm6E8z4NvqM6sddVc6GDn3v1OCA8GKili/g2N3d1naokg8+2R1gtEWGeqs00THZAPSu4UF+BdOmB/nYi6x1s72vSyDGdR6gSqxoVNF5pnUQ7qsL+QtZfOGdUNxperhl58JNDHyuwRrW9SSOeEnJC7i9uIMO3BXUpey1M9MCAwEAAQKCAgACU5sr64amIxydXzITEayG2gloO009Z5YUKlpLRq8oPbVv6gTk6RwWZZG8xrH4c5eNEwy+DbcFmwnzd0ab1VfCRFtPbQYXxpF37VjfBKqEkjQ0DQRuI7DOi1saV4Xj67Ora6OfyUBxoWfGlmNtIrJ2AdOuJIvWOWN/Z/3kenYv+nbnlYW5SsishnOeh/CrDRgI8PN8AnCqYnfcaKWvSu693SykjssFj6Fi0UJI+Z1bPRh+ki6TizcTO032K/rc3ttch0UL9ESVq43ZhrmQjLt1FcmIYbqh0bOcPR89EDE2RN8+HH9muVpfFKbtc/8E8sl7WoGaEtYL5rQrdaa67wE1SOasldxlalQ8XVFMyVlC6ev2Oi60278uWPI4ENzclUvgUs1+ZiuC7BDCyJMBCq+6q5v6o5xFm+Rr3iF2Tv9KCfXbPJY/tjdiptBsdRSABRIvbW2ktEwpJaizz4aH713g14nMU8q6rHnnjgPCLVZyiY/QTVBbAt0QQzfp8NCWFBKEZzFuvaHuk5Su/Bnzv0eYtReNPPUE/Tl2iTxCATrb2+3+WCxVvWSblnsUeIk8T6clPMjZneUzB2HYy6bFecj3sE0s3nRKGrPVoooiP7AHUL8lIVP02uLGI+K0sRPkPdt8yl8ERlqVHBsX/X3u4AIb4xwtUNSLdKk0m4wkUbLPAQKCAQEA8ieL5nnWpT/o2xhed97s+S2tq2R8tI4sKPLgxxbQrC0l9k0c626NUhHRbd6eeRaaacQK8pA9U3l1U+EKuOTXQDRcv5c0p7v6/VSIhnU4ZXdY4q5DjcKYUNuTtoGJo7PuDMr1mPR7qw9hp0k64W3H90ms7Xqn0sWz7FUIUDOVU23ncZgN8ZK7SEX53VJQzpmaSYnHuDW67gKv6b879ZDTh6wyqwnSBAfe5ORYkngKL5UmlREb3c/4ZEQOxM/rCpUE+Z55YD7/FSymspCLufp4FJhEW7V/Lo7ERFlM6nBcNb4xv1tHEQ2CPSg8ENFUpAkcwPTHtPc4skDst8QTPbLXuQKCAQEA0gPfiqfdjra1YpTBZ7FTeE7VtGiafYb0NFaFDtjfeLY5yMqI1Qs3d0K/pa63I1ZsDrpKOOSpHEFEEcBXaP7ZFONbnvR7V1tOmeAbD6lnl5WhI39p2yp4J9Z5VpUzmaAIUlgQs4+f/ORBsrfCkJEi7HNE5yEn++H1cWuVLI769xu32ZdiXBCsEFceqblbH6xVGH3c005qxWudpbKf1Je9FodottQzkx9l+qU6K1v0m7WrIZyXq8XmpmM5wpeuXAm0jO4grsbxgiYeyIlYkIuLq1N0PObd9P0+wQA5OWHrOW/t0qUTY7dfAKOl2pwbxqJ59x78vce875Li9OoKyg8V6wKCAQEAlHVgVN2vlcI3zVMEX7NBT4cMqT5DIiLjufsliYlYR6aqVnVyXHh7laws3JIWUCBmbJ9vIsUBhBK7tsAKZc6OlONFVYSrGIar2vIffWeSOsrPqLGz4s5BuZjU15hVPRLLx/YKWkrRIs+cTAYeXiSC6v21UibXiuYAZ8y9+wWU8AA6W68gJVGTFj0oceLMfc04BQu+cRYn01G8ba77YJL4zH3q1md/5U65/VRtZObJP+DONae2kOe23inHcCwUanlwAmWA/lvA4Udtr53kvBFt2xp7FkqQfYezlj+1Yymdrqk7MJkSWccRaNMo+BqOLL8VbMrlQPIsRUR+nC9OqI3jqQKCAQABM6J40aMT6Pm6ua0tobcfjhvs71hK9ZW6IvCZ+CW3NBu6iWYlCe5kUU51bT2BB0KRBwHbt3s8PSddjqMxZ5voYbCphS6bfltByCV/fnGoTWPhpx388g5D9Bc3ppzn+SFzDyvxSxYYRVoW4rRLTXlMrxAq3mazK0TTRFFTMvI+rbrslNAsRLAnW8hCIlxiHwNRo4666szzmj0JsK73cXLUiSvRN/+fjONxfraJfvo0VeLHy3SWuAgs1Y6EDYgi4K9WyxoGxf6lxwAQF7EZCqNe9JhKrOuCNlzAj/bD3EqTRo+uz+D/hhIWF9mgGZqTFWTrRBMgJt9u44FG83viUhnHAoIBABDJGv1qhb8LWXIESN8tlAuKim48z96IUHUq5OpxcNyJKUcADgV0M3L7pGaEJTInYiNfCxIbaeBAYSV2OFGbipnwlA6TQzRq7WbrKfbmQHN5rPgwSU4+ZdOUI0fhMvJBlnU98lzQ6RhAHzLwNxbP017ggr66o10PKrf+BlO2Tvrq76iRFawTY3U9nKgFnDw1iCxnITB/s/DV7fbbS/3gJZmsB1pSQZm4mYP3Bc6vkqNfe4RC09MH5051Vju4frGv6Bwshzsej2AFYg0ysWRmkvV/B/IP+1PSKwzoR8kOKSGBHNZICeNDR3ICQ87fZ0aCigx/uiEv6yfVMiZqnRiv9Ig=
     -----END RSA PRIVATE KEY-----`;
@@ -1291,6 +1315,7 @@ export function Card({ navigation, route }: any) {
               if (!cardPin && !userID) {
                 return;
               }
+              refRBSShowCard?.current?.close();
               setEncryptedCardDetails((prevState) => ({
                 ...prevState,
                 isLoadingEncryptedCardDetails: true,
@@ -1314,7 +1339,6 @@ export function Card({ navigation, route }: any) {
                 .then((res: any) => {
                   console.log("🚀 ~ .then ~ res:", res);
                   if (res?.code === 200 || res?.code === "200") {
-                    refRBSShowCard?.current?.close();
                     setEncryptedCardDetails((prevState) => ({
                       ...prevState,
                       isLoadingEncryptedCardDetails: false,

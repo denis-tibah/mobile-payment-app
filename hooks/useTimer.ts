@@ -1,97 +1,74 @@
 import { useState, useEffect } from "react";
 
 const useTimer = () => {
-  const [timeoutIds, setTimeoutIds] = useState<any>({});
-  const [isRunning, setIsRunning] = useState<any>({});
-  const [isTimesUp, setIsTimesUp] = useState<any>({});
-  const [remainingTimeCountDown, setRemainingTime] = useState<any>({});
+  const [timeoutIds, setTimeoutIds] = useState<Record<string, NodeJS.Timeout>>(
+    {}
+  );
+  const [isRunning, setIsRunning] = useState<Record<string, boolean>>({});
+  const [isTimesUp, setIsTimesUp] = useState<Record<string, boolean>>({});
+  const [remainingTimeCountDown, setRemainingTime] = useState<
+    Record<string, number>
+  >({});
 
   // Function to start the timer
   const startTimer = (name: string, interval: number) => {
-    /* if (!isRunning[name]) {
-      setIsRunning({ ...isRunning, [name]: true });
-      const id = setTimeout(() => {
-        setIsRunning({ ...isRunning, [name]: false });
-        setIsTimesUp({ ...isTimesUp, [name]: true });
-      }, interval);
-      setTimeoutIds({ ...timeoutIds, [name]: id });
-    } */
-
     if (!isRunning[name]) {
-      setIsRunning((prevState: any) => ({ ...prevState, [name]: true }));
-      setIsTimesUp((prevState: any) => ({ ...prevState, [name]: false }));
-      setRemainingTime((prevState: any) => ({
-        ...prevState,
-        [name]: interval,
-      }));
+      //console.log(`Starting timer: ${name} for interval: ${interval}`);
+      setIsRunning((prevState) => ({ ...prevState, [name]: true }));
+      setIsTimesUp((prevState) => ({ ...prevState, [name]: false }));
+      setRemainingTime((prevState) => ({ ...prevState, [name]: interval }));
 
       const intervalId = setInterval(() => {
-        setRemainingTime((prevTime: any) => {
-          const newTime = { ...prevTime, [name]: prevTime[name] - 1000 };
-          if (newTime[name] <= 0) {
+        setRemainingTime((prevTime) => {
+          const currentTime = prevTime[name] ?? interval;
+          const newTime = currentTime - 1000;
+
+          // console.log(`Timer ${name} countdown: ${newTime}`);
+          if (newTime <= 0) {
             clearInterval(intervalId);
-            setIsRunning((prevState: any) => ({ ...prevState, [name]: false }));
-            setIsTimesUp((prevState: any) => ({ ...prevState, [name]: true }));
-            newTime[name] = 0; // Ensure it doesn't go below 0
+            setIsRunning((prevState) => ({ ...prevState, [name]: false }));
+            setIsTimesUp((prevState) => ({ ...prevState, [name]: true }));
+            return { ...prevTime, [name]: 0 }; // Ensure it doesn't go below 0
           }
-          return newTime;
+
+          return { ...prevTime, [name]: newTime };
         });
       }, 1000);
 
-      const timeoutId = setTimeout(() => {
-        clearInterval(intervalId);
-      }, interval);
-
-      setTimeoutIds((prevState: any) => ({
+      setTimeoutIds((prevState) => ({
         ...prevState,
-        [name]: { timeoutId, intervalId },
+        [name]: intervalId,
       }));
     }
   };
 
   // Function to stop the timer
   const stopTimer = (name: string) => {
-    /* setIsRunning({ ...isRunning, [name]: false });
-    setIsTimesUp({ ...isTimesUp, [name]: false });
-    if (timeoutIds[name]) {
-      clearTimeout(timeoutIds[name]);
-      setTimeoutIds({ ...timeoutIds, [name]: null });
-    } */
-
-    setIsRunning((prevState: any) => ({ ...prevState, [name]: false }));
-    setIsTimesUp((prevState: any) => ({ ...prevState, [name]: false }));
-    setRemainingTime((prevState: any) => ({ ...prevState, [name]: null }));
+    //console.log(`Stopping timer: ${name}`);
+    setIsRunning((prevState) => ({ ...prevState, [name]: false }));
+    setIsTimesUp((prevState) => ({ ...prevState, [name]: false }));
+    setRemainingTime((prevState) => ({ ...prevState, [name]: 0 }));
 
     if (timeoutIds[name]) {
-      clearTimeout(timeoutIds[name].timeoutId);
-      clearInterval(timeoutIds[name].intervalId);
-      setTimeoutIds((prevState: any) => ({ ...prevState, [name]: null }));
+      clearInterval(timeoutIds[name]);
+      setTimeoutIds((prevState) => {
+        const newTimeoutIds = { ...prevState };
+        delete newTimeoutIds[name];
+        return newTimeoutIds;
+      });
     }
   };
 
   // Effect to clean up timers when the component unmounts
   useEffect(() => {
-    /* return () => {
-      Object.values(timeoutIds).forEach((id: any) => {
-        if (id) {
-          clearTimeout(id);
-        }
-      });
-    }; */
     return () => {
-      Object.values(timeoutIds).forEach(({ timeoutId, intervalId }: any) => {
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
-        if (intervalId) {
-          clearInterval(intervalId);
-        }
+      Object.values(timeoutIds).forEach((intervalId) => {
+        clearInterval(intervalId);
       });
     };
-  }, []);
+  }, [timeoutIds]);
 
   return { startTimer, isTimesUp, stopTimer, remainingTimeCountDown };
-  // Return the startTimer, isTimesUp, and stopTimer functions remainingTime
 };
 
 export default useTimer;

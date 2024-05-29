@@ -225,7 +225,7 @@ export function Card({ navigation, route }: any) {
     return signature;
   }; */
 
-  const encryptMessage = async ({
+  /* const encryptMessage = async ({
     encryptedData,
     publicKey,
   }: {
@@ -275,7 +275,7 @@ export function Card({ navigation, route }: any) {
         pin: decryptedMessage,
       }));
     }
-  };
+  }; */
 
   /* const testEncryptDecrypt = async (message: any) => {
     // let keys=generateRSASignature(message);
@@ -305,7 +305,7 @@ export function Card({ navigation, route }: any) {
       // set timer for digital_signature for 5mins
       // startTimer("digital_signature", 60000 * 2);
       //set timer for decrypted card info deletion
-      // startTimer("decrypted_card_info_local_state", 30000);
+      startTimer("decrypted_card_info_local_state", 30000);
       if (signatureRSA?.privateKey) {
         if (
           encryptedCardDetails?.encryptedCardDetailsData?.cardNumberEncrypted
@@ -418,16 +418,23 @@ export function Card({ navigation, route }: any) {
   }, [isTimesUp?.digital_signature]); */
 
   useEffect(() => {
-    if (isTimesUp?.decrypted_card_info_local_state) {
+    if (
+      isTimesUp?.decrypted_card_info_local_state ||
+      Number(remainingTimeCountDown["decrypted_card_info_local_state"]) /
+        1000 ===
+        0
+    ) {
       stopTimer("decrypted_card_info_local_state");
-
       setCardDetailsDecrypted({
         cardNumber: "",
         cvc: "",
         pin: "",
       });
     }
-  }, [isTimesUp?.decrypted_card_info_local_state]);
+  }, [
+    isTimesUp?.decrypted_card_info_local_state,
+    Number(remainingTimeCountDown?.decrypted_card_info_local_state) / 1000,
+  ]);
 
   /* useEffect(() => {
     console.log(
@@ -544,7 +551,8 @@ export function Card({ navigation, route }: any) {
           card={item}
           pin={cardPin}
           timer={
-            remainingTimeCountDown["decrypted_card_info_local_state"] / 1000
+            Number(remainingTimeCountDown["decrypted_card_info_local_state"]) /
+            1000
           }
           cardDetailsDecrypted={cardDetailsDecrypted}
         />
@@ -609,8 +617,6 @@ export function Card({ navigation, route }: any) {
   useEffect(() => {
     setIsLoading(true);
     handleGetCards();
-    // startTimer("test_timer", 20000);
-    //get digital signature
     dispatch<any>(setIsCardTransactionShown(false));
   }, []);
 

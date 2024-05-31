@@ -9,14 +9,11 @@ import ZazooTerminated from "../../assets/images/card_background_images/terminat
 import ZazooPendingCard from "../../assets/images/card_background_images/pending_card.png";
 // import ZazooVirtualCard from "../../assets/images/zazocard.png";
 import { FreezeCard } from "./FreezeCard";
-import { PinCard } from "./PinCard";
-import { TimerCard } from "./TimerCard";
-import { getProfile } from "../../redux/profile/profileSlice";
 import { CardStatus } from "../../utils/constants";
+import Typography from "../Typography";
 
 interface CardViewProps {
   freezeLoading: boolean;
-  // unFreezeCard: () => void;
   card: any;
   pin: any;
   timer: any;
@@ -33,14 +30,8 @@ export const CardView = ({
   cardDetails,
   cardDetailsDecrypted,
 }: CardViewProps) => {
-  // if (pin) return <PinCard card={card} pin={pin} timer={timer} />; showing pin is disabled
-
   if (card?.frozenYN === "Y") {
     return <FreezeCard card={card} loading={freezeLoading} />;
-  }
-
-  if (cardDetails.cardImage) {
-    return <TimerCard timer={timer} card={cardDetails.cardImage} />;
   }
 
   const cardImage =
@@ -66,15 +57,41 @@ export const CardView = ({
         source={cardImage}
       >
         <View
-          style={{
-            width: "100%",
-            paddingTop: 32,
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "row",
-          }}
+          style={[
+            styles.headerText,
+            {
+              paddingTop: 30,
+            },
+          ]}
         >
-          <View style={{ width: "78%", marginTop: 28 }}>
+          <View
+            style={{
+              width: "85%",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Typography
+              fontFamily="Nunito-Regular"
+              fontSize={14}
+              fontWeight="700"
+              marginRight={6}
+            >
+              {timer() > 0 ? timer() : ""}
+              {timer() > 0 ? "s" : ""}
+            </Typography>
+          </View>
+        </View>
+        <View
+          style={[
+            styles.headerText,
+            {
+              paddingTop: 10,
+            },
+          ]}
+        >
+          <View style={{ width: "78%", marginTop: 0 }}>
             <Text style={styles.panTitle}>Card Number</Text>
             <Text style={styles.panText}>
               {cardDetailsDecrypted?.cardNumber || pan}
@@ -192,5 +209,11 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 18,
     fontWeight: "400",
+  },
+  headerText: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
   },
 });

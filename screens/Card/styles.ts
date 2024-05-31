@@ -18,7 +18,7 @@ export const styles: any = StyleSheet.create<any>({
     color: vars["accent-pink"],
     fontSize: 14,
     fontWeight: "400",
-    marginTop: 12,
+    marginTop: 4,
     textAlign: "center",
   },
   // listHead: {

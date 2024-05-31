@@ -10,18 +10,8 @@ export const styles = StyleSheet.create({
     position: "relative",
     width: 390,
     height: 230,
-    // justifyContent: "center",
-    // alignItems: "center",
     borderRadius: 25,
-    // overflow: "hidden",
   },
-  // card: {
-  //   flexDirection: "column",
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  //   width: "100%",
-  //   height: "100%",
-  // },
   overlay: {
     flexDirection: "column",
     justifyContent: "center",

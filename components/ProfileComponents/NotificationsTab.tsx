@@ -40,6 +40,7 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
   }>({ header: "", body: "", isOpen: false, isError: false });
   const [bottomSheetHeight, setBottomSheetHeight] = useState<number>(0);
   const [notification, setNotication] = useState<any>({});
+  console.log("🚀 ~ notification:", notification);
 
   const {
     isLoading: isLoadingGetNotifications,
@@ -106,17 +107,16 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
   };
 
   const renderNotificationList = (item: any) => {
-    console.log("🚀 ~ renderNotificationList ~ item:", item);
     return (
       <TouchableWithoutFeedback
         onPress={() => {
+          refRBSheet?.current?.open();
           setNotication((prevState: any) => {
             if (item?.item) {
               return { ...item?.item };
             }
             return prevState;
           });
-          refRBSheet?.current?.open();
           if (!item?.item?.readByUser) {
             const bodyParams = {
               notificationId: item?.item?.id || "",

@@ -1,15 +1,16 @@
+import { useEffect } from "react";
+import { TouchableOpacity } from "react-native";
 import { View, Image } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import * as ImagePicker from "expo-image-picker";
+
 import { styles } from "./styles";
 import { uploadProfileImage } from "../../redux/profile/profileSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { convertImageToBase64 } from "../../utils/helpers";
+import { useGetProfileQuery } from "../../redux/profile/profileSliceV2";
 import { getProfile } from "../../redux/profile/profileSlice";
 import DefaultAvatar from "../../assets/images/default-avatar.jpg";
 import Button from "../Button";
-import { useEffect } from "react";
-import { TouchableOpacity } from "react-native";
-
-import * as ImagePicker from "expo-image-picker";
+import { RootState } from "../../store";
 
 export function Avatar({
   src,
@@ -20,14 +21,22 @@ export function Avatar({
   borderColor = "#ddebff",
   fileUpload = false,
 }: any) {
+  const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const dispatch = useDispatch();
-  const profileData = useSelector(
-    (state: any) => state?.profile?.profile
-  )?.data;
 
-  useEffect(() => {
-    if (!profileData) dispatch<any>(getProfile());
-  }, [profileData]);
+  const {
+    isLoading: isLoadingGetProfile,
+    data: profileData,
+    refetch,
+  } = useGetProfileQuery(
+    {
+      accessToken: userTokens?.access_token,
+      tokenZiyl: userTokens?.token_ziyl,
+    },
+    {
+      skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
+    }
+  );
 
   const handleUploadFile = async () => {
     const options: ImagePicker.ImagePickerOptions = {
@@ -46,7 +55,7 @@ export function Avatar({
         })
       ).then((payload: any) => {
         if (payload) {
-          dispatch<any>(getProfile());
+          refetch();
         }
       });
     }

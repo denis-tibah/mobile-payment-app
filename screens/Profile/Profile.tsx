@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState, Fragment, useCallback } from "react";
 import {
   View,
   ScrollView,
@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   Platform,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import * as Clipboard from "expo-clipboard";
@@ -28,6 +29,7 @@ import ArrowRightIcon from "../../assets/icons/ArrowRight";
 import FinancialDataGraphIcon from "../../assets/icons/FinancialDataGraph";
 import LimitIcon from "../../assets/icons/Limit";
 import { useGetAccountDetailsQuery } from "../../redux/account/accountSliceV2";
+import { useGetProfileQuery } from "../../redux/profile/profileSliceV2";
 import { signout } from "../../redux/auth/authSlice";
 import { Seperator } from "../../components/Seperator/Seperator";
 import { getLimits } from "../../redux/setting/settingSlice";
@@ -40,7 +42,7 @@ import NotificationsTab from "../../components/ProfileComponents/NotificationsTa
 import LimitsTab from "../../components/ProfileComponents/LimitsTab";
 import HelpTab from "../../components/ProfileComponents/HelpTab";
 import NotificationsSettingsTab from "../../components/ProfileComponents/NotificationsSettingsTab";
-import { helpTabticketParams } from "../../utils/globalStates";
+import { helpTabticketParams, profileTabRoute } from "../../utils/globalStates";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import Typography from "../../components/Typography";
 import WholeContainer from "../../layout/WholeContainer";
@@ -51,15 +53,28 @@ export interface SelectOption {
 }
 
 export function Profile({ route, navigation }: any) {
+  console.log("🚀 ~ Profile ~ route:", route);
   const dispatch = useDispatch();
 
-  const profileData = useSelector(
-    (state: any) => state?.profile?.profile
-  )?.data;
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
 
   const [ticketParams, setTicketParams] = useAtom(helpTabticketParams);
+  const [profileRoute, setProfileRoutes] = useAtom(profileTabRoute);
+
+  const {
+    isLoading: isLoadingGetProfile,
+    data: profileData,
+    refetch,
+  } = useGetProfileQuery(
+    {
+      accessToken: userTokens?.access_token,
+      tokenZiyl: userTokens?.token_ziyl,
+    },
+    {
+      skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
+    }
+  );
 
   const [isUpdateLimitSuccess, setIsUpdateLimitSuccess] = useState<{
     state: boolean;
@@ -67,6 +82,7 @@ export function Profile({ route, navigation }: any) {
   }>({ state: false, isModalOpen: false });
   const [limitTypes, setLimitTypes] = useState<string>("");
   const [tabSelection, setTabSelection] = useState<string>("");
+  console.log("🚀 ~ Profile ~ tabSelection:", tabSelection);
   const [snackBarMessage, setSnackBarMessage] = useState({
     open: false,
     label: "",
@@ -89,6 +105,20 @@ export function Profile({ route, navigation }: any) {
       setTabSelection("Help");
     }
   }, [ticketParams]);
+
+  useFocusEffect(
+    useCallback(() => {
+      // Do something when the screen is focused
+      if (profileRoute === "Notifications") {
+        setTabSelection("Notifications");
+      }
+      return () => {
+        // Do something when the screen is unfocused
+        // Useful for cleanup functions
+        setTabSelection("");
+      };
+    }, [profileRoute])
+  );
 
   const handleShowTab = (tab: string): void => {
     setTabSelection(tab);

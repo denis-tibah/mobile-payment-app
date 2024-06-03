@@ -7,16 +7,29 @@ import {
   getStatementsfinxp,
   StatementResponse,
 } from "../redux/transaction/transactionSlice";
+import { useGetProfileQuery } from "../redux/profile/profileSliceV2";
 import { RootState } from "../store";
 import { generateStatementsPDF } from "../components/StatementsPDF/StatementsPDF";
 
 export default function useGeneratePDF() {
   const dispatch = useDispatch();
-  const profileData = useSelector((state: any) => state.profile?.profile)?.data;
   const userData = useSelector((state: RootState) => state?.auth?.userData);
   const accountDetails = useSelector(
     (state: RootState) => state?.account?.details
   );
+  const userTokens = useSelector((state: RootState) => state?.auth?.data);
+
+  const { isLoading: isLoadingGetProfile, data: profileData } =
+    useGetProfileQuery(
+      {
+        accessToken: userTokens?.access_token,
+        tokenZiyl: userTokens?.token_ziyl,
+      },
+      {
+        skip:
+          !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
+      }
+    );
 
   const [generatePDFParams, setGeneratePDFParams] = useState<{
     dateFrom: string;

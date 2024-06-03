@@ -20,7 +20,10 @@ import {
   employmentStatus,
   employmentStatusTwo,
 } from "../../data/options";
-import { useCreateTicketRequestMutation } from "../../redux/profile/profileSliceV2";
+import {
+  useGetProfileQuery,
+  useCreateTicketRequestMutation,
+} from "../../redux/profile/profileSliceV2";
 import { RootState } from "../../store";
 import WholeContainer from "../../layout/WholeContainer";
 import Typography from "../Typography";
@@ -30,10 +33,21 @@ import { styles } from "./styles";
 interface IFinancialDetailsTab {}
 
 const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
-  const profileData = useSelector(
-    (state: RootState) => state?.profile?.profile
-  )?.data;
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
+
+  const {
+    isLoading: isLoadingGetProfile,
+    data: profileData,
+    refetch,
+  } = useGetProfileQuery(
+    {
+      accessToken: userTokens?.access_token,
+      tokenZiyl: userTokens?.token_ziyl,
+    },
+    {
+      skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
+    }
+  );
 
   const [openListForSourceOfDeposits, setOpenListForSourceOfDeposits] =
     useState<boolean>(false);
@@ -151,7 +165,7 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
         <SafeAreaView>
           {/* <ScrollView> */}
           <View>
-            {/* <Spinner visible={isLoadingCreateTicketReq} /> */}
+            {/* <Spinner visible={isLoadingCreateTicketReq || isLoadingGetProfile} /> */}
             <SuccessModal
               isOpen={statusMessage?.isOpen}
               title={statusMessage.header}

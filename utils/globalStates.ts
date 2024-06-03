@@ -7,4 +7,6 @@ export const helpTabticketParams = atom({
   transactionReferenceNumber: "",
 });
 
+export const profileTabRoute = atom("");
+
 export const sessionToken = atom(null);

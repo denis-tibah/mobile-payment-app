@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Text, Alert } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { printAsync } from "expo-print";
 import Spinner from "react-native-loading-spinner-overlay/lib";
@@ -12,14 +11,12 @@ import {
   StatementTransactionsResponse,
 } from "../../redux/transaction/transactionSlice";
 import { getAccountDetails } from "../../redux/account/accountSlice";
-import { generatePDF } from "../../utils/files";
-import Typography from "../../components/Typography";
+import { useGetProfileQuery } from "../../redux/profile/profileSliceV2";
 import Box from "../../components/Box";
 import { MainLayout } from "../../layout/Main/Main";
 import Heading from "../../components/Heading";
 import { styles } from "./styles";
 import StatementIcon from "../../assets/icons/Statement";
-import ExcelIcon from "../../assets/icons/Excel";
 import TransactionIcon from "../../assets/icons/Transaction";
 import Pdf from "../../assets/icons/Pdf";
 import Button from "../../components/Button";
@@ -53,13 +50,25 @@ const initialDateRange: DateRangeType = {
 const currentDate = new Date();
 export function Statements({ navigation }: any) {
   const userData = useSelector((state: RootState) => state?.auth?.userData);
-  const profileData = useSelector(
-    (state: RootState) => state?.profile?.profile.data
-  );
+  const userTokens = useSelector((state: RootState) => state?.auth?.data);
 
   const dispatch = useDispatch();
   const accountDetails = useSelector(
     (state: RootState) => state?.account?.details
+  );
+
+  const {
+    isLoading: isLoadingGetProfile,
+    data: profileData,
+    refetch,
+  } = useGetProfileQuery(
+    {
+      accessToken: userTokens?.access_token,
+      tokenZiyl: userTokens?.token_ziyl,
+    },
+    {
+      skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
+    }
   );
   const currentBalance = accountDetails?.curbal;
   const [selectedPrint, setSelectedPrint] = useState<string>("pdf");

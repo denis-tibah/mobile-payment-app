@@ -2,7 +2,8 @@ import { useEffect, useState, useRef, Fragment } from "react";
 import { View, TouchableWithoutFeedback, Image } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useRoute } from "@react-navigation/native";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import MaterialIcons from "react-native-vector-icons/Feather";
+import { useAtom } from "jotai";
 import Feather from "react-native-vector-icons/Feather";
 
 import { getProfile } from "../../redux/profile/profileSlice";
@@ -15,15 +16,20 @@ import Avatar from "../Avatar";
 import Typography from "../Typography";
 import Button from "../Button";
 import WholeContainer from "../../layout/WholeContainer";
+import { useGetProfileQuery } from "../../redux/profile/profileSliceV2";
+import { profileTabRoute } from "../../utils/globalStates";
+import { RootState } from "../../store";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export function Header({ navigation }: any): any {
   const auth = useSelector((state: any) => state.auth);
   const userId = auth?.userData?.id;
 
-  const profileData = useSelector((state: any) => state.profile?.profile)?.data;
-
+  const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const route = useRoute();
   const refRBSheet = useRef();
+
+  const [, setProfileRoute] = useAtom(profileTabRoute);
 
   const dispatch = useDispatch();
 
@@ -37,13 +43,21 @@ export function Header({ navigation }: any): any {
     lastDateOfPrevMonth,
   } = dateFunctions();
 
-  const [bottomSheetHeight, setBottomSheetHeight] = useState<number>(0);
+  const { isLoading: isLoadingGetProfile, data: profileData } =
+    useGetProfileQuery(
+      {
+        accessToken: userTokens?.access_token,
+        tokenZiyl: userTokens?.token_ziyl,
+      },
+      {
+        skip:
+          !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
+      }
+    );
 
-  useEffect(() => {
-    if (auth?.data?.access_token) {
-      dispatch<any>(getProfile());
-    }
-  }, []);
+  const [bottomSheetHeight, setBottomSheetHeight] = useState<number>(0);
+  const unReadNotification = profileData?.userProfile?.totalNotificationsUnread;
+  console.log("🚀 ~ Header ~ unReadNotification:", unReadNotification);
 
   return (
     <Fragment>
@@ -64,6 +78,17 @@ export function Header({ navigation }: any): any {
           {auth?.isAuthenticated && (
             <View style={styles.actions}>
               <View style={styles.action__iconMargin}>
+                {/* <TouchableOpacity
+                  onPress={() => {
+                    console.log("click");
+                    navigation.navigate("profile");
+                    setProfileRoute("Notifications");
+                  }}
+                >
+                  <View style={styles.notificationContainer}>
+                    <Feather color="#086AFB" size={14} name={"bell"} />
+                  </View>
+                </TouchableOpacity> */}
                 <TouchableWithoutFeedback
                   onPress={() => navigation.navigate("profile")}
                 >

@@ -22,7 +22,10 @@ import { SuccessModal } from "../SuccessModal/SuccessModal";
 import { Seperator } from "../Seperator/Seperator";
 import TwoFactorAuthenticationIcon from "../../assets/icons/TwoFactorAuthentication";
 import { securityTabSchema } from "../../utils/formikSchema";
-import { useUpdatePasswordMutation } from "../../redux/profile/profileSliceV2";
+import {
+  useGetProfileQuery,
+  useUpdatePasswordMutation,
+} from "../../redux/profile/profileSliceV2";
 import WholeContainer from "../../layout/WholeContainer";
 import { RootState } from "../../store";
 import { styles } from "./styles";
@@ -31,10 +34,21 @@ import vars from "../../styles/vars";
 interface ISecurityTab {}
 
 const SecurityTab: FC<ISecurityTab> = () => {
-  const profileData = useSelector(
-    (state: RootState) => state?.profile?.profile
-  )?.data;
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
+
+  const {
+    isLoading: isLoadingGetProfile,
+    data: profileData,
+    refetch,
+  } = useGetProfileQuery(
+    {
+      accessToken: userTokens?.access_token,
+      tokenZiyl: userTokens?.token_ziyl,
+    },
+    {
+      skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
+    }
+  );
 
   const [statusMessage, setStatusMessage] = useState<{
     header: string;

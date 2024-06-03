@@ -80,10 +80,6 @@ export const GetCardScreen = ({ navigation }: any) => {
   };
 
   useEffect(() => {
-    dispatch(getProfile() as any);
-  }, []);
-
-  useEffect(() => {
     if (!!userData) dispatch(getAccountDetails(userData.id) as any);
   }, [userData]);
 

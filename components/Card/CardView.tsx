@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
 // import ZazooDebitCard from "../../assets/images/zazoo-debit-card.png";
 // import ZazooVirtualCard from "../../assets/images/zazoo-virtual-card.png";
@@ -8,9 +8,11 @@ import ZazooVirtualCard from "../../assets/images/card_background_images/virtual
 import ZazooTerminated from "../../assets/images/card_background_images/terminated_card.png";
 import ZazooPendingCard from "../../assets/images/card_background_images/pending_card.png";
 // import ZazooVirtualCard from "../../assets/images/zazocard.png";
+import { useGetProfileQuery } from "../../redux/profile/profileSliceV2";
 import { FreezeCard } from "./FreezeCard";
 import { CardStatus } from "../../utils/constants";
 import Typography from "../Typography";
+import { RootState } from "../../store";
 
 interface CardViewProps {
   freezeLoading: boolean;
@@ -46,7 +48,19 @@ export const CardView = ({
 
   const expiryMonth = (card?.expiration_date).split("-")[1] || "";
   const expiryYear = (card?.expiration_date).split("-")[0].slice(2, 4) || "";
-  const profileData = useSelector((state: any) => state.profile?.profile)?.data;
+  const userTokens = useSelector((state: RootState) => state?.auth?.data);
+
+  const { isLoading: isLoadingGetProfile, data: dataGetProfile } =
+    useGetProfileQuery(
+      {
+        accessToken: userTokens?.access_token,
+        tokenZiyl: userTokens?.token_ziyl,
+      },
+      {
+        skip:
+          !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
+      }
+    );
 
   return (
     <View style={styles.container}>
@@ -117,7 +131,8 @@ export const CardView = ({
               <View>
                 <Text style={styles.cardHolder}>Card holder</Text>
                 <Text style={styles.cardHolderName}>
-                  {profileData.first_name} {profileData.last_name}
+                  {dataGetProfile?.first_name || ""}{" "}
+                  {dataGetProfile?.last_name || ""}
                 </Text>
               </View>
             </View>

@@ -36,7 +36,10 @@ import CityIcon from "../../assets/icons/City";
 import { countries, countries2 } from "../../data/ISO3166";
 import { salutations, salutations2 } from "../../data/options";
 import { editProfileSchema } from "../../utils/formikSchema";
-import { useCreateTicketRequestMutation } from "../../redux/profile/profileSliceV2";
+import {
+  useGetProfileQuery,
+  useCreateTicketRequestMutation,
+} from "../../redux/profile/profileSliceV2";
 import { RootState } from "../../store";
 import vars from "../../styles/vars";
 import { styles } from "./styles";
@@ -46,10 +49,21 @@ import { getFormattedDateAndTimeAndSeconds } from "../../utils/helpers";
 interface IProfileTab {}
 
 const ProfileTab: FC<IProfileTab> = () => {
-  const profileData = useSelector(
-    (state: RootState) => state?.profile?.profile
-  )?.data;
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
+
+  const {
+    isLoading: isLoadingGetProfile,
+    data: profileData,
+    refetch,
+  } = useGetProfileQuery(
+    {
+      accessToken: userTokens?.access_token,
+      tokenZiyl: userTokens?.token_ziyl,
+    },
+    {
+      skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
+    }
+  );
 
   const [openListForSalutation, setOpenListForSalutation] =
     useState<boolean>(false);

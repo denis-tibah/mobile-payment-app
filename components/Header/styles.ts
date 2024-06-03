@@ -24,7 +24,10 @@ export const styles: any = StyleSheet.create({
     alignItems: "center",
   },
   action__iconMargin: {
-    /* marginRight: 14, */
+    display: "flex",
+    gap: 12,
+    alignItems: "center",
+    flexDirection: "row",
   },
   iconContainer: {
     height: 36,
@@ -49,5 +52,12 @@ export const styles: any = StyleSheet.create({
     paddingBottom: 16,
     display: "flex",
     alignItems: "center",
+  },
+  notificationContainer: {
+    height: 36,
+    width: 36,
+    padding: 10,
+    backgroundColor: "#F5F9FF",
+    borderRadius: 20,
   },
 });

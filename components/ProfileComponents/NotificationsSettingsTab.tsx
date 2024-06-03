@@ -17,10 +17,6 @@ import { styles } from "./styles";
 import vars from "../../styles/vars";
 
 const NotificationsSettingsTab: FC = () => {
-  const profileData = useSelector(
-    (state: RootState) => state?.profile?.profile
-  )?.data;
-
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
 
   const [emailNotifications, setEmailNotifications] = useState<boolean>(false);
@@ -45,10 +41,7 @@ const NotificationsSettingsTab: FC = () => {
 
   const {
     isLoading: isLoadingGetProfile,
-    /* isError: isErrorGetProfile,
-    isSuccess: isSuccessGetProfile,
-    error: errorGetProfile, */
-    data: dataGetProfile,
+    data: profileData,
     refetch,
   } = useGetProfileQuery(
     {
@@ -66,9 +59,9 @@ const NotificationsSettingsTab: FC = () => {
 
   useEffect(() => {
     setEmailNotifications(
-      dataGetProfile?.userProfile?.enableAlertsYN === "Y" ? true : false
+      profileData?.userProfile?.enableAlertsYN === "Y" ? true : false
     );
-  }, [dataGetProfile?.userProfile?.enableAlertsYN]);
+  }, [profileData?.userProfile?.enableAlertsYN]);
 
   useEffect(() => {
     if (!isLoadingUpdateNotifications && isSuccessUpdateNotifications) {

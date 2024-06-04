@@ -17,6 +17,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import { RSA } from "react-native-rsa-native";
+import RNSecureStorage from "rn-secure-storage";
 
 import Heading from "../../components/Heading";
 import MainLayout from "../../layout/Main";
@@ -32,7 +33,11 @@ import {
   setIsCardTransactionShown,
   terminateCard,
 } from "../../redux/card/cardSlice";
-import { getUserActiveCards, screenNames } from "../../utils/helpers";
+import {
+  getUserActiveCards,
+  screenNames,
+  stripPemFormatting,
+} from "../../utils/helpers";
 import { CardView } from "../../components/Card/CardView";
 import { RootState } from "../../store";
 import vars from "../../styles/vars";
@@ -105,6 +110,7 @@ export function Card({ navigation, route }: any) {
     publicKeyWithoutPadding: "",
     encodedMessage: "",
   });
+  console.log("🚀 ~ Card ~ signatureRSA:", signatureRSA);
   /* console.log("🚀 ~ Card ~ signatureRSA:", signatureRSA?.privateKey);
   console.log("🚀 ~ Card ~ signatureRSA:", signatureRSA?.publicKey);
   console.log(
@@ -166,18 +172,10 @@ export function Card({ navigation, route }: any) {
 
   const [getOTP] = useLazySendSmsShowPinVerificationQuery();
 
-  // Function to strip the header and footer
-  const stripPemFormatting = (pem: any) => {
-    return pem
-      .replace(/-----BEGIN [\s\S]+?-----/, "")
-      .replace(/-----END [\s\S]+?-----/, "")
-      .replace(/\r?\n|\r/g, ""); // Remove all newlines
-  };
-
   const generateKeys = async () => {
     //4096 Is the key size
     let keyPair = await RSA.generateKeys(2048);
-    setSignatureRSA({
+    /* setSignatureRSA({
       privateKey: keyPair?.private,
       publicKey:
         keyPair?.public && Platform.OS === "android"
@@ -190,7 +188,7 @@ export function Card({ navigation, route }: any) {
               : keyPair?.public
           )
         : "",
-    });
+    }); */
   };
 
   // to show decrypted card details is success
@@ -485,10 +483,27 @@ export function Card({ navigation, route }: any) {
     setIsLoading(true);
     handleGetCards();
     dispatch<any>(setIsCardTransactionShown(false));
+
+    RNSecureStorage.multiGet([
+      "public_key",
+      "public_key_without_padding",
+      "private_key",
+    ])
+      .then((res) => {
+        console.log(res);
+        setSignatureRSA({
+          privateKey: res?.private_key,
+          publicKey: res?.public_key,
+          publicKeyWithoutPadding: res?.public_key_without_padding,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
   const handleGetOTP = async () => {
-    generateKeys();
+    // generateKeys();
     setIsLoading(true);
     const bodyParams = {
       type: "trusted",

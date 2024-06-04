@@ -606,3 +606,10 @@ export const dateFunctions = () => {
     lastDateOfPrevMonth,
   };
 };
+
+export const stripPemFormatting = (pem: any) => {
+  return pem
+    .replace(/-----BEGIN [\s\S]+?-----/, "")
+    .replace(/-----END [\s\S]+?-----/, "")
+    .replace(/\r?\n|\r/g, ""); // Remove all newlines
+};

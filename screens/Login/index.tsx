@@ -5,6 +5,7 @@ import {
   View,
   Switch,
   KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import Constants from "expo-constants";
 import { AntDesign } from "@expo/vector-icons";
@@ -16,6 +17,8 @@ import { useFormik } from "formik";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAtom } from "jotai";
+import { RSA } from "react-native-rsa-native";
+import RNSecureStorage, { ACCESSIBLE } from "rn-secure-storage";
 
 import Button from "../../components/Button";
 import FormGroup from "../../components/FormGroup";
@@ -33,13 +36,17 @@ import { useLoginMutation } from "../../redux/auth/authSliceV2";
 import { useLazyGetAccountQuery } from "../../redux/account/accountSliceV2";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
-import { arrayChecker, hp, wp } from "../../utils/helpers";
+import { arrayChecker, hp, stripPemFormatting } from "../../utils/helpers";
 import { validationAuthSchema } from "../../utils/validation";
 import { getDeviceDetails } from "../../utils/getIpAddress";
 import { sessionToken } from "../../utils/globalStates";
+import useDigitalSignature from "../../hooks/useDigitalSignature";
 
 export function LoginScreen({ navigation }: any) {
   const appVersion = Constants?.manifest?.version;
+
+  const { convertPublicKeyPKCS1ToPKCS8 } = useDigitalSignature();
+
   const [isFaceId, setFaceId] = useState<boolean>(true);
   const [storageData, setStorageData] = useState<any>({});
   const [biometricFlag, setBiometricFlag] = useState<string>("null");
@@ -112,6 +119,35 @@ export function LoginScreen({ navigation }: any) {
     });
   };
 
+  const generateKeys = async () => {
+    //2048 Is the key size
+    let keyPair = await RSA.generateKeys(2048);
+    const publicKey =
+      keyPair?.public && Platform.OS === "android"
+        ? convertPublicKeyPKCS1ToPKCS8(keyPair?.public)
+        : "";
+    const publicKeyWithoutPadding = keyPair?.public
+      ? stripPemFormatting(
+          Platform.OS === "android"
+            ? convertPublicKeyPKCS1ToPKCS8(keyPair?.public)
+            : keyPair?.public
+        )
+      : "";
+    const privateKey = keyPair?.private ? keyPair?.private : "";
+    const keys = {
+      public_key: publicKey,
+      public_key_without_padding: publicKeyWithoutPadding,
+      private_key: privateKey,
+    };
+    RNSecureStorage.multiSet(keys, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const handleLogin = async (signInData: any) => {
     const { dataLogin, accountQuery } = signInData;
     const objAccountQuery =
@@ -122,6 +158,7 @@ export function LoginScreen({ navigation }: any) {
       setSessionToken(dataLogin?.access_token);
       await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
       await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
+      generateKeys();
       dispatch<any>(signInViaRTK({ dataLogin, dataAccount: objAccountQuery }));
     }
     if (dataLogin?.biometricYN && dataLogin?.biometricYN === "Y") {

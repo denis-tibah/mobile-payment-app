@@ -1,66 +1,128 @@
 import { useEffect, useState, useRef, Fragment } from "react";
 import { View, TouchableWithoutFeedback, Image } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useRoute } from "@react-navigation/native";
-import MaterialIcons from "react-native-vector-icons/Feather";
 import { useAtom } from "jotai";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import Feather from "react-native-vector-icons/Feather";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Spinner from "react-native-loading-spinner-overlay/lib";
 
-import { getProfile } from "../../redux/profile/profileSlice";
-import { dateFunctions } from "../../utils/helpers";
 import useGeneratePDF from "../../hooks/useGeneratePDF";
 import { Seperator } from "../Seperator/Seperator";
+import { RootState } from "../../store";
+import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import SwipableBottomSheet from "../SwipableBottomSheet";
 import { styles } from "./styles";
 import Avatar from "../Avatar";
 import Typography from "../Typography";
-import Button from "../Button";
 import WholeContainer from "../../layout/WholeContainer";
 import { useGetProfileQuery } from "../../redux/profile/profileSliceV2";
 import { profileTabRoute } from "../../utils/globalStates";
-import { RootState } from "../../store";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import Statements from "../Notification/Statements";
+import { useReadNotificationMutation } from "../../redux/notifications/notificationSlice";
 
 export function Header({ navigation }: any): any {
   const auth = useSelector((state: any) => state.auth);
-  const userId = auth?.userData?.id;
-
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
+
   const route = useRoute();
   const refRBSheet = useRef();
 
   const [, setProfileRoute] = useAtom(profileTabRoute);
 
-  const dispatch = useDispatch();
+  const { resetPDFParams } = useGeneratePDF();
 
-  const { handleSetDate, isGeneratingPDF, resetPDFParams } = useGeneratePDF();
+  const [statusMessage, setStatusMessage] = useState<{
+    header: string;
+    body: string;
+    isOpen: boolean;
+    isError: boolean;
+  }>({ header: "", body: "", isOpen: false, isError: false });
 
-  const {
-    dateIsEqual,
-    previousMonth,
-    currentYear,
-    previousMonthFirstDay,
-    lastDateOfPrevMonth,
-  } = dateFunctions();
-
-  const { isLoading: isLoadingGetProfile, data: profileData } =
-    useGetProfileQuery(
-      {
-        accessToken: userTokens?.access_token,
-        tokenZiyl: userTokens?.token_ziyl,
-      },
-      {
-        skip:
-          !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
-      }
-    );
+  const { data: profileData, refetch: refetchProfile } = useGetProfileQuery(
+    {
+      accessToken: userTokens?.access_token,
+      tokenZiyl: userTokens?.token_ziyl,
+    },
+    {
+      skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
+    }
+  );
+  console.log("🚀 ~ Header ~ profileData:", profileData);
+  const [
+    readNotification,
+    {
+      isLoading: isLoadingReadNotification,
+      isError: isErrorReadNotification,
+      isSuccess: isSuccessReadNotification,
+      error: errorReadNotification,
+      /* data: dataReadNotification, */
+    },
+  ] = useReadNotificationMutation();
+  console.log("🚀 ~ Header ~ errorReadNotification:", errorReadNotification);
+  console.log(
+    "🚀 ~ Header ~ isSuccessReadNotification:",
+    isSuccessReadNotification
+  );
+  console.log(
+    "🚀 ~ Header ~ isErrorReadNotification:",
+    isErrorReadNotification
+  );
+  console.log(
+    "🚀 ~ Header ~ isLoadingReadNotification:",
+    isLoadingReadNotification
+  );
 
   const [bottomSheetHeight, setBottomSheetHeight] = useState<number>(0);
   const unReadNotification = profileData?.userProfile?.totalNotificationsUnread;
-  console.log("🚀 ~ Header ~ unReadNotification:", unReadNotification);
+  const notificationId = profileData?.userProfile?.statementNotification?.id;
+  const statementNotification = profileData?.userProfile?.statementNotification;
+  const notificationReadByUser =
+    profileData?.userProfile?.statementNotification?.readByUser;
+
+  useEffect(() => {
+    if (!isLoadingReadNotification && isSuccessReadNotification) {
+      refRBSheet?.current?.open();
+    }
+  }, [isLoadingReadNotification, isErrorReadNotification]);
+
+  useEffect(() => {
+    if (!isLoadingReadNotification && isErrorReadNotification) {
+      setStatusMessage({
+        header: `Error: ${errorReadNotification?.data?.code}`,
+        body:
+          errorReadNotification?.data?.message ||
+          "Something went wrong while reading message",
+        isOpen: true,
+        isError: true,
+      });
+    }
+  }, [isLoadingReadNotification, isErrorReadNotification]);
+
+  const handleCloseBottomSheet = () => {
+    refRBSheet?.current?.close();
+  };
+
+  const onCloseModal = (): void => {
+    setStatusMessage({
+      header: "",
+      body: "",
+      isOpen: false,
+      isError: false,
+    });
+  };
 
   return (
     <Fragment>
+      <Spinner visible={isLoadingReadNotification} />
+      <SuccessModal
+        isOpen={statusMessage?.isOpen}
+        title={statusMessage.header}
+        text={statusMessage.body}
+        isError={statusMessage.isError}
+        onClose={onCloseModal}
+      />
       <View style={styles.header}>
         <View>
           <Image
@@ -78,17 +140,33 @@ export function Header({ navigation }: any): any {
           {auth?.isAuthenticated && (
             <View style={styles.actions}>
               <View style={styles.action__iconMargin}>
-                {/* <TouchableOpacity
+                <TouchableWithoutFeedback
                   onPress={() => {
                     console.log("click");
                     navigation.navigate("profile");
                     setProfileRoute("Notifications");
                   }}
                 >
-                  <View style={styles.notificationContainer}>
-                    <Feather color="#086AFB" size={14} name={"bell"} />
+                  <View style={{ zIndex: 999, overflow: "visible" }}>
+                    <View style={styles.notificationContainer}>
+                      <Feather color="#086AFB" size={14} name={"bell"} />
+                    </View>
+                    {unReadNotification > 0 ? (
+                      <View style={styles.headerAlertCounterStyle}>
+                        <Typography
+                          color="#fff"
+                          fontSize={14}
+                          fontFamily="Mukta-Regular"
+                          fontWeight="800"
+                        >
+                          {unReadNotification || ""}
+                        </Typography>
+                      </View>
+                    ) : (
+                      ""
+                    )}
                   </View>
-                </TouchableOpacity> */}
+                </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback
                   onPress={() => navigation.navigate("profile")}
                 >
@@ -103,14 +181,17 @@ export function Header({ navigation }: any): any {
                     />
                   </View>
                 </TouchableWithoutFeedback>
-                {/* FE implementation of statement alert with bell icon 05/16 */}
-                {/* {dateIsEqual ? (
+                {statementNotification && !statementNotification?.readByUser ? (
                   <TouchableWithoutFeedback
                     onPress={() => {
-                      refRBSheet?.current?.open();
+                      const bodyParams = {
+                        notificationId: notificationId || "",
+                        tokenZiyl: userTokens?.token_ziyl || "",
+                      };
+                      readNotification(bodyParams);
                     }}
                   >
-                    <View style={{ position: "absolute", top: -6, right: -5 }}>
+                    <View style={{ position: "absolute", top: -6, right: 2 }}>
                       <MaterialIcons
                         color="#E7038E"
                         size={20}
@@ -118,7 +199,7 @@ export function Header({ navigation }: any): any {
                       />
                     </View>
                   </TouchableWithoutFeedback>
-                ) : null} */}
+                ) : null}
               </View>
             </View>
           )}
@@ -130,6 +211,9 @@ export function Header({ navigation }: any): any {
         closeOnPressMask={false}
         onClose={() => {
           resetPDFParams();
+          setTimeout(() => {
+            refetchProfile();
+          }, 3000);
         }}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
@@ -163,77 +247,22 @@ export function Header({ navigation }: any): any {
                 fontSize={18}
                 fontFamily="Nunito-SemiBold"
               >
-                Your monthly statement is ready
+                {profileData?.userProfile?.statementNotification?.title}
               </Typography>
             </View>
           </WholeContainer>
           <Seperator backgroundColor={"#DDDDDD"} />
-          <WholeContainer>
-            <View style={{ paddingVertical: 32 }}>
-              <Typography
-                fontFamily="Mukta-Regular"
-                fontSize={14}
-                fontWeight={"400"}
-                color="#696F7A"
-                marginBottom={16}
-              >
-                You can download your{" "}
-                <Typography
-                  fontFamily="Mukta-Bold"
-                  fontSize={14}
-                  fontWeight={"700"}
-                >
-                  {previousMonth} {currentYear}
-                </Typography>{" "}
-                statement
-              </Typography>
-              <Button
-                color="light-blue"
-                onPress={() => {
-                  handleSetDate({
-                    previousMonthFirstDay,
-                    lastDateOfPrevMonth,
-                    userId,
-                  });
-                }}
-                leftIcon={
-                  <Feather color="#086AFB" size={16} name={"download"} />
+          {profileData?.userProfile?.statementNotification?.requestType ===
+          "STATEMENTS_READY" ? (
+            <Fragment>
+              <Statements
+                onCloseBottomSheet={handleCloseBottomSheet}
+                message={
+                  profileData?.userProfile?.statementNotification?.message
                 }
-                disabled={isGeneratingPDF}
-              >
-                <Typography
-                  fontWeight="600"
-                  fontSize={16}
-                  fontFamily="Nunito-SemiBold"
-                >
-                  {isGeneratingPDF
-                    ? "Downloading..."
-                    : "Download monthly statement"}
-                </Typography>
-              </Button>
-            </View>
-          </WholeContainer>
-          <View style={styles.footerContent}>
-            <View style={styles.downloadBtnMain}>
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  refRBSheet?.current?.close();
-                  navigation.navigate("statements");
-                }}
-              >
-                <View>
-                  <Typography
-                    fontFamily="Nunito-Regular"
-                    fontSize={14}
-                    fontWeight={"300"}
-                    color="#E7038E"
-                  >
-                    Check your statements statement
-                  </Typography>
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          </View>
+              />
+            </Fragment>
+          ) : null}
         </View>
       </SwipableBottomSheet>
     </Fragment>

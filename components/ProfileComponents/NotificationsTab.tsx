@@ -21,11 +21,9 @@ import useGeneratePDF from "../../hooks/useGeneratePDF";
 import SwipableBottomSheet from "../SwipableBottomSheet";
 import Statements from "../Notification/Statements";
 
-interface INotificationsTab {
-  cleanUpTabSelection: () => void;
-}
+interface INotificationsTab {}
 
-const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
+const NotificationsTab: FC<INotificationsTab> = () => {
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
 
   const { resetPDFParams } = useGeneratePDF();
@@ -296,7 +294,10 @@ const NotificationsTab: FC<INotificationsTab> = ({ cleanUpTabSelection }) => {
           <Seperator backgroundColor={"#DDDDDD"} />
           {notification?.requestType === "STATEMENTS_READY" ? (
             <Fragment>
-              <Statements onCloseBottomSheet={handleCloseBottomSheet} />
+              <Statements
+                onCloseBottomSheet={handleCloseBottomSheet}
+                message={notification?.title}
+              />
             </Fragment>
           ) : null}
         </View>

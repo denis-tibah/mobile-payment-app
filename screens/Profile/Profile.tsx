@@ -60,7 +60,7 @@ export function Profile({ route, navigation }: any) {
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
 
   const [ticketParams, setTicketParams] = useAtom(helpTabticketParams);
-  const [profileRoute, setProfileRoutes] = useAtom(profileTabRoute);
+  const [profileRoute, setProfileRoute] = useAtom(profileTabRoute);
 
   const {
     isLoading: isLoadingGetProfile,
@@ -133,7 +133,10 @@ export function Profile({ route, navigation }: any) {
     });
   };
 
-  const cleanUpTabSelection = () => setTabSelection("");
+  const cleanUpTabSelection = () => {
+    setProfileRoute("");
+    setTabSelection("");
+  };
 
   const handleCloseBottomSheet = (): void => {
     setTicketParams({
@@ -156,10 +159,10 @@ export function Profile({ route, navigation }: any) {
         return <FinancialDetailsTab />;
       }
       case "Notifications": {
-        return <NotificationsTab cleanUpTabSelection={cleanUpTabSelection} />;
+        return <NotificationsTab />;
       }
       case "Limits": {
-        return <LimitsTab cleanUpTabSelection={cleanUpTabSelection} />;
+        return <LimitsTab />;
       }
       case "Help": {
         return (
@@ -575,6 +578,7 @@ export function Profile({ route, navigation }: any) {
                                 }
                                 return "";
                               });
+                              setProfileRoute("");
                             }}
                           >
                             <View

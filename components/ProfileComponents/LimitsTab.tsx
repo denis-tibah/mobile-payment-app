@@ -13,11 +13,9 @@ import CardLimit from "./SubComponents/CardLimits";
 import CardIcon from "../../assets/icons/Card";
 import WholeContainer from "../../layout/WholeContainer";
 
-interface ISecurityTab {
-  cleanUpTabSelection: () => void;
-}
+interface ISecurityTab {}
 
-const LimitsTab: FC<ISecurityTab> = ({ cleanUpTabSelection }) => {
+const LimitsTab: FC<ISecurityTab> = () => {
   const layout = useWindowDimensions();
   const [limitIndex, setLimitIndex] = useState(0);
   const [routes] = useState([

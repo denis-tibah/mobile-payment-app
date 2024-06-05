@@ -13,9 +13,10 @@ import { styles } from "./style";
 
 interface IStatements {
   onCloseBottomSheet: () => void;
+  message: string;
 }
 
-const Statements: FC<IStatements> = ({ onCloseBottomSheet }) => {
+const Statements: FC<IStatements> = ({ onCloseBottomSheet, message }) => {
   const { navigate }: any = useNavigation();
   const { handleSetDate, isGeneratingPDF } = useGeneratePDF();
   const {
@@ -31,7 +32,7 @@ const Statements: FC<IStatements> = ({ onCloseBottomSheet }) => {
     <Fragment>
       <WholeContainer>
         <View style={{ paddingVertical: 32 }}>
-          <Typography
+          {/* <Typography
             fontFamily="Mukta-Regular"
             fontSize={14}
             fontWeight={"400"}
@@ -47,6 +48,15 @@ const Statements: FC<IStatements> = ({ onCloseBottomSheet }) => {
               {previousMonth} {currentYear}
             </Typography>{" "}
             statement
+          </Typography> */}
+          <Typography
+            fontFamily="Mukta-Regular"
+            fontSize={14}
+            fontWeight={"400"}
+            textAlign="center"
+            marginBottom={16}
+          >
+            {message}
           </Typography>
           <Button
             color="light-blue"

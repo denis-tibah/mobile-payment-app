@@ -60,4 +60,17 @@ export const styles: any = StyleSheet.create({
     backgroundColor: "#F5F9FF",
     borderRadius: 20,
   },
+  headerAlertCounterStyle: {
+    position: "absolute",
+    bottom: -6,
+    right: -5,
+    height: 20,
+    width: 20,
+    backgroundColor: "#E7038E",
+    borderRadius: 20,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "visible",
+  },
 });

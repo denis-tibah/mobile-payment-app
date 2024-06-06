@@ -49,7 +49,7 @@ export function Header({ navigation }: any): any {
       skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
     }
   );
-  console.log("🚀 ~ Header ~ profileData:", profileData);
+
   const [
     readNotification,
     {
@@ -57,30 +57,14 @@ export function Header({ navigation }: any): any {
       isError: isErrorReadNotification,
       isSuccess: isSuccessReadNotification,
       error: errorReadNotification,
-      /* data: dataReadNotification, */
     },
   ] = useReadNotificationMutation();
-  console.log("🚀 ~ Header ~ errorReadNotification:", errorReadNotification);
-  console.log(
-    "🚀 ~ Header ~ isSuccessReadNotification:",
-    isSuccessReadNotification
-  );
-  console.log(
-    "🚀 ~ Header ~ isErrorReadNotification:",
-    isErrorReadNotification
-  );
-  console.log(
-    "🚀 ~ Header ~ isLoadingReadNotification:",
-    isLoadingReadNotification
-  );
 
   const [bottomSheetHeight, setBottomSheetHeight] = useState<number>(0);
   const unReadNotification = profileData?.userProfile?.totalNotificationsUnread;
   const notificationId = profileData?.userProfile?.statementNotification?.id;
   const statementNotification = profileData?.userProfile?.statementNotification;
-  const notificationReadByUser =
-    profileData?.userProfile?.statementNotification?.readByUser;
-
+  console.log("🚀 ~ Header ~ profileData:", profileData);
   useEffect(() => {
     if (!isLoadingReadNotification && isSuccessReadNotification) {
       refRBSheet?.current?.open();
@@ -213,7 +197,7 @@ export function Header({ navigation }: any): any {
           resetPDFParams();
           setTimeout(() => {
             refetchProfile();
-          }, 3000);
+          }, 2000);
         }}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{

@@ -64,7 +64,7 @@ export function Header({ navigation }: any): any {
   const unReadNotification = profileData?.userProfile?.totalNotificationsUnread;
   const notificationId = profileData?.userProfile?.statementNotification?.id;
   const statementNotification = profileData?.userProfile?.statementNotification;
-  console.log("🚀 ~ Header ~ profileData:", profileData);
+
   useEffect(() => {
     if (!isLoadingReadNotification && isSuccessReadNotification) {
       refRBSheet?.current?.open();

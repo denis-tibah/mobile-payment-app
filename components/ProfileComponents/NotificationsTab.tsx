@@ -38,7 +38,7 @@ const NotificationsTab: FC<INotificationsTab> = () => {
   }>({ header: "", body: "", isOpen: false, isError: false });
   const [bottomSheetHeight, setBottomSheetHeight] = useState<number>(0);
   const [notification, setNotication] = useState<any>({});
-  console.log("🚀 ~ notification:", notification);
+  console.log("🚀 ~ notification:", notification?.message);
 
   const {
     isLoading: isLoadingGetNotifications,
@@ -292,6 +292,33 @@ const NotificationsTab: FC<INotificationsTab> = () => {
             </View>
           </WholeContainer>
           <Seperator backgroundColor={"#DDDDDD"} />
+          {notification?.requestType &&
+          [
+            "PAYMENT_RECEIVED",
+            "TRANSACTION_APPROVAL",
+            "EMAIL_VERIFIED",
+          ].includes(notification?.requestType) ? (
+            <WholeContainer>
+              <View
+                style={{
+                  paddingVertical: 8,
+                  marginBottom: 12,
+                  marginTop: 8,
+                }}
+              >
+                <Typography
+                  fontFamily="Mukta-Regular"
+                  fontSize={14}
+                  fontWeight={"400"}
+                  textAlign="center"
+                  marginBottom={16}
+                >
+                  {notification?.message ? notification?.message : ""}
+                </Typography>
+              </View>
+            </WholeContainer>
+          ) : null}
+
           {notification?.requestType === "STATEMENTS_READY" ? (
             <Fragment>
               <Statements

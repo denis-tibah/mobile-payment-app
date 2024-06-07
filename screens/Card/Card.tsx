@@ -201,7 +201,7 @@ export function Card({ navigation, route }: any) {
 
     if (!isLoadingEncryptedCardDetails && isSuccessEncryptedCardDetails) {
       //set timer for decrypted card info deletion
-      startTimer("decrypted_card_info_local_state", 30000);
+      //startTimer("decrypted_card_info_local_state", 30000);
       if (signatureRSA?.privateKey) {
         if (
           encryptedCardDetails?.encryptedCardDetailsData?.cardNumberEncrypted
@@ -259,6 +259,17 @@ export function Card({ navigation, route }: any) {
     encryptedCardDetails,
     signatureRSA?.privateKey,
   ]);
+
+  useEffect(() => {
+    if (
+      cardDetailsDecrypted?.cardNumber &&
+      cardDetailsDecrypted?.cvc &&
+      cardDetailsDecrypted?.pin
+    ) {
+      //set timer for decrypted card info deletion
+      startTimer("decrypted_card_info_local_state", 30000);
+    }
+  }, [cardDetailsDecrypted]);
 
   useEffect(() => {
     const {
@@ -412,10 +423,6 @@ export function Card({ navigation, route }: any) {
           key={index}
           card={item}
           pin={cardPin}
-          /* timer={
-            Number(remainingTimeCountDown["decrypted_card_info_local_state"]) /
-            1000
-          } */
           timer={() =>
             getTimer(remainingTimeCountDown?.decrypted_card_info_local_state)
           }

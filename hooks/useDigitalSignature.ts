@@ -66,7 +66,7 @@ export default function useDigitalSignature() {
         md: forge.md.sha1.create(),
       },
     });
-    console.log("🚀 ~ useDigitalSignature ~ decryptedData:", decryptedData);
+
     /*  setSignatureData({
       publicKeyWithoutPadding: "",
       privateKeyWithPadding: "",

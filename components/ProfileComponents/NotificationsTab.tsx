@@ -38,7 +38,6 @@ const NotificationsTab: FC<INotificationsTab> = () => {
   }>({ header: "", body: "", isOpen: false, isError: false });
   const [bottomSheetHeight, setBottomSheetHeight] = useState<number>(0);
   const [notification, setNotication] = useState<any>({});
-  console.log("🚀 ~ notification:", notification?.message);
 
   const {
     isLoading: isLoadingGetNotifications,

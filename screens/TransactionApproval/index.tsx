@@ -8,6 +8,7 @@ import {
   Dimensions,
   Platform,
 } from "react-native";
+import { useSelector } from "react-redux";
 import * as Notifications from "expo-notifications";
 
 import { screenNames } from "../../utils/helpers";
@@ -17,6 +18,8 @@ import Button from "../../components/Button";
 import CheckIcon from "../../assets/icons/Check";
 import Typography from "../../components/Typography";
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
+import { RootState } from "../../store";
+import { useGetProfileQuery } from "../../redux/profile/profileSliceV2";
 
 export default function TransactionApprovalScreen({
   isOpen,
@@ -24,6 +27,7 @@ export default function TransactionApprovalScreen({
   setShowApproval,
   notificationIdentifier,
 }: any) {
+  console.log("🚀 ~ data:", data);
   const {
     transactionDetails = {
       requestType: "",
@@ -35,13 +39,24 @@ export default function TransactionApprovalScreen({
       ref: "",
       currency: "",
       transactonDate: "",
+      body: "",
     },
     userId = "",
   } = data || {};
   const { navigate }: any = useNavigation();
-
+  const userTokens = useSelector((state: RootState) => state?.auth?.data);
   const windowDimensions = Dimensions.get("screen");
   const refRBSheet = useRef();
+
+  const { refetch: refetchProfile } = useGetProfileQuery(
+    {
+      accessToken: userTokens?.access_token,
+      tokenZiyl: userTokens?.token_ziyl,
+    },
+    {
+      skip: !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
+    }
+  );
 
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
 
@@ -67,7 +82,11 @@ export default function TransactionApprovalScreen({
       setShowApproval({ show: false, data: {} });
       //dismiss single notifications
       Notifications.dismissNotificationAsync(notificationIdentifier);
+      setTimeout(() => {
+        refetchProfile();
+      }, 2000);
     }
+    setTimeout(() => {}, 1500);
     navigate(screenNames.myaccount);
   };
 
@@ -158,7 +177,7 @@ export default function TransactionApprovalScreen({
         <View style={{ backgroundColor: "#fff", paddingBottom: 10 }}>
           {transactionDetails && (
             <View style={styles.transactionDetails}>
-              <Typography
+              {/* <Typography
                 color="#696F7A"
                 fontSize={14}
                 marginLeft={6}
@@ -169,6 +188,15 @@ export default function TransactionApprovalScreen({
                 {transactionDetails.amount} {""} {transactionDetails.currency}{" "}
                 {""} with id {transactionDetails.transactionId}
                 was executed at {""} {transactionDetails.transactonDate}
+              </Typography> */}
+              <Typography
+                color="#696F7A"
+                fontSize={14}
+                marginLeft={6}
+                fontWeight={"400"}
+                fontFamily="Mukta-Regular"
+              >
+                {transactionDetails?.body}
               </Typography>
             </View>
           )}

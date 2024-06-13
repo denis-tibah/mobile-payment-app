@@ -4,6 +4,8 @@ import forge from "node-forge";
 const rsa = forge.pki.rsa;
 const pki = forge.pki;
 import { generateKeysInBackground } from "./worker";
+import RSA, { Hash } from "react-native-fast-rsa";
+RSA.useJSI = true;
 
 export default function useDigitalSignature() {
   const [signatureData, setSignatureData] = useState<{
@@ -45,7 +47,7 @@ export default function useDigitalSignature() {
   };
 
   // Function to decrypt using RSA/ECB/OAEPWithSHA-1AndMGF1Padding
-  const decryptRsa = ({
+  const decryptRsa = async ({
     encryptedData,
     privateKeyPem,
   }: {
@@ -53,25 +55,18 @@ export default function useDigitalSignature() {
     privateKeyPem: string;
   }) => {
     console.log("decrypting");
-    // Parse RSA private key
-    const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
-
-    // Convert base64-encoded encrypted data to binary
-    const encryptedBinary = forge.util.decode64(encryptedData);
-
-    // Decrypt using RSA-OAEP with SHA-1 hashing and MGF1 padding
-    const decryptedData = privateKey.decrypt(encryptedBinary, "RSA-OAEP", {
-      md: forge.md.sha1.create(),
-      mgf1: {
-        md: forge.md.sha1.create(),
-      },
-    });
-
-    /*  setSignatureData({
-      publicKeyWithoutPadding: "",
-      privateKeyWithPadding: "",
-    }); */
-    return decryptedData.toString("utf8");
+    try {
+      const decryptedData = await RSA.decryptOAEP(
+        encryptedData,
+        "",
+        Hash.SHA1,
+        privateKeyPem
+      );
+      return decryptedData;
+    } catch (error) {
+      console.error("Decryption error:", error);
+      throw error;
+    }
   };
 
   const generateSignatureEx = () => {

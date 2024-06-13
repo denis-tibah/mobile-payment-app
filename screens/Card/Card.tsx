@@ -193,58 +193,60 @@ export function Card({ navigation, route }: any) {
 
   // to show decrypted card details is success
   useEffect(() => {
-    const { isLoadingEncryptedCardDetails, isSuccessEncryptedCardDetails } =
-      encryptedCardDetails;
-    let cardNumber: any;
-    let cvc: string;
-    let pin: string;
+    const decrypt = async () => {
+      const { isLoadingEncryptedCardDetails, isSuccessEncryptedCardDetails } =
+        encryptedCardDetails;
+      let cardNumber: any;
+      let cvc: string;
+      let pin: string;
 
-    if (!isLoadingEncryptedCardDetails && isSuccessEncryptedCardDetails) {
-      //set timer for decrypted card info deletion
-      //startTimer("decrypted_card_info_local_state", 30000);
-      if (signatureRSA?.privateKey) {
-        if (
-          encryptedCardDetails?.encryptedCardDetailsData?.cardNumberEncrypted
-        ) {
-          cardNumber = decryptRsa({
-            encryptedData:
-              encryptedCardDetails?.encryptedCardDetailsData
-                ?.cardNumberEncrypted,
-            privateKeyPem: signatureRSA?.privateKey,
-          });
-          if (cardNumber) {
-            setCardDetailsDecrypted((prevState) => ({
-              ...prevState,
-              cardNumber,
-            }));
+      if (!isLoadingEncryptedCardDetails && isSuccessEncryptedCardDetails) {
+        //set timer for decrypted card info deletion
+        //startTimer("decrypted_card_info_local_state", 30000);
+        if (signatureRSA?.privateKey) {
+          if (
+            encryptedCardDetails?.encryptedCardDetailsData?.cardNumberEncrypted
+          ) {
+            cardNumber = await decryptRsa({
+              encryptedData:
+                encryptedCardDetails?.encryptedCardDetailsData
+                  ?.cardNumberEncrypted,
+              privateKeyPem: signatureRSA?.privateKey,
+            });
+            if (cardNumber) {
+              setCardDetailsDecrypted((prevState) => ({
+                ...prevState,
+                cardNumber,
+              }));
+            }
           }
-        }
 
-        if (encryptedCardDetails?.encryptedCardDetailsData?.cvc2Encrypted) {
-          cvc = decryptRsa({
-            encryptedData:
-              encryptedCardDetails?.encryptedCardDetailsData?.cvc2Encrypted,
-            privateKeyPem: signatureRSA?.privateKey,
-          });
-          if (cvc) {
-            setCardDetailsDecrypted((prevState) => ({
-              ...prevState,
-              cvc,
-            }));
+          if (encryptedCardDetails?.encryptedCardDetailsData?.cvc2Encrypted) {
+            cvc = await decryptRsa({
+              encryptedData:
+                encryptedCardDetails?.encryptedCardDetailsData?.cvc2Encrypted,
+              privateKeyPem: signatureRSA?.privateKey,
+            });
+            if (cvc) {
+              setCardDetailsDecrypted((prevState) => ({
+                ...prevState,
+                cvc,
+              }));
+            }
           }
-        }
 
-        if (encryptedCardDetails?.encryptedCardDetailsData?.pinEncrypted) {
-          pin = decryptRsa({
-            encryptedData:
-              encryptedCardDetails?.encryptedCardDetailsData?.pinEncrypted,
-            privateKeyPem: signatureRSA?.privateKey,
-          });
-          if (pin) {
-            setCardDetailsDecrypted((prevState) => ({
-              ...prevState,
-              pin,
-            }));
+          if (encryptedCardDetails?.encryptedCardDetailsData?.pinEncrypted) {
+            pin = await decryptRsa({
+              encryptedData:
+                encryptedCardDetails?.encryptedCardDetailsData?.pinEncrypted,
+              privateKeyPem: signatureRSA?.privateKey,
+            });
+            if (pin) {
+              setCardDetailsDecrypted((prevState) => ({
+                ...prevState,
+                pin,
+              }));
+            }
           }
         }
       }
@@ -252,7 +254,8 @@ export function Card({ navigation, route }: any) {
       setTimeout(() => {
         resetEncryptedCardDetailsData();
       }, 7000);
-    }
+    };
+    decrypt();
   }, [
     encryptedCardDetails?.isLoadingEncryptedCardDetails,
     encryptedCardDetails?.isSuccessEncryptedCardDetails,

@@ -338,7 +338,6 @@ export const NewPinCodeInputBoxes = ({
             ref={(ref) => (inputs.current[index] = ref)}
             maxLength={7}
             style={newPinCode.input}
-            returnKeyType="done"
             keyboardType="numeric"
             onChangeText={(text) => handleTextChange(text, index)}
             value={code}

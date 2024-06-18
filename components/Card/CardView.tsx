@@ -91,6 +91,7 @@ export const CardView = ({
               fontSize={14}
               fontWeight="700"
               marginRight={6}
+              color="#FFFFFF"
             >
               {timer() > 0 ? timer() : ""}
               {timer() > 0 ? "s" : ""}

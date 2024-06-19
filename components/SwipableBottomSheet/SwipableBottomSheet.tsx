@@ -38,7 +38,7 @@ const SwipableBottomSheet = ({
       }}
     >
       <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView>
+        <ScrollView keyboardShouldPersistTaps="handled">
           <Pressable>{children}</Pressable>
         </ScrollView>
       </SafeAreaView>

@@ -177,26 +177,15 @@ export default function TransactionApprovalScreen({
         <View style={{ backgroundColor: "#fff", paddingBottom: 10 }}>
           {transactionDetails && (
             <View style={styles.transactionDetails}>
-              {/* <Typography
-                color="#696F7A"
-                fontSize={14}
-                marginLeft={6}
-                fontWeight={"400"}
-                fontFamily="Mukta-Regular"
-              >
-                {transactionDetails.message} of {""}
-                {transactionDetails.amount} {""} {transactionDetails.currency}{" "}
-                {""} with id {transactionDetails.transactionId}
-                was executed at {""} {transactionDetails.transactonDate}
-              </Typography> */}
               <Typography
                 color="#696F7A"
                 fontSize={14}
                 marginLeft={6}
                 fontWeight={"400"}
+                textAlign="center"
                 fontFamily="Mukta-Regular"
               >
-                {transactionDetails?.body}
+                {transactionDetails?.message}
               </Typography>
             </View>
           )}

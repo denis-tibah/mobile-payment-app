@@ -3,9 +3,9 @@ import { View, TouchableWithoutFeedback, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { useRoute } from "@react-navigation/native";
 import { useAtom } from "jotai";
-import { TouchableOpacity } from "react-native-gesture-handler";
+/* import { TouchableOpacity } from "react-native-gesture-handler"; */
 import Feather from "react-native-vector-icons/Feather";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+/* import MaterialIcons from "react-native-vector-icons/MaterialIcons"; */
 import Spinner from "react-native-loading-spinner-overlay/lib";
 
 import useGeneratePDF from "../../hooks/useGeneratePDF";
@@ -62,8 +62,8 @@ export function Header({ navigation }: any): any {
 
   const [bottomSheetHeight, setBottomSheetHeight] = useState<number>(0);
   const unReadNotification = profileData?.userProfile?.totalNotificationsUnread;
-  const notificationId = profileData?.userProfile?.statementNotification?.id;
-  const statementNotification = profileData?.userProfile?.statementNotification;
+  /* const notificationId = profileData?.userProfile?.statementNotification?.id;
+  const statementNotification = profileData?.userProfile?.statementNotification; */
 
   useEffect(() => {
     if (!isLoadingReadNotification && isSuccessReadNotification) {
@@ -165,7 +165,7 @@ export function Header({ navigation }: any): any {
                     />
                   </View>
                 </TouchableWithoutFeedback>
-                {statementNotification && !statementNotification?.readByUser ? (
+                {/* {statementNotification && statementNotification?.readByUser ? (
                   <TouchableWithoutFeedback
                     onPress={() => {
                       const bodyParams = {
@@ -183,7 +183,7 @@ export function Header({ navigation }: any): any {
                       />
                     </View>
                   </TouchableWithoutFeedback>
-                ) : null}
+                ) : null} */}
               </View>
             </View>
           )}

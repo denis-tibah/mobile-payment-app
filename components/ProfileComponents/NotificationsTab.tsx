@@ -13,6 +13,7 @@ import {
   useGetNotificationsQuery,
   useReadNotificationMutation,
 } from "../../redux/notifications/notificationSlice";
+import { useGetProfileQuery } from "../../redux/profile/profileSliceV2";
 import { RootState } from "../../store";
 import { styles } from "./styles";
 import vars from "../../styles/vars";
@@ -59,11 +60,21 @@ const NotificationsTab: FC<INotificationsTab> = () => {
     {
       isLoading: isLoadingReadNotification,
       isError: isErrorReadNotification,
-      /* isSuccess: isSuccessReadNotification, */
-      error: errorReadNotification,
-      /* data: dataReadNotification, */
+      isSuccess: isSuccessReadNotification,
     },
   ] = useReadNotificationMutation();
+
+  const { isLoading: isLoadingGetProfile, refetch: refetchGetProfile } =
+    useGetProfileQuery(
+      {
+        accessToken: userTokens?.access_token,
+        tokenZiyl: userTokens?.token_ziyl,
+      },
+      {
+        skip:
+          !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
+      }
+    );
 
   useEffect(() => {
     if (!isLoadingReadNotification && isErrorReadNotification) {
@@ -77,6 +88,15 @@ const NotificationsTab: FC<INotificationsTab> = () => {
       });
     }
   }, [isLoadingReadNotification, isErrorReadNotification]);
+
+  useEffect(() => {
+    if (!isLoadingReadNotification && isSuccessReadNotification) {
+      setTimeout(() => {
+        refetchGetProfile();
+        refetchNotifications();
+      }, 2000);
+    }
+  }, [isLoadingReadNotification, isSuccessReadNotification]);
 
   useEffect(() => {
     if (!isLoadingGetNotifications && isErrorGetNotifications) {
@@ -120,7 +140,6 @@ const NotificationsTab: FC<INotificationsTab> = () => {
               tokenZiyl: userTokens?.token_ziyl || "",
             };
             readNotification(bodyParams);
-            refetchNotifications();
           }
         }}
       >
@@ -236,7 +255,11 @@ const NotificationsTab: FC<INotificationsTab> = () => {
     <Fragment>
       <View style={{ backgroundColor: "#ffff" }}>
         <Spinner
-          visible={isLoadingGetNotifications || isLoadingReadNotification}
+          visible={
+            isLoadingGetNotifications ||
+            isLoadingReadNotification ||
+            isLoadingGetProfile
+          }
         />
         <SuccessModal
           isOpen={statusMessage?.isOpen}

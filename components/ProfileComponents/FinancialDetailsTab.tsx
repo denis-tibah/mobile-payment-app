@@ -101,27 +101,27 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
   );
 
   useEffect(() => {
-    if (profileData?.UserProfile?.employmentStatus) {
+    if (profileData?.userProfile?.employmentStatus) {
       const defaultEmpStatus = employmentStatusTwo.find(
         (param) =>
           param?.value.toLowerCase() ===
-          profileData?.UserProfile?.employmentStatus.toLowerCase()
+          profileData?.userProfile?.employmentStatus.toLowerCase()
       );
       setDefaultEmploymentStatus(
         defaultEmpStatus || { key: "", value: "", passedValue: "" }
       );
     }
-    if (profileData?.UserProfile?.sourceOfWealth) {
+    if (profileData?.source_of_wealth) {
       const defaultEmpStatus = sourceOfWealthTwo.find(
         (param) =>
           param?.value.toLowerCase() ===
-          profileData?.UserProfile?.sourceOfWealth.toLowerCase()
+          profileData?.source_of_wealth.toLowerCase()
       );
       setDefaultSourceOfDeposit(defaultEmpStatus || { key: "", value: "" });
     }
   }, [
-    profileData?.UserProfile?.sourceOfWealth,
-    profileData?.UserProfile?.employmentStatus,
+    profileData?.source_of_wealth,
+    profileData?.userProfile?.employmentStatus,
   ]);
 
   const {
@@ -134,9 +134,9 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
     setValues,
   } = useFormik({
     initialValues: {
-      annualSalary: profileData?.UserProfile?.annualSalary || "",
-      sourceOfDeposit: profileData?.UserProfile?.sourceOfWealth || "",
-      employmentStatus: profileData?.UserProfile?.employmentStatus || "",
+      annualSalary: profileData?.annual_salary || "",
+      sourceOfDeposit: profileData?.source_of_wealth || "",
+      employmentStatus: profileData?.userProfile?.employmentStatus || "",
     },
     validationSchema: financialDataTabSchema,
     onSubmit: async ({ annualSalary, sourceOfDeposit, employmentStatus }) => {
@@ -508,13 +508,6 @@ const FinancialDetailsTab: FC<IFinancialDetailsTab> = () => {
             </View>
           </View>
         </SafeAreaView>
-        {/* <View style={styles.footerContent}> */}
-        {/* <View style={styles.downloadBtnMain}> */}
-        {/* <WholeContainer> */}
-
-        {/* </WholeContainer> */}
-        {/* </View> */}
-        {/* </View> */}
       </View>
     </Fragment>
   );

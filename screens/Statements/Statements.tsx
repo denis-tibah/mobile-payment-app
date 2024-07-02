@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { printAsync } from "expo-print";
 import Spinner from "react-native-loading-spinner-overlay/lib";
-import { View } from "react-native";
+import { View, PermissionsAndroid, Alert } from "react-native";
 
 import {
   StatementFilter,
@@ -19,11 +19,14 @@ import { styles } from "./styles";
 import StatementIcon from "../../assets/icons/Statement";
 import TransactionIcon from "../../assets/icons/Transaction";
 import Pdf from "../../assets/icons/Pdf";
+import Excel from "../../assets/icons/Excel";
 import Button from "../../components/Button";
 import { RootState } from "../../store";
 import ScrollingButtons from "./ScrollingButtons";
 import { format } from "date-fns";
 import { generateStatementsPDF } from "../../components/StatementsPDF/StatementsPDF";
+import XLSX from "xlsx";
+import RNFS from "react-native-fs";
 
 interface DateRangeType {
   dateTo: {
@@ -138,6 +141,30 @@ export function Statements({ navigation }: any) {
   //   });
   // };
 
+  const writeDataAndDownloadExcelFile = () => {
+    // Created Sample data
+    let sample_data_to_export = [
+      { id: "1", name: "first" },
+      { id: "2", name: "second" },
+    ];
+
+    let wb = XLSX.utils.book_new();
+    let ws = XLSX.utils.json_to_sheet(sample_data_to_export);
+    XLSX.utils.book_append_sheet(wb, ws, "Users");
+    const wbout = XLSX.write(wb, { type: "array", bookType: "xlsx" });
+
+    // Write generated excel to Storage
+
+    RNFS.writeFile(RNFS.DownloadDirectoryPath + "/abc.xlsx", wbout, "ascii")
+      .then((r) => {
+        console.log("success");
+        Alert.alert("Succeses");
+      })
+      .catch((e) => {
+        console.log("Error", e);
+      });
+  };
+
   const handleGenerateFile = async () => {
     if (selectedPrint === "pdf") {
       const { dateFrom, dateTo } = showStatementPickerDateToAndFrom;
@@ -172,6 +199,43 @@ export function Statements({ navigation }: any) {
       } else {
         alert("Please select from and to date");
       }
+    } else if (selectedPrint === "excel") {
+      try {
+        // Check for Permission (check if permission is already given or not)
+        let isPermitedExternalStorage = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+        );
+
+        if (!isPermitedExternalStorage) {
+          // Ask for permission
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            {
+              title: "Storage permission needed",
+              message: "Android writing permission request",
+              buttonNeutral: "Ask Me Later",
+              buttonNegative: "Cancel",
+              buttonPositive: "OK",
+            }
+          );
+
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            // Permission Granted (calling our writeDataAndDownloadExcelFile function)
+            writeDataAndDownloadExcelFile();
+            console.log("Permission granted");
+          } else {
+            // Permission denied
+            console.log("Permission denied");
+          }
+        } else {
+          // Already have Permission (calling our writeDataAndDownloadExcelFile function)
+          writeDataAndDownloadExcelFile();
+        }
+      } catch (e) {
+        console.log("Error while checking permission");
+        console.log(e);
+        return;
+      }
     } else {
       alert("File type not supported yet. Please select PDF file type.");
     }
@@ -190,9 +254,7 @@ export function Statements({ navigation }: any) {
         <View style={styles.downloadBtn}>
           <Button
             onPress={() => {
-              setSelectedPrint((prevState) =>
-                prevState === "pdf" ? "" : "pdf"
-              );
+              setSelectedPrint("pdf");
             }}
             color={selectedPrint === "pdf" ? "blue" : "light-blue"}
             leftIcon={
@@ -203,6 +265,22 @@ export function Statements({ navigation }: any) {
             }
           >
             PDF Export
+          </Button>
+        </View>
+        <View style={styles.downloadBtn}>
+          <Button
+            onPress={() => {
+              setSelectedPrint("excel");
+            }}
+            color={selectedPrint === "excel" ? "blue" : "light-blue"}
+            leftIcon={
+              <Excel
+                size={16}
+                color={selectedPrint === "excel" ? "white" : "blue"}
+              />
+            }
+          >
+            Excel Export
           </Button>
         </View>
       </View>

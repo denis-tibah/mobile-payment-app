@@ -8,23 +8,25 @@ import Typography from "../Typography";
 import Button from "../Button";
 import WholeContainer from "../../layout/WholeContainer";
 import useGeneratePDF from "../../hooks/useGeneratePDF";
-import { dateFunctions } from "../../utils/helpers";
 import { styles } from "./style";
 
 interface IStatements {
   onCloseBottomSheet: () => void;
   message: string;
+  dateFrom: string;
+  dateTo: string;
 }
 
-const Statements: FC<IStatements> = ({ onCloseBottomSheet, message }) => {
+const Statements: FC<IStatements> = ({
+  onCloseBottomSheet,
+  message,
+
+  dateFrom,
+  dateTo,
+}) => {
   const { navigate }: any = useNavigation();
   const { handleSetDate, isGeneratingPDF } = useGeneratePDF();
-  const {
-    previousMonthFirstDay,
-    lastDateOfPrevMonth,
-    previousMonth,
-    currentYear,
-  } = dateFunctions();
+
   const auth = useSelector((state: any) => state.auth);
   const userId = auth?.userData?.id;
 
@@ -62,8 +64,8 @@ const Statements: FC<IStatements> = ({ onCloseBottomSheet, message }) => {
             color="light-blue"
             onPress={() => {
               handleSetDate({
-                previousMonthFirstDay,
-                lastDateOfPrevMonth,
+                previousMonthFirstDay: dateFrom,
+                lastDateOfPrevMonth: dateTo,
                 userId,
               });
             }}

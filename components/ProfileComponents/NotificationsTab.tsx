@@ -3,6 +3,7 @@ import { View, FlatList, TouchableWithoutFeedback } from "react-native";
 import { useSelector } from "react-redux";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Spinner from "react-native-loading-spinner-overlay/lib";
+import { startOfMonth, parse, differenceInDays } from "date-fns";
 
 import Typography from "../Typography";
 import ArrowRightIcon from "../../assets/icons/ArrowRight";
@@ -21,6 +22,7 @@ import { arrayChecker } from "../../utils/helpers";
 import useGeneratePDF from "../../hooks/useGeneratePDF";
 import SwipableBottomSheet from "../SwipableBottomSheet";
 import Statements from "../Notification/Statements";
+import { dateFunctionsWithParams } from "../../utils/helpers";
 
 interface INotificationsTab {}
 
@@ -39,6 +41,10 @@ const NotificationsTab: FC<INotificationsTab> = () => {
   }>({ header: "", body: "", isOpen: false, isError: false });
   const [bottomSheetHeight, setBottomSheetHeight] = useState<number>(0);
   const [notification, setNotication] = useState<any>({});
+  const [dateParams, setDateParams] = useState<{ from: string; to: string }>({
+    from: "",
+    to: "",
+  });
 
   const {
     isLoading: isLoadingGetNotifications,
@@ -109,6 +115,50 @@ const NotificationsTab: FC<INotificationsTab> = () => {
       });
     }
   }, [isLoadingGetNotifications, isErrorGetNotifications]);
+
+  //for statement generationDate
+  useEffect(() => {
+    if (notification?.submittedDate) {
+      const splitDate = notification?.submittedDate.split(" ");
+      const [date, time] = splitDate;
+
+      // Assuming the date format is 'yyyy-MM-dd'
+      const parsedDate = parse(date, "yyyy-MM-dd", new Date());
+      const firstDayOfMonth = startOfMonth(parsedDate);
+
+      // Calculate the differences in days
+      const daysFromFirstDay = differenceInDays(parsedDate, firstDayOfMonth);
+
+      // Adjust the conditions for proximity to the first or last day of the month
+      const isFirstDayOfMonth = daysFromFirstDay <= 2 && daysFromFirstDay >= 0;
+
+      if (isFirstDayOfMonth && date) {
+        const dateParamsRes = dateFunctionsWithParams({
+          dateParamPrevMonth: date,
+        });
+
+        setDateParams((prevState): any => {
+          if (
+            dateParamsRes?.previousMonthCompleteDate &&
+            dateParamsRes?.lastDateOfPrevMonth
+          ) {
+            return {
+              from: dateParamsRes?.previousMonthCompleteDate,
+              to: dateParamsRes?.lastDateOfPrevMonth,
+            };
+          }
+          return prevState;
+        });
+      } else {
+        setStatusMessage({
+          header: `Error`,
+          body: "invalid date parameter",
+          isOpen: true,
+          isError: true,
+        });
+      }
+    }
+  }, [notification?.submittedDate]);
 
   const onCloseModal = (): void => {
     setStatusMessage({
@@ -276,6 +326,7 @@ const NotificationsTab: FC<INotificationsTab> = () => {
         closeOnPressMask={false}
         onClose={() => {
           resetPDFParams();
+          setDateParams({ from: "", to: "" });
         }}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
@@ -346,6 +397,8 @@ const NotificationsTab: FC<INotificationsTab> = () => {
               <Statements
                 onCloseBottomSheet={handleCloseBottomSheet}
                 message={notification?.title}
+                dateFrom={dateParams?.from}
+                dateTo={dateParams?.to}
               />
             </Fragment>
           ) : null}

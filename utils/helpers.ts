@@ -7,6 +7,7 @@ import dateFns, {
   lastDayOfMonth,
   getMonth,
   subMonths,
+  startOfMonth,
 } from "date-fns";
 
 import { dateFormatter } from "./dates";
@@ -605,6 +606,29 @@ export const dateFunctions = () => {
     previousMonthFirstDay,
     lastDateOfPrevMonth,
   };
+};
+
+export const dateFunctionsWithParams = ({
+  dateParamPrevMonth,
+}: {
+  dateParamPrevMonth: any;
+}) => {
+  if (!dateParamPrevMonth) return null;
+  const dateParam = new Date(dateParamPrevMonth);
+  // Get the first day of the current month as a Date object
+  const firstDayOfMonth = startOfMonth(dateParam);
+
+  // Subtract one month from the first day of the current month
+  const previousMonthDate = subMonths(firstDayOfMonth, 1);
+
+  // Get the last day of the previous month as a Date object
+  const lastDateOfPrevMonthDate = lastDayOfMonth(previousMonthDate);
+
+  const previousMonthCompleteDate = format(previousMonthDate, "yyyy-MM-dd");
+
+  const lastDateOfPrevMonth = format(lastDateOfPrevMonthDate, "yyyy-MM-dd");
+
+  return { previousMonthCompleteDate, lastDateOfPrevMonth };
 };
 
 export const stripPemFormatting = (pem: any) => {

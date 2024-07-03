@@ -26,7 +26,7 @@ export const generateStatementsExcel = async (
   const image = await convertLogoToBase64();
   const obj = { image };
   let wb = XLSX.utils.book_new();
-  let ws = XLSX.utils.json_to_sheet(transactionsContent);
+  let ws = XLSX.utils.json_to_sheet([transactionsContent]);
 
   XLSX.utils.book_append_sheet(wb, ws, "Users");
   const wbout = XLSX.write(wb, { type: "binary", bookType: "xlsx" });
@@ -81,7 +81,7 @@ export const generateStatementsExcel = async (
 
   //   const buffer = await workbook.xlsx.writeBuffer();
 
-  RNFS.writeFile(RNFS.DownloadDirectoryPath + "/abc.xlsx", wbout, "ascii")
+  RNFS.writeFile(RNFS.DownloadDirectoryPath + "/statement.xlsx", wbout, "ascii")
     .then((r) => {
       console.log("success");
       Alert.alert("Succeses");

@@ -27,6 +27,7 @@ import { format } from "date-fns";
 import { generateStatementsPDF } from "../../components/StatementsPDF/StatementsPDF";
 import XLSX from "xlsx";
 import RNFS from "react-native-fs";
+import { generateStatementsExcel } from "../../components/StatementsExcel";
 
 interface DateRangeType {
   dateTo: {
@@ -104,6 +105,22 @@ export function Statements({ navigation }: any) {
     return await printAsync({ uri: pdfUri });
   };
 
+  const handleGenerateExcel = async (
+    statements: StatementTransactionsResponse[],
+    _searchFilter: StatementFilter
+  ) => {
+    const pdfUri = await generateStatementsPDF({
+      statements,
+      accountData: {
+        ...userData,
+        ..._searchFilter,
+        currentBalance,
+        ...profileData,
+      },
+    });
+    return await printAsync({ uri: pdfUri });
+  };
+
   // generateStatementsPDF
 
   // const handleOnChangeShowPickerDate = (
@@ -141,6 +158,8 @@ export function Statements({ navigation }: any) {
   //   });
   // };
 
+  console.log("ABOUT USER>>>>", userData);
+
   const writeDataAndDownloadExcelFile = () => {
     // Created Sample data
     let sample_data_to_export = [
@@ -166,78 +185,80 @@ export function Statements({ navigation }: any) {
   };
 
   const handleGenerateFile = async () => {
-    if (selectedPrint === "pdf") {
-      const { dateFrom, dateTo } = showStatementPickerDateToAndFrom;
-      if (userData?.id && dateFrom.value && dateTo.value) {
-        setLoading(true);
-        const getFormattedDate = new Date(dateTo.value);
-        const statementFilterWithDateRange: StatementFilter = {
-          account_id: Number(userData?.id),
-          from_date: dateFrom.value,
-          to_date:
-            getFormattedDate > currentDate
-              ? currentDate.toISOString().split("T")[0]
-              : dateTo.value,
-        };
-        dispatch<any>(getStatementsfinxp(statementFilterWithDateRange))
-          .unwrap()
-          .then(async (res: StatementResponse) => {
-            const { statements } = res;
-            if (statements && statements?.length > 0) {
-              setLoading(false);
+    const { dateFrom, dateTo } = showStatementPickerDateToAndFrom;
+    if (userData?.id && dateFrom.value && dateTo.value) {
+      setLoading(true);
+      const getFormattedDate = new Date(dateTo.value);
+      const statementFilterWithDateRange: StatementFilter = {
+        account_id: Number(userData?.id),
+        from_date: dateFrom.value,
+        to_date:
+          getFormattedDate > currentDate
+            ? currentDate.toISOString().split("T")[0]
+            : dateTo.value,
+      };
+      dispatch<any>(getStatementsfinxp(statementFilterWithDateRange))
+        .unwrap()
+        .then(async (res: StatementResponse) => {
+          const { statements } = res;
+          if (statements && statements?.length > 0) {
+            //           setLoading(false);
+            if (selectedPrint === "pdf") {
               await handleGeneratePDF(statements, statementFilterWithDateRange);
-            } else {
-              setLoading(false);
-              alert("You dont have transaction for selected dates");
-            }
-            setLoading(false);
-          })
-          .catch((err: any) => {
-            setLoading(false);
-            console.log({ err: `${err}. Statements generation file error` });
-          });
-      } else {
-        alert("Please select from and to date");
-      }
-    } else if (selectedPrint === "excel") {
-      try {
-        // Check for Permission (check if permission is already given or not)
-        let isPermitedExternalStorage = await PermissionsAndroid.check(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
-        );
+              //         } else {
+              //           setLoading(false);
+              //           alert("You dont have transaction for selected dates");
+              //         }
+              //         setLoading(false);
+            } else if (selectedPrint === "excel") {
+              try {
+                // Check for Permission (check if permission is already given or not)
+                let isPermitedExternalStorage = await PermissionsAndroid.check(
+                  PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+                );
 
-        if (!isPermitedExternalStorage) {
-          // Ask for permission
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-            {
-              title: "Storage permission needed",
-              message: "Android writing permission request",
-              buttonNeutral: "Ask Me Later",
-              buttonNegative: "Cancel",
-              buttonPositive: "OK",
-            }
-          );
+                if (!isPermitedExternalStorage) {
+                  // Ask for permission
+                  const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                    {
+                      title: "Storage permission needed",
+                      message: "Storage writing permission request",
+                      buttonNeutral: "Ask Me Later",
+                      buttonNegative: "Cancel",
+                      buttonPositive: "OK",
+                    }
+                  );
 
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            // Permission Granted (calling our writeDataAndDownloadExcelFile function)
-            writeDataAndDownloadExcelFile();
-            console.log("Permission granted");
+                  if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                    generateStatementsExcel(statements, accountDetails);
+                    console.log("Permission granted");
+                  } else {
+                    // Permission denied
+                    console.log("Permission denied");
+                  }
+                } else {
+                  generateStatementsExcel(statements, accountDetails);
+                }
+              } catch (e) {
+                console.log("Error while checking permission");
+                console.log(e);
+                return;
+              }
+            }
           } else {
-            // Permission denied
-            console.log("Permission denied");
+            alert("File type not supported yet. Please select PDF file type.");
           }
-        } else {
-          // Already have Permission (calling our writeDataAndDownloadExcelFile function)
-          writeDataAndDownloadExcelFile();
-        }
-      } catch (e) {
-        console.log("Error while checking permission");
-        console.log(e);
-        return;
-      }
+        })
+        .catch((err: any) => {
+          setLoading(false);
+          console.log({ err: `${err}. Statements generation file error` });
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     } else {
-      alert("File type not supported yet. Please select PDF file type.");
+      alert("Please select from and to date");
     }
   };
 

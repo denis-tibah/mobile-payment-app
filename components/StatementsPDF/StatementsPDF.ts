@@ -24,7 +24,7 @@ import { StatementTransactionsResponse } from "../../redux/transaction/transacti
 //   return `data:${mimeType};base64,${image}`;
 // };
 
-const convertImageToBase64 = async (): Promise<string> => {
+export const convertLogoToBase64 = async (): Promise<string> => {
   try {
     const asset = Asset.fromModule(ZazooLogo);
     await asset.downloadAsync();
@@ -130,14 +130,14 @@ const generateHTML = (transactions: StatementTransactionsResponse[]) => {
   );
 };
 
-const statementsPDFGenerator = async ({
+export const statementsPDFGenerator = async ({
   statements,
   accountData,
 }: any): Promise<string> => {
   if (!statements || !accountData) {
     return "";
   }
-  const image = await convertImageToBase64();
+  const image = await convertLogoToBase64();
   const tableRows = generateHTML(statements);
 
   return `

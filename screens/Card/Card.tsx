@@ -112,7 +112,7 @@ export function Card({ navigation, route }: any) {
     cardNumber: string;
     cvc: string;
     pin: string;
-  }>({ cardNumber: "5555 5555 5555 4444", cvc: "5555", pin: "555" });
+  }>({ cardNumber: "", cvc: "", pin: "" });
   console.log("🚀 ~ Card ~ cardDetailsDecrypted:", cardDetailsDecrypted);
   const [encryptedCardDetails, setEncryptedCardDetails] = useState<{
     isLoadingEncryptedCardDetails: boolean;

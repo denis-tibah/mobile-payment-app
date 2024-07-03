@@ -33,11 +33,7 @@ import {
   setIsCardTransactionShown,
   terminateCard,
 } from "../../redux/card/cardSlice";
-import {
-  getUserActiveCards,
-  screenNames,
-  stripPemFormatting,
-} from "../../utils/helpers";
+import { getUserActiveCards, screenNames } from "../../utils/helpers";
 import { CardView } from "../../components/Card/CardView";
 import { RootState } from "../../store";
 import vars from "../../styles/vars";
@@ -57,11 +53,9 @@ import {
 import SwipableBottomSheet from "../../components/SwipableBottomSheet";
 import { styles } from "./styles";
 import useDigitalSignature from "../../hooks/useDigitalSignature";
-import useSecureStoreCreateDelete from "../../hooks/useSecureStoreCreateDelete";
 import useTimer from "../../hooks/useTimer";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { arrayChecker } from "../../utils/helper";
-import { stopCoverage } from "v8";
 
 const windowDimensions = Dimensions.get("window");
 const screenDimensions = Dimensions.get("screen");
@@ -76,7 +70,7 @@ export function Card({ navigation, route }: any) {
   const userData = useSelector((state: RootState) => state.auth?.userData);
   const userID = userData?.id;
 
-  const { decryptRsa, convertPublicKeyPKCS1ToPKCS8 } = useDigitalSignature();
+  const { decryptRsa } = useDigitalSignature();
   const { startTimer, isTimesUp, stopTimer, remainingTimeCountDown } =
     useTimer();
 
@@ -98,7 +92,6 @@ export function Card({ navigation, route }: any) {
     []
   );
   const [resendOTP, setResendOTP] = useState<boolean>(false);
-  /* console.log("🚀 ~ Card ~ resendOTP:", resendOTP); */
   const [signatureRSA, setSignatureRSA] = useState<{
     privateKey: string;
     publicKey: string;
@@ -111,13 +104,6 @@ export function Card({ navigation, route }: any) {
     encodedMessage: "",
   });
   console.log("🚀 ~ Card ~ signatureRSA:", signatureRSA);
-  /* console.log("🚀 ~ Card ~ signatureRSA:", signatureRSA?.privateKey);
-  console.log("🚀 ~ Card ~ signatureRSA:", signatureRSA?.publicKey);
-  console.log(
-    "🚀 ~ Card ~ signatureRSA:public ",
-    signatureRSA?.publicKeyWithoutPadding
-  ); */
-
   const [dimensions, setDimensions] = useState({
     window: windowDimensions,
     screen: screenDimensions,
@@ -126,7 +112,7 @@ export function Card({ navigation, route }: any) {
     cardNumber: string;
     cvc: string;
     pin: string;
-  }>({ cardNumber: "", cvc: "", pin: "" });
+  }>({ cardNumber: "5555 5555 5555 4444", cvc: "5555", pin: "555" });
   console.log("🚀 ~ Card ~ cardDetailsDecrypted:", cardDetailsDecrypted);
   const [encryptedCardDetails, setEncryptedCardDetails] = useState<{
     isLoadingEncryptedCardDetails: boolean;
@@ -141,13 +127,13 @@ export function Card({ navigation, route }: any) {
     isErrorEncryptedCardDetails: false,
     encryptedCardDetailsError: {},
   });
-
   const [statusMessage, setStatusMessage] = useState<{
     header: string;
     body: string;
     isOpen: boolean;
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
+  const [isLoadingCopyToClipboard, setLoadingCopyToClipboard] = useState(false);
 
   const resetEncryptedCardDetailsData = () => {
     setEncryptedCardDetails({
@@ -171,25 +157,6 @@ export function Card({ navigation, route }: any) {
     : [];
 
   const [getOTP] = useLazySendSmsShowPinVerificationQuery();
-
-  const generateKeys = async () => {
-    //4096 Is the key size
-    let keyPair = await RSA.generateKeys(2048);
-    /* setSignatureRSA({
-      privateKey: keyPair?.private,
-      publicKey:
-        keyPair?.public && Platform.OS === "android"
-          ? convertPublicKeyPKCS1ToPKCS8(keyPair?.public)
-          : keyPair?.public,
-      publicKeyWithoutPadding: keyPair?.public
-        ? stripPemFormatting(
-            Platform.OS === "android"
-              ? convertPublicKeyPKCS1ToPKCS8(keyPair?.public)
-              : keyPair?.public
-          )
-        : "",
-    }); */
-  };
 
   // to show decrypted card details is success
   useEffect(() => {
@@ -456,8 +423,18 @@ export function Card({ navigation, route }: any) {
     }
   };
 
-  const handleCopyToClipboard = async () => {
-    await Clipboard.setStringAsync(cardDetailsDecrypted?.cardNumber || "");
+  const handleCopyToClipboard = () => {
+    setLoadingCopyToClipboard(true);
+    Clipboard.setStringAsync(cardDetailsDecrypted?.cardNumber || "")
+      .then((param) => {
+        console.log("🚀 ~ .then ~ param:", param);
+        if (param) {
+          setLoadingCopyToClipboard(false);
+        }
+      })
+      .finally(() => {
+        setLoadingCopyToClipboard(false);
+      });
   };
 
   const checkIfCardIsFrozen = (card: any) => {
@@ -654,7 +631,11 @@ export function Card({ navigation, route }: any) {
                 }}
               />
               {cardDetailsDecrypted?.cardNumber ? (
-                <TouchableOpacity onPress={handleCopyToClipboard}>
+                <TouchableOpacity
+                  onPress={handleCopyToClipboard}
+                  disabled={isLoadingCopyToClipboard}
+                  style={{ opacity: isLoadingCopyToClipboard ? 0.3 : 1 }}
+                >
                   <View style={styles.clipboardContainer}>
                     <CopyClipboard color="light-pink" size={18} />
                   </View>

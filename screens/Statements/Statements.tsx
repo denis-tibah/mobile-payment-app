@@ -109,16 +109,19 @@ export function Statements({ navigation }: any) {
     statements: StatementTransactionsResponse[],
     _searchFilter: StatementFilter
   ) => {
-    const pdfUri = await generateStatementsPDF({
-      statements,
-      accountData: {
-        ...userData,
-        ..._searchFilter,
-        currentBalance,
-        ...profileData,
-      },
-    });
-    return await printAsync({ uri: pdfUri });
+    try {
+      await generateStatementsExcel({
+        statements,
+        accountData: {
+          ...userData,
+          ..._searchFilter,
+          currentBalance,
+        },
+      });
+    }
+     catch(e) {
+      console.log("Error")
+     }
   };
 
   // generateStatementsPDF
@@ -158,32 +161,6 @@ export function Statements({ navigation }: any) {
   //   });
   // };
 
-  console.log("ABOUT USER>>>>", userData);
-
-  const writeDataAndDownloadExcelFile = () => {
-    // Created Sample data
-    let sample_data_to_export = [
-      { id: "1", name: "first" },
-      { id: "2", name: "second" },
-    ];
-
-    let wb = XLSX.utils.book_new();
-    let ws = XLSX.utils.json_to_sheet(sample_data_to_export);
-    XLSX.utils.book_append_sheet(wb, ws, "Users");
-    const wbout = XLSX.write(wb, { type: "array", bookType: "xlsx" });
-
-    // Write generated excel to Storage
-
-    RNFS.writeFile(RNFS.DownloadDirectoryPath + "/abc.xlsx", wbout, "ascii")
-      .then((r) => {
-        console.log("success");
-        Alert.alert("Succeses");
-      })
-      .catch((e) => {
-        console.log("Error", e);
-      });
-  };
-
   const handleGenerateFile = async () => {
     const { dateFrom, dateTo } = showStatementPickerDateToAndFrom;
     if (userData?.id && dateFrom.value && dateTo.value) {
@@ -205,14 +182,8 @@ export function Statements({ navigation }: any) {
             //           setLoading(false);
             if (selectedPrint === "pdf") {
               await handleGeneratePDF(statements, statementFilterWithDateRange);
-              //         } else {
-              //           setLoading(false);
-              //           alert("You dont have transaction for selected dates");
-              //         }
-              //         setLoading(false);
             } else if (selectedPrint === "excel") {
               try {
-                // Check for Permission (check if permission is already given or not)
                 let isPermitedExternalStorage = await PermissionsAndroid.check(
                   PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
                 );
@@ -231,14 +202,14 @@ export function Statements({ navigation }: any) {
                   );
 
                   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                    generateStatementsExcel(statements, accountDetails);
+                    handleGenerateExcel(statements, statementFilterWithDateRange);
                     console.log("Permission granted");
                   } else {
                     // Permission denied
                     console.log("Permission denied");
                   }
                 } else {
-                  generateStatementsExcel(statements, accountDetails);
+                  handleGenerateExcel(statements, statementFilterWithDateRange);
                 }
               } catch (e) {
                 console.log("Error while checking permission");

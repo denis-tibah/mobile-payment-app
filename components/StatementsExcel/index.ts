@@ -3,90 +3,53 @@ import { STATEMENT_TRANSACTION_FIELDS } from "../../utils/constants";
 import XLSX from "xlsx";
 import {
   convertLogoToBase64,
-  statementsPDFGenerator,
 } from "../StatementsPDF/StatementsPDF";
 import RNFS from "react-native-fs";
 import { Alert } from "react-native";
-import ExcelJS from "exceljs";
+import { convertDateToDottedName, convertDateToName } from "../../utils/helpers";
+import dateFns from "date-fns";
 
-export const generateStatementsExcel = async (
-  transactions: StatementTransactionsResponse[],
-  accountData: any
-) => {
-  const transactionsContent = transactions.map((transaction) =>
-    Object.keys(transaction).reduce(
-      (res, key) => ({
-        ...res,
-        [STATEMENT_TRANSACTION_FIELDS[key]]:
-          transaction[key as keyof StatementTransactionsResponse],
-      }),
-      {}
+export const generateStatementsExcel = async ({
+  statements,
+  accountData
+}: any) => {
+  const transactionsContent = [
+    ["Zazoo Logo", "", "", "", "", "Account Statement"],
+    ["", "", "", "", "", `Generated on the ${convertDateToName(Date.now())}`],
+    [`${accountData?.first_name || ""} ${accountData?.last_name || ""}`, "", "", "", "", `IBAN: ${accountData?.iban || ""} | BIC: ${accountData?.bic || ""}`],
+    [`${accountData?.address_line_1 || ""}  ${accountData?.address_line_2 || ""} ${accountData?.country || ""}`, "", "", "", "", `Currency: ${accountData?.currentBalance || ""}`],
+    ["", "", "", "", "", `From: ${convertDateToDottedName(accountData?.from_date) + " To:"  + convertDateToDottedName(accountData?.to_date)}`],
+  ]
+  transactionsContent.push(Object.values(STATEMENT_TRANSACTION_FIELDS))
+  transactionsContent.push(...statements.map((transaction: StatementTransactionsResponse) =>
+    Object.keys(STATEMENT_TRANSACTION_FIELDS).reduce<string[]>(
+      (res, key) => ([...res, transaction[key as keyof StatementTransactionsResponse]]),
+      []
     )
-  );
+  ));
+  console.log(transactionsContent)
   const image = await convertLogoToBase64();
   const obj = { image };
+
+  const merge = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 2 } }, { s: { r: 0, c: 4 }, e: { r: 0, c: 5 } },
+    { s: { r: 1, c: 3 }, e: { r: 1, c: 5 } }, 
+    { s: { r: 2, c: 0 }, e: { r: 2, c: 1 } }, { s: { r: 2, c: 3 }, e: { r: 2, c: 5 } },
+    { s: { r: 3, c: 0 }, e: { r: 3, c: 1 } }, { s: { r: 3, c: 4 }, e: { r: 3, c: 5 } },
+    { s: { r: 4, c: 3 }, e: { r: 4, c: 5 } }
+  ];
+  const colWidths = [{ wch: 20 },{ wch: 20 },{ wch: 10 },{ wch: 10 },{ wch: 10 },{ wch: 60 }];
+
   let wb = XLSX.utils.book_new();
-  let ws = XLSX.utils.json_to_sheet([transactionsContent]);
+  let ws = XLSX.utils.aoa_to_sheet(transactionsContent);
+  ws["!merges"] = merge;
+  ws['!cols'] = colWidths;
 
-  XLSX.utils.book_append_sheet(wb, ws, "Users");
+  XLSX.utils.book_append_sheet(wb, ws, "statement");
   const wbout = XLSX.write(wb, { type: "binary", bookType: "xlsx" });
-  // try {
-  //   const { Workbook } = ExcelJS;
-  //   const workbook = new Workbook();
-  //   const worksheet = workbook.addWorksheet("My Sheet");
-
-  //   // Add column headers
-  //   worksheet.columns = [
-  //     { header: "ID", key: "id", width: 10 },
-  //     { header: "Name", key: "name", width: 30 },
-  //     { header: "Age", key: "age", width: 10 },
-  //   ];
-
-  //   // Add rows
-  //   worksheet.addRow({ id: 1, name: "John Doe", age: 28 });
-  //   worksheet.addRow({ id: 2, name: "Jane Smith", age: 34 });
-  //   worksheet.addRow({ id: 3, name: "Sam Johnson", age: 45 });
-
-  //   // Create a file path
-  //   const path = RNFS.DocumentDirectoryPath + "/my_excel_file.xlsx";
-
-  //   // Write to file
-  //   await workbook.xlsx.writeFile(path);
-  //   Alert.alert("ABC");
-  // } catch (e) {
-  //   console.log(e.message);
-  // }
-
-  //   const workbook = new Excel.Workbook();
-  //   const sheet = workbook.addWorksheet("Statement");
-
-  //   const image = await convertLogoToBase64();
-  //   const imageBuffer = Buffer.from(image, "base64");
-  //   const imageId = workbook.addImage({
-  //     buffer: imageBuffer,
-  //     extension: "jpeg", // Adjust the extension as necessary
-  //   });
-  //   sheet.columns = Object.values(STATEMENT_TRANSACTION_FIELDS).map((key) => ({
-  //     header: key,
-  //     key: key,
-  //     width: 15,
-  //   }));
-  //   sheet.addRows(transactionsContent);
-
-  //   // Place the image in a specific cell range on the sheet
-  //   sheet.addImage(imageId, {
-  //     tl: { col: 1.5, row: 1.5 }, // top-left corner of the image in cell
-  //     ext: { width: 100, height: 100 }, // size of the image (width x height in pixels)
-  //   });
-
-  //   const buffer = await workbook.xlsx.writeBuffer();
-
-  RNFS.writeFile(RNFS.DownloadDirectoryPath + "/statement.xlsx", wbout, "ascii")
-    .then((r) => {
-      console.log("success");
-      Alert.alert("Succeses");
-    })
-    .catch((e) => {
-      console.log("Error", e);
-    });
+  const filename = `statement_${dateFns.format(new Date(), "yyyy-MM-dd")}.xlsx`
+  RNFS.writeFile(RNFS.DownloadDirectoryPath + `/statement_${filename}.xlsx`, wbout, "ascii")
+  .then((r) => {
+    Alert.alert("Exported successfully", `File saved as ${filename}`);
+  })
 };

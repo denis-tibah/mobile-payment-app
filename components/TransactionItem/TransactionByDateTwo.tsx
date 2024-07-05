@@ -97,6 +97,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
     return (
       <>
         {transactions.map((transaction: Transaction, index: number) => {
+          console.log("🚀 ~ {transactions.map ~ transaction:", transaction);
           /* console.log(
             "🚀 ~ {transactions.map ~ transaction:",
             transaction?.reference_no
@@ -184,7 +185,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           alignItems: "center",
                         }}
                       >
-                        {/* only show EUR icon as we only have EURO accounts  */}
+                        {/* only show EUR icon as we only have  */}
                         {currencyIcon(shownData?.currency || "EUR", {
                           color: amountColor,
                         })}
@@ -471,7 +472,7 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                               {displayValue({
                                 content: transaction?.original_amount,
                                 hasCurrency: true,
-                                currencyType: transaction?.currency,
+                                currencyType: transaction?.original_currency,
                               })}
                             </View>
                           ) : null}

@@ -93,14 +93,13 @@ const TransactionsByDate: React.FC<TransactionItemProps> = ({
                       <BankIcon size={14} color={"heavy-grey"} />
                     ) : null}
                     <Text numberOfLines={1} style={styles.valueDetailMobile}>
-                    {/* disabled by Aristos 26-04-2026 */}
+                      {/* disabled by Aristos 26-04-2026 */}
                       {/* {transaction.name} */}
-                        {/* added by Aristos 26-04-2026 */}
-                        {transaction?.transaction_direction === "outgoing" ? (
-                          transaction.name
-                      ) :  transaction.debtor_name }
+                      {/* added by Aristos 26-04-2026 */}
+                      {transaction?.transaction_direction === "outgoing"
+                        ? transaction.name
+                        : transaction.debtor_name}
                     </Text>
-                    
                   </View>
                   <View
                     style={{

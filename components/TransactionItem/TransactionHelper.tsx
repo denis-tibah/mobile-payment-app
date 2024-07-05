@@ -47,7 +47,7 @@ const displayValue = ({
       style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
     >
       {hasCurrency ? (
-        <Typography marginRight={4}>
+        <Typography marginRight={4} marginTop={4}>
           {currencyType === "EUR" ? (
             <EuroIcon size={13} />
           ) : currencyType === "USD" ? (

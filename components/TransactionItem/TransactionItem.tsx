@@ -283,11 +283,11 @@ export function TransactionItem({ data }: TransactionItemProps) {
                   {data?.status === "PENDING" && (
                     <Chip label="Pending" color="red" />
                   )}
-                {/* disabled by Aristos 10-04-204 */}
+                  {/* disabled by Aristos 10-04-204 */}
                   {/* {data?.status === "CANCELLED" && (
                     <Chip label="Cancelled" color="red" />
                   )} */}
-                {/* added by Aristos 10-04-204 */}
+                  {/* added by Aristos 10-04-204 */}
                   {data?.status === "CANCEL" && (
                     <Chip label="Cancelled" color="red" />
                   )}

@@ -184,10 +184,10 @@ const TransactionsByDateTwo: React.FC<TransactionItemProps> = ({
                           alignItems: "center",
                         }}
                       >
-                        {currencyIcon(
-                          shownData?.currency || transaction?.original_currency,
-                          { color: amountColor }
-                        )}
+                        {/* only show EUR icon as we only have EURO accounts  */}
+                        {currencyIcon(shownData?.currency || "EUR", {
+                          color: amountColor,
+                        })}
                         <Typography
                           marginLeft={2}
                           fontWeight={"400"}

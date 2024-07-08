@@ -6,6 +6,7 @@ import {
   Dimensions,
   Switch,
   FlatList,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { useSelector } from "react-redux";
 import * as SecureStore from "expo-secure-store";
@@ -124,6 +125,18 @@ export function MyAccount({ navigation }: any) {
     setPagePendingTransactionsProperties,
   ] = useState<any>({});
   const [prevScrollPosition, setPrevScrollPosition] = useState(0);
+  const [isHiddenCurrentBalance, setHiddenCurrentBalance] =
+    useState<boolean>(false);
+  console.log(
+    "🚀 ~ MyAccount ~ isHiddenCurrentBalance:",
+    isHiddenCurrentBalance
+  );
+  const [isHiddenAvailableBalance, setHiddenAvailableBalance] =
+    useState<boolean>(false);
+  console.log(
+    "🚀 ~ MyAccount ~ isHiddenAvailableBalance:",
+    isHiddenAvailableBalance
+  );
 
   useEffect(() => {
     const handleGetBiometricStatus = async () => {
@@ -412,43 +425,50 @@ export function MyAccount({ navigation }: any) {
           scrollEventThrottle={64}
         >
           <View style={styles.balancesContainer}>
-            <View
-              style={[
-                styles.balanceItem,
-                {
-                  width: "37.33%",
-                },
-              ]}
+            <TouchableWithoutFeedback
+              onPress={() => setHiddenCurrentBalance(!isHiddenCurrentBalance)}
             >
-              <View style={{ paddingTop: 4, paddingLeft: 6 }}>
-                <Typography
-                  color={"medium-grey2"}
-                  fontWeight={"400"}
-                  fontSize={12}
-                >
-                  Current Balance
-                </Typography>
-                <Typography
-                  color={"accent-pink"}
-                  fontWeight={"800"}
-                  fontSize={18}
-                >
-                  {`${getCurrency(
-                    userAccountInformation?.data?.currency || 0
-                  )} ${
-                    formatCurrencyToLocalEnTwo(
-                      userAccountInformation?.data?.curbal
-                    ) || "0.00"
-                  }`}
-                </Typography>
-              </View>
               <View
                 style={[
-                  styles.balanceItemBorderColor,
-                  { backgroundColor: "#E7038E" },
+                  styles.balanceItem,
+                  {
+                    width: "37.33%",
+                  },
                 ]}
-              />
-            </View>
+              >
+                <View style={{ paddingTop: 4, paddingLeft: 6 }}>
+                  <Typography
+                    color={"medium-grey2"}
+                    fontWeight={"400"}
+                    fontSize={12}
+                  >
+                    Current Balance
+                  </Typography>
+                  <Typography
+                    color={"accent-pink"}
+                    fontWeight={"800"}
+                    fontSize={18}
+                    letterSpacing={isHiddenCurrentBalance ? 4 : 0}
+                  >
+                    {!isHiddenCurrentBalance
+                      ? `${getCurrency(
+                          userAccountInformation?.data?.currency || 0
+                        )} ${
+                          formatCurrencyToLocalEnTwo(
+                            userAccountInformation?.data?.curbal
+                          ) || "0.00"
+                        }`
+                      : "..."}
+                  </Typography>
+                </View>
+                <View
+                  style={[
+                    styles.balanceItemBorderColor,
+                    { backgroundColor: "#E7038E" },
+                  ]}
+                />
+              </View>
+            </TouchableWithoutFeedback>
             <View style={[styles.balanceItem, { width: "26.33%" }]}>
               <View style={{ paddingTop: 4, paddingLeft: 6 }}>
                 <Typography
@@ -480,28 +500,37 @@ export function MyAccount({ navigation }: any) {
               />
             </View>
             <View style={[styles.balanceItem, { width: "37.33%" }]}>
-              <View style={{ paddingTop: 4, paddingLeft: 6 }}>
-                <Typography
-                  color={"medium-grey2"}
-                  fontWeight={"400"}
-                  fontSize={12}
-                >
-                  Available Balance
-                </Typography>
-                <Typography
-                  color={"accent-green"}
-                  fontWeight={"800"}
-                  fontSize={18}
-                >
-                  {`${getCurrency(
-                    userAccountInformation?.data?.currency || 0
-                  )} ${
-                    formatCurrencyToLocalEnTwo(
-                      userAccountInformation?.data?.avlbal
-                    ) || "0.00"
-                  }`}
-                </Typography>
-              </View>
+              <TouchableWithoutFeedback
+                onPress={() =>
+                  setHiddenAvailableBalance(!isHiddenAvailableBalance)
+                }
+              >
+                <View style={{ paddingTop: 4, paddingLeft: 6 }}>
+                  <Typography
+                    color={"medium-grey2"}
+                    fontWeight={"400"}
+                    fontSize={12}
+                  >
+                    Available Balance
+                  </Typography>
+                  <Typography
+                    color={"accent-green"}
+                    fontWeight={"800"}
+                    fontSize={18}
+                    letterSpacing={isHiddenAvailableBalance ? 4 : 0}
+                  >
+                    {!isHiddenAvailableBalance
+                      ? `${getCurrency(
+                          userAccountInformation?.data?.currency || 0
+                        )} ${
+                          formatCurrencyToLocalEnTwo(
+                            userAccountInformation?.data?.avlbal
+                          ) || "0.00"
+                        }`
+                      : "..."}
+                  </Typography>
+                </View>
+              </TouchableWithoutFeedback>
               <View
                 style={[
                   styles.balanceItemBorderColor,

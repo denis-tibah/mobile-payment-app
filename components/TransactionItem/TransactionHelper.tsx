@@ -4,7 +4,7 @@ import Typography from "../Typography";
 import EuroIcon from "../../assets/icons/Euro";
 import DollarIcon from "../../assets/icons/Dollar";
 import GbpIcon from "../../assets/icons/Gbp";
-import { formatAmountTableValue } from "../../utils/helpers";
+import { formatAmountTableValue, strippedHTMLTag } from "../../utils/helpers";
 import IconGBP from "../../assets/icons/IconGBP/IconGBP";
 
 const displayTitle = ({ title }: { title: string }) => {
@@ -67,7 +67,7 @@ const displayValue = ({
         {/* for amount value */}
         {hasCurrency ? formatAmountTableValue(content, currencyType) : null}
         {/* for ordinary value */}
-        {!hasCurrency ? content : null}
+        {!hasCurrency ? strippedHTMLTag(content) : null}
       </Typography>
     </View>
   );

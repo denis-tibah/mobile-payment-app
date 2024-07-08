@@ -637,3 +637,8 @@ export const stripPemFormatting = (pem: any) => {
     .replace(/-----END [\s\S]+?-----/, "")
     .replace(/\r?\n|\r/g, ""); // Remove all newlines
 };
+
+export const strippedHTMLTag = (param: string | null): string => {
+  if (!param) return "";
+  return param.replace(/(<([^>]+)>)/gi, "");
+};

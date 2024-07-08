@@ -127,16 +127,8 @@ export function MyAccount({ navigation }: any) {
   const [prevScrollPosition, setPrevScrollPosition] = useState(0);
   const [isHiddenCurrentBalance, setHiddenCurrentBalance] =
     useState<boolean>(false);
-  console.log(
-    "🚀 ~ MyAccount ~ isHiddenCurrentBalance:",
-    isHiddenCurrentBalance
-  );
   const [isHiddenAvailableBalance, setHiddenAvailableBalance] =
     useState<boolean>(false);
-  console.log(
-    "🚀 ~ MyAccount ~ isHiddenAvailableBalance:",
-    isHiddenAvailableBalance
-  );
 
   useEffect(() => {
     const handleGetBiometricStatus = async () => {

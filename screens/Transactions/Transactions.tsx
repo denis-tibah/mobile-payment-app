@@ -775,6 +775,7 @@ export function Transactions({ navigation, route }: any) {
             <FormGroup.Input
               icon={<SearchIcon color="blue" size={18} />}
               placeholder={"Search for transactions ..."}
+              placeholderTextColor={vars["ios-default-text"]}
               color={vars["black"]}
               fontSize={14}
               fontWeight={"400"}
@@ -972,6 +973,7 @@ export function Transactions({ navigation, route }: any) {
                 </Typography>
                 <FormGroup.Input
                   placeholder={"From"}
+                  placeholderTextColor={vars["ios-default-text"]}
                   color={vars["black"]}
                   disabled={
                     searchFieldData.card_id !== "" && isCardTransactionShown
@@ -996,6 +998,7 @@ export function Transactions({ navigation, route }: any) {
                 </Typography>
                 <FormGroup.Input
                   placeholder={"To"}
+                  placeholderTextColor={vars["ios-default-text"]}
                   color={vars["black"]}
                   disabled={
                     searchFieldData.card_id !== "" && isCardTransactionShown

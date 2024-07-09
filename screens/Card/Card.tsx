@@ -8,7 +8,6 @@ import {
   Text,
   RefreshControl,
   Dimensions,
-  Platform,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as Clipboard from "expo-clipboard";
@@ -16,7 +15,6 @@ import Carousel from "react-native-snap-carousel";
 import { AntDesign } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Spinner from "react-native-loading-spinner-overlay/lib";
-import { RSA } from "react-native-rsa-native";
 import RNSecureStorage from "rn-secure-storage";
 
 import Heading from "../../components/Heading";
@@ -103,7 +101,6 @@ export function Card({ navigation, route }: any) {
     publicKeyWithoutPadding: "",
     encodedMessage: "",
   });
-  console.log("🚀 ~ Card ~ signatureRSA:", signatureRSA);
   const [dimensions, setDimensions] = useState({
     window: windowDimensions,
     screen: screenDimensions,
@@ -113,7 +110,6 @@ export function Card({ navigation, route }: any) {
     cvc: string;
     pin: string;
   }>({ cardNumber: "", cvc: "", pin: "" });
-  console.log("🚀 ~ Card ~ cardDetailsDecrypted:", cardDetailsDecrypted);
   const [encryptedCardDetails, setEncryptedCardDetails] = useState<{
     isLoadingEncryptedCardDetails: boolean;
     isSuccessEncryptedCardDetails: boolean;
@@ -134,7 +130,6 @@ export function Card({ navigation, route }: any) {
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
   const [isLoadingCopyToClipboard, setLoadingCopyToClipboard] = useState(false);
-
   const resetEncryptedCardDetailsData = () => {
     setEncryptedCardDetails({
       isLoadingEncryptedCardDetails: false,
@@ -144,6 +139,15 @@ export function Card({ navigation, route }: any) {
       encryptedCardDetailsError: {},
     });
   };
+  const [bottomSheetHeight, setBottomSheetHeight] = useState<{
+    terminateCard: number;
+    managePaymentMethod: number;
+    showTerminatedCards: number;
+  }>({
+    terminateCard: 0,
+    managePaymentMethod: 0,
+    showTerminatedCards: 0,
+  });
 
   const [showCardDetailsV2] = useLazyShowCardDetailsV2Query();
 
@@ -427,7 +431,6 @@ export function Card({ navigation, route }: any) {
     setLoadingCopyToClipboard(true);
     Clipboard.setStringAsync(cardDetailsDecrypted?.cardNumber || "")
       .then((param) => {
-        console.log("🚀 ~ .then ~ param:", param);
         if (param) {
           setLoadingCopyToClipboard(false);
         }
@@ -477,7 +480,6 @@ export function Card({ navigation, route }: any) {
       "private_key",
     ])
       .then((res) => {
-        console.log(res);
         setSignatureRSA({
           privateKey: res?.private_key,
           publicKey: res?.public_key,
@@ -525,6 +527,15 @@ export function Card({ navigation, route }: any) {
       body: "",
       isOpen: false,
       isError: false,
+    });
+  };
+
+  const handleSetBottomSheetHeight = (
+    height: number,
+    property: string
+  ): void => {
+    setBottomSheetHeight((prevState) => {
+      return Object.assign({}, prevState, { [property]: height });
     });
   };
 
@@ -877,7 +888,7 @@ export function Card({ navigation, route }: any) {
         closeOnPressMask={false}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
-          height: 250,
+          height: bottomSheetHeight.managePaymentMethod + 100,
           backgroundColor: "#FFF",
           borderTopLeftRadius: 14,
           borderTopRightRadius: 14,
@@ -887,32 +898,39 @@ export function Card({ navigation, route }: any) {
         }}
         draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
       >
-        <Typography
-          fontSize={18}
-          fontWeight={"600"}
-          fontFamily={"Nunito-SemiBold"}
-        >
-          <MaterialCommunityIcons
-            name="cog-outline"
-            size={18}
-            color={vars["accent-blue"]}
-          />
-          Manage Payment Method
-        </Typography>
-        <Divider
-          style={{
-            marginTop: 20,
-            height: 1,
-            backgroundColor: vars["shade-grey"],
-            opacity: 0.2,
-            width: "100%",
+        <View
+          onLayout={(event) => {
+            const { height } = event.nativeEvent.layout;
+            handleSetBottomSheetHeight(height, "managePaymentMethod");
           }}
-        />
-        <ManagePaymentMethod
-          handleOnlinePayment={handleOnlinePayment}
-          listOfCheckedOptions={listOfCheckedOptions}
-          setListOfCheckedOptions={setListOfCheckedOptions}
-        />
+        >
+          <Typography
+            fontSize={18}
+            fontWeight={"600"}
+            fontFamily={"Nunito-SemiBold"}
+          >
+            <MaterialCommunityIcons
+              name="cog-outline"
+              size={18}
+              color={vars["accent-blue"]}
+            />
+            Manage Payment Method
+          </Typography>
+          <Divider
+            style={{
+              marginTop: 20,
+              height: 1,
+              backgroundColor: vars["shade-grey"],
+              opacity: 0.2,
+              width: "100%",
+            }}
+          />
+          <ManagePaymentMethod
+            handleOnlinePayment={handleOnlinePayment}
+            listOfCheckedOptions={listOfCheckedOptions}
+            setListOfCheckedOptions={setListOfCheckedOptions}
+          />
+        </View>
       </SwipableBottomSheet>
       <SwipableBottomSheet
         rbSheetRef={refRBSheetShowTerminatedCards}
@@ -920,8 +938,7 @@ export function Card({ navigation, route }: any) {
         closeOnPressMask={false}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
-          height:
-            dimensions.window.height - (Platform.OS === "android" ? 535 : 600),
+          height: bottomSheetHeight.showTerminatedCards + 90,
           backgroundColor: "#FFF",
           borderTopLeftRadius: 14,
           borderTopRightRadius: 14,
@@ -931,52 +948,59 @@ export function Card({ navigation, route }: any) {
         }}
         draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
       >
-        <Typography fontSize={16} fontWeight={"600"}>
-          {isTerminatedCardShown
-            ? "Hide Terminated Cards?"
-            : "Show Terminated Cards?"}
-        </Typography>
-        <Divider style={{ marginVertical: 15, paddingHorizontal: 15 }} />
         <View
-          style={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            paddingVertical: 10,
-            bottom: "2%",
-            marginTop: 25,
+          onLayout={(event) => {
+            const { height } = event.nativeEvent.layout;
+            handleSetBottomSheetHeight(height, "showTerminatedCards");
           }}
         >
-          <Button
-            onPress={() => {
-              if (isTerminatedCardShown) {
-                setIsTerminatedCardShown(false);
-                setSelectedCard(cardsActiveList[0]);
-              } else {
-                setIsTerminatedCardShown(true);
-                setSelectedCard(shownCardsOnCarousel[0]);
-              }
-              handleDataChangeShownOnCards();
-              refRBSheetShowTerminatedCards?.current?.close();
+          <Typography fontSize={16} fontWeight={"600"}>
+            {isTerminatedCardShown
+              ? "Hide Terminated Cards?"
+              : "Show Terminated Cards?"}
+          </Typography>
+          <Divider style={{ marginVertical: 15, paddingHorizontal: 15 }} />
+          <View
+            style={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              paddingVertical: 10,
+              bottom: "2%",
+              marginTop: 25,
             }}
-            style={{ color: "#fff", width: 140 }}
-            color="light-pink"
-            fontFamily={"Nunito-SemiBold"}
-            leftIcon={<EyeIcon color="pink" size={14} />}
           >
-            Yes
-          </Button>
-          <Button
-            onPress={() => {
-              refRBSheetShowTerminatedCards?.current?.close();
-            }}
-            style={{ color: "#fff", width: 140 }}
-            color="grey"
-          >
-            Cancel
-          </Button>
+            <Button
+              onPress={() => {
+                if (isTerminatedCardShown) {
+                  setIsTerminatedCardShown(false);
+                  setSelectedCard(cardsActiveList[0]);
+                } else {
+                  setIsTerminatedCardShown(true);
+                  setSelectedCard(shownCardsOnCarousel[0]);
+                }
+                handleDataChangeShownOnCards();
+                refRBSheetShowTerminatedCards?.current?.close();
+              }}
+              style={{ color: "#fff", width: 140 }}
+              color="light-pink"
+              fontFamily={"Nunito-SemiBold"}
+              leftIcon={<EyeIcon color="pink" size={14} />}
+            >
+              Yes
+            </Button>
+            <Button
+              onPress={() => {
+                refRBSheetShowTerminatedCards?.current?.close();
+              }}
+              style={{ color: "#fff", width: 140 }}
+              color="grey"
+            >
+              Cancel
+            </Button>
+          </View>
         </View>
       </SwipableBottomSheet>
       <SwipableBottomSheet
@@ -985,7 +1009,7 @@ export function Card({ navigation, route }: any) {
         closeOnPressMask={false}
         wrapperStyles={{ backgroundColor: "rgba(172, 172, 172, 0.5)" }}
         containerStyles={{
-          height: 230,
+          height: bottomSheetHeight.terminateCard + 90,
           backgroundColor: "#FFF",
           borderTopLeftRadius: 14,
           borderTopRightRadius: 14,
@@ -993,80 +1017,91 @@ export function Card({ navigation, route }: any) {
           shadowColor: "#52006A",
           paddingHorizontal: 15,
         }}
-        draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 90 }}
+        draggableIconStyles={{ backgroundColor: "#DDDDDD", width: 80 }}
       >
-        <Typography fontSize={16} fontWeight={"600"} fontFamily={"Nunito-Bold"}>
-          Terminate This Card?
-        </Typography>
-        <Divider
-          style={{
-            marginBottom: 35,
-            marginTop: 10,
-            height: 1,
-            backgroundColor: vars["shade-grey"],
-            opacity: 0.1,
-            width: "100%",
-          }}
-        />
-
-        <Typography fontSize={16} fontWeight={"400"} color={"#000"}>
-          Are you sure you want to terminate this card?
-        </Typography>
-        <Divider
-          style={{
-            marginTop: 35,
-            height: 1,
-            backgroundColor: vars["shade-grey"],
-            opacity: 0.1,
-            width: "100%",
-          }}
-        />
         <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginTop: 20,
+          onLayout={(event) => {
+            const { height } = event.nativeEvent.layout;
+            handleSetBottomSheetHeight(height, "terminateCard");
           }}
         >
-          <Button
-            onPress={() => {
-              setIsLoading(true);
-              terminatedThisCard({
-                accountId: userID,
-                cardId: selectedCard?.cardreferenceId,
-              })
-                .unwrap()
-                .then((res: any) => {
-                  if (res) {
-                    setSelectedCard(shownCardsOnCarousel[0]);
-                  }
-                })
-                .finally(() => {
-                  setIsLoading(false);
-                  refRBSTerminateThisCard?.current?.close();
-                });
+          <Typography
+            fontSize={16}
+            fontWeight={"600"}
+            fontFamily={"Nunito-Bold"}
+          >
+            Terminate This Card?
+          </Typography>
+          <Divider
+            style={{
+              marginBottom: 35,
+              marginTop: 10,
+              height: 1,
+              backgroundColor: vars["shade-grey"],
+              opacity: 0.1,
+              width: "100%",
             }}
-            style={{ color: "#fff", width: 140 }}
-            color="light-pink"
-            leftIcon={
-              <AntDesign
-                name="checkcircleo"
-                size={16}
-                color={vars["accent-pink"]}
-              />
-            }
-            disabled={isLoading}
+          />
+
+          <Typography fontSize={16} fontWeight={"400"} color={"#000"}>
+            Are you sure you want to terminate this card?
+          </Typography>
+          <Divider
+            style={{
+              marginTop: 35,
+              height: 1,
+              backgroundColor: vars["shade-grey"],
+              opacity: 0.1,
+              width: "100%",
+            }}
+          />
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 20,
+            }}
           >
-            Yes
-          </Button>
-          <Button
-            onPress={() => refRBSTerminateThisCard?.current?.close()}
-            style={{ color: "#fff", width: 140 }}
-            color="grey"
-          >
-            No
-          </Button>
+            <Button
+              onPress={() => {
+                setIsLoading(true);
+                terminatedThisCard({
+                  accountId: userID,
+                  cardId: selectedCard?.cardreferenceId,
+                })
+                  .unwrap()
+                  .then((res: any) => {
+                    if (res) {
+                      setSelectedCard(shownCardsOnCarousel[0]);
+                    }
+                  })
+                  .finally(() => {
+                    setIsLoading(false);
+                    refRBSTerminateThisCard?.current?.close();
+                  });
+              }}
+              style={{ color: "#fff", width: 140 }}
+              color="light-pink"
+              leftIcon={
+                <AntDesign
+                  name="checkcircleo"
+                  size={16}
+                  color={vars["accent-pink"]}
+                />
+              }
+              disabled={isLoading}
+            >
+              Yes
+            </Button>
+            <Button
+              onPress={() => refRBSTerminateThisCard?.current?.close()}
+              style={{ color: "#fff", width: 140 }}
+              color="grey"
+            >
+              No
+            </Button>
+          </View>
         </View>
       </SwipableBottomSheet>
       <SwipableBottomSheet

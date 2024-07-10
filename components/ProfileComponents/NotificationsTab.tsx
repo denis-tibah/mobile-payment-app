@@ -118,7 +118,10 @@ const NotificationsTab: FC<INotificationsTab> = () => {
 
   //for statement generationDate
   useEffect(() => {
-    if (notification?.submittedDate) {
+    if (
+      notification?.submittedDate &&
+      notification?.requestType === "STATEMENTS_READY"
+    ) {
       const splitDate = notification?.submittedDate.split(" ");
       const [date, time] = splitDate;
 
@@ -158,7 +161,7 @@ const NotificationsTab: FC<INotificationsTab> = () => {
         });
       }
     }
-  }, [notification?.submittedDate]);
+  }, [notification?.submittedDate, notification?.requestType]);
 
   const onCloseModal = (): void => {
     setStatusMessage({

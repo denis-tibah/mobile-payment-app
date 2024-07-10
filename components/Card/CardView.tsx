@@ -1,6 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { ImageBackground, StyleSheet, Text, View } from "react-native";
+import {
+  ImageBackground,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from "react-native";
+import * as Clipboard from "expo-clipboard";
 // import ZazooDebitCard from "../../assets/images/zazoo-debit-card.png";
 // import ZazooVirtualCard from "../../assets/images/zazoo-virtual-card.png";
 import ZazooPhysicalCard from "../../assets/images/card_background_images/physical_card.png";
@@ -13,6 +20,7 @@ import { FreezeCard } from "./FreezeCard";
 import { CardStatus } from "../../utils/constants";
 import Typography from "../Typography";
 import { RootState } from "../../store";
+import CopyClipboard from "../../assets/icons/CopyClipboard";
 
 interface CardViewProps {
   freezeLoading: boolean;
@@ -50,6 +58,8 @@ export const CardView = ({
   const expiryYear = (card?.expiration_date).split("-")[0].slice(2, 4) || "";
   const userTokens = useSelector((state: RootState) => state?.auth?.data);
 
+  const [isLoadingCopyToClipboard, setLoadingCopyToClipboard] = useState(false);
+
   const { isLoading: isLoadingGetProfile, data: dataGetProfile } =
     useGetProfileQuery(
       {
@@ -61,6 +71,19 @@ export const CardView = ({
           !userTokens && !userTokens?.access_token && !userTokens?.token_ziyl,
       }
     );
+
+  const handleCopyToClipboard = () => {
+    setLoadingCopyToClipboard(true);
+    Clipboard.setStringAsync(cardDetailsDecrypted?.cardNumber || "")
+      .then((param) => {
+        if (param) {
+          setLoadingCopyToClipboard(false);
+        }
+      })
+      .finally(() => {
+        setLoadingCopyToClipboard(false);
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -98,19 +121,38 @@ export const CardView = ({
             </Typography>
           </View>
         </View>
-        <View
-          style={[
-            styles.headerText,
-            {
-              paddingTop: 10,
-            },
-          ]}
-        >
-          <View style={{ width: "78%", marginTop: 0 }}>
+        <View style={[styles.headerText]}>
+          <View
+            style={{
+              width: "78%",
+              marginTop: 14,
+            }}
+          >
             <Text style={styles.panTitle}>Card Number</Text>
-            <Text style={styles.panText}>
-              {cardDetailsDecrypted?.cardNumber || pan}
-            </Text>
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                gap: 4,
+                alignItems: "center",
+              }}
+            >
+              <Text style={styles.panText}>
+                {cardDetailsDecrypted?.cardNumber || pan}
+              </Text>
+              {cardDetailsDecrypted?.cardNumber ? (
+                <TouchableOpacity
+                  onPress={handleCopyToClipboard}
+                  disabled={isLoadingCopyToClipboard}
+                  style={{ opacity: isLoadingCopyToClipboard ? 0.3 : 1 }}
+                >
+                  <View>
+                    <CopyClipboard color="light-pink" size={18} />
+                  </View>
+                </TouchableOpacity>
+              ) : null}
+            </View>
           </View>
         </View>
         <View style={styles.cardHolderAndExpiryDateContainer}>

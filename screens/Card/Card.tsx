@@ -10,7 +10,6 @@ import {
   Dimensions,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import * as Clipboard from "expo-clipboard";
 import Carousel from "react-native-snap-carousel";
 import { AntDesign } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -24,7 +23,6 @@ import Typography from "../../components/Typography";
 import CardIcon from "../../assets/icons/Card";
 import FreezeIcon from "../../assets/icons/Freeze";
 import EyeIcon from "../../assets/icons/Eye";
-import CopyClipboard from "../../assets/icons/CopyClipboard";
 import {
   getCards,
   setCardAsFrozen,
@@ -129,7 +127,6 @@ export function Card({ navigation, route }: any) {
     isOpen: boolean;
     isError: boolean;
   }>({ header: "", body: "", isOpen: false, isError: false });
-  const [isLoadingCopyToClipboard, setLoadingCopyToClipboard] = useState(false);
   const resetEncryptedCardDetailsData = () => {
     setEncryptedCardDetails({
       isLoadingEncryptedCardDetails: false,
@@ -427,19 +424,6 @@ export function Card({ navigation, route }: any) {
     }
   };
 
-  const handleCopyToClipboard = () => {
-    setLoadingCopyToClipboard(true);
-    Clipboard.setStringAsync(cardDetailsDecrypted?.cardNumber || "")
-      .then((param) => {
-        if (param) {
-          setLoadingCopyToClipboard(false);
-        }
-      })
-      .finally(() => {
-        setLoadingCopyToClipboard(false);
-      });
-  };
-
   const checkIfCardIsFrozen = (card: any) => {
     if (card.frozenYN === "N" && card.cardStatus === "active") {
       // means the card is not frozen
@@ -516,7 +500,7 @@ export function Card({ navigation, route }: any) {
         });
       })
       .finally(() => {
-        startTimer("resend_otp", 30000);
+        startTimer("resend_otp", 90000);
         setIsLoading(false);
       });
   };
@@ -626,6 +610,7 @@ export function Card({ navigation, route }: any) {
                 layout="default"
                 lockScrollWhileSnapping={true}
                 onSnapToItem={(index) => {
+                  stopTimer("decrypted_card_info_local_state");
                   setCardDetailsDecrypted({
                     cardNumber: "",
                     cvc: "",
@@ -641,17 +626,6 @@ export function Card({ navigation, route }: any) {
                   setSelectedCard(shownCardsOnCarousel[index]);
                 }}
               />
-              {cardDetailsDecrypted?.cardNumber ? (
-                <TouchableOpacity
-                  onPress={handleCopyToClipboard}
-                  disabled={isLoadingCopyToClipboard}
-                  style={{ opacity: isLoadingCopyToClipboard ? 0.3 : 1 }}
-                >
-                  <View style={styles.clipboardContainer}>
-                    <CopyClipboard color="light-pink" size={18} />
-                  </View>
-                </TouchableOpacity>
-              ) : null}
             </View>
             <View style={styles.cardActions}>
               <View style={styles.cardActionsButtonMargin}>

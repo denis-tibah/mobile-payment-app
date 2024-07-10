@@ -54,11 +54,4 @@ export const styles: any = StyleSheet.create<any>({
     alignItems: "center",
     marginBottom: -10,
   },
-  clipboardContainer: {
-    position: "absolute",
-    bottom: 5,
-    right: -25,
-    // marginTop: -20,
-    // marginLeft: 250
-  },
 });

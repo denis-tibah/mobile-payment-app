@@ -476,7 +476,6 @@ export function Card({ navigation, route }: any) {
   }, []);
 
   const handleGetOTP = async () => {
-    // generateKeys();
     setIsLoading(true);
     const bodyParams = {
       type: "trusted",
@@ -494,7 +493,7 @@ export function Card({ navigation, route }: any) {
       .catch((error: any) => {
         setStatusMessage({
           header: `${error?.status}${error?.status ? ":" : ""}Error`,
-          body: `OTP error: Please try again`,
+          body: `Unable to request otp, please try again.`,
           isOpen: true,
           isError: true,
         });

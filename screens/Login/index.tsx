@@ -32,7 +32,10 @@ import LockIcon from "../../assets/icons/Lock";
 import FaceIdIcon from "../../assets/icons/FaceId";
 import { SuccessModal } from "../../components/SuccessModal/SuccessModal";
 import { signInViaRTK } from "../../redux/auth/authSlice";
-import { useLoginMutation } from "../../redux/auth/authSliceV2";
+import {
+  useLoginMutation,
+  useLoginV2Mutation,
+} from "../../redux/auth/authSliceV2";
 import { useLazyGetAccountQuery } from "../../redux/account/accountSliceV2";
 import { Seperator } from "../../components/Seperator/Seperator";
 import vars from "../../styles/vars";
@@ -78,7 +81,11 @@ export function LoginScreen({ navigation }: any) {
       error: errorLogin,
       data: dataLogin,
     },
-  ] = useLoginMutation();
+  ] = useLoginV2Mutation();
+  console.log("🚀 ~ LoginScreen ~ dataLogin:", dataLogin);
+  console.log("🚀 ~ LoginScreen ~ errorLogin:", errorLogin);
+  console.log("🚀 ~ LoginScreen ~ isSuccessLogin:", isSuccessLogin);
+  console.log("🚀 ~ LoginScreen ~ isErrorLogin:", isErrorLogin);
 
   const [
     getAccountQuery,
@@ -90,6 +97,7 @@ export function LoginScreen({ navigation }: any) {
       data: dataAccount,
     },
   ] = useLazyGetAccountQuery();
+  console.log("🚀 ~ LoginScreen ~ dataAccount:", dataAccount);
 
   const { handleSubmit, handleChange, values, touched, errors, handleBlur } =
     useFormik({
@@ -154,14 +162,24 @@ export function LoginScreen({ navigation }: any) {
       arrayChecker(accountQuery) && accountQuery.length > 0
         ? accountQuery[0]
         : {};
-    if (dataLogin?.token_ziyl && dataLogin?.access_token) {
-      setSessionToken(dataLogin?.access_token);
-      await AsyncStorage.setItem("tokenZiyl", dataLogin?.token_ziyl);
-      await AsyncStorage.setItem("accessToken", dataLogin?.access_token);
+    if (dataLogin?.data?.token_ziyl && dataLogin?.data?.access_token) {
+      setSessionToken(dataLogin?.data?.access_token);
+      await AsyncStorage.setItem("tokenZiyl", dataLogin?.data?.token_ziyl);
+      await AsyncStorage.setItem("accessToken", dataLogin?.data?.access_token);
       generateKeys();
-      dispatch<any>(signInViaRTK({ dataLogin, dataAccount: objAccountQuery }));
+      dispatch<any>(
+        signInViaRTK({
+          dataLogin: dataLogin?.data,
+          dataAccount: objAccountQuery,
+        })
+      );
+      // for biometrics
+      await saveSecureCredentials(
+        dataLogin?.email || values?.email,
+        values?.password || storageData?.password
+      );
     }
-    if (dataLogin?.biometricYN && dataLogin?.biometricYN === "Y") {
+    /*  if (dataLogin?.data?.biometricYN && dataLogin?.data?.biometricYN === "Y") {
       console.log("use biometric");
       await saveSecureCredentials(
         dataLogin?.email || values?.email,
@@ -171,7 +189,7 @@ export function LoginScreen({ navigation }: any) {
       console.log("do not use biometric");
       await SecureStore.deleteItemAsync("user_email");
       await SecureStore.deleteItemAsync("user_password");
-    }
+    } */
   };
 
   useEffect(() => {
@@ -277,12 +295,31 @@ export function LoginScreen({ navigation }: any) {
 
   useEffect(() => {
     if (isSuccessLogin) {
-      getAccountQuery({
-        tokenZiyl: dataLogin?.token_ziyl,
-        accessToken: dataLogin?.access_token,
-      });
+      const stringCode = dataLogin?.code ? dataLogin?.code.toString() : null;
+      if (!stringCode || (stringCode !== "200" && stringCode !== "230")) {
+        setStatusMessage({
+          header: stringCode,
+          body: "Something went wrong",
+          isOpen: true,
+          isError: false,
+        });
+      }
+      if (stringCode === "200") {
+        getAccountQuery({
+          tokenZiyl: dataLogin?.data?.token_ziyl,
+          accessToken: dataLogin?.data?.access_token,
+        });
+      }
+      if (stringCode === "230") {
+        setStatusMessage({
+          header: stringCode,
+          body: dataLogin?.message ? dataLogin?.message : "",
+          isOpen: true,
+          isError: false,
+        });
+      }
     }
-  }, [isSuccessLogin]);
+  }, [isSuccessLogin, dataLogin]);
 
   useEffect(() => {
     if (isSuccessAccount) {
@@ -302,14 +339,19 @@ export function LoginScreen({ navigation }: any) {
     }
     if (isErrorLogin) {
       console.log({ errorLogin });
+      const errorMessage =
+        arrayChecker(errorLogin?.data?.errors) &&
+        errorLogin?.data?.errors.length > 0
+          ? errorLogin?.data?.errors.join(" ")
+          : "Something went wrong";
       setStatusMessage({
         header: `${errorLogin?.data?.code} Error`,
-        body: errorLogin?.data?.message || errorLogin?.data?.status,
+        body: errorMessage,
         isOpen: true,
         isError: true,
       });
     }
-  }, [isErrorLogin, isErrorAccount]);
+  }, [isErrorLogin, errorLogin, isErrorAccount, errorAccount]);
 
   // original logic of biometrics login
   /*   useEffect(() => {

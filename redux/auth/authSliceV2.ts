@@ -30,8 +30,21 @@ export const authV2 = createApi({
         };
       },
     }),
+    loginV2: builder.mutation({
+      query: (bodyParams) => {
+        return {
+          url: `/auth/login-mobile`,
+          method: "POST",
+          body: bodyParams,
+        };
+      },
+    }),
   }),
 });
 
-export const { useUpdateBiometricMutation, useLoginMutation } = authV2;
+export const {
+  useUpdateBiometricMutation,
+  useLoginMutation,
+  useLoginV2Mutation,
+} = authV2;
 export const loginReducer = authV2.reducer;

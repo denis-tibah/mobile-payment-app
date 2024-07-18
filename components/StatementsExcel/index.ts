@@ -50,6 +50,6 @@ export const generateStatementsExcel = async ({
   const filename = `statement_${dateFns.format(new Date(), "yyyy-MM-dd")}.xlsx`
   RNFS.writeFile(RNFS.DownloadDirectoryPath + `/statement_${filename}.xlsx`, wbout, "ascii")
   .then((r) => {
-    Alert.alert("Exported successfully", `File saved as ${filename}`);
+    Alert.alert("Excel generated successfully", `File saved as ${filename}`);
   })
 };

@@ -25,8 +25,6 @@ import { RootState } from "../../store";
 import ScrollingButtons from "./ScrollingButtons";
 import { format } from "date-fns";
 import { generateStatementsPDF } from "../../components/StatementsPDF/StatementsPDF";
-import XLSX from "xlsx";
-import RNFS from "react-native-fs";
 import { generateStatementsExcel } from "../../components/StatementsExcel";
 
 interface DateRangeType {
@@ -93,7 +91,7 @@ export function Statements({ navigation }: any) {
     statements: StatementTransactionsResponse[],
     _searchFilter: StatementFilter
   ) => {
-    const pdfUri = await generateStatementsPDF({
+    const {newURI: fileUrl, filename} = await generateStatementsPDF({
       statements,
       accountData: {
         ...userData,
@@ -102,7 +100,10 @@ export function Statements({ navigation }: any) {
         ...profileData,
       },
     });
-    return await printAsync({ uri: pdfUri });
+    navigation.navigate("pdfView", {
+      pdf_url: fileUrl,
+      filename
+    });
   };
 
   const handleGenerateExcel = async (
@@ -118,48 +119,10 @@ export function Statements({ navigation }: any) {
           currentBalance,
         },
       });
+    } catch (e) {
+      console.log("Error");
     }
-     catch(e) {
-      console.log("Error")
-     }
   };
-
-  // generateStatementsPDF
-
-  // const handleOnChangeShowPickerDate = (
-  //   formattedDate: string,
-  //   setState: any,
-  //   values: any,
-  //   key: string
-  // ) => {
-  //   const { dateFrom, dateTo } = values;
-  //   if (key === "dateFrom") {
-  //     if (dateTo.value) {
-  //       const fromDate = new Date(formattedDate);
-  //       const toDate = new Date(dateTo.value);
-  //       if (fromDate > toDate) {
-  //         alert("Date from should be before or same with Date to");
-  //         return;
-  //       }
-  //     }
-  //   } else {
-  //     if (dateFrom.value) {
-  //       const fromDate = new Date(dateFrom.value);
-  //       const toDate = new Date(formattedDate);
-  //       if (fromDate > toDate) {
-  //         alert("Date from should be before or same with Date to");
-  //         return;
-  //       }
-  //     }
-  //   }
-  //   setState({
-  //     ...values,
-  //     [key]: {
-  //       state: false,
-  //       value: formattedDate,
-  //     },
-  //   });
-  // };
 
   const handleGenerateFile = async () => {
     const { dateFrom, dateTo } = showStatementPickerDateToAndFrom;
@@ -202,7 +165,10 @@ export function Statements({ navigation }: any) {
                   );
 
                   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                    handleGenerateExcel(statements, statementFilterWithDateRange);
+                    handleGenerateExcel(
+                      statements,
+                      statementFilterWithDateRange
+                    );
                     console.log("Permission granted");
                   } else {
                     // Permission denied

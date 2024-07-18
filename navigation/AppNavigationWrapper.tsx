@@ -35,6 +35,7 @@ import { signout } from "../redux/auth/authSlice";
 import * as SecureStore from "expo-secure-store";
 import Inactivity from "../components/Inactivity";
 import { GetCardScreen } from "../screens/Card/Components/GetCardScreen";
+import { PDFViewScreen } from "../screens/PDFView";
 // import * as TaskManager from 'expo-task-manager';
 
 const Tab = createBottomTabNavigator();
@@ -368,6 +369,11 @@ export default function AppNavigationWrapper() {
               name={screenNames.payees}
               component={PayeeScreen}
             /> */}
+            <Root.Screen
+              options={{ headerShown: false }}
+              name="pdfView"
+              component={PDFViewScreen}
+            />
             <Root.Screen
               options={{ headerShown: false }}
               name={screenNames.approve}

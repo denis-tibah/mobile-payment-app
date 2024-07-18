@@ -1,28 +1,14 @@
-import React from "react";
-import * as Print from "expo-print";
 import { Asset } from "expo-asset";
-import { StyleSheet, Text, View, Image } from "react-native";
 import {
   convertDateToDottedName,
   convertDateToName,
-  formatAmountTableValue,
   formatAmountValueWithCurrency,
-  getFormattedDateAndTimeV2,
   formatDateV3,
 } from "../../utils/helpers";
-import * as DocumentPicker from "expo-document-picker";
 import ZazooLogo from "../../assets/images/ZazooLogoDark.jpg";
 import * as FileSystem from "expo-file-system";
 import mime from "react-native-mime-types";
 import { StatementTransactionsResponse } from "../../redux/transaction/transactionSlice";
-// const ZazooLogo = '../../assets/images/ZazooLogo.png';
-
-// const convertImageToBase64 = async (imagePath: string): Promise<string | undefined> => {
-//   const image = await FileSystem.readAsStringAsync(imagePath, { encoding: 'base64' });
-//   const mimeType = mime.lookup(imagePath);
-//   console.log({ image });
-//   return `data:${mimeType};base64,${image}`;
-// };
 
 export const convertLogoToBase64 = async (): Promise<string> => {
   try {
@@ -265,11 +251,11 @@ export const statementsPDFGenerator = async ({
             ${tableRows.join("")}
           </table>
         </div>
+        <footer style="position: fixed; bottom: -10; left: 0; width: 100%; padding: 10px;">
+        © 2023 Zazoo is a brand name operated by IQGP Ltd, a company registered in Cyprus with its Registered address at Dimostheni Severi 12, 6th Floor, Office 601, Nicosia, 1080, Cyprus and with Company Registration number HE 435932. Zazoo is not a bank. Zazoo is a technical platform that facilitates the opening and operating of an electronic money accounts for both individuals and corporate customers.
+        Payment related services, debit card services, account opening and management services are provided through its relationship with regulated entity and electric money institution license holder, FinXP Ltd, a company registered in Malta with Registration number C 65783 which is regulated by the Malta Financial Services Authority and who has their registered office at Ardent Business Centre, No 4, Triq L-Oratorju, Naxxar NXR 2505, Malta.
+        </footer>
       </body>
-      <footer style="position: fixed; bottom: 0; left: 0; width: 100%; padding: 10px;">
-      © 2023 Zazoo is a brand name operated by IQGP Ltd, a company registered in Cyprus with its Registered address at Dimostheni Severi 12, 6th Floor, Office 601, Nicosia, 1080, Cyprus and with Company Registration number HE 435932. Zazoo is not a bank. Zazoo is a technical platform that facilitates the opening and operating of an electronic money accounts for both individuals and corporate customers.
-      Payment related services, debit card services, account opening and management services are provided through its relationship with regulated entity and electric money institution license holder, FinXP Ltd, a company registered in Malta with Registration number C 65783 which is regulated by the Malta Financial Services Authority and who has their registered office at Ardent Business Centre, No 4, Triq L-Oratorju, Naxxar NXR 2505, Malta.
-      </footer>
     </html>
   `;
 };
@@ -279,14 +265,7 @@ export const generateStatementsPDF = async ({
   accountData,
 }: any) => {
   const { from_date, to_date } = accountData;
-  const getHTML = await statementsPDFGenerator({ statements, accountData });
-  const { uri } = await Print.printToFileAsync({
-    html: getHTML,
-    margins: { top: 20, bottom: 20, left: 20, right: 20 },
-  });
-  const newURI =
-    FileSystem.documentDirectory + `statement_${from_date}_${to_date}.pdf`;
-  await FileSystem.moveAsync({ from: uri, to: newURI });
-  // await FileSystem.downloadAsync(newURI, FileSystem.documentDirectory + `statement_${from_date}_${to_date}.pdf`);
-  return newURI;
+  const filename = `statement_${from_date}_${to_date}.pdf`;
+  const newURI = FileSystem.documentDirectory + filename;
+  return {newURI, filename};
 };

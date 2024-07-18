@@ -141,12 +141,12 @@ export function MyAccount({ navigation }: any) {
   }, []);
 
   useEffect(() => {
-    getCompletedTransactions(
-      transactionsParams({ status: "SUCCESS", limit: 10 })
-    );
-    getPendingTransactions(
-      transactionsParams({ status: "PENDING", limit: 10 })
-    );
+    // getCompletedTransactions(
+    //   transactionsParams({ status: "SUCCESS", limit: 10 })
+    // );
+    // getPendingTransactions(
+    //   transactionsParams({ status: "PENDING", limit: 10 })
+    // );
 
     setTimeout(() => {
       setTriggerBiometric(true);

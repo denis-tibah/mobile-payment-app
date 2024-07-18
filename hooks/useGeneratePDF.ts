@@ -74,7 +74,7 @@ export default function useGeneratePDF() {
               accountData,
             });
 
-            return await printAsync({ uri: pdfUri });
+            // return await printAsync({ uri: pdfUri });
           } else {
             setIsGeneratingPDF(false);
             alert("You dont have transaction for selected dates");

@@ -94,10 +94,10 @@ export function LoginScreen({ navigation }: any) {
   const { handleSubmit, handleChange, values, touched, errors, handleBlur } =
     useFormik({
       initialValues: {
-        email: "aristosc@iqgp.io",
-        password: "3P4N5xUK4$",
+        email: "",
+        password: "",
       },
-      // validationSchema: validationAuthSchema,
+      validationSchema: validationAuthSchema,
       onSubmit: async ({ email, password }) => {
         const ipAddress = await getDeviceDetails();
         const reqData = {

@@ -1,6 +1,6 @@
 {
   "name": "zazoo-mobile",
-  "version": "1.0.14",
+  "version": "1.0.18",
   "scripts": {
     "start": "expo start --dev-client",
     "start:dev": "NODE_ENV=development npx expo",

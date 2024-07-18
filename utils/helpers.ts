@@ -394,6 +394,7 @@ export const formatDateV3 = (inputDate: any) => {
 };
 
 export const convertDateToDottedName = (date: string) => {
+  if(!date) return ""
   const [year, month, day] = date.split("-");
   return `${day}.${month}.${year}`;
 };

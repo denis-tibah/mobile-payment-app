@@ -70,3 +70,12 @@ export const CardStatus = {
     ACTIVE: 'active',
     INACTIVE: 'inactive'
 };
+
+export const STATEMENT_TRANSACTION_FIELDS = {
+  transaction_ref_no: "Reference",
+  transaction_date: "Date(UTC)",
+  closing_balance: "Money out",
+  opening_balance: "Money In",
+  balance: "Balance",
+  description: "description",
+};

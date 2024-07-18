@@ -3,7 +3,6 @@ import {
   Alert,
   Pressable,
   View,
-  Switch,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
@@ -44,11 +43,13 @@ import { validationAuthSchema } from "../../utils/validation";
 import { getDeviceDetails } from "../../utils/getIpAddress";
 import { sessionToken } from "../../utils/globalStates";
 import useDigitalSignature from "../../hooks/useDigitalSignature";
+import useDeviceFingerprint from "../../hooks/useDeviceFingerprint";
 
 export function LoginScreen({ navigation }: any) {
   const appVersion = Constants?.manifest?.version;
 
   const { convertPublicKeyPKCS1ToPKCS8 } = useDigitalSignature();
+  const { deviceFingerprint, type, name } = useDeviceFingerprint();
 
   const [isFaceId, setFaceId] = useState<boolean>(true);
   const [storageData, setStorageData] = useState<any>({});
@@ -65,7 +66,6 @@ export function LoginScreen({ navigation }: any) {
 
   const { navigate }: any = useNavigation();
   const dispatch = useDispatch();
-  /* const validationSchema = validationAuthSchema(); */
 
   const saveSecureCredentials = async (email: string, password: string) => {
     await SecureStore.setItemAsync("user_email", email);
@@ -82,10 +82,6 @@ export function LoginScreen({ navigation }: any) {
       data: dataLogin,
     },
   ] = useLoginV2Mutation();
-  console.log("🚀 ~ LoginScreen ~ dataLogin:", dataLogin);
-  console.log("🚀 ~ LoginScreen ~ errorLogin:", errorLogin);
-  console.log("🚀 ~ LoginScreen ~ isSuccessLogin:", isSuccessLogin);
-  console.log("🚀 ~ LoginScreen ~ isErrorLogin:", isErrorLogin);
 
   const [
     getAccountQuery,
@@ -97,7 +93,6 @@ export function LoginScreen({ navigation }: any) {
       data: dataAccount,
     },
   ] = useLazyGetAccountQuery();
-  console.log("🚀 ~ LoginScreen ~ dataAccount:", dataAccount);
 
   const { handleSubmit, handleChange, values, touched, errors, handleBlur } =
     useFormik({
@@ -112,7 +107,12 @@ export function LoginScreen({ navigation }: any) {
           email,
           password,
           ipAddress,
-          browserfingerprint: "react native app",
+          browserfingerprint: deviceFingerprint,
+          device: {
+            type: type,
+            name: name,
+            fingerprint: deviceFingerprint,
+          },
         };
         loginMutation(reqData);
       },
@@ -179,17 +179,6 @@ export function LoginScreen({ navigation }: any) {
         values?.password || storageData?.password
       );
     }
-    /*  if (dataLogin?.data?.biometricYN && dataLogin?.data?.biometricYN === "Y") {
-      console.log("use biometric");
-      await saveSecureCredentials(
-        dataLogin?.email || values?.email,
-        values?.password || storageData?.password
-      );
-    } else {
-      console.log("do not use biometric");
-      await SecureStore.deleteItemAsync("user_email");
-      await SecureStore.deleteItemAsync("user_password");
-    } */
   };
 
   useEffect(() => {
@@ -468,9 +457,8 @@ export function LoginScreen({ navigation }: any) {
               email: storageData?.email,
               password: storageData?.password,
               ipAddress,
-              browserfingerprint: "react native app",
+              browserfingerprint: deviceFingerprint,
             };
-            console.log("🚀 ~ triggerBiometric ~ reqData:", reqData);
             loginMutation(reqData);
           } else {
             setFaceId(false);
